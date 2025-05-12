@@ -1,255 +1,237 @@
-<p style="color: green"><%= notice %></p>
-
-<% content_for :title, "Psychologist profiles" %>
-
-<h1>Psychologist profiles</h1>
-
-
-<!-- Search Bar -->
-<div class="container mb-5">
-  <div class="card">
-    <div class="card-content">
-      <h3 class="title is-4 mb-4">Find a Psychologist</h3>
-      
-      <%= form_with url: psychologist_profiles_path, method: :get, local: true, class: "search-form" do |f| %>
-        <div class="columns is-multiline">
-          <!-- Keywords Search -->
-          <div class="column is-half">
-            <div class="field">
-              <label class="label">Keywords</label>
-              <div class="control has-icons-left">
-                <%= f.text_field :keywords, class: "input", placeholder: "Search by name, specialties or keywords" %>
-                <span class="icon is-small is-left">
-                  <i class="fas fa-search"></i>
-                </span>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Psychology Type -->
-          <div class="column is-one-quarter">
-            <div class="field">
-              <label class="label">Psychology Type</label>
-              <div class="control">
-                <div class="select is-fullwidth">
-                  <%= f.select :psychology_type, 
-                    [
-                      ["All Types", ""], 
-                      ["Clinical", "clinical"], 
-                      ["Cognitive", "cognitive"],
-                      ["Behavioral", "behavioral"],
-                      ["Developmental", "developmental"],
-                      ["Educational", "educational"],
-                      ["Social", "social"]
-                    ] 
-                  %>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Gender Filter -->
-          <div class="column is-one-quarter">
-            <div class="field">
-              <label class="label">Gender</label>
-              <div class="control">
-                <div class="select is-fullwidth">
-                  <%= f.select :gender, [["Any Gender", ""], ["Male", "male"], ["Female", "female"], ["Non-binary", "non-binary"]] %>
-                </div>
-              </div>
-            </div>
-          </div>
+<!-- Simplified Search and Filter Bar -->
+<div class="search-card">
+  <%= form_tag psychologist_profiles_path, method: :get, class: "search-form" do %>
+    <div class="search-header">
+      <div class="field has-addons">
+        <div class="control is-expanded">
+          <%= text_field_tag :search, params[:search], 
+                class: "input", 
+                placeholder: "Name, specialty, or keyword..." %>
         </div>
-        
-        <div class="columns">
-          <!-- Additional Filters (collapsible) -->
-          <div class="column is-half">
-            <div class="field">
-              <input id="showMoreFilters" type="checkbox" class="is-checkradio">
-              <label for="showMoreFilters" class="is-size-7">More filters</label>
-              
-              <div id="additionalFilters" style="display: none;" class="mt-3">
-                <div class="columns">
-                  <div class="column">
-                    <div class="field">
-                      <label class="label">Years of Experience</label>
-                      <div class="control">
-                        <div class="select is-fullwidth">
-                          <%= f.select :experience, 
-                            [
-                              ["Any Experience", ""], 
-                              ["Less than 5 years", "0-5"], 
-                              ["5-10 years", "5-10"],
-                              ["More than 10 years", "10+"]
-                            ] 
-                          %>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div class="column">
-                    <div class="field">
-                      <label class="label">Qualifications</label>
-                      <label class="checkbox">
-                        <%= f.check_box :is_doctor, class: "is-checkradio" %>
-                        Has Doctor Degree
-                      </label>
-                      <br>
-                      <label class="checkbox mt-2">
-                        <%= f.check_box :is_certified, class: "is-checkradio" %>
-                        Certified
-                      </label>
-                    </div>
-                  </div>
+        <div class="control">
+          <button class="button is-primary" type="submit">
+            <span class="icon"><i class="fas fa-search"></i></span>
+          </button>
+        </div>
+        <% if any_filters_active?(params) %>
+          <div class="control">
+            <%= link_to psychologist_profiles_path, class: "button is-light" do %>
+              <span class="icon"><i class="fas fa-times"></i></span>
+              <span>Clear All</span>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="search-body p-2">
+      <!-- Active Filters Display -->
+      <% if any_filters_active?(params) %>
+        <div class="field is-grouped is-grouped-multiline mb-2">
+          <% if params[:search].present? %>
+            <div class="control">
+              <div class="tags has-addons">
+                <span class="tag is-primary">Search: <%= params[:search] %></span>
+                <%= link_to psychologist_profiles_path(request.query_parameters.except(:search)), class: "tag is-delete" do %>
+                  <i class="fas fa-times"></i>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+
+          <% (params[:specialty_ids] || []).each do |id| %>
+            <% specialty = Specialty.find_by(id: id) %>
+            <% if specialty %>
+              <div class="control">
+                <div class="tags has-addons">
+                  <span class="tag is-info"><%= specialty.name %></span>
+                  <%= link_to psychologist_profiles_path(request.query_parameters.except(:specialty_ids).merge(specialty_ids: request.query_parameters[:specialty_ids] - [id.to_s])), class: "tag is-delete" do %>
+                    <i class="fas fa-times"></i>
+                  <% end %>
                 </div>
               </div>
-            </div>
-          </div>
-          
-          <div class="column is-half has-text-right">
-            <div class="field is-grouped is-grouped-right mt-4">
-              <div class="control">
-                <%= f.submit "Search", class: "button is-link" %>
-              </div>
-              <div class="control">
-                <%= link_to "Reset", psychologist_profiles_path, class: "button is-light" %>
-              </div>
-            </div>
-          </div>
+            <% end %>
+          <% end %>
+
+          <!-- Similar for other filter types -->
         </div>
       <% end %>
+
+      <!-- Filter Dropdowns - Simplified Version -->
+      <div class="field is-grouped is-grouped-multiline">
+        <!-- Specialty Filter -->
+        <div class="control">
+          <%= select_tag :specialty_ids, 
+              options_for_select(
+                Specialty.all.map { |s| [s.name, s.id] },
+                params[:specialty_ids]
+              ),
+              multiple: true,
+              class: "select is-small is-multiple",
+              onchange: "this.form.submit()" %>
+        </div>
+
+        <!-- Issue Filter -->
+        <div class="control">
+          <%= select_tag :issue_ids, 
+              options_for_select(
+                Issue.all.map { |i| [i.name, i.id] },
+                params[:issue_ids]
+              ),
+              multiple: true,
+              class: "select is-small is-multiple",
+              onchange: "this.form.submit()" %>
+        </div>
+
+        <!-- Location Filter -->
+        <div class="control">
+          <%= select_tag :country, 
+              options_for_select(
+                [['All Countries', '']] + 
+                PsychologistProfile.distinct.pluck(:country).compact.sort,
+                params[:country]
+              ),
+              class: "select is-small",
+              onchange: "this.form.submit()" %>
+        </div>
+      </div>
     </div>
-  </div>
+  <% end %>
 </div>
 
-<!-- Search Results -->
-<div class="container">
-  <div class="columns is-multiline">
-    <% @psychologist_profiles.each do |psychologist_profile| %>
-      <div class="column is-full">
-        <div class="box p-3 mb-3 has-background-white-ter">
-          <div class="columns is-vcentered is-mobile">
-            <!-- Profile Image -->
-            <div class="column is-narrow">
-              <% if psychologist_profile.profile_img.attached? %>
-                <figure class="image is-64x64">
-                  <%= image_tag url_for(psychologist_profile.profile_img), alt: "Profile Image", class: "is-rounded" %>
-                </figure>
-              <% else %>
-                <figure class="image is-64x64">
-                  <img src="/api/placeholder/64/64" alt="Profile placeholder" class: "is-rounded">
-                </figure>
-              <% end %>
-            </div>
-            
-            <!-- Main Profile Info -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Psychologist Profiles -->
+<div class="profiles-container">
+  <% @psychologist_profiles.each do |profile| %>
+    <div class="profile-card">
+      <div class="columns is-mobile">
+        <!-- Profile Image -->
+        <div class="column is-2-desktop is-3-tablet is-4-mobile profile-img-container has-text-centered">
+          <figure class="image is-96x96 mx-auto">
+            <% if profile.profile_img.attached? %>
+              <%= image_tag url_for(profile.profile_img), class: "is-rounded profile-image" %>
+            <% else %>
+              <img src="/api/placeholder/96/96" alt="Profile Image" class="is-rounded profile-image">
+            <% end %>
+          </figure>
+        </div>
+        
+        <!-- Profile Info -->
+        <div class="column profile-info">
+          <div class="columns is-mobile">
             <div class="column">
-              <div class="columns">
-                <div class="column">
-                  <h4 class="title is-5 mb-1">
-                    <%= link_to psychologist_profile.first_name, psychologist_profile_path(psychologist_profile), class: "has-text-link" %>
-                  </h4>
-                  <p class="is-size-7 mb-1">
-                    <span class="icon is-small has-text-grey"><i class="fas fa-map-marker-alt"></i></span>
-                    <%= psychologist_profile.city %>, <%= psychologist_profile.country %>
-                    • <span class="has-text-weight-medium"><%= psychologist_profile.years_of_experience %> years exp.</span>
-                    • <span><%= psychologist_profile.gender %></span>
-                  </p>
-                  
-   
-                <div class="column is-narrow">
-                  <!-- Service Price Range -->
-                  <% if psychologist_profile.user.services.any? %>
-                    <% 
-                      min_price = psychologist_profile.user.services.minimum(:price).to_f
-                      max_price = psychologist_profile.user.services.maximum(:price).to_f
-                    %>
-                    <div class="has-text-right">
-                      <p class="has-text-weight-bold">
-                        <% if min_price == max_price %>
-                          <%= number_to_currency(min_price) %>
-                        <% else %>
-                          From <%= number_to_currency(min_price) %>
-                        <% end %>
-                      </p>
-                    </div>
-                  <% end %>
-                  
-                  <!-- Status indicators with more subtle design -->
-                  <div class="field is-grouped is-grouped-multiline mt-1">
-                    <% if psychologist_profile.is_doctor %>
-                      <div class="control">
-                        <div class="tags has-addons">
-                          <span class="tag is-dark is-small">Dr</span>
-                        </div>
-                      </div>
-                    <% end %>
-                    <% if psychologist_profile.is_degree_boolean %>
-                      <div class="control">
-                        <div class="tags has-addons">
-                          <span class="tag is-dark is-small">Certified</span>
-                        </div>
-                      </div>
-                    <% end %>
-                  </div>
-                </div>
+              <!-- Name and Badges -->
+              <h3 class="title is-5 mb-1">
+                <% if profile.is_doctor %>Dr. <% end %><%= profile.first_name %> <%= profile.last_name %>
+              </h3>
+              <p class="mb-2">
+                <% if profile.is_doctor %>
+                  <span class="qualification-badge">
+                    <i class="fas fa-user-md"></i> PhD
+                  </span>
+                <% end %>
+                <% if profile.is_degree_boolean %>
+                  <span class="qualification-badge">
+                    <i class="fas fa-certificate"></i> Certified
+                  </span>
+                <% end %>
+              </p>
+              
+              <!-- Location -->
+              <p class="location-text mb-2">
+                <span class="icon is-small"><i class="fas fa-map-marker-alt"></i></span>
+                <%= profile.city %>, <%= profile.country %>
+                <span class="ml-2"><i class="fas fa-clock"></i> <%= profile.years_of_experience %> years exp.</span>
+              </p>
+              
+              <!-- Short Bio -->
+              <p class="has-text-grey is-size-7 mb-2">
+                <%= truncate(profile.about_me, length: 150) %>
+              </p>
+              
+              <!-- Specialties Tags -->
+              <div class="tags are-small mt-2">
+                <% profile.specialties.each do |specialty| %>
+                  <span class="tag is-specialty"><%= specialty.name %></span>
+                <% end %>
+                <% profile.issues.each do |issue| %>
+                  <span class="tag is-issue"><%= issue.name %></span>
+                <% end %>
               </div>
               
-              <!-- Services (just names) -->
-              <% if psychologist_profile.user.services.any? %>
-                <p class="is-size-7 has-text-grey mb-1">
-                  <span class="icon is-small"><i class="fas fa-clipboard-list"></i></span>
-                  <strong>Services:</strong> 
-                  <%= psychologist_profile.user.services.pluck(:name).join(", ") %>
-                </p>
-              <% end %>
+              <!-- Client Types (shown at bottom) -->
+              <p class="is-size-7 has-text-grey mt-2">
+                <span class="icon is-small"><i class="fas fa-users"></i></span>
+                <% profile.client_types.each_with_index do |client_type, index| %>
+                  <% if index > 0 %> • <% end %>
+                  <span><%= client_type.name %></span>
+                <% end %>
+              </p>
             </div>
             
-            <!-- Action Button -->
+            <!-- Contact Information (right side) -->
             <div class="column is-narrow">
-              <%= link_to "View Profile", psychologist_profile_path(psychologist_profile), class: "button is-small is-outlined is-link" %>
+              <div class="buttons are-small is-flex is-flex-direction-column">
+                <%= link_to psychologist_profile_path(profile), class: "button is-primary is-outlined mb-2" do %>
+                  <span class="icon is-small"><i class="fas fa-user"></i></span>
+                  <span>View Profile</span>
+                <% end %>
+                <button class="button is-text contact-button" data-target="contact-<%= profile.id %>">
+                  <span class="icon is-small"><i class="fas fa-envelope"></i></span>
+                  <span>Contact</span>
+                </button>
+              </div>
+              <!-- Hidden Contact Info -->
+              <div id="contact-<%= profile.id %>" class="contact-info mt-2">
+                <% if profile.contact_phone.present? %>
+                  <p class="is-size-7">
+                    <span class="icon is-small"><i class="fas fa-phone"></i></span>
+                    <a href="tel:<%= profile.contact_phone %>"><%= profile.contact_phone %></a>
+                  </p>
+                <% end %>
+                <p class="is-size-7">
+                  <span class="icon is-small"><i class="fas fa-envelope"></i></span>
+                  <a href="mailto:<%= profile.user.email %>"><%= profile.user.email %></a>
+                </p>
+                <% if profile.telegram.present? %>
+                  <p class="is-size-7">
+                    <span class="icon is-small"><i class="fab fa-telegram"></i></span>
+                    <a href="https://t.me/<%= profile.telegram %>" target="_blank">@<%= profile.telegram %></a>
+                  </p>
+                <% end %>
+                <% if profile.whatsapp.present? %>
+                  <p class="is-size-7">
+                    <span class="icon is-small"><i class="fab fa-whatsapp"></i></span>
+                    <a href="https://wa.me/<%= profile.whatsapp %>" target="_blank"><%= profile.whatsapp %></a>
+                  </p>
+                <% end %>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    <% end %>
-  </div>
-  
-  <!-- Pagination -->
-  <% if @psychologist_profiles.respond_to?(:total_pages) %>
-    <nav class="pagination is-centered" role="navigation" aria-label="pagination">
-      <%= link_to_prev_page @psychologist_profiles, "Previous", class: "pagination-previous" %>
-      <%= link_to_next_page @psychologist_profiles, "Next page", class: "pagination-next" %>
-      <ul class="pagination-list">
-        <% @psychologist_profiles.total_pages.times do |i| %>
-          <li>
-            <%= link_to i+1, url_for(page: i+1), 
-                class: "pagination-link #{@psychologist_profiles.current_page == i+1 ? 'is-current' : ''}", 
-                aria: { label: "Page #{i+1}" } %>
-          </li>
-        <% end %>
-      </ul>
-    </nav>
+    </div>
   <% end %>
 </div>
-
-<!-- Fontawesome for icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-<!-- JavaScript for More Filters toggle -->
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const checkbox = document.getElementById('showMoreFilters');
-    const filters = document.getElementById('additionalFilters');
-    
-    checkbox.addEventListener('change', () => {
-      if (checkbox.checked) {
-        filters.style.display = 'block';
-      } else {
-        filters.style.display = 'none';
-      }
-    });
-  });
-</script>
-

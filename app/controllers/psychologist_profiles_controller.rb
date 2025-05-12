@@ -7,10 +7,6 @@ class PsychologistProfilesController < ApplicationController
   def index
     @psychologist_profiles = PsychologistProfile.includes(:user).all
 
-    if params[:keywords].present?
-      @psychologist_profiles = @psychologist_profiles.where("title ILIKE ? OR specialties ILIKE ?", "%#{params[:keywords]}%", "%#{params[:keywords]}%")
-    end
-
     if params[:gender].present?
       @psychologist_profiles = @psychologist_profiles.where(gender: params[:gender])
     end
@@ -19,6 +15,35 @@ class PsychologistProfilesController < ApplicationController
       @psychologist_profiles = @psychologist_profiles.joins(:user).where(users: { service_mode: params[:mode] }) # assuming service_mode is on user
     end
 
+     # Filter by specialties
+      if params[:specialty_ids].present?
+        @psychologist_profiles = @psychologist_profiles.joins(:specialties).where(specialties: { id: params[:specialty_ids] }).distinct
+      end
+      
+      # Filter by issues
+      if params[:issue_ids].present?
+        @psychologist_profiles = @psychologist_profiles.joins(:issues).where(issues: { id: params[:issue_ids] }).distinct
+      end
+      # Filter by client types
+      if params[:client_type_ids].present?
+        @psychologist_profiles = @psychologist_profiles.joins(:client_types).where(client_types: { id: params[:client_type_ids] }).distinct
+      end
+
+
+        # Filter by location
+        if params[:country].present?
+          @psychologist_profiles = @psychologist_profiles.where(country: params[:country])
+        end
+        
+        if params[:city].present?
+          @psychologist_profiles = @psychologist_profiles.where("city ILIKE ?", "%#{params[:city]}%")
+        end
+
+      if params[:keywords].present?
+        @psychologist_profiles = @psychologist_profiles.where("title ILIKE ? OR specialties ILIKE ?", "%#{params[:keywords]}%", "%#{params[:keywords]}%")
+      end
+      
+ 
     # Add pagination if using kaminari or pagy
     @psychologist_profiles = @psychologist_profiles.page(params[:page])
   end
@@ -75,6 +100,8 @@ class PsychologistProfilesController < ApplicationController
       format.json { head :no_content }
     end
   end
+
+
 
   private
     # Use callbacks to share common setup or constraints between actions.
