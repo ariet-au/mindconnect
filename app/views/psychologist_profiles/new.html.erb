@@ -1,0 +1,11 @@
+<% content_for :title, "New psychologist profile" %>
+
+<h1>New psychologist profile</h1>
+
+<%= render "form", psychologist_profile: @psychologist_profile %>
+
+<br>
+
+<div>
+  <%= link_to "Back to psychologist profiles", psychologist_profiles_path %>
+</div>

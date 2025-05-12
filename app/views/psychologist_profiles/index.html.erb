@@ -1,0 +1,255 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Psychologist profiles" %>
+
+<h1>Psychologist profiles</h1>
+
+
+<!-- Search Bar -->
+<div class="container mb-5">
+  <div class="card">
+    <div class="card-content">
+      <h3 class="title is-4 mb-4">Find a Psychologist</h3>
+      
+      <%= form_with url: psychologist_profiles_path, method: :get, local: true, class: "search-form" do |f| %>
+        <div class="columns is-multiline">
+          <!-- Keywords Search -->
+          <div class="column is-half">
+            <div class="field">
+              <label class="label">Keywords</label>
+              <div class="control has-icons-left">
+                <%= f.text_field :keywords, class: "input", placeholder: "Search by name, specialties or keywords" %>
+                <span class="icon is-small is-left">
+                  <i class="fas fa-search"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Psychology Type -->
+          <div class="column is-one-quarter">
+            <div class="field">
+              <label class="label">Psychology Type</label>
+              <div class="control">
+                <div class="select is-fullwidth">
+                  <%= f.select :psychology_type, 
+                    [
+                      ["All Types", ""], 
+                      ["Clinical", "clinical"], 
+                      ["Cognitive", "cognitive"],
+                      ["Behavioral", "behavioral"],
+                      ["Developmental", "developmental"],
+                      ["Educational", "educational"],
+                      ["Social", "social"]
+                    ] 
+                  %>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Gender Filter -->
+          <div class="column is-one-quarter">
+            <div class="field">
+              <label class="label">Gender</label>
+              <div class="control">
+                <div class="select is-fullwidth">
+                  <%= f.select :gender, [["Any Gender", ""], ["Male", "male"], ["Female", "female"], ["Non-binary", "non-binary"]] %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="columns">
+          <!-- Additional Filters (collapsible) -->
+          <div class="column is-half">
+            <div class="field">
+              <input id="showMoreFilters" type="checkbox" class="is-checkradio">
+              <label for="showMoreFilters" class="is-size-7">More filters</label>
+              
+              <div id="additionalFilters" style="display: none;" class="mt-3">
+                <div class="columns">
+                  <div class="column">
+                    <div class="field">
+                      <label class="label">Years of Experience</label>
+                      <div class="control">
+                        <div class="select is-fullwidth">
+                          <%= f.select :experience, 
+                            [
+                              ["Any Experience", ""], 
+                              ["Less than 5 years", "0-5"], 
+                              ["5-10 years", "5-10"],
+                              ["More than 10 years", "10+"]
+                            ] 
+                          %>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="column">
+                    <div class="field">
+                      <label class="label">Qualifications</label>
+                      <label class="checkbox">
+                        <%= f.check_box :is_doctor, class: "is-checkradio" %>
+                        Has Doctor Degree
+                      </label>
+                      <br>
+                      <label class="checkbox mt-2">
+                        <%= f.check_box :is_certified, class: "is-checkradio" %>
+                        Certified
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="column is-half has-text-right">
+            <div class="field is-grouped is-grouped-right mt-4">
+              <div class="control">
+                <%= f.submit "Search", class: "button is-link" %>
+              </div>
+              <div class="control">
+                <%= link_to "Reset", psychologist_profiles_path, class: "button is-light" %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<!-- Search Results -->
+<div class="container">
+  <div class="columns is-multiline">
+    <% @psychologist_profiles.each do |psychologist_profile| %>
+      <div class="column is-full">
+        <div class="box p-3 mb-3 has-background-white-ter">
+          <div class="columns is-vcentered is-mobile">
+            <!-- Profile Image -->
+            <div class="column is-narrow">
+              <% if psychologist_profile.profile_img.attached? %>
+                <figure class="image is-64x64">
+                  <%= image_tag url_for(psychologist_profile.profile_img), alt: "Profile Image", class: "is-rounded" %>
+                </figure>
+              <% else %>
+                <figure class="image is-64x64">
+                  <img src="/api/placeholder/64/64" alt="Profile placeholder" class: "is-rounded">
+                </figure>
+              <% end %>
+            </div>
+            
+            <!-- Main Profile Info -->
+            <div class="column">
+              <div class="columns">
+                <div class="column">
+                  <h4 class="title is-5 mb-1">
+                    <%= link_to psychologist_profile.first_name, psychologist_profile_path(psychologist_profile), class: "has-text-link" %>
+                  </h4>
+                  <p class="is-size-7 mb-1">
+                    <span class="icon is-small has-text-grey"><i class="fas fa-map-marker-alt"></i></span>
+                    <%= psychologist_profile.city %>, <%= psychologist_profile.country %>
+                    • <span class="has-text-weight-medium"><%= psychologist_profile.years_of_experience %> years exp.</span>
+                    • <span><%= psychologist_profile.gender %></span>
+                  </p>
+                  
+   
+                <div class="column is-narrow">
+                  <!-- Service Price Range -->
+                  <% if psychologist_profile.user.services.any? %>
+                    <% 
+                      min_price = psychologist_profile.user.services.minimum(:price).to_f
+                      max_price = psychologist_profile.user.services.maximum(:price).to_f
+                    %>
+                    <div class="has-text-right">
+                      <p class="has-text-weight-bold">
+                        <% if min_price == max_price %>
+                          <%= number_to_currency(min_price) %>
+                        <% else %>
+                          From <%= number_to_currency(min_price) %>
+                        <% end %>
+                      </p>
+                    </div>
+                  <% end %>
+                  
+                  <!-- Status indicators with more subtle design -->
+                  <div class="field is-grouped is-grouped-multiline mt-1">
+                    <% if psychologist_profile.is_doctor %>
+                      <div class="control">
+                        <div class="tags has-addons">
+                          <span class="tag is-dark is-small">Dr</span>
+                        </div>
+                      </div>
+                    <% end %>
+                    <% if psychologist_profile.is_degree_boolean %>
+                      <div class="control">
+                        <div class="tags has-addons">
+                          <span class="tag is-dark is-small">Certified</span>
+                        </div>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Services (just names) -->
+              <% if psychologist_profile.user.services.any? %>
+                <p class="is-size-7 has-text-grey mb-1">
+                  <span class="icon is-small"><i class="fas fa-clipboard-list"></i></span>
+                  <strong>Services:</strong> 
+                  <%= psychologist_profile.user.services.pluck(:name).join(", ") %>
+                </p>
+              <% end %>
+            </div>
+            
+            <!-- Action Button -->
+            <div class="column is-narrow">
+              <%= link_to "View Profile", psychologist_profile_path(psychologist_profile), class: "button is-small is-outlined is-link" %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+  
+  <!-- Pagination -->
+  <% if @psychologist_profiles.respond_to?(:total_pages) %>
+    <nav class="pagination is-centered" role="navigation" aria-label="pagination">
+      <%= link_to_prev_page @psychologist_profiles, "Previous", class: "pagination-previous" %>
+      <%= link_to_next_page @psychologist_profiles, "Next page", class: "pagination-next" %>
+      <ul class="pagination-list">
+        <% @psychologist_profiles.total_pages.times do |i| %>
+          <li>
+            <%= link_to i+1, url_for(page: i+1), 
+                class: "pagination-link #{@psychologist_profiles.current_page == i+1 ? 'is-current' : ''}", 
+                aria: { label: "Page #{i+1}" } %>
+          </li>
+        <% end %>
+      </ul>
+    </nav>
+  <% end %>
+</div>
+
+<!-- Fontawesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- JavaScript for More Filters toggle -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const checkbox = document.getElementById('showMoreFilters');
+    const filters = document.getElementById('additionalFilters');
+    
+    checkbox.addEventListener('change', () => {
+      if (checkbox.checked) {
+        filters.style.display = 'block';
+      } else {
+        filters.style.display = 'none';
+      }
+    });
+  });
+</script>
+

@@ -1,0 +1,2 @@
+module PsychologicalIssuesHelper
+end

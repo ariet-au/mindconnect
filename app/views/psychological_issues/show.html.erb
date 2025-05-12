@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @psychological_issue %>
+
+<div>
+  <%= link_to "Edit this psychological issue", edit_psychological_issue_path(@psychological_issue) %> |
+  <%= link_to "Back to psychological issues", psychological_issues_path %>
+
+  <%= button_to "Destroy this psychological issue", @psychological_issue, method: :delete %>
+</div>

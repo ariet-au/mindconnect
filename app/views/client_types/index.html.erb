@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Client types" %>
+
+<h1>Client types</h1>
+
+<div id="client_types">
+  <% @client_types.each do |client_type| %>
+    <%= render client_type %>
+    <p>
+      <%= link_to "Show this client type", client_type %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New client type", new_client_type_path %>

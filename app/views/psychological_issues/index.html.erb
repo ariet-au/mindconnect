@@ -1,0 +1,16 @@
+<p style="color: green"><%= notice %></p>
+
+<% content_for :title, "Psychological issues" %>
+
+<h1>Psychological issues</h1>
+
+<div id="psychological_issues">
+  <% @psychological_issues.each do |psychological_issue| %>
+    <%= render psychological_issue %>
+    <p>
+      <%= link_to "Show this psychological issue", psychological_issue %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New psychological issue", new_psychological_issue_path %>

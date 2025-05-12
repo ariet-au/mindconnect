@@ -1,0 +1,41 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  bio: MyText
+  specialties: MyString
+  years_of_experience: 1
+  license_number: MyString
+  country: MyString
+  city: MyString
+  address: MyString
+  telegram: MyString
+  whatsapp: MyString
+  contact_phone: MyString
+  contact_phone2: MyString
+  contact_phone3: MyString
+  gender: 1
+  education: MyString
+  is_doctor: false
+  is_degree_boolean: MyString
+  title: MyString
+
+two:
+  user: two
+  bio: MyText
+  specialties: MyString
+  years_of_experience: 1
+  license_number: MyString
+  country: MyString
+  city: MyString
+  address: MyString
+  telegram: MyString
+  whatsapp: MyString
+  contact_phone: MyString
+  contact_phone2: MyString
+  contact_phone3: MyString
+  gender: 1
+  education: MyString
+  is_doctor: false
+  is_degree_boolean: MyString
+  title: MyString

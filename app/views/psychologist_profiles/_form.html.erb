@@ -1,0 +1,139 @@
+<%= form_with(model: psychologist_profile , local: true, html: { multipart: true } ) do |form| %>
+  <% if psychologist_profile.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(psychologist_profile.errors.count, "error") %> prohibited this psychologist_profile from being saved:</h2>
+
+      <ul>
+        <% psychologist_profile.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  
+  
+
+  <div>
+    <%= form.label :first_name, style: "display: block" %>
+    <%= form.text_field :first_name %>
+  </div>
+
+  
+  <div>
+    <%= form.label :last_name, style: "display: block" %>
+    <%= form.text_field :first_name %>
+  </div>
+
+
+  <div>
+    <%= form.label :about_me, style: "display: block" %>
+    <%= form.textarea :about_me %>
+  </div>
+
+  <div class="field">
+    <%= form.label :specialty_ids, "Select Specialties" %>
+    <%= form.collection_select :specialty_ids, Specialty.all, :id, :name, {}, { multiple: true, size: 5 } %>
+  </div>
+
+    <div class="field">
+      <%= form.label :client_type_ids , "Select client types" %>
+      <%= form.collection_select :client_type_ids , ClientType.all, :id, :name, {}, { multiple: true, size: 5 } %>
+    </div>
+    
+  <div class="field">
+    <%= form.label :issue_ids, "Select Issues" %>
+    <%= form.collection_select :issue_ids, Issue.all, :id, :name, {}, { multiple: true, size: 5 } %>
+  </div>
+
+
+  
+
+      <div class="field">
+        <%= form.label :profile_img %><br>
+        <%= form.file_field :profile_img %>
+      </div>
+
+
+
+
+  <div>
+    <%= form.label :years_of_experience, style: "display: block" %>
+    <%= form.number_field :years_of_experience %>
+  </div>
+
+  <div>
+    <%= form.label :license_number, style: "display: block" %>
+    <%= form.text_field :license_number %>
+  </div>
+
+<div class="field">
+  <%= form.label :country %>
+  <%= form.select :country, 
+                  options_for_select(country_list, selected: @psychologist_profile.country),
+                  { include_blank: 'Select Country' },
+                  class: 'select' %>
+</div>
+
+  <div>
+    <%= form.label :city, style: "display: block" %>
+    <%= form.text_field :city %>
+  </div>
+
+  <div>
+    <%= form.label :address, style: "display: block" %>
+    <%= form.text_field :address %>
+  </div>
+
+  <div>
+    <%= form.label :telegram, style: "display: block" %>
+    <%= form.text_field :telegram %>
+  </div>
+
+  <div>
+    <%= form.label :whatsapp, style: "display: block" %>
+    <%= form.text_field :whatsapp %>
+  </div>
+
+  <div>
+    <%= form.label :contact_phone, style: "display: block" %>
+    <%= form.text_field :contact_phone %>
+  </div>
+
+  <div>
+    <%= form.label :contact_phone2, style: "display: block" %>
+    <%= form.text_field :contact_phone2 %>
+  </div>
+
+  <div>
+    <%= form.label :contact_phone3, style: "display: block" %>
+    <%= form.text_field :contact_phone3 %>
+  </div>
+
+  <div>
+<%= form.select :gender, 
+    PsychologistProfile.genders.map { |key, value| [key.humanize, key] },
+    { selected: 'unspecified' },
+    { class: "form-select" } %>
+  </div>
+
+  <div>
+    <%= form.label :education, style: "display: block" %>
+    <%= form.text_field :education %>
+  </div>
+
+  <div>
+    <%= form.label :is_doctor, style: "display: block" %>
+    <%= form.checkbox :is_doctor %>
+  </div>
+
+  <div>
+    <%= form.label :is_degree_boolean, style: "display: block" %>
+    <%= form.checkbox :is_degree_boolean %>
+  </div>
+
+
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

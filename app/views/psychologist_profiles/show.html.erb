@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+<%= link_to "New service", new_service_path %>
+<%= render @psychologist_profile %>
+
+<div>
+  <%= link_to "Edit this psychologist profile", edit_psychologist_profile_path(@psychologist_profile) %> |
+  <%= link_to "Back to psychologist profiles", psychologist_profiles_path %>
+
+  <%= button_to "Destroy this psychologist profile", @psychologist_profile, method: :delete %>
+</div>

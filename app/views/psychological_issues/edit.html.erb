@@ -1,0 +1,12 @@
+<% content_for :title, "Editing psychological issue" %>
+
+<h1>Editing psychological issue</h1>
+
+<%= render "form", psychological_issue: @psychological_issue %>
+
+<br>
+
+<div>
+  <%= link_to "Show this psychological issue", @psychological_issue %> |
+  <%= link_to "Back to psychological issues", psychological_issues_path %>
+</div>
