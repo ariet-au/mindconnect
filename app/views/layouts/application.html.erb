@@ -27,19 +27,76 @@
 
     <link rel="stylesheet"  href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
     <%= javascript_importmap_tags %>
+
+
+
   </head>
 
-  <body>
-    <% if user_signed_in? %>
-      <p>  Signed in as <%= link_to current_user.email %></p>
-        <% if current_user.role == 'psychologist' && current_user.psychologist_profile.present? %>
-          <%= link_to "Edit Profile", edit_psychologist_profile_path(current_user.psychologist_profile), class: "dropdown-item" %>
-        <% end %>
-        <%= link_to "Sign out", destroy_user_session_path, data: { turbo_method: :delete }, id: "sign_out_menu_link", class: "dropdown-item" %>
-    <% else %>
-      <%= link_to 'Login', new_user_session_path %> |
-      <%= link_to 'Sign up', new_user_registration_path %>
-    <% end %>
-    <%= yield %>
-  </body>
+<body>
+<nav class="navbar is-white is-fixed-top has-shadow" role="navigation" aria-label="main navigation">
+  <div class="container">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/">
+        <strong class="has-text-weight-semibold">MindCare</strong>
+      </a>
+    </div>
+
+    <div class="navbar-menu">
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <% if user_signed_in? %>
+            <div class="dropdown is-right is-hoverable">
+              <div class="dropdown-trigger">
+                <button class="button is-white" aria-haspopup="true" aria-controls="user-menu">
+                  <span class="icon-text">
+                    <span class="icon">
+                      <i class="fas fa-user-circle has-text-grey-dark"></i>
+                    </span>
+                    <span class="has-text-grey-dark"><%= current_user.email %></span>
+                  </span>
+                </button>
+              </div>
+              <div class="dropdown-menu" id="user-menu" role="menu">
+                <div class="dropdown-content has-background-white">
+                  <% if current_user.psychologist? && current_user.psychologist_profile.present? %>
+                    <%= link_to edit_psychologist_profile_path(current_user.psychologist_profile), 
+                        class: "dropdown-item has-text-grey-darker" do %>
+                      <span class="icon">
+                        <i class="fas fa-user-edit"></i>
+                      </span>
+                      <span>Edit Profile</span>
+                    <% end %>
+                  <% end %>
+                  <hr class="dropdown-divider">
+                  <%= link_to destroy_user_session_path, 
+                      method: :delete,
+                      class: "dropdown-item has-text-grey-darker" do %>
+                      <span class="icon">
+                        <i class="fas fa-sign-out-alt"></i>
+                      </span>
+                      <span>Sign Out</span>
+                    <% end %>
+                </div>
+              </div>
+            </div>
+          <% else %>
+            <div class="buttons">
+              <%= link_to 'Log in', new_user_session_path, class: "button is-light is-outlined" %>
+              <%= link_to 'Sign up', new_user_registration_path, class: "button is-primary is-outlined" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+    <main class="main-content" style="padding-top: 4rem;"> <!-- Increased padding -->
+    <div class="container">
+      <%= yield %>
+    </div>
+  </main>
+
+  <!-- Include Font Awesome for icons -->
+  <script src="https://kit.fontawesome.com/your-code.js" crossorigin="anonymous"></script>
+</body>
 </html>

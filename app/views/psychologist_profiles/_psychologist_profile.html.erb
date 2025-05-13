@@ -19,8 +19,8 @@
     </div>
     <div class="column">
       <h2 class="title is-4 has-text-grey-dark">
-        <%= psychologist_profile.first_name %> 
-         <%= psychologist_profile.last_name %>
+      <span class="has-text-link">
+        <%= "#{@psychologist_profile.first_name} #{@psychologist_profile.last_name}" %></span>
       </h2>
       <div class="tags">
         <% if psychologist_profile.is_doctor %>

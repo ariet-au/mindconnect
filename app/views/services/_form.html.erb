@@ -1,8 +1,7 @@
-<%= form_with(model: service) do |form| %>
+<%= form_with(model: service, html: { class: 'box' }) do |form| %>
   <% if service.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(service.errors.count, "error") %> prohibited this service from being saved:</h2>
-
+    <div class="notification is-danger">
+      <h2 class="subtitle"><%= pluralize(service.errors.count, "error") %> prohibited this service from being saved:</h2>
       <ul>
         <% service.errors.each do |error| %>
           <li><%= error.full_message %></li>
@@ -11,36 +10,74 @@
     </div>
   <% end %>
 
+  <div class="columns is-multiline">
+    <!-- Name -->
+    <div class="column is-full">
+      <div class="field">
+        <%= form.label :name, class: "label" %>
+        <div class="control">
+          <%= form.text_field :name, class: "input" %>
+        </div>
+      </div>
+    </div>
 
+    <!-- Description -->
+    <div class="column is-full">
+      <div class="field">
+        <%= form.label :description, class: "label" %>
+        <div class="control">
+          <%= form.text_area :description, class: "textarea" %>
+        </div>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :name, style: "display: block" %>
-    <%= form.text_field :name %>
-  </div>
+    <!-- Price and Duration -->
+    <div class="column is-half">
+      <div class="field">
+        <%= form.label :price, class: "label" %>
+        <div class="control has-icons-left">
+          <%= form.text_field :price, class: "input", placeholder: "0.00" %>
+          <span class="icon is-small is-left">
+            <i class="fas fa-dollar-sign"></i>
+          </span>
+        </div>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :description, style: "display: block" %>
-    <%= form.textarea :description %>
-  </div>
+    <div class="column is-half">
+      <div class="field">
+        <%= form.label :duration_minutes, class: "label" %>
+        <div class="control has-icons-left">
+          <%= form.number_field :duration_minutes, class: "input", placeholder: "Minutes" %>
+          <span class="icon is-small is-left">
+            <i class="fas fa-clock"></i>
+          </span>
+        </div>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :price, style: "display: block" %>
-    <%= form.text_field :price %>
-  </div>
+    <!-- Delivery Method -->
+    <div class="column is-full">
+      <div class="field">
+        <%= form.label :delivery_method, class: "label" %>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <%= form.select :delivery_method, 
+                Service.delivery_methods.map { |key, value| [key.humanize, key] },
+                { selected: 'unspecified' },
+                class: "input" %>
+          </div>
+        </div>
+      </div>
+    </div>
 
-  <div>
-    <%= form.label :duration_minutes, style: "display: block" %>
-    <%= form.number_field :duration_minutes %>
-  </div>
-
-    <div>
-<%= form.select :delivery_method, 
-    Service.delivery_methods.map { |key, value| [key.humanize, key] },
-    { selected: 'unspecified' },
-    { class: "form-select" } %>
-  </div>
-
-  <div>
-    <%= form.submit %>
+    <!-- Submit Button -->
+    <div class="column is-full">
+      <div class="field">
+        <div class="control">
+          <%= form.submit class: "button is-primary is-fullwidth" %>
+        </div>
+      </div>
+    </div>
   </div>
 <% end %>

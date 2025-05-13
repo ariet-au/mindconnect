@@ -1,6 +1,8 @@
 class PsychologistProfilesController < ApplicationController
   # before_action :authenticate_user!
   before_action :set_psychologist_profile, only: %i[ show edit update destroy ]
+  before_action :authorize_user!, only: [:edit, :update, :destroy]
+
 
 
   # GET /psychologist_profiles or /psychologist_profiles.json
@@ -101,6 +103,12 @@ class PsychologistProfilesController < ApplicationController
     end
   end
 
+  def authorize_user!
+    unless @psychologist_profile.user == current_user
+      redirect_to root_path, alert: "You are not authorized to edit this profile."
+    end
+  end
+
 
 
   private
@@ -112,7 +120,7 @@ class PsychologistProfilesController < ApplicationController
     # Only allow a list of trusted parameters through.
         def psychologist_profile_params
           params.require(:psychologist_profile).permit(
-            :first_name, :about_me, :years_of_experience, :license_number,
+            :first_name, :last_name, :about_me, :years_of_experience, :license_number,
             :country, :city, :address, :telegram, :whatsapp, :contact_phone,
             :contact_phone2, :contact_phone3, :gender, :education, :is_doctor,
             :is_degree_boolean, :profile_img,

@@ -83,6 +83,19 @@
               onchange: "this.form.submit()" %>
         </div>
 
+      <!-- Clinet Type Filter -->
+        <div class="control">
+          <%= select_tag :client_type_ids, 
+              options_for_select(
+                ClientType.all.map { |i| [i.name, i.id] },
+                params[:client_type_ids]
+              ),
+              multiple: true,
+              class: "select is-small is-multiple",
+              onchange: "this.form.submit()" %>
+        </div>
+
+
         <!-- Location Filter -->
         <div class="control">
           <%= select_tag :country, 
@@ -90,6 +103,18 @@
                 [['All Countries', '']] + 
                 PsychologistProfile.distinct.pluck(:country).compact.sort,
                 params[:country]
+              ),
+              class: "select is-small",
+              onchange: "this.form.submit()" %>
+        </div>
+
+                <!-- Location Filter -->
+        <div class="control">
+          <%= select_tag :gender, 
+              options_for_select(
+                [['Any Gender', '']] + 
+                PsychologistProfile.distinct.pluck(:gender).compact.sort,
+                params[:gender]
               ),
               class: "select is-small",
               onchange: "this.form.submit()" %>

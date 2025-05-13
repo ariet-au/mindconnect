@@ -1,10 +1,19 @@
 <p style="color: green"><%= notice %></p>
-<%= link_to "New service", new_service_path %>
+
+<% if @psychologist_profile.user == current_user %>
+    <%= link_to "New service", new_service_path %>
+ <% end %>
+ 
 <%= render @psychologist_profile %>
 
 <div>
-  <%= link_to "Edit this psychologist profile", edit_psychologist_profile_path(@psychologist_profile) %> |
-  <%= link_to "Back to psychologist profiles", psychologist_profiles_path %>
 
-  <%= button_to "Destroy this psychologist profile", @psychologist_profile, method: :delete %>
+  <% if @psychologist_profile.user == current_user %>
+    <%= link_to "Edit this psychologist profile", edit_psychologist_profile_path(@psychologist_profile) %> 
+
+    <%= button_to "Destroy this psychologist profile", @psychologist_profile, method: :delete %>
+ 
+  <%= link_to "Back to psychologist profiles", psychologist_profiles_path %>
+  <% end %>
+  
 </div>
