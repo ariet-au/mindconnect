@@ -21,7 +21,7 @@
   
   <div>
     <%= form.label :last_name, style: "display: block" %>
-    <%= form.text_field :first_name %>
+    <%= form.text_field :last_name %>
   </div>
 
 
@@ -54,6 +54,32 @@
       </div>
 
 
+         <!-- Image Upload Button -->
+  <label class="button is-link is-light">
+    Upload Profile Image
+    <input type="file" id="imageInput" accept="image/*" hidden>
+  </label>
+
+  <!-- Hidden file input to receive cropped blob before form submission -->
+  <input type="file" id="croppedImageInput" name="psychologist_profile[profile_img]" hidden>
+
+  <!-- Modal for cropping -->
+  <div class="modal" id="cropModal">
+    <div class="modal-background"></div>
+    <div class="modal-card">
+      <header class="modal-card-head">
+        <p class="modal-card-title">Crop Your Image</p>
+        <button class="delete" id="closeModal" aria-label="close"></button>
+      </header>
+      <section class="modal-card-body">
+        <img id="imagePreview" style="max-width: 100%;">
+      </section>
+      <footer class="modal-card-foot">
+        <button type="button" class="button is-primary" id="confirmCrop">Confirm</button>
+        <button type="button" class="button" id="cancelCrop">Cancel</button>
+      </footer>
+    </div>
+  </div>
 
 
   <div>
@@ -137,3 +163,60 @@
     <%= form.submit %>
   </div>
 <% end %>
+
+
+<script>
+let cropper;
+const imageInput = document.getElementById("imageInput");
+const imagePreview = document.getElementById("imagePreview");
+const cropModal = document.getElementById("cropModal");
+const confirmCrop = document.getElementById("confirmCrop");
+const cancelCrop = document.getElementById("cancelCrop");
+const closeModal = document.getElementById("closeModal");
+const croppedImageInput = document.getElementById("croppedImageInput");
+
+// Open modal on file selection
+imageInput.addEventListener("change", function () {
+  const file = this.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    imagePreview.src = e.target.result;
+    cropModal.classList.add("is-active");
+
+    imagePreview.onload = function () {
+      if (cropper) cropper.destroy();
+      cropper = new Cropper(imagePreview, {
+        aspectRatio: 1,
+        viewMode: 1,
+      });
+    };
+  };
+  reader.readAsDataURL(file);
+});
+
+// Close modal
+[cancelCrop, closeModal].forEach((btn) => {
+  btn.addEventListener("click", () => {
+    cropModal.classList.remove("is-active");
+    if (cropper) cropper.destroy();
+  });
+});
+
+// On confirm crop: generate blob, create a File, and assign to hidden input
+confirmCrop.addEventListener("click", () => {
+  cropper.getCroppedCanvas().toBlob((blob) => {
+    const file = new File([blob], "cropped_profile.jpg", { type: "image/jpeg" });
+
+    // Simulate user selecting this file in hidden input
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+    croppedImageInput.files = dataTransfer.files;
+
+    // Close modal
+    cropModal.classList.remove("is-active");
+    cropper.destroy();
+  });
+});
+</script>

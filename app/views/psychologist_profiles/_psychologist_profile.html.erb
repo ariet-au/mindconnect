@@ -1,90 +1,87 @@
 <div class="container">
-  <div class="columns is-centered mt-5 mb-5">
+  <div class="columns is-centered mt-6 mb-6">
     <div class="column is-10">
       <div class="card">
-        <!-- Profile Header with Smaller Image -->
-        <div class="card-content">
-          <div class="columns">
-            <div class="column is-one-fifth">
-              <% if psychologist_profile.profile_img.attached? %>
-                <figure class="image is-128x128">
-                  <%= image_tag url_for(psychologist_profile.profile_img), alt: "Profile Image", class: "is-rounded" %>
-                </figure>
-              <% else %>
-                <figure class="image is-128x128">
-                  <img src="/api/placeholder/128/128" alt="Profile placeholder" class="is-rounded">
-                </figure>
-              <% end %>
-            </div>
-            
-            <div class="column">
-              <div class="tags mb-2">
-                <% if psychologist_profile.is_doctor %>
-                  <span class="tag is-primary">Doctor</span>
-                <% end %>
-                <% if psychologist_profile.is_degree_boolean %>
-                  <span class="tag is-info">Certified</span>
-                <% end %>
-                <span class="tag is-light"><%= psychologist_profile.gender %></span>
-                <span class="tag is-warning"><%= psychologist_profile.years_of_experience %> years experience</span>
-              </div>
-              
-              <p class="is-size-6 mb-2">
-                <span class="icon has-text-info"><i class="fas fa-map-marker-alt"></i></span>
-                <%= psychologist_profile.city %>, <%= psychologist_profile.country %>
-                <% if psychologist_profile.address.present? %>
-                  • <%= psychologist_profile.address %>
-                <% end %>
-              </p>
-              
-              <p class="is-size-6 mb-2">
-                <span class="icon has-text-info"><i class="fas fa-id-card"></i></span>
-                License: <%= psychologist_profile.license_number %>
-              </p>
-            </div>
-          </div>
-        </div>
         
-        <hr class="has-background-light m-0">
-        
-        <!-- Bio Section -->
+ <!-- Profile Header -->
+<div class="card-content">
+  <div class="columns is-vcentered">
+    <div class="column is-one-quarter">
+      <% if psychologist_profile.profile_img.attached? %>
+        <figure class="image" style="max-width: 180px;">
+          <%= image_tag url_for(psychologist_profile.profile_img), class: "is-rounded is-fullwidth", alt: "Profile image" %>
+        </figure>
+      <% else %>
+        <figure class="image" style="max-width: 180px;">
+          <img src="/api/placeholder/128/128" class="is-rounded is-fullwidth" alt="Profile placeholder">
+        </figure>
+      <% end %>
+    </div>
+    <div class="column">
+      <h2 class="title is-4 has-text-grey-dark">
+        <%= psychologist_profile.first_name %> 
+         <%= psychologist_profile.last_name %>
+      </h2>
+      <div class="tags">
+        <% if psychologist_profile.is_doctor %>
+          <span class="tag is-light has-text-grey-dark">Doctor</span>
+        <% end %>
+        <% if psychologist_profile.is_degree_boolean%>
+          <span class="tag is-light has-text-grey-dark">Certified</span>
+        <% end %>
+        <span class="tag is-white has-text-grey"><%= psychologist_profile.gender %></span>
+        <span class="tag is-white has-text-grey"><%= psychologist_profile.years_of_experience %> yrs experience</span>
+      </div>
+
+      <p class="mt-2 has-text-grey">
+        <span class="icon has-text-grey"><i class="fas fa-map-marker-alt"></i></span>
+        <%= psychologist_profile.city %>, <%= psychologist_profile.country %>
+        <% if psychologist_profile.address.present? %>
+          • <%= psychologist_profile.address %>
+        <% end %>
+      </p>
+
+      <p class="has-text-grey">
+        <span class="icon has-text-grey"><i class="fas fa-id-card"></i></span>
+        License: <%= psychologist_profile.license_number %>
+      </p>
+    </div>
+  </div>
+</div>
+
+        <!-- About -->
         <div class="card-content">
-          <h3 class="title is-4">About</h3>
+          <h3 class="title is-5 has-text-link">About</h3>
           <div class="content">
             <p><%= psychologist_profile.about_me %></p>
           </div>
         </div>
-        
+
         <hr class="has-background-light m-0">
-        
-     
-        
-        <hr class="has-background-light m-0">
-        
-        <!-- Education Section -->
+
+        <!-- Education -->
         <div class="card-content">
-          <h3 class="title is-4">Education & Qualifications</h3>
+          <h3 class="title is-5 has-text-link">Education & Qualifications</h3>
           <div class="content">
             <p><%= psychologist_profile.education %></p>
           </div>
         </div>
-        
+
         <hr class="has-background-light m-0">
-        
-        <!-- Services Section -->
+
+        <!-- Services Offered -->
         <div class="card-content">
-          <h3 class="title is-4">Services Offered</h3>
-          
+          <h3 class="title is-5 has-text-link">Services Offered</h3>
           <% if psychologist_profile.user.services.any? %>
             <div class="columns is-multiline">
               <% psychologist_profile.user.services.each do |service| %>
                 <div class="column is-half">
                   <div class="box">
-                    <h4 class="title is-5"><%= service.name %></h4>
+                    <h4 class="title is-6 has-text-primary"><%= service.name %></h4>
                     <div class="level is-mobile">
                       <div class="level-left">
                         <div class="level-item">
-                          <span class="tag is-primary is-medium"><%= service.price %></span>
+                          <span class="tag is-link is-medium"><%= service.price %></span>
                         </div>
                       </div>
                       <div class="level-right">
@@ -97,122 +94,105 @@
                       </div>
                     </div>
                     <p><%= service.description %></p>
-                    <%= link_to "Book Now", service, class: "button is-small is-link" %>
+                    <%= link_to "Book Now", service, class: "button is-small is-link mt-2" %>
                   </div>
                 </div>
               <% end %>
             </div>
           <% else %>
             <p>No services available at this time.</p>
+            <%= link_to "Add your first service", new_service_path %>
           <% end %>
         </div>
-        
+
         <hr class="has-background-light m-0">
-        
-        <!-- Contact Section -->
+
+        <!-- Specialties, Client Types, Issues -->
         <div class="card-content">
-          <h3 class="title is-4">Contact Information</h3>
-          
+          <h3 class="title is-5 has-text-link">Areas of Focus</h3>
+          <div class="columns">
+            <div class="column">
+              <h4 class="subtitle is-6 has-text-weight-bold has-text-link-dark">Specialties</h4>
+              <ul>
+                <% @psychologist_profile.specialties.each do |specialty| %>
+                  <li><span class="tag is-info is-light mb-1"><%= specialty.name %></span></li>
+                <% end %>
+              </ul>
+            </div>
+            <div class="column">
+              <h4 class="subtitle is-6 has-text-weight-bold has-text-link-dark">Client Types</h4>
+              <ul>
+                <% @psychologist_profile.client_types.each do |client_type| %>
+                  <li><span class="tag is-primary is-light mb-1"><%= client_type.name %></span></li>
+                <% end %>
+              </ul>
+            </div>
+            <div class="column">
+              <h4 class="subtitle is-6 has-text-weight-bold has-text-link-dark">Issues</h4>
+              <ul>
+                <% @psychologist_profile.issues.each do |issue| %>
+                  <li><span class="tag is-link is-light mb-1"><%= issue.name %></span></li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <hr class="has-background-light m-0">
+
+        <!-- Contact Info -->
+        <div class="card-content">
+          <h3 class="title is-5 has-text-link">Contact Information</h3>
           <div class="columns is-multiline">
             <div class="column is-half">
               <div class="field">
                 <label class="label">Email</label>
                 <div class="control has-icons-left">
-                  <input class="input is-static" type="email" value="<%= psychologist_profile.user.email %>" readonly>
-                  <span class="icon is-small is-left">
-                    <i class="fas fa-envelope"></i>
-                  </span>
+                  <input class="input is-static" readonly value="<%= psychologist_profile.user.email %>">
+                  <span class="icon is-left"><i class="fas fa-envelope"></i></span>
                 </div>
               </div>
             </div>
-            
+
             <% if psychologist_profile.telegram.present? %>
               <div class="column is-half">
                 <div class="field">
                   <label class="label">Telegram</label>
                   <div class="control has-icons-left">
-                    <input class="input is-static" type="text" value="<%= psychologist_profile.telegram %>" readonly>
-                    <span class="icon is-small is-left">
-                      <i class="fab fa-telegram"></i>
-                    </span>
+                    <input class="input is-static" readonly value="<%= psychologist_profile.telegram %>">
+                    <span class="icon is-left"><i class="fab fa-telegram"></i></span>
                   </div>
                 </div>
               </div>
             <% end %>
-            
+
             <% if psychologist_profile.whatsapp.present? %>
               <div class="column is-half">
                 <div class="field">
                   <label class="label">WhatsApp</label>
                   <div class="control has-icons-left">
-                    <input class="input is-static" type="text" value="<%= psychologist_profile.whatsapp %>" readonly>
-                    <span class="icon is-small is-left">
-                      <i class="fab fa-whatsapp"></i>
-                    </span>
+                    <input class="input is-static" readonly value="<%= psychologist_profile.whatsapp %>">
+                    <span class="icon is-left"><i class="fab fa-whatsapp"></i></span>
                   </div>
                 </div>
               </div>
             <% end %>
-            
-            <% if psychologist_profile.contact_phone.present? %>
+
+            <% [psychologist_profile.contact_phone, psychologist_profile.contact_phone2, psychologist_profile.contact_phone3].compact.each_with_index do |phone, idx| %>
               <div class="column is-half">
                 <div class="field">
-                  <label class="label">Primary Phone</label>
+                  <label class="label"><%= ['Primary', 'Secondary', 'Additional'][idx] %> Phone</label>
                   <div class="control has-icons-left">
-                    <input class="input is-static" type="tel" value="<%= psychologist_profile.contact_phone %>" readonly>
-                    <span class="icon is-small is-left">
-                      <i class="fas fa-phone"></i>
-                    </span>
-                  </div>
-                </div>
-              </div>
-            <% end %>
-            
-            <% if psychologist_profile.contact_phone2.present? %>
-              <div class="column is-half">
-                <div class="field">
-                  <label class="label">Secondary Phone</label>
-                  <div class="control has-icons-left">
-                    <input class="input is-static" type="tel" value="<%= psychologist_profile.contact_phone2 %>" readonly>
-                    <span class="icon is-small is-left">
-                      <i class="fas fa-phone"></i>
-                    </span>
-                  </div>
-                </div>
-              </div>
-            <% end %>
-            
-            <% if psychologist_profile.contact_phone3.present? %>
-              <div class="column is-half">
-                <div class="field">
-                  <label class="label">Additional Phone</label>
-                  <div class="control has-icons-left">
-                    <input class="input is-static" type="tel" value="<%= psychologist_profile.contact_phone3 %>" readonly>
-                    <span class="icon is-small is-left">
-                      <i class="fas fa-phone"></i>
-                    </span>
+                    <input class="input is-static" readonly value="<%= phone %>">
+                    <span class="icon is-left"><i class="fas fa-phone"></i></span>
                   </div>
                 </div>
               </div>
             <% end %>
           </div>
         </div>
+
       </div>
     </div>
   </div>
 </div>
-
-<% @psychologist_profile.specialties.each do |specialty| %>
-    <li><%= specialty.name %></li>
-  <% end %>
-
-<% @psychologist_profile.client_types.each do |client_type| %>
-    <li><%= client_type.name %></li>
-  <% end %>
-
-  <% @psychologist_profile.issues.each do |issue| %>
-    <li><%= issue.name %></li>
-  <% end %>
-
-<!-- Fontawesome for icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
