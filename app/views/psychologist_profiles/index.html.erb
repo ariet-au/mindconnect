@@ -25,75 +25,107 @@
     </div>
 
     <div class="search-body p-2">
-      <!-- Active Filters Display -->
-      <% if any_filters_active?(params) %>
-        <div class="field is-grouped is-grouped-multiline mb-2">
-          <% if params[:search].present? %>
-            <div class="control">
-              <div class="tags has-addons">
-                <span class="tag is-primary">Search: <%= params[:search] %></span>
-                <%= link_to psychologist_profiles_path(request.query_parameters.except(:search)), class: "tag is-delete" do %>
-                  <i class="fas fa-times"></i>
-                <% end %>
-              </div>
-            </div>
-          <% end %>
-
-          <% (params[:specialty_ids] || []).each do |id| %>
-            <% specialty = Specialty.find_by(id: id) %>
-            <% if specialty %>
-              <div class="control">
-                <div class="tags has-addons">
-                  <span class="tag is-info"><%= specialty.name %></span>
-                  <%= link_to psychologist_profiles_path(request.query_parameters.except(:specialty_ids).merge(specialty_ids: request.query_parameters[:specialty_ids] - [id.to_s])), class: "tag is-delete" do %>
-                    <i class="fas fa-times"></i>
-                  <% end %>
-                </div>
-              </div>
+  <!-- Active Filters Display -->
+  <% if any_filters_active?(params) %>
+    <div class="field is-grouped is-grouped-multiline mb-2">
+      <% if params[:search].present? %>
+        <div class="control">
+          <div class="tags has-addons">
+            <span class="tag is-primary">Search: <%= params[:search] %></span>
+            <%= link_to psychologist_profiles_path(request.query_parameters.except(:search)), class: "tag is-delete" do %>
+              <i class="fas fa-times"></i>
             <% end %>
-          <% end %>
-
-          <!-- Similar for other filter types -->
+          </div>
         </div>
       <% end %>
 
-      <!-- Filter Dropdowns - Simplified Version -->
-      <div class="field is-grouped is-grouped-multiline">
-        <!-- Specialty Filter -->
-        <div class="control">
-          <%= select_tag :specialty_ids, 
-              options_for_select(
-                Specialty.all.map { |s| [s.name, s.id] },
-                params[:specialty_ids]
-              ),
-              multiple: true,
-              class: "select is-small is-multiple",
-              onchange: "this.form.submit()" %>
-        </div>
+      <% (params[:specialty_ids] || []).each do |id| %>
+        <% specialty = Specialty.find_by(id: id) %>
+        <% if specialty %>
+          <div class="control">
+            <div class="tags has-addons">
+              <span class="tag is-info"><%= specialty.name %></span>
+              <%= link_to psychologist_profiles_path(request.query_parameters.except(:specialty_ids).merge(specialty_ids: request.query_parameters[:specialty_ids] - [id.to_s])), class: "tag is-delete" do %>
+                <i class="fas fa-times"></i>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
 
-        <!-- Issue Filter -->
-        <div class="control">
-          <%= select_tag :issue_ids, 
-              options_for_select(
-                Issue.all.map { |i| [i.name, i.id] },
-                params[:issue_ids]
-              ),
-              multiple: true,
-              class: "select is-small is-multiple",
-              onchange: "this.form.submit()" %>
-        </div>
+      <% (params[:issue_ids] || []).each do |id| %>
+        <% issue = Issue.find_by(id: id) %>
+        <% if issue %>
+          <div class="control">
+            <div class="tags has-addons">
+              <span class="tag is-warning"><%= issue.name %></span>
+              <%= link_to psychologist_profiles_path(request.query_parameters.except(:issue_ids).merge(issue_ids: request.query_parameters[:issue_ids] - [id.to_s])), class: "tag is-delete" do %>
+                <i class="fas fa-times"></i>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
 
-      <!-- Clinet Type Filter -->
-        <div class="control">
-          <%= select_tag :client_type_ids, 
-              options_for_select(
-                ClientType.all.map { |i| [i.name, i.id] },
-                params[:client_type_ids]
-              ),
-              multiple: true,
-              class: "select is-small is-multiple",
-              onchange: "this.form.submit()" %>
-        </div>
+      <% (params[:client_type_ids] || []).each do |id| %>
+        <% client_type = ClientType.find_by(id: id) %>
+        <% if client_type %>
+          <div class="control">
+            <div class="tags has-addons">
+              <span class="tag is-success"><%= client_type.name %></span>
+              <%= link_to psychologist_profiles_path(request.query_parameters.except(:client_type_ids).merge(client_type_ids: request.query_parameters[:client_type_ids] - [id.to_s])), class: "tag is-delete" do %>
+                <i class="fas fa-times"></i>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <!-- Filter Dropdowns - Simplified Version -->
+  <div class="field is-grouped is-grouped-multiline">
+    <!-- Specialty Filter -->
+    <div class="control">
+      <%= select_tag :specialty_ids, 
+          options_for_select(
+            Specialty.all.map { |s| [s.name, s.id] },
+            params[:specialty_ids]
+          ),
+          multiple: true,
+          class: "select is-small is-multiple",
+          onchange: "this.form.submit()" %>
+    </div>
+
+    <!-- Issue Filter -->
+    <div class="control">
+      <%= select_tag :issue_ids, 
+          options_for_select(
+            Issue.all.map { |i| [i.name, i.id] },
+            params[:issue_ids]
+          ),
+          multiple: true,
+          class: "select is-small is-multiple",
+          onchange: "this.form.submit()" %>
+    </div>
+
+    <!-- Client Type Filter -->
+    <div class="control">
+      <%= select_tag :client_type_ids, 
+          options_for_select(
+            ClientType.all.map { |i| [i.name, i.id] },
+            params[:client_type_ids]
+          ),
+          multiple: true,
+          class: "select is-small is-multiple",
+          onchange: "this.form.submit()" %>
+    </div>
+
+
+
+    
+  </div>
+</div>
 
 
         <!-- Location Filter -->

@@ -68,8 +68,9 @@
                     <% end %>
                   <% end %>
                   <hr class="dropdown-divider">
-                  <%= link_to destroy_user_session_path, 
-                      method: :delete,
+                  <%= link_to destroy_user_session_path,
+                  
+                      data: { turbo_method: :delete }, 
                       class: "dropdown-item has-text-grey-darker" do %>
                       <span class="icon">
                         <i class="fas fa-sign-out-alt"></i>
