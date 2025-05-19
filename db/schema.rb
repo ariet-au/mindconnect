@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_12_145912) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_19_163515) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -106,6 +106,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_12_145912) do
     t.string "is_degree_boolean"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.decimal "standard_rate"
+    t.string "currency"
     t.index ["user_id"], name: "index_psychologist_profiles_on_user_id"
   end
 
@@ -127,6 +129,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_12_145912) do
     t.integer "delivery_method"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "currency", limit: 3
     t.index ["user_id"], name: "index_services_on_user_id"
   end
 

@@ -69,7 +69,7 @@
 
         <hr class="has-background-light m-0">
 
-        <!-- Services Offered -->
+        < !-- Services Offered -->
         <div class="card-content">
           <h3 class="title is-5 has-text-link">Services Offered</h3>
           <% if psychologist_profile.user.services.any? %>
@@ -81,7 +81,13 @@
                     <div class="level is-mobile">
                       <div class="level-left">
                         <div class="level-item">
-                          <span class="tag is-link is-medium"><%= service.price %></span>
+                          <span class="tag is-link is-medium">
+                          <% if service.price==0%> 
+                            Free 
+                          <% else %>  
+                            <%= service.price %> <%= service.currency %> 
+                          <%end%>
+                          </span>
                         </div>
                       </div>
                       <div class="level-right">

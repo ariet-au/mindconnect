@@ -7,4 +7,12 @@ module ApplicationHelper
             params[:country].present? ||
             params[:city].present?
     end
+
+
+    def countries_with_cities
+        YAML.load_file(Rails.root.join('config', 'countries_cities.yml'))
+    end
+
+
 end
+

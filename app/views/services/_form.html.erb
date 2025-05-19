@@ -31,8 +31,9 @@
       </div>
     </div>
 
+
     <!-- Price and Duration -->
-    <div class="column is-half">
+    <div class="column is-one-quarter">
       <div class="field">
         <%= form.label :price, class: "label" %>
         <div class="control has-icons-left">
@@ -43,6 +44,20 @@
         </div>
       </div>
     </div>
+
+<div class="column is-one-quarter">
+  <div class="field">
+    <%= form.label :currency, class: "label" %>
+    <div class="control has-icons-left">
+      <div class="select is-fullwidth">
+        <%= form.select :currency, options_for_select(['KGS', 'KZT', 'UZS', 'USD', 'RUB'], selected: form.object.currency), { include_blank: 'Select Currency' } %>
+      </div>
+      <span class="icon is-small is-left">
+        <i class="fas fa-dollar-sign"></i>
+      </span>
+    </div>
+  </div>
+</div>
 
     <div class="column is-half">
       <div class="field">

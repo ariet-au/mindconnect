@@ -6,49 +6,74 @@ class PsychologistProfilesController < ApplicationController
 
 
   # GET /psychologist_profiles or /psychologist_profiles.json
-  def index
-    @psychologist_profiles = PsychologistProfile.includes(:user).all
-
-    if params[:gender].present?
-      @psychologist_profiles = @psychologist_profiles.where(gender: params[:gender])
-    end
-
-    if params[:mode].present?
-      @psychologist_profiles = @psychologist_profiles.joins(:user).where(users: { service_mode: params[:mode] }) # assuming service_mode is on user
-    end
-
-     # Filter by specialties
-      if params[:specialty_ids].present?
-        @psychologist_profiles = @psychologist_profiles.joins(:specialties).where(specialties: { id: params[:specialty_ids] }).distinct
-      end
-      
-      # Filter by issues
-      if params[:issue_ids].present?
-        @psychologist_profiles = @psychologist_profiles.joins(:issues).where(issues: { id: params[:issue_ids] }).distinct
-      end
-      # Filter by client types
-      if params[:client_type_ids].present?
-        @psychologist_profiles = @psychologist_profiles.joins(:client_types).where(client_types: { id: params[:client_type_ids] }).distinct
-      end
 
 
-        # Filter by location
-        if params[:country].present?
-          @psychologist_profiles = @psychologist_profiles.where(country: params[:country])
-        end
-        
-        if params[:city].present?
-          @psychologist_profiles = @psychologist_profiles.where("city ILIKE ?", "%#{params[:city]}%")
-        end
-
-      if params[:keywords].present?
-        @psychologist_profiles = @psychologist_profiles.where("title ILIKE ? OR specialties ILIKE ?", "%#{params[:keywords]}%", "%#{params[:keywords]}%")
-      end
-      
- 
-    # Add pagination if using kaminari or pagy
-    @psychologist_profiles = @psychologist_profiles.page(params[:page])
+  def search_landing
+    @client_types = ClientType.all
+    @issues = Issue.all
+    @specialties = Specialty.all
+    @countries= PsychologistProfile.where.not(country: [nil, ""]).distinct.order(:country).pluck(:country)
+    @cities = PsychologistProfile.where.not(city: [nil, ""]).distinct.order(:city).pluck(:city)
+    
   end
+
+def index
+  @psychologist_profiles = PsychologistProfile.includes(:user).all
+
+  if params[:gender].present?
+    @psychologist_profiles = @psychologist_profiles.where(gender: params[:gender])
+  end
+
+
+  if params[:delivery_methods].present?
+    methods = Array(params[:delivery_methods]).reject(&:blank?)
+
+    if methods.any?
+      method_values = methods.map { |m| Service.delivery_methods[m] }
+
+      @psychologist_profiles = @psychologist_profiles
+        .left_outer_joins(user: :services)
+        .where(
+          'services.delivery_method IN (?) OR services.id IS NULL',
+          method_values
+        )
+        .distinct
+    end
+  end
+
+  # Sanitize multi-selects
+  specialty_ids    = Array(params[:specialty_ids]).reject(&:blank?)
+  issue_ids        = Array(params[:issue_ids]).reject(&:blank?)
+  client_type_ids  = Array(params[:client_type_ids]).reject(&:blank?)
+
+  if specialty_ids.any?
+    @psychologist_profiles = @psychologist_profiles.joins(:specialties).where(specialties: { id: specialty_ids }).distinct
+  end
+
+  if issue_ids.any?
+    @psychologist_profiles = @psychologist_profiles.joins(:issues).where(issues: { id: issue_ids }).distinct
+  end
+
+  if client_type_ids.any?
+    @psychologist_profiles = @psychologist_profiles.joins(:client_types).where(client_types: { id: client_type_ids }).distinct
+  end
+
+  if params[:country].present?
+    @psychologist_profiles = @psychologist_profiles.where(country: params[:country])
+  end
+
+  if params[:city].present?
+    @psychologist_profiles = @psychologist_profiles.where("city ILIKE ?", "%#{params[:city]}%")
+  end
+
+  if params[:keywords].present?
+    @psychologist_profiles = @psychologist_profiles.where("title ILIKE ?", "%#{params[:keywords]}%")
+  end
+
+  # Add pagination if using kaminari or pagy
+  @psychologist_profiles = @psychologist_profiles.page(params[:page])
+end
+
 
 
   # GET /psychologist_profiles/1 or /psychologist_profiles/1.json
@@ -120,7 +145,7 @@ class PsychologistProfilesController < ApplicationController
     # Only allow a list of trusted parameters through.
         def psychologist_profile_params
           params.require(:psychologist_profile).permit(
-            :first_name, :last_name, :about_me, :years_of_experience, :license_number,
+            :first_name, :last_name, :about_me, :standard_rate, :currency, :years_of_experience, :license_number,
             :country, :city, :address, :telegram, :whatsapp, :contact_phone,
             :contact_phone2, :contact_phone3, :gender, :education, :is_doctor,
             :is_degree_boolean, :profile_img,

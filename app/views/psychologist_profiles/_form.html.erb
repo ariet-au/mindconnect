@@ -42,6 +42,18 @@
       </div>
     </div>
 
+        <!-- Image Upload -->
+    <div class="column is-full">
+      <div class="field">
+        <label class="button is-link is-light">
+          Upload Profile Image
+          <input type="file" id="imageInput" accept="image/*" hidden>
+        </label>
+        <input type="file" id="croppedImageInput" name="psychologist_profile[profile_img]" hidden>
+      </div>
+    </div>
+
+
     <!-- Specialties -->
     <div class="column is-one-third">
       <div class="field">
@@ -66,6 +78,9 @@
       </div>
     </div>
 
+
+
+
     <!-- Issues -->
     <div class="column is-one-third">
       <div class="field">
@@ -78,16 +93,28 @@
       </div>
     </div>
 
-    <!-- Image Upload -->
-    <div class="column is-full">
-      <div class="field">
-        <label class="button is-link is-light">
-          Upload Profile Image
-          <input type="file" id="imageInput" accept="image/*" hidden>
-        </label>
-        <input type="file" id="croppedImageInput" name="psychologist_profile[profile_img]" hidden>
+
+    <!-- Standard Rate -->
+<div class="column is-one-quarter">
+  <div class="field">
+    <%= form.label :standard_rate, "Standard Rate", class: "label" %>
+    <div class="control">
+      <%= form.number_field :standard_rate, step: 0.01, min: 0, class: "input", placeholder: "e.g. 100.00" %>
+    </div>
+  </div>
+</div>
+
+<!-- Currency -->
+<div class="column is-one-quarter">
+  <div class="field">
+    <%= form.label :currency, "Currency", class: "label" %>
+    <div class="control">
+      <div class="select is-fullwidth">
+        <%= form.select :currency, options_for_select(['KGS', 'KZT', 'UZS', 'USD', 'RUB'], selected: @psychologist_profile.currency), { include_blank: 'Select Currency' } %>
       </div>
     </div>
+  </div>
+</div>
 
     <!-- Years of Experience -->
     <div class="column is-half">
@@ -110,29 +137,44 @@
     </div>
 
     <!-- Country -->
-    <div class="column is-half">
-      <div class="field">
-        <%= form.label :country, class: "label" %>
-        <div class="control">
-          <div class="select">
-            <%= form.select :country, 
-                options_for_select(country_list, selected: @psychologist_profile.country),
-                { include_blank: 'Select Country' },
-                class: 'input' %>
-          </div>
-        </div>
+<div class="column is-half">
+  <div class="field">
+    <%= form.label :country, class: "label" %>
+    <div class="control">
+      <div class="select is-fullwidth">
+        <%= form.select :country,
+            options_for_select(
+              countries_with_cities.map { |c| c['name'] },
+              selected: @psychologist_profile.country
+            ),
+            { include_blank: 'Select Country' },
+            { class: 'input', id: 'country-select' }
+        %>
       </div>
     </div>
+  </div>
+</div>
 
-    <!-- City -->
-    <div class="column is-half">
-      <div class="field">
-        <%= form.label :city, class: "label" %>
-        <div class="control">
-          <%= form.text_field :city, class: "input" %>
-        </div>
+<!-- City -->
+<div class="column is-half">
+  <div class="field">
+    <%= form.label :city, class: "label" %>
+    <div class="control">
+      <div class="select is-fullwidth">
+        <%= form.select :city,
+            options_for_select(
+              [], # Empty by default
+              selected: @psychologist_profile.city
+            ),
+            { include_blank: 'Select City' },
+            { class: 'input', id: 'city-select', disabled: true }
+        %>
       </div>
     </div>
+  </div>
+</div>
+
+
 
     <!-- Address -->
     <div class="column is-full">
@@ -318,4 +360,41 @@ confirmCrop.addEventListener("click", () => {
     cropper.destroy();
   });
 });
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+  const countrySelect = document.getElementById('country-select');
+  const citySelect = document.getElementById('city-select');
+  const countryData = <%= raw countries_with_cities.to_json %>;
+
+  countrySelect.addEventListener('change', function() {
+    const selectedCountry = this.value;
+    citySelect.innerHTML = '<option value="">Select City</option>';
+    citySelect.disabled = !selectedCountry;
+
+    if (selectedCountry) {
+      const country = countryData.find(c => c.name === selectedCountry);
+      if (country && country.cities) {
+        country.cities.forEach(city => {
+          const option = new Option(city, city);
+          citySelect.add(option);
+        });
+        
+        // Preselect saved value if exists
+        if ('<%= @psychologist_profile.city %>') {
+          citySelect.value = '<%= @psychologist_profile.city %>';
+        }
+      }
+    }
+  });
+
+  // Initialize if country is already selected
+  if (countrySelect.value) {
+    countrySelect.dispatchEvent(new Event('change'));
+  }
+});
+
 </script>

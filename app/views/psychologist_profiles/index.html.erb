@@ -127,6 +127,23 @@
   </div>
 </div>
 
+<!-- Delivery Method Filter -->
+<div class="control">
+  <%= select_tag :delivery_methods,
+      options_for_select(
+        [
+          ['Any Delivery Method', ''], # Blank means "any"
+          ['In Person', 'in_person'],
+          ['Online', 'online'],
+          ['Phone', 'phone']
+        ],
+        params[:delivery_methods]
+      ),
+      multiple: true,
+      class: "select is-small is-multiple",
+      onchange: "this.form.submit()" %>
+</div>
+
 
         <!-- Location Filter -->
         <div class="control">
@@ -135,6 +152,17 @@
                 [['All Countries', '']] + 
                 PsychologistProfile.distinct.pluck(:country).compact.sort,
                 params[:country]
+              ),
+              class: "select is-small",
+              onchange: "this.form.submit()" %>
+        </div>
+
+            <div class="control">
+          <%= select_tag :city, 
+              options_for_select(
+                [['All Cities', '']] + 
+                PsychologistProfile.distinct.pluck(:city).compact.sort,
+                params[:city]
               ),
               class: "select is-small",
               onchange: "this.form.submit()" %>

@@ -8,8 +8,13 @@ Rails.application.routes.draw do
     collection do
       post 'toggle_filter'
     end
+    
   end
-  devise_for :users
+  get 'find-a-psychologist', to: 'psychologist_profiles#search_landing', as: :search_landing
+
+  devise_for :users, controllers: {
+    registrations: 'users/registrations'
+  }
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -22,5 +27,5 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
-  root "psychologist_profiles#index"
+  root "psychologist_profiles#search_landing"
 end

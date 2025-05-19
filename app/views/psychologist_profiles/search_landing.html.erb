@@ -1,0 +1,74 @@
+<div class="container">
+  <div class="section">
+    <h1 class="title is-3 has-text-centered">Find a Psychologist</h1>
+
+    <%= form_with url: psychologist_profiles_path, method: :get, local: true do |f| %>
+      <div class="columns is-multiline">
+        
+
+
+        <!-- Location -->
+        <div class="column is-half">
+            <div class="field">
+            <label class="label">Country</label>
+            <div class="control">
+                <div class="select is-fullwidth">
+                <%= select_tag :country, options_for_select(@countries, params[:country]), include_blank: true %>
+                </div>
+            </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Location -->
+        <div class="column is-half">
+            <div class="field">
+            <label class="label">City</label>
+            <div class="control">
+                <div class="select is-fullwidth">
+                <%= select_tag :city, options_for_select(@cities, params[:city]), include_blank: true %>
+                </div>
+            </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Client Type -->
+        <div class="column is-half">
+          <div class="field">
+            <label class="label">Client Type</label>
+            <div class="control">
+              <%= f.select :client_type_ids, options_from_collection_for_select(@client_types, :id, :name), {}, { class: "select is-fullwidth", multiple: true } %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Issues -->
+        <div class="column is-half">
+          <div class="field">
+            <label class="label">Issues</label>
+            <div class="control">
+              <%= f.select :issue_ids, options_from_collection_for_select(@issues, :id, :name), {}, { class: "select is-fullwidth", multiple: true } %>
+            </div>
+          </div>
+        </div>
+
+        <!-- Specialties -->
+        <div class="column is-half">
+          <div class="field">
+            <label class="label">Specialties</label>
+            <div class="control">
+              <%= f.select :specialty_ids, options_from_collection_for_select(@specialties, :id, :name), {}, { class: "select is-fullwidth", multiple: true } %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field is-grouped is-justify-content-center mt-5">
+        <div class="control">
+          <%= f.submit "Search", class: "button is-primary is-medium" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

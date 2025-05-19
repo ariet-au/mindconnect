@@ -6,14 +6,19 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   protected
 
+
+   protected
+
   def after_sign_up_path_for(resource)
     if resource.psychologist?
-            resource.create_psychologist_profile unless resource.psychologist_profile
-            edit_psychologist_profile_path(resource.psychologist_profile)
+      resource.create_psychologist_profile! unless resource.psychologist_profile
+      edit_psychologist_profile_path(resource.psychologist_profile)
     else
       root_path
     end
   end
+
+
 
   def configure_sign_up_params
     devise_parameter_sanitizer.permit(:sign_up, keys: [:role])

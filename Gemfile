@@ -64,3 +64,4 @@ end
 
 gem "devise"
 gem 'kaminari'
+gem 'countries'
