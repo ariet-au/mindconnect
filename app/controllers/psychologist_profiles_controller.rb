@@ -15,6 +15,8 @@ class PsychologistProfilesController < ApplicationController
     @countries= PsychologistProfile.where.not(country: [nil, ""]).distinct.order(:country).pluck(:country)
     @cities = PsychologistProfile.where.not(city: [nil, ""]).distinct.order(:city).pluck(:city)
     @genders = PsychologistProfile.where.not(gender: [nil, ""]).distinct.order(:gender).pluck(:gender)
+    @languages = Language.all
+
     
   end
 
@@ -42,6 +44,12 @@ def index
   specialty_ids    = Array(params[:specialty_ids]).reject(&:blank?)
   issue_ids        = Array(params[:issue_ids]).reject(&:blank?)
   client_type_ids  = Array(params[:client_type_ids]).reject(&:blank?)
+  language_ids  = Array(params[:language_ids]).reject(&:blank?)
+
+
+   if language_ids.any?
+    @psychologist_profiles = @psychologist_profiles.joins(:languages).where(languages: { id: language_ids }).distinct
+  end
 
   if specialty_ids.any?
     @psychologist_profiles = @psychologist_profiles.joins(:specialties).where(specialties: { id: specialty_ids }).distinct
@@ -171,7 +179,8 @@ end
             :is_degree_boolean, :profile_img,
             issue_ids: [],         # <-- Add this
             client_type_ids: [],  # <-- And this
-            specialty_ids: []      # <-- And this
+            specialty_ids: [] ,     # <-- And this,
+            language_ids: []
           )
         end
 

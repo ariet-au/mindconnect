@@ -217,25 +217,46 @@
 
 
 
+
+
         <!-- Gender Filter -->
-        <div class="column is-4-tablet is-12-mobile">
-          <div class="field">
-            <label class="label is-small">Gender</label>
-            <div class="control">
-              <div class="select is-small is-fullwidth">
-             <%= select_tag :gender, 
-              options_for_select(
-                [['Any Gender', '']] + 
-                @genders.map { |g| [g.humanize.titleize, g] },
-                params[:gender]
-              ),
-              class: "select is-small",
-              onchange: "this.form.submit()" %>
-              </div>
-            </div>
-          </div>
+   <div class="columns is-multiline">
+  <!-- Gender Filter -->
+  <div class="column is-6-tablet is-12-mobile">
+    <div class="field">
+      <label class="label is-small">Gender</label>
+      <div class="control">
+        <div class="select is-small is-fullwidth">
+          <%= select_tag :gender, 
+            options_for_select(
+              [['Any Gender', '']] + 
+              @genders.map { |g| [g.humanize.titleize, g] },
+              params[:gender]
+            ),
+            class: "select is-small",
+            onchange: "this.form.submit()" %>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Languages Filter -->
+  <div class="column is-6-tablet is-12-mobile">
+    <div class="field">
+      <label class="label is-small">Languages</label>
+      <div class="control">
+        <div class="select is-small is-fullwidth">
+          <%= select_tag "language_ids[]", 
+                options_from_collection_for_select(Language.all, :id, :name, params[:language_ids]),
+                multiple: true,
+                class: "select is-multiple",
+                onchange: "this.form.submit()" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
       
       <!-- Price Range Row -->
       <div class="columns is-multiline is-variable is-2">

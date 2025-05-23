@@ -77,6 +77,24 @@
           </div>
         </div>
 
+              <!-- Language Tye Pills -->
+        <div class="field">
+          <label class="label">Languages</label>
+          <div class="control">
+            <div class="tags are-medium">
+              <% @languages.each do |language| %>
+                <span class="tag is-rounded filter-pill">
+                  <%= check_box_tag 'language_ids[]', language.id, 
+                        Array(params[:language_ids]).include?(language.id.to_s), 
+                        id: "language_#{language.id}", class: "is-checkradio" %>
+                  <label for="language_<%= language.id %>"><%= language.name %></label>
+                </span>
+              <% end %>
+            </div>
+          </div>
+        </div>
+
+
         <!-- Client Type Pills -->
         <div class="field">
           <label class="label">Client Type</label>

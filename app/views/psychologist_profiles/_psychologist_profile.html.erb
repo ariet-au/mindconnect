@@ -20,9 +20,16 @@
     <div class="column">
       <h2 class="title is-4 has-text-grey-dark">
       <span class="has-text-link">
-        <%= "#{@psychologist_profile.first_name} #{@psychologist_profile.last_name}" %></span>
-      </h2>
+        <%= "#{@psychologist_profile.first_name} #{@psychologist_profile.last_name}" %></span> 
+      </h2> <% if @psychologist_profile.languages.any? %>
+  <p><strong>Languages Spoken:</strong>
+    <%= @psychologist_profile.languages.map(&:name).to_sentence %>
+  </p>
+<% else %>
+  <p><strong>Languages Spoken:</strong> Not specified</p>
+<% end %>
       <div class="tags">
+        
         <% if psychologist_profile.is_doctor %>
           <span class="tag is-light has-text-grey-dark">Doctor</span>
         <% end %>

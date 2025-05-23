@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_23_055044) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_23_223104) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -58,6 +58,13 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_23_055044) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "languages", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["name"], name: "index_languages_on_name", unique: true
+  end
+
   create_table "psychological_issues", force: :cascade do |t|
     t.string "name"
     t.text "description"
@@ -83,6 +90,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_23_055044) do
     t.datetime "updated_at", null: false
     t.index ["issue_id"], name: "index_psychologist_issues_on_issue_id"
     t.index ["psychologist_profile_id"], name: "index_psychologist_issues_on_psychologist_profile_id"
+  end
+
+  create_table "psychologist_languages", force: :cascade do |t|
+    t.bigint "psychologist_profile_id", null: false
+    t.bigint "language_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["language_id"], name: "index_psychologist_languages_on_language_id"
+    t.index ["psychologist_profile_id"], name: "index_psychologist_languages_on_psychologist_profile_id"
   end
 
   create_table "psychologist_profiles", force: :cascade do |t|
@@ -162,6 +178,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_23_055044) do
   add_foreign_key "psychologist_client_types", "psychologist_profiles"
   add_foreign_key "psychologist_issues", "issues"
   add_foreign_key "psychologist_issues", "psychologist_profiles"
+  add_foreign_key "psychologist_languages", "languages"
+  add_foreign_key "psychologist_languages", "psychologist_profiles"
   add_foreign_key "psychologist_profiles", "users"
   add_foreign_key "psychologist_specialties", "psychologist_profiles"
   add_foreign_key "psychologist_specialties", "specialties"

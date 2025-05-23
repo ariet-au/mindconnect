@@ -7,3 +7,9 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+
+
+%w[Kyrgyz Kazakh Russian Uzbek Tajik Turkish Uyghur Karakalpak Georgian Azeri Armenian Moldovan Dungan Tatar German Ukranian].each do |lang|
+  Language.find_or_create_by!(name: lang)
+end

@@ -18,6 +18,12 @@ class PsychologistProfile < ApplicationRecord
   has_many :psychologist_issues, dependent: :destroy
   has_many :issues, through: :psychologist_issues
 
+
+
+  has_many :psychologist_languages
+  has_many :languages, through: :psychologist_languages
+
+
   enum :gender, {
     unspecified: 0, 
     male: 1,       

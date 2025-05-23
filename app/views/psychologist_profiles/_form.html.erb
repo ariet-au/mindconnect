@@ -273,6 +273,18 @@
       </div>
     </div>
 
+
+    <div class="column is-12">
+  <div class="field">
+    <div class="control">
+      <label class="checkbox">
+<%= form.collection_select :language_ids, Language.all, :id, :name,
+      { prompt: "Select languages", selected: form.object.language_ids },
+      { multiple: true, class: "select is-multiple" } %>
+      </label>
+    </div>
+  </div>
+</div>
     <!-- Submit Button -->
     <div class="column is-full">
       <div class="field">
