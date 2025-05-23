@@ -27,5 +27,5 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
-  root "psychologist_profiles#search_landing"
+  root "psychologist_profiles#index"
 end

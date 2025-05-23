@@ -1,69 +1,135 @@
 <div class="container">
   <div class="section">
-    <h1 class="title is-3 has-text-centered">Find a Psychologist</h1>
+    <h1 class="title is-3 has-text-centered mb-5">Find a Psychologist</h1>
 
-    <%= form_with url: psychologist_profiles_path, method: :get, local: true do |f| %>
-      <div class="columns is-multiline">
-        
-
-
-        <!-- Location -->
-        <div class="column is-half">
-            <div class="field">
+    <%= form_with url: psychologist_profiles_path, method: :get, local: true, class: "psychologist-search-form" do |f| %>
+      <!-- Primary City Search -->
+      <div class="field has-addons is-justify-content-center mb-5">
+        <div class="control is-expanded" style="max-width: 500px;">
+          <div class="field">
             <label class="label">Country</label>
-            <div class="control">
-                <div class="select is-fullwidth">
-                <%= select_tag :country, options_for_select(@countries, params[:country]), include_blank: true %>
-                </div>
-            </div>
+            <div class="select is-fullwidth">
+              <%= select_tag :country,
+                    options_for_select(
+                      [['Select Country', '']] + countries_with_cities.map { |c| c['name'] },
+                      params[:country]
+                    ),
+                    class: "landing-country-select",
+                    id: "landing-country" %>
             </div>
           </div>
         </div>
-
-        <!-- Location -->
-        <div class="column is-half">
-            <div class="field">
+        <div class="control is-expanded" style="max-width: 500px;">
+          <div class="field">
             <label class="label">City</label>
-            <div class="control">
-                <div class="select is-fullwidth">
-                <%= select_tag :city, options_for_select(@cities, params[:city]), include_blank: true %>
-                </div>
+            <div class="select is-fullwidth">
+              <%= select_tag :city,
+                    options_for_select(
+                      [['Select City', '']],
+                      params[:city]
+                    ),
+                    class: "landing-city-select",
+                    id: "landing-city",
+                    disabled: params[:country].blank? %>
             </div>
+          </div>
+        </div>
+        <div class="control align-self-flex-end">
+          <button type="button" class="button is-primary toggle-filters-button mt-3">
+            <span>More Filters</span>
+            <span class="icon">
+              <i class="fas fa-chevron-down"></i>
+            </span>
+          </button>
+        </div>
+      </div>
+
+
+      <div class="field">
+  <label class="label is-small">Delivery Method</label>
+  <div class="control">
+    <label class="checkbox mr-3">
+      <%= check_box_tag "in_person", "1", params[:in_person] == "1" %>
+      In Person
+    </label>
+    <label class="checkbox mr-3">
+      <%= check_box_tag "online", "1", params[:online] == "1" %>
+      Online
+    </label>
+  </div>
+</div>
+
+      <!-- Collapsible Filters Section -->
+      <div class="filters-section box is-hidden">
+        <!-- Gender -->
+        <div class="field">
+          <label class="label">Gender</label>
+          <div class="control">
+            <div class="select">
+              <%= select_tag :gender,
+                    options_for_select(
+                      [['Any Gender', '']] + 
+                      @genders.map { |g| [g.humanize.titleize, g] },
+                      params[:gender]
+                    ),
+                    class: "select" %>
             </div>
           </div>
         </div>
 
-        <!-- Client Type -->
-        <div class="column is-half">
-          <div class="field">
-            <label class="label">Client Type</label>
-            <div class="control">
-              <%= f.select :client_type_ids, options_from_collection_for_select(@client_types, :id, :name), {}, { class: "select is-fullwidth", multiple: true } %>
+        <!-- Client Type Pills -->
+        <div class="field">
+          <label class="label">Client Type</label>
+          <div class="control">
+            <div class="tags are-medium">
+              <% @client_types.each do |type| %>
+                <span class="tag is-rounded filter-pill">
+                  <%= check_box_tag 'client_type_ids[]', type.id, 
+                        Array(params[:client_type_ids]).include?(type.id.to_s), 
+                        id: "client_type_#{type.id}", class: "is-checkradio" %>
+                  <label for="client_type_<%= type.id %>"><%= type.name %></label>
+                </span>
+              <% end %>
             </div>
           </div>
         </div>
 
-        <!-- Issues -->
-        <div class="column is-half">
-          <div class="field">
-            <label class="label">Issues</label>
-            <div class="control">
-              <%= f.select :issue_ids, options_from_collection_for_select(@issues, :id, :name), {}, { class: "select is-fullwidth", multiple: true } %>
+        <!-- Issues Pills -->
+        <div class="field">
+          <label class="label">Issues</label>
+          <div class="control">
+            <div class="tags are-medium">
+              <% @issues.each do |issue| %>
+                <span class="tag is-rounded filter-pill">
+                  <%= check_box_tag 'issue_ids[]', issue.id, 
+                        Array(params[:issue_ids]).include?(issue.id.to_s), 
+                        id: "issue_#{issue.id}", class: "is-checkradio" %>
+                  <label for="issue_<%= issue.id %>"><%= issue.name %></label>
+                </span>
+              <% end %>
             </div>
           </div>
         </div>
 
-        <!-- Specialties -->
-        <div class="column is-half">
-          <div class="field">
-            <label class="label">Specialties</label>
-            <div class="control">
-              <%= f.select :specialty_ids, options_from_collection_for_select(@specialties, :id, :name), {}, { class: "select is-fullwidth", multiple: true } %>
+        <!-- Specialties Pills -->
+        <div class="field">
+          <label class="label">Specialties</label>
+          <div class="control">
+            <div class="tags are-medium">
+              <% @specialties.each do |specialty| %>
+                <span class="tag is-rounded filter-pill">
+                  <%= check_box_tag 'specialty_ids[]', specialty.id, 
+                        Array(params[:specialty_ids]).include?(specialty.id.to_s), 
+                        id: "specialty_#{specialty.id}", class: "is-checkradio" %>
+                  <label for="specialty_<%= specialty.id %>"><%= specialty.name %></label>
+                </span>
+              <% end %>
             </div>
           </div>
         </div>
       </div>
 
+      <!-- Submit Button -->
       <div class="field is-grouped is-justify-content-center mt-5">
         <div class="control">
           <%= f.submit "Search", class: "button is-primary is-medium" %>
@@ -72,3 +138,135 @@
     <% end %>
   </div>
 </div>
+
+<style>
+  .psychologist-search-form {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  
+  .toggle-filters-button {
+    height: fit-content;
+    margin-top: 1.5rem;
+  }
+  
+  .filters-section {
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+  }
+  
+  .filters-section.is-active {
+    display: block !important;
+  }
+  
+  .filter-pill {
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+    position: relative;
+    padding-left: 2.5em;
+  }
+  
+  .filter-pill input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+  }
+  
+  .filter-pill input[type="checkbox"]:checked + label {
+    background-color: #3273dc;
+    color: white;
+  }
+  
+  .filter-pill label {
+    display: block;
+    padding: 0.25em 0.75em;
+    margin-left: -2.5em;
+    padding-left: 2.5em;
+    border-radius: 9999px;
+    transition: all 0.2s ease;
+  }
+  
+  .filter-pill:hover label {
+    background-color: #f5f5f5;
+  }
+  
+  .filter-pill input[type="checkbox"]:checked + label:hover {
+    background-color: #276cda;
+  }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Country-City dependency (your existing code)
+  const landingCountryCityData = <%= raw countries_with_cities.each_with_object({}) { |country, hash| 
+    hash[country['name']] = country['cities'] 
+  }.to_json %>;
+
+  function updateLandingCities() {
+    const countrySelect = document.getElementById('landing-country');
+    const citySelect = document.getElementById('landing-city');
+    
+    if (!countrySelect || !citySelect) return;
+    
+    const selectedCountry = countrySelect.value;
+    
+    // Reset city dropdown
+    citySelect.innerHTML = '<option value="">Select City</option>';
+    citySelect.disabled = !selectedCountry;
+
+    if (selectedCountry && landingCountryCityData[selectedCountry]) {
+      // Add cities for selected country
+      landingCountryCityData[selectedCountry].forEach(city => {
+        const option = new Option(city, city);
+        citySelect.add(option);
+      });
+      
+      // Preselect city from params if available
+      const urlParams = new URLSearchParams(window.location.search);
+      const selectedCity = urlParams.get('city');
+      if (selectedCity && landingCountryCityData[selectedCountry].includes(selectedCity)) {
+        citySelect.value = selectedCity;
+      }
+    }
+  }
+
+  // Initialize country-city select
+  document.addEventListener('turbo:load', function() {
+    const countrySelect = document.getElementById('landing-country');
+    const citySelect = document.getElementById('landing-city');
+    
+    if (countrySelect && countrySelect.value) {
+      updateLandingCities();
+    }
+    
+    countrySelect?.addEventListener('change', updateLandingCities);
+  });
+
+  // Toggle filters section
+  const toggleButton = document.querySelector('.toggle-filters-button');
+  const filtersSection = document.querySelector('.filters-section');
+  
+  if (toggleButton && filtersSection) {
+    toggleButton.addEventListener('click', function() {
+      filtersSection.classList.toggle('is-hidden');
+      const icon = this.querySelector('.icon i');
+      
+      if (filtersSection.classList.contains('is-hidden')) {
+        icon.classList.remove('fa-chevron-up');
+        icon.classList.add('fa-chevron-down');
+      } else {
+        icon.classList.remove('fa-chevron-down');
+        icon.classList.add('fa-chevron-up');
+      }
+    });
+    
+    // Show filters if any are already selected
+    const hasSelectedFilters = <%= [params[:gender], params[:client_type_ids], params[:issue_ids], params[:specialty_ids]].any?(&:present?) %>;
+    if (hasSelectedFilters) {
+      filtersSection.classList.remove('is-hidden');
+      const icon = toggleButton.querySelector('.icon i');
+      icon.classList.remove('fa-chevron-down');
+      icon.classList.add('fa-chevron-up');
+    }
+  }
+});
+</script>

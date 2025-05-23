@@ -53,7 +53,30 @@
       </div>
     </div>
 
+   <!-- Gender -->
+    <div class="column is-half">
+      <div class="field">
+        <%= form.label :gender, class: "label" %>
+        <div class="control">
+          <div class="select">
+            <%= form.select :gender, 
+                PsychologistProfile.genders.map { |key, value| [key.humanize, key] },
+                { selected: 'unspecified' },
+                class: "input" %>
+          </div>
+        </div>
+      </div>
+    </div>
 
+    <!-- Education -->
+    <div class="column is-half">
+      <div class="field">
+        <%= form.label :education, class: "label" %>
+        <div class="control">
+          <%= form.text_field :education, class: "input" %>
+        </div>
+      </div>
+    </div>
     <!-- Specialties -->
     <div class="column is-one-third">
       <div class="field">
@@ -126,15 +149,7 @@
       </div>
     </div>
 
-    <!-- License Number -->
-    <div class="column is-half">
-      <div class="field">
-        <%= form.label :license_number, class: "label" %>
-        <div class="control">
-          <%= form.text_field :license_number, class: "input" %>
-        </div>
-      </div>
-    </div>
+
 
     <!-- Country -->
 <div class="column is-half">
@@ -187,7 +202,7 @@
     </div>
 
     <!-- Contact Information -->
-    <div class="column is-one-third">
+    <div class="column is-half">
       <div class="field">
         <%= form.label :telegram, class: "label" %>
         <div class="control">
@@ -196,7 +211,7 @@
       </div>
     </div>
 
-    <div class="column is-one-third">
+    <div class="column is-half">
       <div class="field">
         <%= form.label :whatsapp, class: "label" %>
         <div class="control">
@@ -205,7 +220,10 @@
       </div>
     </div>
 
-    <div class="column is-one-third">
+
+    <!-- Additional Phones -->
+
+            <div class="column is-one-third">
       <div class="field">
         <%= form.label :contact_phone, class: "label" %>
         <div class="control">
@@ -214,8 +232,7 @@
       </div>
     </div>
 
-    <!-- Additional Phones -->
-    <div class="column is-half">
+    <div class="column is-one-third">
       <div class="field">
         <%= form.label :contact_phone2, class: "label" %>
         <div class="control">
@@ -224,7 +241,7 @@
       </div>
     </div>
 
-    <div class="column is-half">
+    <div class="column is-one-third">
       <div class="field">
         <%= form.label :contact_phone3, class: "label" %>
         <div class="control">
@@ -233,37 +250,16 @@
       </div>
     </div>
 
-    <!-- Gender -->
-    <div class="column is-half">
-      <div class="field">
-        <%= form.label :gender, class: "label" %>
-        <div class="control">
-          <div class="select">
-            <%= form.select :gender, 
-                PsychologistProfile.genders.map { |key, value| [key.humanize, key] },
-                { selected: 'unspecified' },
-                class: "input" %>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Education -->
-    <div class="column is-half">
-      <div class="field">
-        <%= form.label :education, class: "label" %>
-        <div class="control">
-          <%= form.text_field :education, class: "input" %>
-        </div>
-      </div>
-    </div>
+
+ 
 
     <!-- Checkboxes -->
     <div class="column is-half">
       <div class="field">
         <label class="checkbox">
-          <%= form.check_box :is_doctor, class: "checkbox" %>
-          <%= form.label :is_doctor, "Is a Doctor?", class: "checkbox" %>
+          <%= form.check_box :in_person, class: "checkbox" %>
+          <%= form.label :in_person, "In person services", class: "checkbox" %>
         </label>
       </div>
     </div>
@@ -271,8 +267,8 @@
     <div class="column is-half">
       <div class="field">
         <label class="checkbox">
-          <%= form.check_box :is_degree_boolean, class: "checkbox" %>
-          <%= form.label :is_degree_boolean, "Has Degree?", class: "checkbox" %>
+          <%= form.check_box :online, class: "checkbox" %>
+          <%= form.label :online, "Online Services?", class: "checkbox" %>
         </label>
       </div>
     </div>
@@ -307,45 +303,61 @@
 <% end %>
 
 <script>
-let cropper;
-const imageInput = document.getElementById("imageInput");
-const imagePreview = document.getElementById("imagePreview");
-const cropModal = document.getElementById("cropModal");
-const confirmCrop = document.getElementById("confirmCrop");
-const cancelCrop = document.getElementById("cancelCrop");
-const closeModal = document.getElementById("closeModal");
-const croppedImageInput = document.getElementById("croppedImageInput");
+document.addEventListener("turbo:load", function () {
+  let cropper;
 
-// Open modal on file selection
-imageInput.addEventListener("change", function () {
-  const file = this.files[0];
-  if (!file) return;
+  const imageInput = document.getElementById("imageInput");
+  if (!imageInput) return; 
 
-  const reader = new FileReader();
-  reader.onload = function (e) {
-    imagePreview.src = e.target.result;
-    cropModal.classList.add("is-active");
+  const imagePreview = document.getElementById("imagePreview");
+  const cropModal = document.getElementById("cropModal");
+  const confirmCrop = document.getElementById("confirmCrop");
+  const cancelCrop = document.getElementById("cancelCrop");
+  const closeModal = document.getElementById("closeModal");
+  const croppedImageInput = document.getElementById("croppedImageInput");
 
-    imagePreview.onload = function () {
-      if (cropper) cropper.destroy();
-      cropper = new Cropper(imagePreview, {
-        aspectRatio: 1,
-        viewMode: 1,
-      });
+  imageInput.addEventListener("change", function () {
+    const file = this.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      imagePreview.src = e.target.result;
+      cropModal.classList.add("is-active");
+
+      imagePreview.onload = function () {
+        if (cropper) cropper.destroy();
+        cropper = new Cropper(imagePreview, {
+          aspectRatio: 1,
+          viewMode: 1,
+        });
+      };
     };
-  };
-  reader.readAsDataURL(file);
-});
+    reader.readAsDataURL(file);
+  });
 
-// Close modal
-[cancelCrop, closeModal].forEach((btn) => {
-  btn.addEventListener("click", () => {
-    cropModal.classList.remove("is-active");
-    if (cropper) cropper.destroy();
+  [cancelCrop, closeModal].forEach((btn) => {
+    btn.addEventListener("click", () => {
+      cropModal.classList.remove("is-active");
+      if (cropper) cropper.destroy();
+    });
+  });
+
+  confirmCrop.addEventListener("click", () => {
+    cropper.getCroppedCanvas().toBlob((blob) => {
+      const file = new File([blob], "cropped_profile.jpg", { type: "image/jpeg" });
+
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      croppedImageInput.files = dataTransfer.files;
+
+      cropModal.classList.remove("is-active");
+      cropper.destroy();
+    });
   });
 });
 
-// On confirm crop: generate blob, create a File, and assign to hidden input
+
 confirmCrop.addEventListener("click", () => {
   cropper.getCroppedCanvas().toBlob((blob) => {
     const file = new File([blob], "cropped_profile.jpg", { type: "image/jpeg" });
@@ -365,36 +377,40 @@ confirmCrop.addEventListener("click", () => {
 
 
 
-document.addEventListener('DOMContentLoaded', function() {
-  const countrySelect = document.getElementById('country-select');
-  const citySelect = document.getElementById('city-select');
-  const countryData = <%= raw countries_with_cities.to_json %>;
+  document.addEventListener('turbo:load', function() {
+    const countrySelect = document.getElementById('country-select');
+    const citySelect = document.getElementById('city-select');
+    const countryData = <%= raw countries_with_cities.to_json %>;
 
-  countrySelect.addEventListener('change', function() {
-    const selectedCountry = this.value;
-    citySelect.innerHTML = '<option value="">Select City</option>';
-    citySelect.disabled = !selectedCountry;
+    if (!countrySelect || !citySelect) return;
 
-    if (selectedCountry) {
-      const country = countryData.find(c => c.name === selectedCountry);
-      if (country && country.cities) {
-        country.cities.forEach(city => {
-          const option = new Option(city, city);
-          citySelect.add(option);
-        });
-        
-        // Preselect saved value if exists
-        if ('<%= @psychologist_profile.city %>') {
-          citySelect.value = '<%= @psychologist_profile.city %>';
+    countrySelect.addEventListener('change', function() {
+      const selectedCountry = this.value;
+      citySelect.innerHTML = '<option value="">Select City</option>';
+      citySelect.disabled = !selectedCountry;
+
+      if (selectedCountry) {
+        const country = countryData.find(c => c.name === selectedCountry);
+        if (country && country.cities) {
+          country.cities.forEach(city => {
+            const option = new Option(city, city);
+            citySelect.add(option);
+          });
+
+          // Preselect saved value if it matches one of the cities
+          const savedCity = '<%= j @psychologist_profile.city %>';
+          if (savedCity) {
+            citySelect.value = savedCity;
+          }
         }
       }
+    });
+
+    // Trigger change if country is preselected
+    if (countrySelect.value) {
+      countrySelect.dispatchEvent(new Event('change'));
     }
   });
 
-  // Initialize if country is already selected
-  if (countrySelect.value) {
-    countrySelect.dispatchEvent(new Event('change'));
-  }
-});
 
 </script>

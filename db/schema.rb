@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_19_163515) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_23_055044) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -108,6 +108,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_19_163515) do
     t.datetime "updated_at", null: false
     t.decimal "standard_rate"
     t.string "currency"
+    t.boolean "in_person"
+    t.boolean "online"
     t.index ["user_id"], name: "index_psychologist_profiles_on_user_id"
   end
 

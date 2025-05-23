@@ -69,7 +69,7 @@
 
         <hr class="has-background-light m-0">
 
-        < !-- Services Offered -->
+        
         <div class="card-content">
           <h3 class="title is-5 has-text-link">Services Offered</h3>
           <% if psychologist_profile.user.services.any? %>
@@ -100,7 +100,7 @@
                       </div>
                     </div>
                     <p><%= service.description %></p>
-                    <%= link_to "Book Now", service, class: "button is-small is-link mt-2" %>
+                    <%= link_to "Book Now/More Info", service, class: "button is-small is-link mt-2" %>
                   </div>
                 </div>
               <% end %>

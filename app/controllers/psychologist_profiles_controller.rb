@@ -14,32 +14,29 @@ class PsychologistProfilesController < ApplicationController
     @specialties = Specialty.all
     @countries= PsychologistProfile.where.not(country: [nil, ""]).distinct.order(:country).pluck(:country)
     @cities = PsychologistProfile.where.not(city: [nil, ""]).distinct.order(:city).pluck(:city)
+    @genders = PsychologistProfile.where.not(gender: [nil, ""]).distinct.order(:gender).pluck(:gender)
     
   end
 
 def index
   @psychologist_profiles = PsychologistProfile.includes(:user).all
+      @genders = PsychologistProfile.where.not(gender: [nil, ""]).distinct.order(:gender).pluck(:gender)
 
   if params[:gender].present?
     @psychologist_profiles = @psychologist_profiles.where(gender: params[:gender])
   end
 
 
-  if params[:delivery_methods].present?
-    methods = Array(params[:delivery_methods]).reject(&:blank?)
 
-    if methods.any?
-      method_values = methods.map { |m| Service.delivery_methods[m] }
 
-      @psychologist_profiles = @psychologist_profiles
-        .left_outer_joins(user: :services)
-        .where(
-          'services.delivery_method IN (?) OR services.id IS NULL',
-          method_values
-        )
-        .distinct
+  
+    if params[:in_person] == "1" && params[:online] == "1"
+      @psychologist_profiles = @psychologist_profiles.where(in_person: true).or(PsychologistProfile.where(online: true))
+    elsif params[:in_person] == "1"
+      @psychologist_profiles = @psychologist_profiles.where(in_person: true)
+    elsif params[:online] == "1"
+      @psychologist_profiles = @psychologist_profiles.where(online: true)
     end
-  end
 
   # Sanitize multi-selects
   specialty_ids    = Array(params[:specialty_ids]).reject(&:blank?)
@@ -68,6 +65,19 @@ def index
 
   if params[:keywords].present?
     @psychologist_profiles = @psychologist_profiles.where("title ILIKE ?", "%#{params[:keywords]}%")
+  end
+
+  
+  if params[:min_rate].present?
+    @psychologist_profiles = @psychologist_profiles.where("standard_rate >= ?", params[:min_rate])
+  end
+
+  if params[:max_rate].present?
+    @psychologist_profiles = @psychologist_profiles.where("standard_rate <= ?", params[:max_rate])
+  end
+
+  if params[:currency].present?
+    @psychologist_profiles = @psychologist_profiles.where(currency: params[:currency])
   end
 
   # Add pagination if using kaminari or pagy
@@ -135,6 +145,16 @@ end
   end
 
 
+  def cities
+    country = params[:country]
+    cities = PsychologistProfile.where(country: country)
+                              .distinct
+                              .pluck(:city)
+                              .compact
+                              .sort
+    render json: cities
+  end
+
 
   private
     # Use callbacks to share common setup or constraints between actions.
@@ -147,7 +167,7 @@ end
           params.require(:psychologist_profile).permit(
             :first_name, :last_name, :about_me, :standard_rate, :currency, :years_of_experience, :license_number,
             :country, :city, :address, :telegram, :whatsapp, :contact_phone,
-            :contact_phone2, :contact_phone3, :gender, :education, :is_doctor,
+            :contact_phone2, :contact_phone3, :gender, :education, :is_doctor, :in_person, :online, 
             :is_degree_boolean, :profile_img,
             issue_ids: [],         # <-- Add this
             client_type_ids: [],  # <-- And this
