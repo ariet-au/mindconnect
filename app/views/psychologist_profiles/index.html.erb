@@ -353,7 +353,8 @@
               <div class="mb-2">
                 <% if profile.standard_rate.present? %>
                   <span class="tag is-light">
-                    <i class="fas fa-money-bill-wave mr-1"></i> <%= profile.standard_rate %> <%= profile.currency %>
+                    <i class="fas fa-money-bill-wave mr-1"></i> <% converted = profile.converted_rate(current_currency) %>
+<%= humanized_money_with_symbol(converted) %>
                   </span>
                 <% end %>
                 <% if profile.is_doctor %>

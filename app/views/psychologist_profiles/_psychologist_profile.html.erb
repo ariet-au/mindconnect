@@ -89,11 +89,15 @@
                       <div class="level-left">
                         <div class="level-item">
                           <span class="tag is-link is-medium">
-                          <% if service.price==0%> 
-                            Free 
-                          <% else %>  
-                            <%= service.price %> <%= service.currency %> 
-                          <%end%>
+                         <% if service.price == 0 %>
+                          Free
+                        <% else %>
+                          <%= service.price %> <%= service.currency %>
+                          <% if service.currency.present? && current_currency.present? %>
+                            <% converted = service.converted_rate(current_currency) %>
+                            <%= humanized_money_with_symbol(converted) if converted %>
+                          <% end %>
+                        <% end %>
                           </span>
                         </div>
                       </div>

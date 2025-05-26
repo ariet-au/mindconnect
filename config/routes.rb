@@ -11,6 +11,7 @@ Rails.application.routes.draw do
     
   end
   get 'find-a-psychologist', to: 'psychologist_profiles#search_landing', as: :search_landing
+  post '/set_currency', to: 'application#set_currency', as: :set_currency
 
   devise_for :users, controllers: {
     registrations: 'users/registrations'

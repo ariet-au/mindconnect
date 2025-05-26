@@ -4,7 +4,16 @@ class ApplicationController < ActionController::Base
 
   before_action :configure_permitted_parameters, if: :devise_controller?
 
+  helper_method :current_currency
 
+  def set_currency
+    session[:currency] = params[:currency]
+    redirect_back fallback_location: root_path
+  end
+
+  def current_currency
+    session[:currency] || 'KGS'
+  end
 
   
   protected

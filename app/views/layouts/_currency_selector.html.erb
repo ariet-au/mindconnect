@@ -1,0 +1,4 @@
+<!-- app/views/layouts/_currency_selector.html.erb -->
+<%= form_with url: set_currency_path, method: :post, local: true do %>
+  <%= select_tag :currency, options_for_select(['KGS', 'KZT', 'UZS', 'RUB'], current_currency), onchange: 'this.form.submit();' %>
+<% end %>

@@ -112,6 +112,7 @@ end
     @psychologist_profile = PsychologistProfile.new(psychologist_profile_params)
     @psychologist_profile.user_id = current_user.id 
     
+    
     respond_to do |format|
       if @psychologist_profile.save
         format.html { redirect_to @psychologist_profile, notice: "Psychologist profile was successfully created." }
@@ -162,6 +163,7 @@ end
                               .sort
     render json: cities
   end
+
 
 
   private
