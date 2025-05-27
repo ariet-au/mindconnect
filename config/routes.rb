@@ -14,7 +14,9 @@ Rails.application.routes.draw do
   post '/set_currency', to: 'application#set_currency', as: :set_currency
 
   devise_for :users, controllers: {
-    registrations: 'users/registrations'
+    registrations: 'users/registrations',
+    confirmations: 'users/confirmations' # Custom controller
+
   }
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html

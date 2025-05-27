@@ -283,11 +283,8 @@
             <label class="label is-small">Currency</label>
             <div class="control">
               <div class="select is-small is-fullwidth">
-                <%= select_tag :currency, 
-                      options_for_select(["KGS", "KZT", "UZS", "USD", "RUB"], params[:currency]), 
-                      include_blank: "Any", 
-                      class: "select is-small" %>
-              </div>
+
+                 <%= render 'layouts/currency_selector' %>
             </div>
           </div>
         </div>

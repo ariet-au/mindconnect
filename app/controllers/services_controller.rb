@@ -2,6 +2,7 @@ class ServicesController < ApplicationController
   before_action :authenticate_user!
   before_action :set_service, only: [:show, :edit, :update, :destroy]
   before_action :authorize_service_owner!, only: [:edit, :update, :destroy]
+  before_action :check_user_confirmation,  only: %i[ edit update destroy ]
   
   
   def authorize_service_owner!
@@ -68,6 +69,14 @@ class ServicesController < ApplicationController
     # Use callbacks to share common setup or constraints between actions.
     def set_service
       @service = Service.find(params.expect(:id))
+    end
+
+    def check_user_confirmation
+      if user_signed_in? && !current_user.confirmed?
+        flash[:alert] = "Please confirm your email address to continue."
+        sign_out current_user
+        redirect_to new_user_session_path
+      end
     end
 
     # Only allow a list of trusted parameters through.

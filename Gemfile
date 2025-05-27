@@ -66,4 +66,3 @@ gem "devise"
 gem 'kaminari'
 gem 'countries'
 gem 'money-rails'
-

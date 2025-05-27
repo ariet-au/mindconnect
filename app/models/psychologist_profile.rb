@@ -23,7 +23,7 @@ class PsychologistProfile < ApplicationRecord
   has_many :psychologist_languages
   has_many :languages, through: :psychologist_languages
 
-  monetize :standard_rate, as: :standard_rate_money, with_model_currency: :currency , as_subunit: false
+  monetize :standard_rate, as: :standard_rate_money, with_model_currency: :currency ,allow_nil: true , as_subunit: false
 
   enum :gender, {
     unspecified: 0, 

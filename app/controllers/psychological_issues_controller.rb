@@ -1,6 +1,5 @@
 class PsychologicalIssuesController < ApplicationController
   before_action :set_psychological_issue, only: %i[ show edit update destroy ]
-
   # GET /psychological_issues or /psychological_issues.json
   def index
     @psychological_issues = PsychologicalIssue.all
@@ -67,4 +66,6 @@ class PsychologicalIssuesController < ApplicationController
     def psychological_issue_params
       params.expect(psychological_issue: [ :name, :description, :category, :severity_level ])
     end
+
+ 
 end

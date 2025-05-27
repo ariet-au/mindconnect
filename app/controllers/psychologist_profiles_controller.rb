@@ -2,6 +2,7 @@ class PsychologistProfilesController < ApplicationController
   # before_action :authenticate_user!
   before_action :set_psychologist_profile, only: %i[ show edit update destroy ]
   before_action :authorize_user!, only: [:edit, :update, :destroy]
+  before_action :check_user_confirmation,  only: %i[ edit update destroy ]
 
 
 
@@ -76,20 +77,64 @@ def index
   end
 
   
-  if params[:min_rate].present?
-    @psychologist_profiles = @psychologist_profiles.where("standard_rate >= ?", params[:min_rate])
-  end
 
-  if params[:max_rate].present?
-    @psychologist_profiles = @psychologist_profiles.where("standard_rate <= ?", params[:max_rate])
-  end
+  # filter by currency 
+       target_currency_for_search_and_display = current_currency.upcase
 
-  if params[:currency].present?
-    @psychologist_profiles = @psychologist_profiles.where(currency: params[:currency])
-  end
+    min_rate_input = params[:min_rate].to_f if params[:min_rate].present?
+    max_rate_input = params[:max_rate].to_f if params[:max_rate].present?
+
+    # Step 2: Perform the in-memory currency-based filtering.
+    # The result of `select` is a plain Ruby Array.
+    filtered_profiles_array = @psychologist_profiles.select do |profile|
+      meets_min_rate_criteria = true
+      meets_max_rate_criteria = true
+
+      begin
+        profile_rate_in_target_currency_money = profile.converted_rate(target_currency_for_search_and_display)
+
+        if profile_rate_in_target_currency_money.present?
+          profile_rate_value = profile_rate_in_target_currency_money.to_f
+
+          if min_rate_input.present?
+            meets_min_rate_criteria = (profile_rate_value >= min_rate_input)
+          end
+
+          if max_rate_input.present?
+            meets_max_rate_criteria = (profile_rate_value <= max_rate_input)
+          end
+        else
+          meets_min_rate_criteria = false
+          meets_max_rate_criteria = false
+          Rails.logger.warn "Skipping profile #{profile.id} in search due to conversion error from #{profile.currency} to #{target_currency_for_search_and_display}."
+        end
+
+      rescue => e
+        Rails.logger.error "Error processing profile #{profile.id} for currency search: #{e.message}"
+        meets_min_rate_criteria = false
+        meets_max_rate_criteria = false
+      end
+
+      meets_min_rate_criteria && meets_max_rate_criteria
+    end
+    # The @psychologist_profiles now holds your filtered results.
+  
+
+
+  # if params[:min_rate].present?
+  #   @psychologist_profiles = @psychologist_profiles.where("standard_rate >= ?", params[:min_rate])
+  # end
+
+  # if params[:max_rate].present?
+  #   @psychologist_profiles = @psychologist_profiles.where("standard_rate <= ?", params[:max_rate])
+  # end
+
+  # if params[:currency].present?
+  #   @psychologist_profiles = @psychologist_profiles.where(currency: params[:currency])
+  # end
 
   # Add pagination if using kaminari or pagy
-  @psychologist_profiles = @psychologist_profiles.page(params[:page])
+    @psychologist_profiles = Kaminari.paginate_array(filtered_profiles_array).page(params[:page])
 end
 
 
@@ -171,6 +216,16 @@ end
     def set_psychologist_profile
       @psychologist_profile = PsychologistProfile.find(params.expect(:id))
     end
+
+    def check_user_confirmation
+      if user_signed_in? && !current_user.confirmed?
+        flash[:alert] = "Please confirm your email address to continue."
+        sign_out current_user
+        redirect_to new_user_session_path
+      end
+    end
+
+     
 
     # Only allow a list of trusted parameters through.
         def psychologist_profile_params
