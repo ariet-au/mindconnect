@@ -23,8 +23,12 @@ class PsychologistProfile < ApplicationRecord
   has_many :psychologist_languages
   has_many :languages, through: :psychologist_languages
 
-  monetize :standard_rate, as: :standard_rate_money, with_model_currency: :currency ,allow_nil: true , as_subunit: false
-
+  #monetize :standard_rate, as: :standard_rate_money, with_model_currency: :currency ,allow_nil: true , as_subunit: false
+  monetize :standard_rate, as: :standard_rate_money, 
+         with_model_currency: :currency, 
+         allow_nil: true, 
+         numericality: { greater_than_or_equal_to: 0 }
+         
   enum :gender, {
     unspecified: 0, 
     male: 1,       
@@ -32,6 +36,8 @@ class PsychologistProfile < ApplicationRecord
     other: 3      
   }
 
+
+  
   # For demonstration purposes outside a full ActiveRecord context,
   # we'll add a simple initializer and accessors. In a real Rails app
   # with ActiveRecord, these would be handled by the ORM and `monetize`.
@@ -51,37 +57,22 @@ class PsychologistProfile < ApplicationRecord
 
   # This method converts the standard_rate_money from its current currency to the target_currency.
   # It leverages the ExchangeRateService to perform the actual rate calculation and conversion.
-  def converted_rate(target_currency)
-    # Log information for debugging (consider using Rails.logger.debug in production)
-    Rails.logger.info "=== Converting from #{currency} to #{target_currency} ==="
-    Rails.logger.info "Original standard_rate_money: #{standard_rate_money}"
+def converted_rate(target_currency)
+  target_currency = target_currency.upcase
 
-    # If the target currency is the same as the original, no conversion is needed.
-    return standard_rate_money if currency.upcase == target_currency.upcase
-
-    # Use the ExchangeRateService.convert method directly.
-    # It handles fetching rates and performing the conversion.
-    # standard_rate_money.to_f converts the Money object to a float representation of its amount.
-    converted_amount_float = ExchangeRateService.convert(
-      standard_rate_money.to_f,
-      from: currency.upcase,
-      to: target_currency.upcase
-    )
-
-    if converted_amount_float
-      # The Money gem typically stores amounts in cents (integer).
-      # Convert the float amount back to cents for the new Money object.
-      converted_cents = (converted_amount_float * 100).to_i
-      result = Money.new(converted_cents, target_currency.upcase)
-      Rails.logger.info "Final result: #{result.inspect}"
-      result
-    else
-      # If conversion fails (e.g., no rate found, API error), return the original standard_rate_money
-      # as a fallback, and log the reason.
-      Rails.logger.warn "Conversion failed for #{currency} to #{target_currency}. Returning original standard_rate_money."
-      standard_rate_money
-    end
+  if currency == target_currency
+    return Money.new((standard_rate * 100).round, currency)
   end
+
+  amount = standard_rate.to_f
+  rate = ExchangeRateService.convert(amount, from: currency, to: target_currency)
+
+  Rails.logger.debug "Converting #{amount} from #{currency} to #{target_currency} at rate #{rate.inspect}"
+
+  return Money.new((standard_rate * 100).round, currency) if rate.nil?
+
+  Money.new((rate * 100).round, target_currency)
+end
 
 
 

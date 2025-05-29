@@ -2,12 +2,16 @@ class Service < ApplicationRecord
   belongs_to :user
 
 
-  monetize :price, as: :price_money,  with_model_currency: :currency ,allow_nil: true, as_subunit: false
+ # monetize :price, as: :price_money,  with_model_currency: :currency ,allow_nil: true, as_subunit: false
 
-
+monetize :price, as: :price_money, 
+         with_model_currency: :currency, 
+         allow_nil: true, 
+         numericality: { greater_than_or_equal_to: 0 }
 
   enum :delivery_method, { in_person: 0, online: 1, phone: 2 }
-      
+
+
 unless defined?(ActiveRecord::Base)
     attr_accessor :price_cents, :currency, :price_money
 

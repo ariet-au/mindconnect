@@ -78,45 +78,32 @@ def index
 
   
 
-  # filter by currency 
-       target_currency_for_search_and_display = current_currency.upcase
+# filter by currency
+target_currency = current_currency.upcase
+min_rate = params[:min_rate]&.to_f
+max_rate = params[:max_rate]&.to_f
 
-    min_rate_input = params[:min_rate].to_f if params[:min_rate].present?
-    max_rate_input = params[:max_rate].to_f if params[:max_rate].present?
+# Early return if no rate filters are applied
+return @psychologist_profiles if min_rate.blank? && max_rate.blank?
 
-    # Step 2: Perform the in-memory currency-based filtering.
-    # The result of `select` is a plain Ruby Array.
-    filtered_profiles_array = @psychologist_profiles.select do |profile|
-      meets_min_rate_criteria = true
-      meets_max_rate_criteria = true
-
-      begin
-        profile_rate_in_target_currency_money = profile.converted_rate(target_currency_for_search_and_display)
-
-        if profile_rate_in_target_currency_money.present?
-          profile_rate_value = profile_rate_in_target_currency_money.to_f
-
-          if min_rate_input.present?
-            meets_min_rate_criteria = (profile_rate_value >= min_rate_input)
-          end
-
-          if max_rate_input.present?
-            meets_max_rate_criteria = (profile_rate_value <= max_rate_input)
-          end
-        else
-          meets_min_rate_criteria = false
-          meets_max_rate_criteria = false
-          Rails.logger.warn "Skipping profile #{profile.id} in search due to conversion error from #{profile.currency} to #{target_currency_for_search_and_display}."
-        end
-
-      rescue => e
-        Rails.logger.error "Error processing profile #{profile.id} for currency search: #{e.message}"
-        meets_min_rate_criteria = false
-        meets_max_rate_criteria = false
-      end
-
-      meets_min_rate_criteria && meets_max_rate_criteria
-    end
+filtered_profiles_array = @psychologist_profiles.filter_map do |profile|
+  begin
+    converted_rate = profile.converted_rate(target_currency)
+    next unless converted_rate&.positive? # Skip nil/zero rates
+    
+    rate_value = converted_rate.to_f
+    
+    # Single condition check instead of separate boolean variables
+    next unless (min_rate.blank? || rate_value >= min_rate) &&
+                (max_rate.blank? || rate_value <= max_rate)
+    
+    profile # Return the profile if it passes all criteria
+    
+  rescue StandardError => e
+    Rails.logger.error "Currency conversion failed for profile #{profile.id}: #{e.message}"
+    next # Skip this profile and continue
+  end
+end
     # The @psychologist_profiles now holds your filtered results.
   
 

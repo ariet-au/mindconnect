@@ -79,7 +79,7 @@ end
 
 
 class ExchangeRateService
-  API_BASE_URL = 'http://data.fixer.io/api'
+  API_BASE_URL = 'https://data.fixer.io/api'
   API_KEY = Rails.application.credentials.fixer_api_key # Accesses the API key from Rails credentials or stub
 
   # Converts a given amount from one currency to another.
@@ -114,25 +114,21 @@ class ExchangeRateService
   # - If 'from' is EUR, it directly fetches the rate to 'to'.
   # - If 'from' is not EUR, it calculates the cross-currency rate using EUR as an intermediary.
   def self.get_conversion_rate(from:, to:)
-    # Cache the individual conversion rate for 24 hours
     Rails.cache.fetch("fx_rate_#{from}_#{to}", expires_in: 1.day) do
       if from == 'EUR'
-        # If the source currency is EUR, directly fetch the rate for the target currency
         rate = fetch_single_rate(to: to)
         Rails.logger.debug "ExchangeRateService: Direct EUR to #{to} rate: #{rate}"
         rate
       else
-        # For cross-currency conversion (e.g., USD to GBP), use EUR as the base:
-        # Rate (USD to GBP) = Rate (EUR to GBP) / Rate (EUR to USD)
-        all_eur_rates = fetch_all_rates # Get all rates relative to EUR
+        all_eur_rates = fetch_all_rates # <-- now returns valid rates hash
 
-        from_rate_vs_eur = all_eur_rates[from]
-        to_rate_vs_eur = all_eur_rates[to]
+        from_rate_vs_eur = all_eur_rates[from.upcase]
+        to_rate_vs_eur = all_eur_rates[to.upcase]
 
         if from_rate_vs_eur && to_rate_vs_eur
           if from_rate_vs_eur == 0
             Rails.logger.error "ExchangeRateService: Cannot convert from #{from} as its EUR rate is zero (division by zero risk)."
-            nil # Return nil to indicate an invalid rate
+            nil
           else
             calculated_rate = to_rate_vs_eur / from_rate_vs_eur
             Rails.logger.debug "ExchangeRateService: Calculated cross-rate for #{from} to #{to}: #{calculated_rate}"
@@ -140,7 +136,7 @@ class ExchangeRateService
           end
         else
           Rails.logger.error "ExchangeRateService: Missing EUR rate for #{from} or #{to}. From rate: #{from_rate_vs_eur}, To rate: #{to_rate_vs_eur}. Cannot calculate cross-rate."
-          nil # Return nil if required rates are missing
+          nil
         end
       end
     end
@@ -154,7 +150,8 @@ class ExchangeRateService
 
   # Fetches all available exchange rates relative to EUR.
   def self.fetch_all_rates
-    fetch_rates # Call fetch_rates without a 'to' parameter to get all rates
+    # Explicitly request the currencies you want rates for
+    fetch_rates(to: ['EUR', 'USD', 'KZT', 'KGS','UZS','RUB','TJS','GBP'])
   end
 
   # Core method to make the API call to Fixer.io and cache the results.

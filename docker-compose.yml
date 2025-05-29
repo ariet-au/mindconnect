@@ -1,0 +1,55 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16.9
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mindconnect_production
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - internal
+  app:
+    build: .
+    command: bash -c "bundle exec rails server -b 0.0.0.0 -p 3000"
+    volumes:
+      - .:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - redis
+    environment:
+      REDIS_URL: redis://redis:6379/1
+  
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+
+  web:
+    build:
+      context: .
+    image: mindconnect
+    depends_on:
+      - db
+    ports:
+      - "3000:80"  # Map host port 3000 to container port 80
+    environment:
+      RAILS_ENV: production
+      RAILS_LOG_TO_STDOUT: "true"
+      RAILS_MASTER_KEY: ${RAILS_MASTER_KEY}
+      DATABASE_URL: postgres://postgres:password@db:5432/mindconnect_production
+    networks:
+      - internal
+    restart: unless-stopped
+
+volumes:
+  db_data:
+
+networks:
+  internal:
+    driver: bridge
