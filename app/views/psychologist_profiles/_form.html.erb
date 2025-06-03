@@ -1,3 +1,5 @@
+    <%= button_to "Destroy this psychologist profile", @psychologist_profile, method: :delete %>
+
 <%= form_with(model: psychologist_profile, local: true, html: { multipart: true, class: 'box' }) do |form| %>
   <% if psychologist_profile.errors.any? %>
     <div class="notification is-danger">

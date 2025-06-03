@@ -1,0 +1,1 @@
+require Rails.root.join('config', 'country_currency_map')

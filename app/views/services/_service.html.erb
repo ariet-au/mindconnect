@@ -1,26 +1,46 @@
-<div id="<%= dom_id service %>">
+<div id="<%= dom_id service %>" class="card mb-4">
+  <div class="card-content">
+    <div class="media">
+      <div class="media-content">
+        <p class="title is-4">
+          <%= service.name %>
+          <span class="tag is-primary is-light ml-2"><%= service.delivery_method %></span>
+        </p>
+      </div>
+    </div>
 
-  <p>
-    
-    <strong><%= service.name %></strong> | <%= service.delivery_method %>
-  </p> 
+    <div class="content">
+      <p class="mb-4">
+        <%= service.description %>
+      </p>
 
-  <p>
-    
-    <%= service.description %>
-  </p>
+      <div class="columns is-mobile is-vcentered">
+        <div class="column">
+          <p class="has-text-weight-semibold">
+            <span class="icon-text">
+              <span class="icon">
+                <i class="fas fa-money-bill-wave"></i>
+              </span>
+              <span><%= number_to_currency(service.price) %></span>
+            </span>
+          </p>
+        </div>
+        
+        <div class="column">
+          <p class="has-text-weight-semibold">
+            <span class="icon-text">
+              <span class="icon">
+                <i class="fas fa-clock"></i>
+              </span>
+              <span><%= service.duration_minutes %> minutes</span>
+            </span>
+          </p>
+        </div>
+      </div>
 
-  <p>
-    <strong>Price:</strong>
-    <%= service.price %>
-
-    <strong>Duration minutes:</strong>
-    <%= service.duration_minutes %>
-  </p>
-
-  <p>
- 
-   
-  </p>
-
+ <div class="buttons is-right">
+  <%= link_to "Edit", edit_service_path(service), class: "button is-light is-small" %>
+</div>
+    </div>
+  </div>
 </div>

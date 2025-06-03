@@ -80,6 +80,27 @@
             </div>
           <% end %>
         <% end %>
+
+  <% (params[:language_ids] || []).each do |id| %>
+    <% language = Language.find_by(id: id) %>
+    <% if language %>
+      <div class="control">
+        <div class="tags has-addons">
+          <span class="tag is-success"><%= language.name %></span>
+          <%= link_to psychologist_profiles_path(
+                request.query_parameters.except(:language_ids)
+                  .merge(language_ids: request.query_parameters[:language_ids] - [id.to_s])
+              ), 
+              class: "tag is-delete" do %>
+            <i class="fas fa-times"></i>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+
+
+
       </div>
     <% end %>
 
@@ -241,22 +262,20 @@
   </div>
 
   <!-- Languages Filter -->
-  <div class="column is-6-tablet is-12-mobile">
-    <div class="field">
-      <label class="label is-small">Languages</label>
-      <div class="control">
-        <div class="select is-small is-fullwidth">
-          <%= select_tag "language_ids[]", 
-                options_from_collection_for_select(Language.all, :id, :name, params[:language_ids]),
-                multiple: true,
-                class: "select is-multiple",
-                onchange: "this.form.submit()" %>
-        </div>
+<div class="column is-6-tablet is-12-mobile">
+  <div class="field">
+    <label class="label is-small">Languages</label>
+    <div class="control">
+      <div class="select is-small is-fullwidth">
+        <%= select_tag "language_ids", 
+              options_from_collection_for_select(Language.all, :id, :name, selected: params[:language_ids]),
+              multiple: true,
+              class: "select is-multiple",
+              onchange: "this.form.submit()" %>
       </div>
     </div>
   </div>
 </div>
-
       
       <!-- Price Range Row -->
       <div class="columns is-multiline is-variable is-2">
@@ -354,12 +373,7 @@
                     </i> <% converted = profile.converted_rate(current_currency) %>
 <%= humanized_money_with_symbol(converted) %>
 
-<% converted = profile.converted_rate(current_currency) %>
 
-<p><strong>Original:</strong> <%= profile.standard_rate.inspect %> <%= profile.currency %></p>
-<p><strong>Target Currency:</strong> <%= current_currency %></p>
-<p><strong>Converted (raw):</strong> <%= converted.inspect %></p>
-<p><strong>Converted (formatted):</strong> <%= humanized_money_with_symbol(converted) %></p>
                   </span>
                 <% end %>
                 <% if profile.is_doctor %>
@@ -414,6 +428,15 @@
                 </p>
               <% end %>
             </div>
+
+                    <!-- Specialties and Issues Tags -->
+              <% if profile.languages.any? %>
+                <div class="tags are-small mt-2">
+                  <% profile.languages.each do |language| %>
+                    <span class="tag is-info is-light"><%= language.name %></span>
+                  <% end %>
+                </div>
+              <% end %>
             
             <!-- Contact Information (right side) -->
             <div class="column is-narrow">
@@ -494,6 +517,24 @@
   <% end %>
 </div>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <!-- JavaScript for Contact Info Toggle and Clear All -->
 <script>
 document.addEventListener('turbo:load', function() {
@@ -509,41 +550,23 @@ document.addEventListener('turbo:load', function() {
   });
 });
 
+
+
 document.getElementById('clear-all-filters')?.addEventListener('click', function(e) {
+  e.preventDefault();
+  
+  // Get the form
   const form = document.querySelector('.search-form');
   
-  // Reset all filter selects
-  form.querySelectorAll('.filter-select').forEach(function(select) {
-    if (select.multiple) {
-      // For multiselects
-      Array.from(select.options).forEach(option => {
-        option.selected = false;
-      });
-    } else {
-      // For single selects
-      select.value = '';
-    }
-  });
+  // Create a new URL object with just the base path
+  const url = new URL(form.action);
   
-  // Reset number inputs
-  form.querySelectorAll('.filter-input').forEach(function(input) {
-    input.value = '';
-  });
+  // Reset the form (optional - only needed if you want UI to reflect cleared state)
+  form.reset();
   
-  // Reset radio buttons
-  form.querySelectorAll('.filter-radio').forEach(function(radio) {
-    radio.checked = false;
-  });
-  
-  // Reset search input
-  form.querySelector('input[name="search"]').value = '';
-  
-  // Submit the form to apply the cleared filters
-  form.submit();
-  });
-
-
-
+  // Redirect to the clean URL (without any query parameters)
+  window.location.href = url.pathname;
+});
 
 
 

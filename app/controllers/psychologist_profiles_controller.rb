@@ -23,32 +23,28 @@ class PsychologistProfilesController < ApplicationController
 
 def index
   @psychologist_profiles = PsychologistProfile.includes(:user).all
-      @genders = PsychologistProfile.where.not(gender: [nil, ""]).distinct.order(:gender).pluck(:gender)
+  @genders = PsychologistProfile.where.not(gender: [nil, ""]).distinct.order(:gender).pluck(:gender)
 
   if params[:gender].present?
     @psychologist_profiles = @psychologist_profiles.where(gender: params[:gender])
   end
 
-
-
-
-  
-    if params[:in_person] == "1" && params[:online] == "1"
-      @psychologist_profiles = @psychologist_profiles.where(in_person: true).or(PsychologistProfile.where(online: true))
-    elsif params[:in_person] == "1"
-      @psychologist_profiles = @psychologist_profiles.where(in_person: true)
-    elsif params[:online] == "1"
-      @psychologist_profiles = @psychologist_profiles.where(online: true)
-    end
+  # In-person/online filtering
+  if params[:in_person] == "1" && params[:online] == "1"
+    @psychologist_profiles = @psychologist_profiles.where(in_person: true).or(PsychologistProfile.where(online: true))
+  elsif params[:in_person] == "1"
+    @psychologist_profiles = @psychologist_profiles.where(in_person: true)
+  elsif params[:online] == "1"
+    @psychologist_profiles = @psychologist_profiles.where(online: true)
+  end
 
   # Sanitize multi-selects
   specialty_ids    = Array(params[:specialty_ids]).reject(&:blank?)
   issue_ids        = Array(params[:issue_ids]).reject(&:blank?)
   client_type_ids  = Array(params[:client_type_ids]).reject(&:blank?)
-  language_ids  = Array(params[:language_ids]).reject(&:blank?)
+  language_ids     = Array(params[:language_ids]).reject(&:blank?)
 
-
-   if language_ids.any?
+  if language_ids.any?
     @psychologist_profiles = @psychologist_profiles.joins(:languages).where(languages: { id: language_ids }).distinct
   end
 
@@ -76,52 +72,41 @@ def index
     @psychologist_profiles = @psychologist_profiles.where("title ILIKE ?", "%#{params[:keywords]}%")
   end
 
-  
+  # Filter by currency - do this AFTER all ActiveRecord filtering
+  target_currency = current_currency.upcase
+  min_rate = params[:min_rate].present? ? params[:min_rate].to_f : nil
+  max_rate = params[:max_rate].present? ? params[:max_rate].to_f : nil
 
-# filter by currency
-target_currency = current_currency.upcase
-min_rate = params[:min_rate]&.to_f
-max_rate = params[:max_rate]&.to_f
-
-# Early return if no rate filters are applied
-return @psychologist_profiles if min_rate.blank? && max_rate.blank?
-
-filtered_profiles_array = @psychologist_profiles.filter_map do |profile|
-  begin
-    converted_rate = profile.converted_rate(target_currency)
-    next unless converted_rate&.positive? # Skip nil/zero rates
+  # Apply currency filtering only if rate filters are present
+  if min_rate.present? || max_rate.present?
+    filtered_profiles_array = @psychologist_profiles.filter_map do |profile|
+      begin
+        # Skip profiles with blank/nil currency or rate
+        next if profile.currency.blank? || profile.standard_rate.blank? || profile.standard_rate.to_f <= 0
+        
+        converted_rate = profile.converted_rate(target_currency)
+        next unless converted_rate&.positive? # Skip nil/zero rates
+        
+        rate_value = converted_rate.to_f
+        
+        # Check rate bounds
+        next unless (min_rate.nil? || rate_value >= min_rate) &&
+                    (max_rate.nil? || rate_value <= max_rate)
+        
+        profile # Return the profile if it passes all criteria
+        
+      rescue StandardError => e
+        Rails.logger.error "Currency conversion failed for profile #{profile.id}: #{e.message}"
+        next # Skip this profile and continue
+      end
+    end
     
-    rate_value = converted_rate.to_f
-    
-    # Single condition check instead of separate boolean variables
-    next unless (min_rate.blank? || rate_value >= min_rate) &&
-                (max_rate.blank? || rate_value <= max_rate)
-    
-    profile # Return the profile if it passes all criteria
-    
-  rescue StandardError => e
-    Rails.logger.error "Currency conversion failed for profile #{profile.id}: #{e.message}"
-    next # Skip this profile and continue
-  end
-end
-    # The @psychologist_profiles now holds your filtered results.
-  
-
-
-  # if params[:min_rate].present?
-  #   @psychologist_profiles = @psychologist_profiles.where("standard_rate >= ?", params[:min_rate])
-  # end
-
-  # if params[:max_rate].present?
-  #   @psychologist_profiles = @psychologist_profiles.where("standard_rate <= ?", params[:max_rate])
-  # end
-
-  # if params[:currency].present?
-  #   @psychologist_profiles = @psychologist_profiles.where(currency: params[:currency])
-  # end
-
-  # Add pagination if using kaminari or pagy
+    # Convert filtered array to paginated collection
     @psychologist_profiles = Kaminari.paginate_array(filtered_profiles_array).page(params[:page])
+  else
+    # No currency filtering needed, paginate the ActiveRecord relation directly
+    @psychologist_profiles = @psychologist_profiles.page(params[:page])
+  end
 end
 
 
@@ -196,6 +181,10 @@ end
     render json: cities
   end
 
+  def set
+    session[:currency] = params[:currency]
+    redirect_back fallback_location: root_path, allow_other_host: false, params: { country: params[:country] }
+  end
 
 
   private

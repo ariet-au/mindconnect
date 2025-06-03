@@ -2,160 +2,387 @@
   <div class="section">
     <h1 class="title is-3 has-text-centered mb-5">Find a Psychologist</h1>
 
-    <%= form_with url: psychologist_profiles_path, method: :get, local: true, class: "psychologist-search-form" do |f| %>
-      <!-- Primary City Search -->
-      <div class="field has-addons is-justify-content-center mb-5">
-        <div class="control is-expanded" style="max-width: 500px;">
-          <div class="field">
-            <label class="label">Country</label>
-            <div class="select is-fullwidth">
-              <%= select_tag :country,
-                    options_for_select(
-                      [['Select Country', '']] + countries_with_cities.map { |c| c['name'] },
-                      params[:country]
-                    ),
-                    class: "landing-country-select",
-                    id: "landing-country" %>
+    <%= form_with url: psychologist_profiles_path, method: :get, local: true, class: "psychologist-search-form", id: "wizardForm" do |f| %>
+      <div id="wizard-steps">
+
+        <div class="wizard-step box" data-step="1">
+          <h2 class="subtitle is-4 has-text-centered">Step 1: Location & Currency</h2>
+          <div class="field has-addons is-justify-content-center mb-4">
+            <div class="control is-expanded" style="max-width: 500px; margin-right: 1rem;">
+              <div class="field">
+                <label class="label">Country</label>
+                <div class="select is-fullwidth">
+                  <%= select_tag :country,
+                        options_for_select(
+                          [['Select Country', '']] + (defined?(countries_with_cities) && countries_with_cities ? countries_with_cities.map { |c| c['name'] } : []),
+                          params[:country]
+                        ),
+                        class: "landing-country-select",
+                        id: "landing-country" %>
+                </div>
+              </div>
+            </div>
+
+            <div class="control is-expanded" style="max-width: 500px;">
+              <div class="field">
+                <label class="label">City</label>
+                <div class="select is-fullwidth">
+                  <%= select_tag :city,
+                        options_for_select(
+                          [['Select City', '']],
+                          params[:city]
+                        ),
+                        class: "landing-city-select",
+                        id: "landing-city",
+                        disabled: params[:country].blank? %>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <div class="control is-expanded" style="max-width: 500px;">
-          <div class="field">
-            <label class="label">City</label>
-            <div class="select is-fullwidth">
-              <%= select_tag :city,
-                    options_for_select(
-                      [['Select City', '']],
-                      params[:city]
-                    ),
-                    class: "landing-city-select",
-                    id: "landing-city",
-                    disabled: params[:country].blank? %>
+          <div class="field is-horizontal">
+            <div class="field-label is-normal">
+                <label class="label">Currency</label>
             </div>
+            <div class="field-body">
+                <div class="field">
+                <div class="control">
+                    <div class="select">
+                    <%= select_tag :currency, options_for_select(['KGS', 'KZT', 'UZS', 'RUB'], defined?(current_currency) ? current_currency : nil), id: 'form-currency-select' %>
+                    </div>
+                </div>
+                </div>
+            </div>
+           </div>
+             <div class="field is-grouped is-grouped-centered mt-4">
+            <p class="control">
+              <button type="button" class="button is-primary wizard-next-button">Next Step</button>
+            </p>
+            <p class="control">
+              <%= f.submit "Skip to Search", class: "button is-link" %>
+            </p>
           </div>
         </div>
-        <div class="control align-self-flex-end">
-          <button type="button" class="button is-primary toggle-filters-button mt-3">
-            <span>More Filters</span>
-            <span class="icon">
-              <i class="fas fa-chevron-down"></i>
-            </span>
-          </button>
+
+        <div class="wizard-step box is-hidden" data-step="2">
+          <h2 class="subtitle is-4 has-text-centered">Step 2: Delivery Method</h2>
+          <div class="field">
+            <label class="label is-small">How would you like your sessions?</label>
+            <div class="control has-text-centered">
+              <label class="checkbox mr-3">
+                <%= check_box_tag "in_person", "1", params[:in_person] == "1" %>
+                In Person
+              </label>
+              <label class="checkbox mr-3">
+                <%= check_box_tag "online", "1", params[:online] == "1" %>
+                Online
+              </label>
+            </div>
+          </div>
+          <div class="field is-grouped is-grouped-centered mt-4">
+            <p class="control">
+              <button type="button" class="button is-light wizard-prev-button">Previous</button>
+            </p>
+            <p class="control">
+              <button type="button" class="button is-primary wizard-next-button">Next</button>
+            </p>
+          </div>
         </div>
-      </div>
 
+        <div class="wizard-step box is-hidden" data-step="3">
+          <h2 class="subtitle is-4 has-text-centered">Step 3: Languages Spoken</h2>
+          <div class="field">
+            <label class="label">Select Languages</label>
+            <div class="control">
+              <div class="tags are-medium is-justify-content-center">
+                <% (@languages || []).each do |language| %>
+                  <span class="tag is-rounded filter-pill">
+                    <%= check_box_tag 'language_ids[]', language.id,
+                            Array(params[:language_ids]).include?(language.id.to_s),
+                            id: "language_#{language.id}", class: "is-checkradio" %>
+                    <label for="language_<%= language.id %>"><%= language.name %></label>
+                  </span>
+                <% end %>
+                 <% if (@languages || []).empty? %>
+                  <p class="has-text-grey">No languages available to select.</p>
+                <% end %>
+              </div>
+            </div>
+          </div>
+          <div class="field is-grouped is-grouped-centered mt-4">
+            <p class="control">
+              <button type="button" class="button is-light wizard-prev-button">Previous</button>
+            </p>
+            <p class="control">
+              <button type="button" class="button is-primary wizard-next-button">Next</button>
+            </p>
+          </div>
+        </div>
 
-      <div class="field">
-  <label class="label is-small">Delivery Method</label>
-  <div class="control">
-    <label class="checkbox mr-3">
-      <%= check_box_tag "in_person", "1", params[:in_person] == "1" %>
-      In Person
-    </label>
-    <label class="checkbox mr-3">
-      <%= check_box_tag "online", "1", params[:online] == "1" %>
-      Online
-    </label>
+        <div class="wizard-step box is-hidden" data-step="4">
+          <h2 class="subtitle is-4 has-text-centered">Step 4: Client Type</h2>
+          <div class="field">
+            <label class="label">Who is this for?</label>
+            <div class="control">
+              <div class="tags are-medium is-justify-content-center">
+                <% (@client_types || []).each do |type| %>
+                  <span class="tag is-rounded filter-pill">
+                    <%= check_box_tag 'client_type_ids[]', type.id,
+                            Array(params[:client_type_ids]).include?(type.id.to_s),
+                            id: "client_type_#{type.id}", class: "is-checkradio" %>
+                    <label for="client_type_<%= type.id %>"><%= type.name %></label>
+                  </span>
+                <% end %>
+                <% if (@client_types || []).empty? %>
+                  <p class="has-text-grey">No client types available.</p>
+                <% end %>
+              </div>
+            </div>
+          </div>
+          <div class="field is-grouped is-grouped-centered mt-4">
+            <p class="control">
+              <button type="button" class="button is-light wizard-prev-button">Previous</button>
+            </p>
+            <p class="control">
+              <button type="button" class="button is-primary wizard-next-button">Next</button>
+            </p>
+          </div>
+        </div>
+
+        <div class="wizard-step box is-hidden" data-step="5">
+          <h2 class="subtitle is-4 has-text-centered">Step 5: Issues to Address</h2>
+          <div class="field">
+            <label class="label">What issues would you like to focus on?</label>
+            <div class="control">
+              <div class="tags are-medium is-justify-content-center">
+                <% (@issues || []).each do |issue| %>
+                  <span class="tag is-rounded filter-pill">
+                    <%= check_box_tag 'issue_ids[]', issue.id,
+                            Array(params[:issue_ids]).include?(issue.id.to_s),
+                            id: "issue_#{issue.id}", class: "is-checkradio" %>
+                    <label for="issue_<%= issue.id %>"><%= issue.name %></label>
+                  </span>
+                <% end %>
+                <% if (@issues || []).empty? %>
+                  <p class="has-text-grey">No issues available to select.</p>
+                <% end %>
+              </div>
+            </div>
+          </div>
+          <div class="field is-grouped is-grouped-centered mt-4">
+            <p class="control">
+              <button type="button" class="button is-light wizard-prev-button">Previous</button>
+            </p>
+            <p class="control">
+              <button type="button" class="button is-primary wizard-next-button">Next</button>
+            </p>
+          </div>
+        </div>
+
+        <div class="wizard-step box is-hidden" data-step="6">
+          <h2 class="subtitle is-4 has-text-centered">Step 6: Preferred Psychologist Gender</h2>
+          <div class="field is-horizontal">
+             <div class="field-label is-normal">
+                <label class="label">Gender</label>
+            </div>
+            <div class="field-body">
+                <div class="field">
+                    <div class="control">
+                        <div class="select">
+                        <%= select_tag :gender,
+                                options_for_select(
+                                [['Any Gender', '']] +
+                                (@genders || []).map { |g| [g.humanize.titleize, g] },
+                                params[:gender]
+                                ),
+                                class: "select" %>
+                        </div>
+                    </div>
+                     <% if (@genders || []).empty? %>
+                        <p class="help has-text-grey">Gender options not available.</p>
+                    <% end %>
+                </div>
+            </div>
+          </div>
+          <div class="field is-grouped is-grouped-centered mt-4">
+            <p class="control">
+              <button type="button" class="button is-light wizard-prev-button">Previous</button>
+            </p>
+            <p class="control">
+              <button type="button" class="button is-primary wizard-next-button">Next</button>
+            </p>
+          </div>
+        </div>
+
+        <div class="wizard-step box is-hidden" data-step="7">
+          <h2 class="subtitle is-4 has-text-centered">Step 7: Psychologist Specialties</h2>
+          <div class="field">
+            <label class="label">Any specific specialties?</label>
+            <div class="control">
+              <div class="tags are-medium is-justify-content-center">
+                <% (@specialties || []).each do |specialty| %>
+                  <span class="tag is-rounded filter-pill">
+                    <%= check_box_tag 'specialty_ids[]', specialty.id,
+                            Array(params[:specialty_ids]).include?(specialty.id.to_s),
+                            id: "specialty_#{specialty.id}", class: "is-checkradio" %>
+                    <label for="specialty_<%= specialty.id %>"><%= specialty.name %></label>
+                  </span>
+                <% end %>
+                <% if (@specialties || []).empty? %>
+                  <p class="has-text-grey">No specialties available to select.</p>
+                <% end %>
+              </div>
+            </div>
+          </div>
+          <div class="field is-grouped is-grouped-centered mt-5">
+            <p class="control">
+              <button type="button" class="button is-light wizard-prev-button">Previous</button>
+            </p>
+            <p class="control">
+              <%= f.submit "Search", class: "button is-primary is-medium wizard-submit-button" %>
+            </p>
+          </div>
+        </div>
+
+      </div> <% end %>
   </div>
 </div>
 
-      <!-- Collapsible Filters Section -->
-      <div class="filters-section box is-hidden">
-        <!-- Gender -->
-        <div class="field">
-          <label class="label">Gender</label>
-          <div class="control">
-            <div class="select">
-              <%= select_tag :gender,
-                    options_for_select(
-                      [['Any Gender', '']] + 
-                      @genders.map { |g| [g.humanize.titleize, g] },
-                      params[:gender]
-                    ),
-                    class: "select" %>
-            </div>
-          </div>
-        </div>
+<style>
+  /* Optional: Add some visual feedback for active pills if not already present */
+  .filter-pill input[type="checkbox"]:checked + label {
+    background-color: hsl(217, 71%, 53%); /* Bulma primary color */
+    color: white;
+    border-color: transparent;
+  }
+  .filter-pill label { /* Ensure label is clickable like the checkbox */
+    cursor: pointer;
+    padding: 0.5em 0.75em; /* Match Bulma tag padding */
+    border-radius: 9999px; /* Match is-rounded */
+    border: 1px solid #dbdbdb; /* Default tag border */
+    line-height: 1.5;
+    display: inline-block;
+  }
+   .filter-pill input[type="checkbox"].is-checkradio {
+    display: none; /* Hide the actual checkbox */
+  }
+  /* Center align pill content (checkboxes and labels) */
+  .tags.is-justify-content-center {
+    justify-content: center;
+    flex-wrap: wrap; /* Allow tags to wrap */
+  }
+  .wizard-step .field.is-horizontal {
+    justify-content: center;
+  }
+  .wizard-step .field.is-horizontal .field-label {
+    flex-grow: 0; /* Prevent label from taking too much space */
+    margin-right: 1rem;
+  }
+</style>
 
-              <!-- Language Tye Pills -->
-        <div class="field">
-          <label class="label">Languages</label>
-          <div class="control">
-            <div class="tags are-medium">
-              <% @languages.each do |language| %>
-                <span class="tag is-rounded filter-pill">
-                  <%= check_box_tag 'language_ids[]', language.id, 
-                        Array(params[:language_ids]).include?(language.id.to_s), 
-                        id: "language_#{language.id}", class: "is-checkradio" %>
-                  <label for="language_<%= language.id %>"><%= language.name %></label>
-                </span>
-              <% end %>
-            </div>
-          </div>
-        </div>
+<script>
+document.addEventListener('turbo:load', function() {
+  // ========== Wizard Form Logic ==========
+  const wizardForm = document.getElementById('wizardForm');
+  if (wizardForm) {
+    const steps = Array.from(wizardForm.querySelectorAll('.wizard-step'));
+    const nextButtons = wizardForm.querySelectorAll('.wizard-next-button');
+    const prevButtons = wizardForm.querySelectorAll('.wizard-prev-button');
+    let currentStep = 0;
 
+    const showStep = (stepIndex) => {
+      steps.forEach((step, index) => {
+        step.classList.toggle('is-hidden', index !== stepIndex);
+      });
+      // Scroll to the top of the form when changing steps for better UX
+      wizardForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
 
-        <!-- Client Type Pills -->
-        <div class="field">
-          <label class="label">Client Type</label>
-          <div class="control">
-            <div class="tags are-medium">
-              <% @client_types.each do |type| %>
-                <span class="tag is-rounded filter-pill">
-                  <%= check_box_tag 'client_type_ids[]', type.id, 
-                        Array(params[:client_type_ids]).include?(type.id.to_s), 
-                        id: "client_type_#{type.id}", class: "is-checkradio" %>
-                  <label for="client_type_<%= type.id %>"><%= type.name %></label>
-                </span>
-              <% end %>
-            </div>
-          </div>
-        </div>
+    nextButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        if (currentStep < steps.length - 1) {
+          currentStep++;
+          showStep(currentStep);
+        }
+      });
+    });
 
-        <!-- Issues Pills -->
-        <div class="field">
-          <label class="label">Issues</label>
-          <div class="control">
-            <div class="tags are-medium">
-              <% @issues.each do |issue| %>
-                <span class="tag is-rounded filter-pill">
-                  <%= check_box_tag 'issue_ids[]', issue.id, 
-                        Array(params[:issue_ids]).include?(issue.id.to_s), 
-                        id: "issue_#{issue.id}", class: "is-checkradio" %>
-                  <label for="issue_<%= issue.id %>"><%= issue.name %></label>
-                </span>
-              <% end %>
-            </div>
-          </div>
-        </div>
+    prevButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        if (currentStep > 0) {
+          currentStep--;
+          showStep(currentStep);
+        }
+      });
+    });
 
-        <!-- Specialties Pills -->
-        <div class="field">
-          <label class="label">Specialties</label>
-          <div class="control">
-            <div class="tags are-medium">
-              <% @specialties.each do |specialty| %>
-                <span class="tag is-rounded filter-pill">
-                  <%= check_box_tag 'specialty_ids[]', specialty.id, 
-                        Array(params[:specialty_ids]).include?(specialty.id.to_s), 
-                        id: "specialty_#{specialty.id}", class: "is-checkradio" %>
-                  <label for="specialty_<%= specialty.id %>"><%= specialty.name %></label>
-                </span>
-              <% end %>
-            </div>
-          </div>
-        </div>
-      </div>
+    // Show the first step initially
+    if (steps.length > 0) {
+      showStep(currentStep);
+    }
+  }
 
-      <!-- Submit Button -->
-      <div class="field is-grouped is-justify-content-center mt-5">
-        <div class="control">
-          <%= f.submit "Search", class: "button is-primary is-medium" %>
-        </div>
-      </div>
-    <% end %>
-  </div>
-</div>
+  // ========== Country-City Dependency ==========
+  // Ensure these variables are defined in your Rails view or globally if they come from helpers
+  const landingCountryCityData = <%= raw (defined?(countries_with_cities) && countries_with_cities ? countries_with_cities.each_with_object({}) { |country, hash| hash[country['name']] = country['cities'] } : {}).to_json %>;
+  const countryToCurrency = <%= raw (defined?(COUNTRY_CURRENCY_MAP) ? COUNTRY_CURRENCY_MAP : {}).to_json %>;
+
+  function updateLandingCitiesAndCurrency() {
+    const countrySelect = document.getElementById('landing-country');
+    const citySelect = document.getElementById('landing-city');
+    const currencySelect = document.getElementById('form-currency-select');
+
+    if (!countrySelect) return;
+
+    const selectedCountry = countrySelect.value;
+
+    if (citySelect) {
+      const previouslySelectedCity = citySelect.value; // Store before clearing
+      citySelect.innerHTML = '<option value="">Select City</option>';
+      citySelect.disabled = !selectedCountry;
+
+      if (landingCountryCityData && landingCountryCityData[selectedCountry]) {
+        landingCountryCityData[selectedCountry].forEach(city => {
+          const option = new Option(city, city);
+          citySelect.add(option);
+        });
+
+        // Try to re-select the city if it's still valid for the new country
+        if (landingCountryCityData[selectedCountry].includes(previouslySelectedCity)) {
+          citySelect.value = previouslySelectedCity;
+        } else {
+          // If coming from URL params and it's the initial load for this country
+          const urlParams = new URLSearchParams(window.location.search);
+          const cityParam = urlParams.get('city');
+          if (cityParam && landingCountryCityData[selectedCountry].includes(cityParam)) {
+            citySelect.value = cityParam;
+          }
+        }
+      }
+    }
+
+    if (currencySelect && countryToCurrency) {
+      const expectedCurrency = countryToCurrency[selectedCountry];
+      if (expectedCurrency && currencySelect.value !== expectedCurrency) {
+        currencySelect.value = expectedCurrency;
+      }
+    }
+  }
+
+  const countrySelectElement = document.getElementById('landing-country');
+  if (countrySelectElement) {
+    // Initial population if a country is already selected (e.g., from params)
+    if (countrySelectElement.value) {
+      updateLandingCitiesAndCurrency();
+    }
+    countrySelectElement.addEventListener('change', updateLandingCitiesAndCurrency);
+  }
+
+  // The "Toggle Filters" button logic is no longer needed as it's a wizard now.
+  // The logic for initially showing filters if params are present is also less relevant
+  // as users will navigate through steps. If you want to jump to a specific step
+  // based on params, that would require more complex JS logic.
+});
+</script>
 
 <style>
   .psychologist-search-form {
@@ -211,80 +438,3 @@
     background-color: #276cda;
   }
 </style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Country-City dependency (your existing code)
-  const landingCountryCityData = <%= raw countries_with_cities.each_with_object({}) { |country, hash| 
-    hash[country['name']] = country['cities'] 
-  }.to_json %>;
-
-  function updateLandingCities() {
-    const countrySelect = document.getElementById('landing-country');
-    const citySelect = document.getElementById('landing-city');
-    
-    if (!countrySelect || !citySelect) return;
-    
-    const selectedCountry = countrySelect.value;
-    
-    // Reset city dropdown
-    citySelect.innerHTML = '<option value="">Select City</option>';
-    citySelect.disabled = !selectedCountry;
-
-    if (selectedCountry && landingCountryCityData[selectedCountry]) {
-      // Add cities for selected country
-      landingCountryCityData[selectedCountry].forEach(city => {
-        const option = new Option(city, city);
-        citySelect.add(option);
-      });
-      
-      // Preselect city from params if available
-      const urlParams = new URLSearchParams(window.location.search);
-      const selectedCity = urlParams.get('city');
-      if (selectedCity && landingCountryCityData[selectedCountry].includes(selectedCity)) {
-        citySelect.value = selectedCity;
-      }
-    }
-  }
-
-  // Initialize country-city select
-  document.addEventListener('turbo:load', function() {
-    const countrySelect = document.getElementById('landing-country');
-    const citySelect = document.getElementById('landing-city');
-    
-    if (countrySelect && countrySelect.value) {
-      updateLandingCities();
-    }
-    
-    countrySelect?.addEventListener('change', updateLandingCities);
-  });
-
-  // Toggle filters section
-  const toggleButton = document.querySelector('.toggle-filters-button');
-  const filtersSection = document.querySelector('.filters-section');
-  
-  if (toggleButton && filtersSection) {
-    toggleButton.addEventListener('click', function() {
-      filtersSection.classList.toggle('is-hidden');
-      const icon = this.querySelector('.icon i');
-      
-      if (filtersSection.classList.contains('is-hidden')) {
-        icon.classList.remove('fa-chevron-up');
-        icon.classList.add('fa-chevron-down');
-      } else {
-        icon.classList.remove('fa-chevron-down');
-        icon.classList.add('fa-chevron-up');
-      }
-    });
-    
-    // Show filters if any are already selected
-    const hasSelectedFilters = <%= [params[:gender], params[:client_type_ids], params[:issue_ids], params[:specialty_ids]].any?(&:present?) %>;
-    if (hasSelectedFilters) {
-      filtersSection.classList.remove('is-hidden');
-      const icon = toggleButton.querySelector('.icon i');
-      icon.classList.remove('fa-chevron-down');
-      icon.classList.add('fa-chevron-up');
-    }
-  }
-});
-</script>
