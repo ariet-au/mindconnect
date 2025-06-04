@@ -84,7 +84,7 @@ Rails.application.configure do
     port: 587,
     domain: 'localhost', # or your real domain
     user_name: 'apikey',
-    password: Rails.application.credentials.dig(:sendgrid, :password),
+    password: ENV["SMTP_PASSWORD"],
     authentication: :plain,
     enable_starttls_auto: true
   }
