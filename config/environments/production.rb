@@ -74,6 +74,21 @@ Rails.application.configure do
   #   port: 587,
   #   authentication: :plain
   # }
+    # Set localhost to be used by links generated in mailer templates.
+  # Set localhost to be used by links generated in mailer templates.
+  config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
+  config.action_mailer.perform_deliveries = true
+  config.action_mailer.delivery_method = :smtp
+  config.action_mailer.smtp_settings = {
+    address: 'smtp.sendgrid.net',
+    port: 587,
+    domain: 'localhost', # or your real domain
+    user_name: 'apikey',
+    password: Rails.application.credentials.dig(:sendgrid, :password),
+    authentication: :plain,
+    enable_starttls_auto: true
+  }
+  
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).
