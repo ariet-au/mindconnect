@@ -79,20 +79,15 @@ test:
 # for a full overview on how database connection configuration can be specified.
 #
 production:
-  primary: &primary_production
+  primary:
     <<: *default
-    database: mindconnect_production
-    username: mindconnect
-    password: <%= ENV["MINDCONNECT_DATABASE_PASSWORD"] %>
+    url: <%= ENV["DATABASE_URL"] %>
   cache:
-    <<: *primary_production
-    database: mindconnect_production_cache
-    migrations_paths: db/cache_migrate
+    <<: *default
+    url: <%= ENV["CACHE_DATABASE_URL"] %>
   queue:
-    <<: *primary_production
-    database: mindconnect_production_queue
-    migrations_paths: db/queue_migrate
+    <<: *default
+    url: <%= ENV["QUEUE_DATABASE_URL"] %>
   cable:
-    <<: *primary_production
-    database: mindconnect_production_cable
-    migrations_paths: db/cable_migrate
+    <<: *default
+    url: <%= ENV["CABLE_DATABASE_URL"] %>
