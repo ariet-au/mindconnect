@@ -51,7 +51,7 @@ Rails.application.configure do
   #   url: ENV.fetch("REDIS_URL") { "redis://localhost:6379/1" },
   #   expires_in: 1.day
   # }
-  config.cache_store = :active_record_store, { expires_in: 1.day }
+  config.cache_store = :file_store, Rails.root.join("tmp", "cache")
 
   # Replace the default in-process and non-durable queuing backend for Active Job.
   config.active_job.queue_adapter = :async
