@@ -82,7 +82,7 @@ Rails.application.configure do
   config.action_mailer.smtp_settings = {
     address: 'smtp.sendgrid.net',
     port: 587,
-    domain: 'localhost', # or your real domain
+    domain: 'https://mindconnect-9x2c.onrender.com', # or your real domain
     user_name: 'apikey',
     password: ENV["SMTP_PASSWORD"],
     authentication: :plain,
