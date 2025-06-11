@@ -19,4 +19,7 @@
     <%= issue.severity_level %>
   </p>
 
+  <p><strong>Client Types:</strong>
+  <%= issue.client_types.map(&:name).to_sentence.presence || "None" %>
+</p>
 </div>

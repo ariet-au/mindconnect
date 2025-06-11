@@ -18,7 +18,7 @@
 
   <div>
     <%= form.label :description, style: "display: block" %>
-    <%= form.textarea :description %>
+    <%= form.text_area :description %>
   </div>
 
   <div>
@@ -29,6 +29,11 @@
   <div>
     <%= form.label :severity_level, style: "display: block" %>
     <%= form.text_field :severity_level %>
+  </div>
+
+  <div>
+    <%= form.label :client_type_ids, "Applicable Client Types", style: "display: block" %>
+    <%= form.collection_select :client_type_ids, ClientType.all, :id, :name, {}, { multiple: true, size: 5 } %>
   </div>
 
   <div>

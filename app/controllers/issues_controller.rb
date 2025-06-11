@@ -57,6 +57,21 @@ class IssuesController < ApplicationController
     end
   end
 
+def filtered
+  client_type_id = params[:client_type_id] || params[:client_type_ids]&.first
+  # Use first from array if you want to support both param names
+
+  if client_type_id.present?
+    @issues = Issue.joins(:client_types)
+                   .where(client_types: { id: client_type_id })
+                   .distinct
+  else
+    @issues = Issue.none
+  end
+
+  render partial: 'issues/list', locals: { issues: @issues }
+end
+
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_issue
@@ -65,6 +80,6 @@ class IssuesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def issue_params
-      params.expect(issue: [ :name, :description, :category, :severity_level ])
+      params.expect(issue: [ :name, :description, :category, :severity_level ,client_type_ids: []])
     end
 end

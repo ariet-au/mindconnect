@@ -1,5 +1,10 @@
 Rails.application.routes.draw do
-  resources :issues
+  resources :issues do
+    collection do
+      get :filtered
+    end
+  end
+
   resources :psychological_issues
   resources :client_types
   resources :specialties

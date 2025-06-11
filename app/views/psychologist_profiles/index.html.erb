@@ -152,14 +152,13 @@
             <label class="label is-small">Client Types</label>
             <div class="control">
               <div class="select is-small is-fullwidth">
-                <%= select_tag :client_type_ids, 
-                      options_for_select(
-                        ClientType.all.map { |i| [i.name, i.id] },
-                        params[:client_type_ids]
-                      ),
-                      multiple: true,
-                      class: "multiselect filter-select",
-                      onchange: "this.form.submit()" %>
+<%= select_tag :client_type_id, 
+               options_for_select(
+                 ClientType.all.map { |i| [i.name, i.id] },
+                 params[:client_type_id]
+               ),
+               class: "select filter-select",
+               onchange: "this.form.submit()" %>
               </div>
             </div>
           </div>

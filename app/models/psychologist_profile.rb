@@ -3,6 +3,10 @@
 # This class defines the model for psychologist profiles.
 # It belongs to a User and has an enumeration for gender.
 class PsychologistProfile < ApplicationRecord
+  include PgSearch::Model
+
+
+
   belongs_to :user
   has_one_attached :profile_img
 
@@ -18,7 +22,7 @@ class PsychologistProfile < ApplicationRecord
   has_many :psychologist_issues, dependent: :destroy
   has_many :issues, through: :psychologist_issues
 
-
+  has_many :services, through: :user
 
   has_many :psychologist_languages
   has_many :languages, through: :psychologist_languages
@@ -35,6 +39,16 @@ class PsychologistProfile < ApplicationRecord
     female: 2,      
     other: 3      
   }
+
+  pg_search_scope :search_full_text,
+    against: [:first_name, :last_name, :about_me, :education, :license_number, :city, :country],
+    associated_against: {
+       # optional, if you want to search user's email
+      services: [:name, :description] # adjust fields based on your Service model
+    },
+    using: {
+      tsearch: { prefix: true }
+    }
 
 
   

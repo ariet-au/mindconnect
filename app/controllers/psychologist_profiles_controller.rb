@@ -18,11 +18,26 @@ class PsychologistProfilesController < ApplicationController
     @genders = PsychologistProfile.where.not(gender: [nil, ""]).distinct.order(:gender).pluck(:gender)
     @languages = Language.all
 
+    client_type_ids = params[:client_type_ids]&.reject(&:blank?) || []
+
+    if client_type_ids.any?
+      @issues = Issue.joins(:client_types).where(client_types: { id: client_type_ids }).distinct
+    else
+      @issues = Issue.all
+    end
+
     
   end
 
 def index
-  @psychologist_profiles = PsychologistProfile.includes(:user).all
+   @psychologist_profiles = PsychologistProfile.all
+
+if params[:search].present?
+  @psychologist_profiles = @psychologist_profiles.search_full_text(params[:search])
+end
+ 
+
+
   @genders = PsychologistProfile.where.not(gender: [nil, ""]).distinct.order(:gender).pluck(:gender)
 
   if params[:gender].present?
@@ -68,9 +83,15 @@ def index
     @psychologist_profiles = @psychologist_profiles.where("city ILIKE ?", "%#{params[:city]}%")
   end
 
-  if params[:keywords].present?
-    @psychologist_profiles = @psychologist_profiles.where("title ILIKE ?", "%#{params[:keywords]}%")
-  end
+  # if params[:keywords].present?
+  #   @psychologist_profiles = @psychologist_profiles.where("title ILIKE ?", "%#{params[:keywords]}%")
+  # end
+
+  # if params[:search].present?
+  # @psychologist_profiles = PsychologistProfile.search_full_text(params[:search]).includes(:user, :services)
+  # else
+  #   @psychologist_profiles = PsychologistProfile.includes(:user).all
+  # end
 
   # Filter by currency - do this AFTER all ActiveRecord filtering
   target_currency = current_currency.upcase

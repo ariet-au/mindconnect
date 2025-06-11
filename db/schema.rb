@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_27_031639) do
+ActiveRecord::Schema[8.0].define(version: 2025_06_08_151340) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -47,6 +47,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_27_031639) do
     t.string "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "client_types_issues", id: false, force: :cascade do |t|
+    t.bigint "client_type_id", null: false
+    t.bigint "issue_id", null: false
+    t.index ["client_type_id", "issue_id"], name: "index_client_types_issues_on_client_type_id_and_issue_id", unique: true
+    t.index ["client_type_id"], name: "index_client_types_issues_on_client_type_id"
+    t.index ["issue_id"], name: "index_client_types_issues_on_issue_id"
   end
 
   create_table "issues", force: :cascade do |t|
@@ -179,6 +187,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_27_031639) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "client_types_issues", "client_types"
+  add_foreign_key "client_types_issues", "issues"
   add_foreign_key "psychologist_client_types", "client_types"
   add_foreign_key "psychologist_client_types", "psychologist_profiles"
   add_foreign_key "psychologist_issues", "issues"

@@ -1,0 +1,67 @@
+<% # Group issues by their category for the accordion structure %>
+<% categorized_issues = issues.group_by(&:category) %>
+
+<div id="issue-category-accordion" x-data="{ selectedIssues: [] }">
+  <% if categorized_issues.any? %>
+    <% categorized_issues.each_with_index do |(category, issues_in_category), index| %>
+      <div class="card mb-3" x-data="{ open: false }">
+        <header class="card-header is-clickable" @click="open = !open">
+          <p class="card-header-title">
+            <span class="icon mr-2" :class="{ 'has-text-primary': open }">
+              <span x-text="open ? '▲' : '▼'"></span>
+            </span>
+            <%= category %>
+          </p>
+          <button class="card-header-icon" aria-label="expand" @click.stop="open = !open">
+            <span class="icon" :class="{ 'has-text-primary': open }" style="font-size: 1.2rem;">
+              <span x-show="!open">+</span>
+              <span x-show="open">−</span>
+            </span>
+          </button>
+        </header>
+        <div class="card-content" x-show="open" x-transition>
+          <div class="field is-grouped is-grouped-multiline">
+            <% issues_in_category.each do |issue| %>
+              <div class="control">
+                <label class="button is-light is-small issue-checkbox" 
+                       :class="{ 'is-primary': selectedIssues.includes('<%= issue.id %>') }"
+                       @click="
+                         if (selectedIssues.includes('<%= issue.id %>')) {
+                           selectedIssues = selectedIssues.filter(id => id !== '<%= issue.id %>');
+                           $refs.checkbox_<%= issue.id %>.checked = false;
+                         } else {
+                           selectedIssues.push('<%= issue.id %>');
+                           $refs.checkbox_<%= issue.id %>.checked = true;
+                         }
+                       ">
+                  <%= check_box_tag 'issue_ids[]', issue.id, false, 
+                        x_ref: "checkbox_#{issue.id}",
+                        class: "is-hidden",
+                        style: "display: none;" %>
+                  <%= issue.name %>
+                </label>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="notification is-light">
+      <p class="has-text-grey">No issues available to select.</p>
+    </div>
+  <% end %>
+</div>
+
+<style>
+.issue-checkbox {
+  margin: 0.25rem !important;
+  transition: all 0.2s ease;
+}
+
+@media screen and (max-width: 768px) {
+  .issue-checkbox {
+    font-size: 0.875rem;
+  }
+}
+</style>

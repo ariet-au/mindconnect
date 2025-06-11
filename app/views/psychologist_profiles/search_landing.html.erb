@@ -5,8 +5,64 @@
     <%= form_with url: psychologist_profiles_path, method: :get, local: true, class: "psychologist-search-form", id: "wizardForm" do |f| %>
       <div id="wizard-steps">
 
-        <div class="wizard-step box" data-step="1">
-          <h2 class="subtitle is-4 has-text-centered">Step 1: Location & Currency</h2>
+      <div class="wizard-step box" data-step="1">
+  <h2 class="subtitle is-4 has-text-centered">Step 1: Delivery Method</h2>
+  
+  <div class="field">
+    <label class="label is-small mb-4">How would you like your sessions?</label>
+    <div class="buttons is-flex is-flex-direction-column">
+      <!-- Online Button -->
+      <button type="button" 
+              class="button is-fullwidth is-primary is-outlined delivery-method-btn py-4" 
+              data-method="online" 
+              data-next-step="3">
+        <span class="icon-text">
+          <span class="icon">
+            <i class="fas fa-laptop"></i>
+          </span>
+          <span>Online Sessions</span>
+        </span>
+      </button>
+      
+      <!-- In Person Button -->
+      <button type="button" 
+              class="button is-fullwidth is-primary is-outlined delivery-method-btn py-4 mt-3" 
+              data-method="in_person" 
+              data-next-step="2">
+        <span class="icon-text">
+          <span class="icon">
+            <i class="fas fa-building"></i>
+          </span>
+          <span>In-Person Sessions</span>
+        </span>
+      </button>
+      
+      <!-- Both Button -->
+      <button type="button" 
+              class="button is-fullwidth is-info is-outlined delivery-method-btn py-4 mt-3" 
+              data-method="both" 
+              data-next-step="2">
+        <span class="icon-text">
+          <span class="icon">
+            <i class="fas fa-random"></i>
+          </span>
+          <span>Online & In-Person</span>
+        </span>
+      </button>
+    </div>
+  </div>
+  
+  <!-- Hidden fields for form submission -->
+  <%= hidden_field_tag :in_person, params[:in_person] || '0' %>
+  <%= hidden_field_tag :online, params[:online] || '0' %>
+</div>
+
+
+
+
+
+        <div class="wizard-step box" data-step="2">
+          <h2 class="subtitle is-4 has-text-centered">Step 2: Location & Currency</h2>
           <div class="field has-addons is-justify-content-center mb-4">
             <div class="control is-expanded" style="max-width: 500px; margin-right: 1rem;">
               <div class="field">
@@ -54,99 +110,120 @@
             </div>
            </div>
              <div class="field is-grouped is-grouped-centered mt-4">
-            <p class="control">
-              <button type="button" class="button is-primary wizard-next-button">Next Step</button>
+              <p class="control">
+              <button type="button" class="button is-light wizard-prev-button">Previous</button>
             </p>
             <p class="control">
-              <%= f.submit "Skip to Search", class: "button is-link" %>
+              <button type="button" class="button is-primary wizard-next-button">Next</button>
             </p>
+            <p class="control">
+                <%= f.submit "Search", class: "button is-link  wizard-submit-button" %>
+              </p>
+
+            
           </div>
         </div>
 
-        <div class="wizard-step box is-hidden" data-step="2">
-          <h2 class="subtitle is-4 has-text-centered">Step 2: Delivery Method</h2>
-          <div class="field">
-            <label class="label is-small">How would you like your sessions?</label>
-            <div class="control has-text-centered">
-              <label class="checkbox mr-3">
-                <%= check_box_tag "in_person", "1", params[:in_person] == "1" %>
-                In Person
-              </label>
-              <label class="checkbox mr-3">
-                <%= check_box_tag "online", "1", params[:online] == "1" %>
-                Online
-              </label>
+      
+
+<div class="wizard-step box is-hidden" data-step="3">
+  <h2 class="subtitle is-4 has-text-centered">Step 3: Languages Spoken</h2>
+
+  <div class="field is-flex is-justify-content-center">
+    <div class="control" style="min-width: 300px; max-width: 500px; width: 100%;">
+      <label class="label has-text-centered is-block">Select Languages</label>
+      <%= select_tag 'language_ids[]',
+            options_from_collection_for_select(@languages, :id, :name, Array(params[:language_ids])),
+            multiple: true,
+            class: 'language-select select is-multiple is-fullwidth' %>
+    </div>
+  </div>
+
+  <div class="field is-grouped is-grouped-centered mt-4">
+    <p class="control">
+      <button type="button" class="button is-light wizard-prev-button">Previous</button>
+    </p>
+    <p class="control">
+      <button type="button" class="button is-primary wizard-next-button">Next</button>
+    </p>
+          <p class="control">
+                <%= f.submit "Search", class: "button is-link  wizard-submit-button" %>
+              </p>
+  </div>
+</div>
+
+<div class="wizard-step box is-hidden" data-step="4">
+  <h2 class="subtitle is-4 has-text-centered">Step 4: Who is the therapy for?</h2>
+
+  <div class="box" id="client-type-box">
+    
+    <div class="field">
+      <label class="label">Your Age</label>
+      <div class="control">
+        <input class="input" type="number" id="person1-age" name="people[0][age]" placeholder="e.g., 35" min="1" max="120" >
+      </div>
+    </div>
+
+    <div class="field mt-4">
+      <div class="control">
+        <button type="button" id="toggle-person-btn" class="button is-link">
+          <span class="icon is-small"><i class="fas fa-user-plus"></i></span>
+          <span>Bringing someone with you?</span>
+        </button>
+      </div>
+    </div>
+    
+    <div id="second-person-section" class="is-hidden mt-4">
+      <div class="box has-background-light">
+        <p class="subtitle is-5">About the second person</p>
+        
+        <div class="field">
+          <label class="label">Their Age</label>
+          <div class="control">
+            <input class="input" type="number" id="person2-age" name="people[1][age]" placeholder="e.g., 40" min="1" max="120">
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="label">Your relationship to them</label>
+          <div class="control">
+            <div class="select is-fullwidth">
+              <select id="relationship" name="people[1][relationship]">
+                <option value="">Select relationship</option>
+                <option value="partner">My Partner / Spouse</option>
+                <option value="child">My Child</option>
+                <option value="parent">My Parent</option>
+                <option value="sibling">My Sibling</option>
+                <option value="friend">A Friend</option>
+                <option value="other">Other</option>
+              </select>
             </div>
           </div>
-          <div class="field is-grouped is-grouped-centered mt-4">
+        </div>
+      </div>
+    </div>
+
+    <div id="group-output" class="notification is-info is-light is-hidden mt-4"></div>
+
+    <%= hidden_field_tag 'client_type_ids[]', '', id: "client_type_input" %>
+  </div>
+  
+  <div class="field is-grouped is-grouped-centered mt-4">
+    </div>
+
+           <div class="field is-grouped is-grouped-centered mt-4">
             <p class="control">
               <button type="button" class="button is-light wizard-prev-button">Previous</button>
             </p>
             <p class="control">
               <button type="button" class="button is-primary wizard-next-button">Next</button>
             </p>
+              <p class="control">
+                <%= f.submit "Search", class: "button is-link  wizard-submit-button" %>
+              </p>
           </div>
-        </div>
-
-        <div class="wizard-step box is-hidden" data-step="3">
-          <h2 class="subtitle is-4 has-text-centered">Step 3: Languages Spoken</h2>
-          <div class="field">
-            <label class="label">Select Languages</label>
-            <div class="control">
-              <div class="tags are-medium is-justify-content-center">
-                <% (@languages || []).each do |language| %>
-                  <span class="tag is-rounded filter-pill">
-                    <%= check_box_tag 'language_ids[]', language.id,
-                            Array(params[:language_ids]).include?(language.id.to_s),
-                            id: "language_#{language.id}", class: "is-checkradio" %>
-                    <label for="language_<%= language.id %>"><%= language.name %></label>
-                  </span>
-                <% end %>
-                 <% if (@languages || []).empty? %>
-                  <p class="has-text-grey">No languages available to select.</p>
-                <% end %>
-              </div>
-            </div>
-          </div>
-          <div class="field is-grouped is-grouped-centered mt-4">
-            <p class="control">
-              <button type="button" class="button is-light wizard-prev-button">Previous</button>
-            </p>
-            <p class="control">
-              <button type="button" class="button is-primary wizard-next-button">Next</button>
-            </p>
-          </div>
-        </div>
-
-        <div class="wizard-step box is-hidden" data-step="4">
-          <h2 class="subtitle is-4 has-text-centered">Step 4: Client Type</h2>
-          <div class="field">
-            <label class="label">Who is this for?</label>
-            <div class="control">
-              <div class="tags are-medium is-justify-content-center">
-                <% (@client_types || []).each do |type| %>
-                  <span class="tag is-rounded filter-pill">
-                    <%= check_box_tag 'client_type_ids[]', type.id,
-                            Array(params[:client_type_ids]).include?(type.id.to_s),
-                            id: "client_type_#{type.id}", class: "is-checkradio" %>
-                    <label for="client_type_<%= type.id %>"><%= type.name %></label>
-                  </span>
-                <% end %>
-                <% if (@client_types || []).empty? %>
-                  <p class="has-text-grey">No client types available.</p>
-                <% end %>
-              </div>
-            </div>
-          </div>
-          <div class="field is-grouped is-grouped-centered mt-4">
-            <p class="control">
-              <button type="button" class="button is-light wizard-prev-button">Previous</button>
-            </p>
-            <p class="control">
-              <button type="button" class="button is-primary wizard-next-button">Next</button>
-            </p>
-          </div>
-        </div>
+        
+</div>
 
         <div class="wizard-step box is-hidden" data-step="5">
           <h2 class="subtitle is-4 has-text-centered">Step 5: Issues to Address</h2>
@@ -154,14 +231,9 @@
             <label class="label">What issues would you like to focus on?</label>
             <div class="control">
               <div class="tags are-medium is-justify-content-center">
-                <% (@issues || []).each do |issue| %>
-                  <span class="tag is-rounded filter-pill">
-                    <%= check_box_tag 'issue_ids[]', issue.id,
-                            Array(params[:issue_ids]).include?(issue.id.to_s),
-                            id: "issue_#{issue.id}", class: "is-checkradio" %>
-                    <label for="issue_<%= issue.id %>"><%= issue.name %></label>
-                  </span>
-                <% end %>
+                <div id="issues-container">
+                    <%= render partial: 'issues/list', locals: { issues: @issues || [] } %>
+                  </div>
                 <% if (@issues || []).empty? %>
                   <p class="has-text-grey">No issues available to select.</p>
                 <% end %>
@@ -175,6 +247,9 @@
             <p class="control">
               <button type="button" class="button is-primary wizard-next-button">Next</button>
             </p>
+                  <p class="control">
+                <%= f.submit "Search", class: "button is-link  wizard-submit-button" %>
+              </p>
           </div>
         </div>
 
@@ -210,119 +285,189 @@
             <p class="control">
               <button type="button" class="button is-primary wizard-next-button">Next</button>
             </p>
+              <p class="control">
+                <%= f.submit "Search", class: "button is-link  wizard-submit-button" %>
+              </p>
           </div>
         </div>
 
         <div class="wizard-step box is-hidden" data-step="7">
-          <h2 class="subtitle is-4 has-text-centered">Step 7: Psychologist Specialties</h2>
-          <div class="field">
-            <label class="label">Any specific specialties?</label>
-            <div class="control">
-              <div class="tags are-medium is-justify-content-center">
-                <% (@specialties || []).each do |specialty| %>
-                  <span class="tag is-rounded filter-pill">
-                    <%= check_box_tag 'specialty_ids[]', specialty.id,
-                            Array(params[:specialty_ids]).include?(specialty.id.to_s),
-                            id: "specialty_#{specialty.id}", class: "is-checkradio" %>
-                    <label for="specialty_<%= specialty.id %>"><%= specialty.name %></label>
-                  </span>
-                <% end %>
+            <h2 class="subtitle is-4 has-text-centered">Step 7: Psychologist Specialties</h2>
+            <div class="field">
+              <label class="label">Any specific specialties?</label>
+              
+           
+
+              <div class="control">
+                <select id="specialty-select" name="specialty_ids[]" multiple placeholder="Select specialties...">
+                  <% (@specialties || []).each do |specialty| %>
+                    <option value="<%= specialty.id %>" <%= 'selected' if Array(params[:specialty_ids]).include?(specialty.id.to_s) %>>
+                      <%= specialty.name %>
+                    </option>
+                  <% end %>
+                </select>
+                
                 <% if (@specialties || []).empty? %>
-                  <p class="has-text-grey">No specialties available to select.</p>
+                  <p class="has-text-grey has-text-centered mt-3">No specialties available to select.</p>
                 <% end %>
               </div>
             </div>
+            <div class="field is-grouped is-grouped-centered mt-5">
+              <p class="control">
+                <button type="button" class="button is-light wizard-prev-button">Previous</button>
+              </p>
+              <p class="control">
+                <%= f.submit "Search", class: "button is-link is-medium wizard-submit-button" %>
+              </p>
+            </div>
+               <p class="help has-text-centered mb-3">
+                Try using ChatGPT to find out a specialty that would work for you
+              </p>
           </div>
-          <div class="field is-grouped is-grouped-centered mt-5">
-            <p class="control">
-              <button type="button" class="button is-light wizard-prev-button">Previous</button>
-            </p>
-            <p class="control">
-              <%= f.submit "Search", class: "button is-primary is-medium wizard-submit-button" %>
-            </p>
-          </div>
-        </div>
 
       </div> <% end %>
   </div>
 </div>
 
-<style>
-  /* Optional: Add some visual feedback for active pills if not already present */
-  .filter-pill input[type="checkbox"]:checked + label {
-    background-color: hsl(217, 71%, 53%); /* Bulma primary color */
-    color: white;
-    border-color: transparent;
-  }
-  .filter-pill label { /* Ensure label is clickable like the checkbox */
-    cursor: pointer;
-    padding: 0.5em 0.75em; /* Match Bulma tag padding */
-    border-radius: 9999px; /* Match is-rounded */
-    border: 1px solid #dbdbdb; /* Default tag border */
-    line-height: 1.5;
-    display: inline-block;
-  }
-   .filter-pill input[type="checkbox"].is-checkradio {
-    display: none; /* Hide the actual checkbox */
-  }
-  /* Center align pill content (checkboxes and labels) */
-  .tags.is-justify-content-center {
-    justify-content: center;
-    flex-wrap: wrap; /* Allow tags to wrap */
-  }
-  .wizard-step .field.is-horizontal {
-    justify-content: center;
-  }
-  .wizard-step .field.is-horizontal .field-label {
-    flex-grow: 0; /* Prevent label from taking too much space */
-    margin-right: 1rem;
-  }
-</style>
 
 <script>
-document.addEventListener('turbo:load', function() {
-  // ========== Wizard Form Logic ==========
-  const wizardForm = document.getElementById('wizardForm');
-  if (wizardForm) {
-    const steps = Array.from(wizardForm.querySelectorAll('.wizard-step'));
-    const nextButtons = wizardForm.querySelectorAll('.wizard-next-button');
-    const prevButtons = wizardForm.querySelectorAll('.wizard-prev-button');
-    let currentStep = 0;
+document.addEventListener('turbo:load', function () {
+  // ========== TomSelect ==========
 
+  const langSelectEl = document.querySelector('.language-select');
+  if (langSelectEl && typeof TomSelect !== 'undefined') {
+    new TomSelect(langSelectEl, {
+      plugins: ['remove_button'],
+      maxItems: null,
+      create: false,
+      placeholder: 'Type to Search and select languages...'
+    });
+  }
+
+  new TomSelect('#specialty-select', {
+    plugins: ['remove_button', 'dropdown_header'],
+    maxItems: null,
+    valueField: 'value',
+    labelField: 'text',
+    searchField: 'text',
+    placeholder: 'Select specialties...',
+    closeAfterSelect: false,
+    hideSelected: true,
+    dropdownParent: 'body',
+    render: {
+      item: function(data, escape) {
+        return '<div class="item">' + escape(data.text) + '</div>';
+      },
+      option: function(data, escape) {
+        return '<div class="option">' + escape(data.text) + '</div>';
+      }
+    }
+  });
+
+  // ========== Wizard Form Logic ==========
+
+  const wizardForm = document.getElementById('wizardForm');
+  
+  if (wizardForm) {
+    // Initialize wizard state
+    const steps = Array.from(wizardForm.querySelectorAll('.wizard-step'));
+    let currentStep = 0;
+    
+    // Navigation functions
     const showStep = (stepIndex) => {
       steps.forEach((step, index) => {
         step.classList.toggle('is-hidden', index !== stepIndex);
       });
-      // Scroll to the top of the form when changing steps for better UX
       wizardForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
-
-    nextButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        if (currentStep < steps.length - 1) {
-          currentStep++;
-          showStep(currentStep);
+    
+    const navigate = async (direction) => {
+      const newStep = direction === 'next' ? currentStep + 1 : currentStep - 1;
+      
+      // Special handling for step 4→5 transition
+      if (currentStep === 3 && newStep === 4) {
+        await handleClientTypeFilter();
+      }
+      
+      if (newStep >= 0 && newStep < steps.length) {
+        currentStep = newStep;
+        showStep(currentStep);
+      }
+    };
+    
+    // Client type filter handler
+    const handleClientTypeFilter = async () => {
+      const hiddenInput = document.getElementById('client_type_input');
+      const clientTypeId = hiddenInput?.value;
+      
+      try {
+        const response = await fetch(`/issues/filtered${clientTypeId ? `?client_type_id=${encodeURIComponent(clientTypeId)}` : ''}`);
+        
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+        const html = await response.text();
+        const container = document.getElementById('issues-container');
+        
+        if (container) {
+          container.innerHTML = html;
+        } else {
+          console.warn('Issues container not found');
         }
+      } catch (error) {
+        console.error('Error fetching filtered issues:', error);
+        showErrorFallback();
+      }
+    };
+    
+    const showErrorFallback = () => {
+      const container = document.getElementById('issues-container');
+      if (container) {
+        container.innerHTML = `
+          <div class="notification is-warning">
+            Could not load filtered results. Showing all available options.
+          </div>`;
+      }
+    };
+    
+    // Event listeners
+    document.querySelectorAll('.wizard-next-button').forEach(button => {
+      button.addEventListener('click', () => navigate('next'));
+    });
+    
+    document.querySelectorAll('.wizard-prev-button').forEach(button => {
+      button.addEventListener('click', () => navigate('prev'));
+    });
+    
+    // Delivery method buttons
+    document.querySelectorAll('.delivery-method-btn').forEach(button => {
+      button.addEventListener('click', function() {
+        const method = this.dataset.method;
+        const nextStep = parseInt(this.dataset.nextStep);
+        
+        // Update form values
+        document.getElementById('in_person').value = method === 'in_person' ? '1' : '0';
+        document.getElementById('online').value = method === 'online' ? '1' : '0';
+        
+        // Special case for "both"
+        if (method === 'both') {
+          document.getElementById('in_person').value = '0';
+          document.getElementById('online').value = '0';
+        }
+        
+        // Navigate to specified step
+        currentStep = nextStep - 1; // Convert to 0-based index
+        showStep(currentStep);
       });
     });
-
-    prevButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        if (currentStep > 0) {
-          currentStep--;
-          showStep(currentStep);
-        }
-      });
-    });
-
-    // Show the first step initially
-    if (steps.length > 0) {
-      showStep(currentStep);
-    }
+    
+    // Initialize
+    showStep(currentStep);
   }
 
+
+
   // ========== Country-City Dependency ==========
-  // Ensure these variables are defined in your Rails view or globally if they come from helpers
+
   const landingCountryCityData = <%= raw (defined?(countries_with_cities) && countries_with_cities ? countries_with_cities.each_with_object({}) { |country, hash| hash[country['name']] = country['cities'] } : {}).to_json %>;
   const countryToCurrency = <%= raw (defined?(COUNTRY_CURRENCY_MAP) ? COUNTRY_CURRENCY_MAP : {}).to_json %>;
 
@@ -330,59 +475,171 @@ document.addEventListener('turbo:load', function() {
     const countrySelect = document.getElementById('landing-country');
     const citySelect = document.getElementById('landing-city');
     const currencySelect = document.getElementById('form-currency-select');
-
     if (!countrySelect) return;
 
     const selectedCountry = countrySelect.value;
 
     if (citySelect) {
-      const previouslySelectedCity = citySelect.value; // Store before clearing
+      const prevCity = citySelect.value;
       citySelect.innerHTML = '<option value="">Select City</option>';
       citySelect.disabled = !selectedCountry;
 
-      if (landingCountryCityData && landingCountryCityData[selectedCountry]) {
-        landingCountryCityData[selectedCountry].forEach(city => {
-          const option = new Option(city, city);
-          citySelect.add(option);
-        });
+      const cities = landingCountryCityData?.[selectedCountry] || [];
+      cities.forEach(city => {
+        const opt = new Option(city, city);
+        citySelect.add(opt);
+      });
 
-        // Try to re-select the city if it's still valid for the new country
-        if (landingCountryCityData[selectedCountry].includes(previouslySelectedCity)) {
-          citySelect.value = previouslySelectedCity;
-        } else {
-          // If coming from URL params and it's the initial load for this country
-          const urlParams = new URLSearchParams(window.location.search);
-          const cityParam = urlParams.get('city');
-          if (cityParam && landingCountryCityData[selectedCountry].includes(cityParam)) {
-            citySelect.value = cityParam;
-          }
+      if (cities.includes(prevCity)) {
+        citySelect.value = prevCity;
+      } else {
+        const cityParam = new URLSearchParams(window.location.search).get('city');
+        if (cityParam && cities.includes(cityParam)) {
+          citySelect.value = cityParam;
         }
       }
     }
 
-    if (currencySelect && countryToCurrency) {
-      const expectedCurrency = countryToCurrency[selectedCountry];
-      if (expectedCurrency && currencySelect.value !== expectedCurrency) {
-        currencySelect.value = expectedCurrency;
+    if (currencySelect) {
+      const expected = countryToCurrency?.[selectedCountry];
+      if (expected && currencySelect.value !== expected) {
+        currencySelect.value = expected;
       }
     }
   }
 
   const countrySelectElement = document.getElementById('landing-country');
   if (countrySelectElement) {
-    // Initial population if a country is already selected (e.g., from params)
     if (countrySelectElement.value) {
       updateLandingCitiesAndCurrency();
     }
     countrySelectElement.addEventListener('change', updateLandingCitiesAndCurrency);
   }
 
-  // The "Toggle Filters" button logic is no longer needed as it's a wizard now.
-  // The logic for initially showing filters if params are present is also less relevant
-  // as users will navigate through steps. If you want to jump to a specific step
-  // based on params, that would require more complex JS logic.
+  
+  const toggleBtn = document.getElementById("toggle-person-btn");
+  const secondSection = document.getElementById("second-person-section");
+  const outputBox = document.getElementById("group-output");
+  const clientTypeInput = document.getElementById("client_type_input");
+  const CLIENT_TYPE_NAME_TO_ID = <%= raw @client_types.each_with_object({}) { |ct, h| h[ct.name] = ct.id }.to_json %>;
+
+
+
+  function classifyGroup(person1Age, person2Age, relationship) {
+    if (!person1Age) return null;
+    if (!person2Age) {
+      if (person1Age < 13) return "single_child";
+      if (person1Age < 18) return "single_teenager";
+      return "single_adult";
+    }
+
+    if (relationship === "partner") return "romantic_couple";
+    if (["parent", "child"].includes(relationship)) return "parent_child";
+    if (relationship === "sibling") return "sibling_pair";
+    if (relationship === "friend") return "friend_pair";
+    return "other";
+  }
+
+    function updateGroupClassification() {
+      const age1 = parseInt(document.getElementById("person1-age")?.value || 0);
+      const age2Input = document.getElementById("person2-age");
+      const relationshipInput = document.getElementById("relationship");
+
+      const secondSectionVisible = !secondSection?.classList.contains("is-hidden");
+      const age2 = secondSectionVisible ? parseInt(age2Input?.value || 0) : 0;
+      const relationship = secondSectionVisible ? relationshipInput?.value : "";
+
+      const groupName = classifyGroup(age1, age2, relationship);
+      const groupId = CLIENT_TYPE_NAME_TO_ID[groupName] || null;
+
+      // Update visible label
+        if (outputBox) {
+          let readableText = "";
+          switch(groupName) {
+              case "single_adult":
+                  readableText = "✅ Okay, searching for psychologists who see individual adults.";
+                  break;
+              case "single_teenager":
+                  readableText = "✅ Got it. Looking for psychologists specializing in teenagers.";
+                  break;
+              case "single_child":
+                  readableText = "✅ Understood. Searching for specialists in child psychology.";
+                  break;
+              case "romantic_couple":
+                  readableText = "✅ Perfect, searching for psychologists who offer couples counseling.";
+                  break;
+              case "parent_child":
+                  readableText = "✅ Okay, looking for specialists in parent-child relationship dynamics.";
+                  break;
+              default:
+                  readableText = "✅ Searching for psychologists who can help with your specific situation.";
+          }
+
+          outputBox.textContent = readableText;
+          outputBox.classList.remove("is-hidden");
+      }
+
+      // Set hidden ID input
+      const clientTypeInput = document.getElementById("client_type_input");
+      if (clientTypeInput) clientTypeInput.value = groupId;
+    }
+
+
+  // This section controls the toggle button text and style
+if (toggleBtn && secondSection) {
+  toggleBtn.addEventListener("click", function () {
+    const isVisible = !secondSection.classList.contains("is-hidden");
+
+    if (isVisible) {
+      // Hiding the section
+      secondSection.classList.add("is-hidden");
+      toggleBtn.classList.remove("is-danger", "is-light");
+      toggleBtn.innerHTML = '<span class="icon is-small"><i class="fas fa-user-plus"></i></span><span>Bringing someone with you?</span>';
+      
+      // Clear the values when removing the person
+      document.getElementById("person2-age").value = "";
+      document.getElementById("relationship").value = "";
+    } else {
+      // Showing the section
+      secondSection.classList.remove("is-hidden");
+      toggleBtn.classList.add("is-danger", "is-light");
+      toggleBtn.innerHTML = '<span class="icon is-small"><i class="fas fa-user-minus"></i></span><span>Actually, I am coming alone</span>';
+    }
+    
+    updateGroupClassification();
+  });
+}
+
+  // Live update on input change
+  ["person1-age", "person2-age", "relationship"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener("input", updateGroupClassification);
+  });
+
+
+  const form = document.querySelector("form.psychologist-search-form");
+  if (form) {
+    form.addEventListener("submit", function(event) {
+      updateGroupClassification();
+
+      const person1Age = document.getElementById("person1-age");
+      const person2Age = document.getElementById("person2-age");
+      const relationship = document.getElementById("relationship");
+
+      if (person1Age) person1Age.disabled = true;
+      if (person2Age) person2Age.disabled = true;
+      if (relationship) relationship.disabled = true;
+    });
+  }
+
+  // Initial run
+  updateGroupClassification();
+
+
 });
 </script>
+
+
 
 <style>
   .psychologist-search-form {
@@ -437,4 +694,95 @@ document.addEventListener('turbo:load', function() {
   .filter-pill input[type="checkbox"]:checked + label:hover {
     background-color: #276cda;
   }
+
+
+
+
+  .filter-pill input[type="checkbox"]:checked + label {
+    background-color: hsl(217, 71%, 53%); /* Bulma primary color */
+    color: white;
+    border-color: transparent;
+  }
+  .filter-pill label { /* Ensure label is clickable like the checkbox */
+    cursor: pointer;
+    padding: 0.5em 0.75em; /* Match Bulma tag padding */
+    border-radius: 9999px; /* Match is-rounded */
+    border: 1px solid #dbdbdb; /* Default tag border */
+    line-height: 1.5;
+    display: inline-block;
+  }
+   .filter-pill input[type="checkbox"].is-checkradio {
+    display: none; /* Hide the actual checkbox */
+  }
+  /* Center align pill content (checkboxes and labels) */
+  .tags.is-justify-content-center {
+    justify-content: center;
+    flex-wrap: wrap; /* Allow tags to wrap */
+  }
+  .wizard-step .field.is-horizontal {
+    justify-content: center;
+  }
+  .wizard-step .field.is-horizontal .field-label {
+    flex-grow: 0; /* Prevent label from taking too much space */
+    margin-right: 1rem;
+  }
+
+
+
+.ts-control {
+  border: 1px solid #dbdbdb;
+  border-radius: 4px;
+  min-height: 2.5em;
+  width: 100%;
+  max-width: 600px;
+  font-size: 1rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.ts-control input {
+  font-size: 1rem;
+}
+
+.ts-control .item {
+  font-size: 0.9rem;
+  padding: 0.25rem 0.5rem;
+  margin: 0.125rem;
+}
+
+.ts-control.focus {
+  border-color: #3273dc;
+  box-shadow: 0 0 0 0.125em rgba(50, 115, 220, 0.25);
+}
+
+.ts-dropdown {
+  border: 1px solid #dbdbdb;
+  border-radius: 4px;
+  box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1);
+  font-size: 1rem;
+  width: 100%;
+}
+
+.ts-dropdown .option {
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+}
+
+.ts-dropdown .option:hover {
+  background-color: #f5f5f5;
+}
+
+.ts-dropdown .option.selected {
+  background-color: #3273dc;
+  color: white;
+}
+}
+
+
 </style>
+
+
+<script>
+
+
+
+</script>

@@ -2,15 +2,22 @@
 
 <% content_for :title, "Issues" %>
 
-<h1>Issues</h1>
+<section class="section">
+  <div class="container">
+    <h1 class="title">Issues</h1>
+    
+    <div id="issues" class="mb-5">
+      <% @issues.each do |issue| %>
+        <div class="box">
+          <%= render issue %>
+          <div class="buttons are-small">
+            <%= link_to "Show", issue, class: "button is-light" %>
+            <%= link_to "Edit", edit_issue_path(issue), class: "button is-light" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
 
-<div id="issues">
-  <% @issues.each do |issue| %>
-    <%= render issue %>
-    <p>
-      <%= link_to "Show this issue", issue %>
-    </p>
-  <% end %>
-</div>
-
-<%= link_to "New issue", new_issue_path %>
+    <%= link_to "New issue", new_issue_path, class: "button is-link" %>
+  </div>
+</section>
