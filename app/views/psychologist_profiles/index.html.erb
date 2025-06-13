@@ -1,335 +1,387 @@
-<!-- Improved Search and Filter Bar -->
-<div class="search-card box mb-4">
+<div class="box">
   <%= form_tag psychologist_profiles_path, method: :get, class: "search-form" do %>
-    <!-- Search Header -->
-    <div class="search-header mb-3">
-      <div class="field has-addons">
-        <div class="control is-expanded">
-          <%= text_field_tag :search, params[:search], 
-                class: "input", 
-                placeholder: "Name, specialty, or keyword..." %>
-        </div>
-        <div class="control">
-          <button class="button is-primary" type="submit">
-            <span class="icon"><i class="fas fa-search"></i></span>
-          </button>
-        </div>
-        <% if any_filters_active?(params) %>
-          <div class="control">
-            <%= link_to psychologist_profiles_path, class: "button is-light", id: "clear-all-filters" do %>
-              <span class="icon"><i class="fas fa-times"></i></span>
-              <span>Clear All</span>
-            <% end %>
-          </div>
-        <% end %>
+    
+    <!-- Main Search Bar -->
+    <div class="field has-addons mb-4">
+      <div class="control is-expanded has-icons-left">
+        <%= text_field_tag :search, params[:search], 
+              class: "input is-medium", 
+              placeholder: "Search by name, specialty, or keyword..." %>
+        <span class="icon is-left">
+          <i class="fas fa-search"></i>
+        </span>
       </div>
+      <div class="control">
+        <button class="button is-primary is-medium" type="submit">
+          <span class="icon is-hidden-mobile">
+            <i class="fas fa-search"></i>
+          </span>
+          <span class="is-hidden-tablet">Search</span>
+          <span class="is-hidden-mobile">Search</span>
+        </button>
+      </div>
+      <% if any_filters_active?(params) %>
+        <div class="control">
+          <%= link_to psychologist_profiles_path, class: "button is-light is-medium" do %>
+            <span class="icon">
+              <i class="fas fa-times"></i>
+            </span>
+            <span class="is-hidden-mobile">Clear All</span>
+          <% end %>
+        </div>
+      <% end %>
     </div>
 
     <!-- Active Filters Display -->
     <% if any_filters_active?(params) %>
-      <div class="field is-grouped is-grouped-multiline mb-3">
-        <% if params[:search].present? %>
-          <div class="control">
-            <div class="tags has-addons">
-              <span class="tag is-primary">Search: <%= params[:search] %></span>
-              <%= link_to psychologist_profiles_path(request.query_parameters.except(:search)), class: "tag is-delete" do %>
-                <i class="fas fa-times"></i>
-              <% end %>
-            </div>
-          </div>
-        <% end %>
-
-        <% (params[:specialty_ids] || []).each do |id| %>
-          <% specialty = Specialty.find_by(id: id) %>
-          <% if specialty %>
+      <div class="notification is-light">
+        <div class="field is-grouped is-grouped-multiline">
+          <% if params[:search].present? %>
             <div class="control">
               <div class="tags has-addons">
-                <span class="tag is-info"><%= specialty.name %></span>
-                <%= link_to psychologist_profiles_path(request.query_parameters.except(:specialty_ids).merge(specialty_ids: request.query_parameters[:specialty_ids] - [id.to_s])), class: "tag is-delete" do %>
+                <span class="tag is-primary">Search: <%= truncate(params[:search], length: 20) %></span>
+                <%= link_to psychologist_profiles_path(request.query_parameters.except(:search)), class: "tag is-delete" do %>
                   <i class="fas fa-times"></i>
                 <% end %>
               </div>
             </div>
           <% end %>
-        <% end %>
 
-        <% (params[:issue_ids] || []).each do |id| %>
-          <% issue = Issue.find_by(id: id) %>
-          <% if issue %>
-            <div class="control">
-              <div class="tags has-addons">
-                <span class="tag is-warning"><%= issue.name %></span>
-                <%= link_to psychologist_profiles_path(request.query_parameters.except(:issue_ids).merge(issue_ids: request.query_parameters[:issue_ids] - [id.to_s])), class: "tag is-delete" do %>
-                  <i class="fas fa-times"></i>
-                <% end %>
+          <% (params[:specialty_ids] || []).each do |id| %>
+            <% specialty = Specialty.find_by(id: id) %>
+            <% if specialty %>
+              <div class="control">
+                <div class="tags has-addons">
+                  <span class="tag is-info"><%= specialty.name %></span>
+                  <%= link_to psychologist_profiles_path(request.query_parameters.except(:specialty_ids).merge(specialty_ids: request.query_parameters[:specialty_ids] - [id.to_s])), class: "tag is-delete" do %>
+                    <i class="fas fa-times"></i>
+                  <% end %>
+                </div>
               </div>
-            </div>
+            <% end %>
           <% end %>
-        <% end %>
 
-        <% (params[:client_type_ids] || []).each do |id| %>
-          <% client_type = ClientType.find_by(id: id) %>
-          <% if client_type %>
-            <div class="control">
-              <div class="tags has-addons">
-                <span class="tag is-success"><%= client_type.name %></span>
-                <%= link_to psychologist_profiles_path(request.query_parameters.except(:client_type_ids).merge(client_type_ids: request.query_parameters[:client_type_ids] - [id.to_s])), class: "tag is-delete" do %>
-                  <i class="fas fa-times"></i>
-                <% end %>
+          <% (params[:issue_ids] || []).each do |id| %>
+            <% issue = Issue.find_by(id: id) %>
+            <% if issue %>
+              <div class="control">
+                <div class="tags has-addons">
+                  <span class="tag is-warning"><%= issue.name %></span>
+                  <%= link_to psychologist_profiles_path(request.query_parameters.except(:issue_ids).merge(issue_ids: request.query_parameters[:issue_ids] - [id.to_s])), class: "tag is-delete" do %>
+                    <i class="fas fa-times"></i>
+                  <% end %>
+                </div>
               </div>
-            </div>
+            <% end %>
           <% end %>
-        <% end %>
 
-  <% (params[:language_ids] || []).each do |id| %>
-    <% language = Language.find_by(id: id) %>
-    <% if language %>
-      <div class="control">
-        <div class="tags has-addons">
-          <span class="tag is-success"><%= language.name %></span>
-          <%= link_to psychologist_profiles_path(
-                request.query_parameters.except(:language_ids)
-                  .merge(language_ids: request.query_parameters[:language_ids] - [id.to_s])
-              ), 
-              class: "tag is-delete" do %>
-            <i class="fas fa-times"></i>
+          <% (params[:client_type_ids] || []).each do |id| %>
+            <% client_type = ClientType.find_by(id: id) %>
+            <% if client_type %>
+              <div class="control">
+                <div class="tags has-addons">
+                  <span class="tag is-success"><%= client_type.name %></span>
+                  <%= link_to psychologist_profiles_path(request.query_parameters.except(:client_type_ids).merge(client_type_ids: request.query_parameters[:client_type_ids] - [id.to_s])), class: "tag is-delete" do %>
+                    <i class="fas fa-times"></i>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+
+          <% (params[:language_ids] || []).each do |id| %>
+            <% language = Language.find_by(id: id) %>
+            <% if language %>
+              <div class="control">
+                <div class="tags has-addons">
+                  <span class="tag is-link"><%= language.name %></span>
+                  <%= link_to psychologist_profiles_path(
+                        request.query_parameters.except(:language_ids)
+                          .merge(language_ids: request.query_parameters[:language_ids] - [id.to_s])
+                      ), 
+                      class: "tag is-delete" do %>
+                    <i class="fas fa-times"></i>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
           <% end %>
         </div>
       </div>
     <% end %>
-  <% end %>
 
+    <!-- Collapsible Filters Section - Hidden only on mobile -->
+    <div class="block" x-data="{ showFilters: window.innerWidth > 768 }">
+      <!-- Toggle button - hidden on tablet/desktop -->
+      <button type="button" 
+              class="button is-light is-fullwidth is-justify-content-space-between is-hidden-tablet" 
+              @click="showFilters = !showFilters"
+              x-show="!showFilters">
+        <span>
+          <span class="icon">
+            <i class="fas fa-filter"></i>
+          </span>
+          <span>Filters</span>
+        </span>
+        <span class="icon">
+          <i class="fas fa-chevron-down"></i>
+        </span>
+      </button>
 
-
-      </div>
-    <% end %>
-
-    <!-- Filter Sections -->
-    <div class="filter-sections">
-      <!-- Main Filters Row -->
-      <div class="columns is-multiline is-variable is-2" style="margin-bottom: 6rem;">
-        <!-- Specialty Filter -->
-        <div class="column is-4-tablet is-12-mobile">
-          <div class="field">
-            <label class="label is-small">Specialties</label>
-            <div class="control">
-              <div class="select is-small is-fullwidth">
-                <%= select_tag :specialty_ids, 
+      <!-- Filters content - always visible on desktop, toggleable on mobile -->
+      <div x-show="showFilters" x-transition class="box mt-3">
+        
+        <!-- Primary Filters -->
+        <div class="columns is-multiline">
+          <!-- Specialties -->
+          <div class="column is-6-tablet is-12-mobile">
+            <div class="field">
+              <label class="label">Specialties</label>
+              <div class="control">
+                <%= select_tag :specialty_ids,
                       options_for_select(
                         Specialty.all.map { |s| [s.name, s.id] },
                         params[:specialty_ids]
                       ),
                       multiple: true,
-                      class: "multiselect filter-select",
-                      onchange: "this.form.submit()" %>
+                      class: "filter-select tom-select",
+                      id: "specialties-select" %>
               </div>
             </div>
           </div>
-        </div>
 
-        <!-- Issue Filter -->
-        <div class="column is-4-tablet is-12-mobile">
-          <div class="field">
-            <label class="label is-small">Issues</label>
-            <div class="control">
-              <div class="select is-small is-fullwidth">
-                <%= select_tag :issue_ids, 
+          <!-- Issues -->
+          <div class="column is-6-tablet is-12-mobile">
+            <div class="field">
+              <label class="label">Issues</label>
+              <div class="control">
+                <%= select_tag :issue_ids,
                       options_for_select(
                         Issue.all.map { |i| [i.name, i.id] },
                         params[:issue_ids]
                       ),
                       multiple: true,
-                      class: "multiselect filter-select",
-                      onchange: "this.form.submit()" %>
+                      class: "filter-select tom-select",
+                      id: "issues-select" %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Client Types -->
+          <div class="column is-6-tablet is-12-mobile">
+            <div class="field">
+              <label class="label">Client Types</label>
+              <div class="control">
+                <div class="select is-fullwidth">
+                  <%= select_tag :client_type_id, 
+                                 options_for_select(
+                                   [['All Client Types', '']] +
+                                   ClientType.all.map { |i| [i.name, i.id] },
+                                   params[:client_type_id]
+                                 ),
+                                 class: "select filter-select",
+                                 onchange: "this.form.submit()" %>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Languages -->
+          <div class="column is-6-tablet is-12-mobile">
+            <div class="field">
+              <label class="label">Languages</label>
+              <div class="control">
+                <%= select_tag "language_ids",
+                      options_from_collection_for_select(Language.all, :id, :name, selected: params[:language_ids]),
+                      multiple: true,
+                      class: "tom-select filter-select",
+                      id: "languages-select",
+                      data: { placeholder: "Select languages" } %>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Client Type Filter -->
-        <div class="column is-4-tablet is-12-mobile">
-          <div class="field">
-            <label class="label is-small">Client Types</label>
+        <!-- Delivery Method -->
+        <div class="field">
+          <label class="label">Delivery Method</label>
+          <div class="field is-grouped is-grouped-multiline">
             <div class="control">
-              <div class="select is-small is-fullwidth">
-<%= select_tag :client_type_id, 
-               options_for_select(
-                 ClientType.all.map { |i| [i.name, i.id] },
-                 params[:client_type_id]
-               ),
-               class: "select filter-select",
-               onchange: "this.form.submit()" %>
+              <label class="checkbox">
+                <%= check_box_tag "in_person", "1", params[:in_person] == "1", onchange: "this.form.submit()" %>
+                <span class="ml-2">In Person</span>
+              </label>
+            </div>
+            <div class="control">
+              <label class="checkbox">
+                <%= check_box_tag "online", "1", params[:online] == "1", onchange: "this.form.submit()" %>
+                <span class="ml-2">Online</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Location Filters -->
+        <div class="columns is-multiline">
+          <div class="column is-6-tablet is-12-mobile">
+            <div class="field">
+              <label class="label">Country</label>
+              <div class="control">
+                <div class="select is-fullwidth">
+                    <%= select_tag :country,
+                                  options_for_select(
+                                    [['All Countries', '']] +
+                                    countries_with_cities.map { |c| [c['name'], c['name']] },
+                                    params[:country]
+                                  ),
+                                  class: "select filter-select",
+                                  id: "search-country",
+                                  onchange: "updateCityFilter(); this.form.submit()" %>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="column is-6-tablet is-12-mobile">
+            <div class="field">
+              <label class="label">City</label>
+              <div class="control">
+                <div class="select is-fullwidth">
+  <%= select_tag :city,
+  options_for_select(
+    [['All Cities', '']],  # Static default option
+    params[:city]          # Preserves selected city after submission
+  ),
+  class: "select filter-select",
+  id: "search-city",
+  onchange: "this.form.submit()",  # Auto-submit on change
+  disabled: params[:country].blank? %>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      
-      <!-- Delivery Method Row -->
-      <div style="margin-top: 6rem;">
-      <label class="label is-small mb-2">Delivery Method</label>
- 
-
-                       <div class="tags are-medium">
-                            <label class="checkbox mr-3">
-                              <%= check_box_tag "in_person", "1", params[:in_person] == "1", class: "tag is-clickable",  onchange: "this.form.submit()" %>
-                              In Person
-                            </label>
-                            <label class="checkbox mr-3">
-                              <%= check_box_tag "online", "1", params[:online] == "1", class: "tag is-clickable" , onchange: "this.form.submit()" %>
-                              Online
-                            </label>
-                          </div>
-      </div>
-
-
-      
-
-<!-- In your search form -->
-<div class="columns is-multiline is-variable is-2 mb-4">
-  <!-- Country Filter -->
-  <div class="column is-4-tablet is-12-mobile">
-    <div class="field">
-      <label class="label is-small">Country</label>
-      <div class="control">
-        <div class="select is-small is-fullwidth">
-          <%= select_tag :country, 
-                options_for_select(
-                  [['All Countries', '']] + 
-                  countries_with_cities.map { |c| c['name'] },
-                  params[:country]
-                ),
-                class: "select is-small filter-select",
-                id: "search-country",
-                onchange: "updateCityFilter(); this.form.submit()" %>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- City Filter -->
-  <div class="column is-4-tablet is-12-mobile">
-    <div class="field">
-      <label class="label is-small">City</label>
-      <div class="control">
-        <div class="select is-small is-fullwidth">
-          <%= select_tag :city, 
-                options_for_select(
-                  [['All Cities', '']],
-                  params[:city]
-                ),
-                class: "select is-small filter-select",
-                id: "search-city",
-                disabled: params[:country].blank? %>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
 
         <!-- Gender Filter -->
-   <div class="columns is-multiline">
-  <!-- Gender Filter -->
-  <div class="column is-6-tablet is-12-mobile">
-    <div class="field">
-      <label class="label is-small">Gender</label>
-      <div class="control">
-        <div class="select is-small is-fullwidth">
-          <%= select_tag :gender, 
-            options_for_select(
-              [['Any Gender', '']] + 
-              @genders.map { |g| [g.humanize.titleize, g] },
-              params[:gender]
-            ),
-            class: "select is-small",
-            onchange: "this.form.submit()" %>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Languages Filter -->
-<div class="column is-6-tablet is-12-mobile">
-  <div class="field">
-    <label class="label is-small">Languages</label>
-    <div class="control">
-      <div class="select is-small is-fullwidth">
-        <%= select_tag "language_ids", 
-              options_from_collection_for_select(Language.all, :id, :name, selected: params[:language_ids]),
-              multiple: true,
-              class: "select is-multiple",
-              onchange: "this.form.submit()" %>
-      </div>
-    </div>
-  </div>
-</div>
-      
-      <!-- Price Range Row -->
-      <div class="columns is-multiline is-variable is-2">
-        <div class="column is-3-tablet is-12-mobile">
-          <div class="field">
-            <label class="label is-small">Min Rate</label>
-            <div class="control">
-              <%= number_field_tag :min_rate, params[:min_rate], step: 1, class: "input is-small", min: 0 %>
+        <div class="columns is-multiline">
+          <div class="column is-12-mobile is-6-tablet">
+            <div class="field">
+              <label class="label">Gender</label>
+              <div class="control">
+                <div class="select is-fullwidth">
+                  <%= select_tag :gender, 
+                    options_for_select(
+                      [['Any Gender', '']] + 
+                      @genders.map { |g| [g.humanize.titleize, g] },
+                      params[:gender]
+                    ),
+                    class: "select",
+                    onchange: "this.form.submit()" %>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="column is-3-tablet is-12-mobile">
-          <div class="field">
-            <label class="label is-small">Max Rate</label>
-            <div class="control">
-              <%= number_field_tag :max_rate, params[:max_rate], step: 1, class: "input is-small", min: 0 %>
+        <!-- Price Range -->
+        <div class="field">
+          <label class="label">Price Range</label>
+          <div class="columns is-mobile">
+            <div class="column">
+              <div class="field">
+                <label class="label is-small">Min Rate</label>
+                <div class="control">
+                  <%= number_field_tag :min_rate, params[:min_rate], 
+                        step: 1, 
+                        class: "input", 
+                        min: 0,
+                        placeholder: "Min" %>
+                </div>
+              </div>
+            </div>
+            <div class="column">
+              <div class="field">
+                <label class="label is-small">Max Rate</label>
+                <div class="control">
+                  <%= number_field_tag :max_rate, params[:max_rate], 
+                        step: 1, 
+                        class: "input", 
+                        min: 0,
+                        placeholder: "Max" %>
+                </div>
+              </div>
+            </div>
+            <div class="column">
+              <div class="field">
+                <label class="label is-small">Currency</label>
+                <div class="control">
+                  <%= render 'layouts/currency_selector' %>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div class="column is-3-tablet is-12-mobile">
-          <div class="field">
-            <label class="label is-small">Currency</label>
-            <div class="control">
-              <div class="select is-small is-fullwidth">
+        <!-- Apply Filters Button -->
+        <div class="field">
+          <div class="control">
+            <button type="submit" class="button is-primary is-fullwidth">
+              <span class="icon">
+                <i class="fas fa-check"></i>
+              </span>
+              <span>Apply Filters</span>
+            </button>
+          </div>
+        </div>
 
-                 <%= render 'layouts/currency_selector' %>
-            </div>
-          </div>
-        </div>
-        
-        <div class="column is-3-tablet is-12-mobile is-flex is-align-items-flex-end">
-          <div class="field">
-            <div class="control">
-              <button type="submit" class="button is-small is-info is-fullwidth">
-                Apply Filters
-              </button>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   <% end %>
 </div>
 
+<style>
+  /* Show filters by default on desktop */
+  @media screen and (min-width: 769px) {
+    [x-cloak] { 
+      display: block !important; 
+    }
+    
+    .filter-section {
+      display: block !important;
+    }
+  }
 
+  /* Mobile specific styles */
+  @media screen and (max-width: 768px) {
+    .box {
+      margin: 0.5rem;
+      padding: 1rem;
+    }
+    
+    .field.has-addons .control:not(:last-child) .button,
+    .field.has-addons .control:not(:last-child) .input {
+      border-radius: 4px 0 0 4px;
+    }
+    
+    .field.has-addons .control:last-child .button,
+    .field.has-addons .control:last-child .input {
+      border-radius: 0 4px 4px 0;
+    }
+    
+    .tags .tag {
+      margin-bottom: 0.25rem;
+    }
+    
+    .button.is-fullwidth {
+      justify-content: space-between;
+    }
+  }
 
-
-
-
-
-
-
-
+  /* Ensure proper spacing */
+  .field:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+</style>
 
 
 
@@ -526,93 +578,120 @@
 
 
 
-
-
-
-
-
-
-
-
-<!-- JavaScript for Contact Info Toggle and Clear All -->
 <script>
-document.addEventListener('turbo:load', function() {
-  document.querySelectorAll('.contact-button').forEach(function(button) {
-    button.addEventListener('click', function(e) {
-      e.preventDefault();
-      const targetId = this.getAttribute('data-target');
-      const contactInfo = document.getElementById(targetId);
-      if (contactInfo) {
-        contactInfo.style.display = contactInfo.style.display === 'none' ? 'block' : 'none';
-      }
-    });
-  });
-});
+  // Country-city JSON data - must come first
+  const countryCityData = <%= raw countries_with_cities.each_with_object({}) { |country, hash| hash[country['name']] = country['cities'] }.to_json %>;
+</script>
 
+<script>
+  // Make updateCityFilter globally available
+  function updateCityFilter() {
+    const countrySelect = document.getElementById('search-country');
+    const citySelect = document.getElementById('search-city');
+    const selectedCountry = countrySelect?.value;
+    const cities = countryCityData[selectedCountry] || [];
 
+    if (!citySelect) return;
+    citySelect.innerHTML = '<option value="">All Cities</option>';
+    citySelect.disabled = cities.length === 0;
 
-document.getElementById('clear-all-filters')?.addEventListener('click', function(e) {
-  e.preventDefault();
-  
-  // Get the form
-  const form = document.querySelector('.search-form');
-  
-  // Create a new URL object with just the base path
-  const url = new URL(form.action);
-  
-  // Reset the form (optional - only needed if you want UI to reflect cleared state)
-  form.reset();
-  
-  // Redirect to the clean URL (without any query parameters)
-  window.location.href = url.pathname;
-});
-
-
-
-const countryCityData = <%= raw countries_with_cities.each_with_object({}) { |country, hash| 
-  hash[country['name']] = country['cities'] }.to_json %>;
-
-document.addEventListener('turbo:load', function() {
-  // Initialize city filter if country is already selected
-  const countrySelect = document.getElementById('search-country');
-  const citySelect = document.getElementById('search-city');
-  
-  if (countrySelect && countrySelect.value) {
-    updateCityFilter();
-  }
-  
-  // Add event listener for country change
-  countrySelect?.addEventListener('change', updateCityFilter);
-});
-
-function updateCityFilter() {
-  const countrySelect = document.getElementById('search-country');
-  const citySelect = document.getElementById('search-city');
-  
-  if (!countrySelect || !citySelect) return;
-  
-  const selectedCountry = countrySelect.value;
-  
-  // Clear existing options except the first "All Cities" option
-  citySelect.innerHTML = '<option value="">All Cities</option>';
-  citySelect.disabled = !selectedCountry;
-
-  if (selectedCountry && countryCityData[selectedCountry]) {
-    // Add cities for the selected country
-    countryCityData[selectedCountry].forEach(city => {
+    cities.forEach(city => {
       const option = new Option(city, city);
       citySelect.add(option);
     });
-    
-    // Set the selected value from params if it exists in available cities
+
     const urlParams = new URLSearchParams(window.location.search);
     const selectedCity = urlParams.get('city');
-    if (selectedCity && countryCityData[selectedCountry].includes(selectedCity)) {
+    if (selectedCity && cities.includes(selectedCity)) {
       citySelect.value = selectedCity;
     }
   }
-}
+</script>
 
+<script>
+  document.addEventListener('turbo:load', function () {
+    // Toggle contact info
+    document.querySelectorAll('.contact-button').forEach(function (button) {
+      button.addEventListener('click', function (e) {
+        e.preventDefault();
+        const targetId = this.getAttribute('data-target');
+        const contactInfo = document.getElementById(targetId);
+        if (contactInfo) {
+          contactInfo.style.display = contactInfo.style.display === 'none' ? 'block' : 'none';
+        }
+      });
+    });
 
+    // Clear filters
+    document.getElementById('clear-all-filters')?.addEventListener('click', function (e) {
+      e.preventDefault();
+      const form = document.querySelector('.search-form');
+      const url = new URL(form.action);
+      form.reset();
+      window.location.href = url.pathname;
+    });
 
+    // Initialize TomSelect for all select elements EXCEPT country/city selects
+    document.querySelectorAll(".tom-select").forEach((el) => {
+      // Skip initialization for country and city selects
+      if (el.id === 'search-country' || el.id === 'search-city') return;
+      
+      // Only initialize if not already initialized
+      if (!el.classList.contains('tomselected')) {
+        new TomSelect(el, {
+          plugins: ['remove_button'],
+          persist: false,
+          create: false,
+          placeholder: el.getAttribute('data-placeholder') || 'Выберите...',
+          onChange: function () {
+            el.form.submit();
+          }
+        });
+      }
+    });
+
+    // TomSelect for issues (with duplicate initialization check)
+    const issuesSelect = document.getElementById("issues-select");
+    if (issuesSelect && !issuesSelect.classList.contains('tomselected')) {
+      new TomSelect(issuesSelect, {
+        plugins: ['remove_button'],
+        persist: false,
+        create: false,
+        placeholder: 'Выберите проблемы',
+        onChange: function () {
+          issuesSelect.form.submit();
+        }
+      });
+    }
+
+    // TomSelect for specialties (with duplicate initialization check)
+    const specialtiesSelect = document.getElementById("specialties-select");
+    if (specialtiesSelect && !specialtiesSelect.classList.contains('tomselected')) {
+      new TomSelect(specialtiesSelect, {
+        plugins: ['remove_button'],
+        persist: false,
+        create: false,
+        placeholder: 'Выберите специальности',
+        onChange: function () {
+          specialtiesSelect.form.submit();
+        }
+      });
+    }
+
+    // Country-city select logic
+    const countrySelect = document.getElementById('search-country');
+    if (countrySelect && countrySelect.value) {
+      updateCityFilter();
+    }
+
+    countrySelect?.addEventListener('change', updateCityFilter);
+
+    // Responsive filter toggle (Alpine support)
+    window.addEventListener('resize', function () {
+      const filterSection = document.querySelector('[x-data]');
+      if (filterSection && filterSection.__x) {
+        filterSection.__x.$data.showFilters = window.innerWidth > 768;
+      }
+    });
+  });
 </script>

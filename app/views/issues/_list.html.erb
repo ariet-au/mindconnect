@@ -23,23 +23,23 @@
           <div class="field is-grouped is-grouped-multiline">
             <% issues_in_category.each do |issue| %>
               <div class="control">
-                <label class="button is-light is-small issue-checkbox" 
-                       :class="{ 'is-primary': selectedIssues.includes('<%= issue.id %>') }"
-                       @click="
-                         if (selectedIssues.includes('<%= issue.id %>')) {
-                           selectedIssues = selectedIssues.filter(id => id !== '<%= issue.id %>');
-                           $refs.checkbox_<%= issue.id %>.checked = false;
-                         } else {
-                           selectedIssues.push('<%= issue.id %>');
-                           $refs.checkbox_<%= issue.id %>.checked = true;
-                         }
-                       ">
-                  <%= check_box_tag 'issue_ids[]', issue.id, false, 
-                        x_ref: "checkbox_#{issue.id}",
-                        class: "is-hidden",
-                        style: "display: none;" %>
+                <div class="button is-light is-small issue-checkbox" 
+                     :class="{ 'is-primary is-selected': selectedIssues.includes('<%= issue.id %>') }"
+                     @click="
+                       const issueId = '<%= issue.id %>';
+                       if (selectedIssues.includes(issueId)) {
+                         selectedIssues = selectedIssues.filter(id => id !== issueId);
+                       } else {
+                         selectedIssues.push(issueId);
+                       }
+                     ">
+                  <input type="checkbox" 
+                         name="issue_ids[]" 
+                         value="<%= issue.id %>" 
+                         class="is-hidden"
+                         :checked="selectedIssues.includes('<%= issue.id %>')">
                   <%= issue.name %>
-                </label>
+                </div>
               </div>
             <% end %>
           </div>
@@ -57,6 +57,21 @@
 .issue-checkbox {
   margin: 0.25rem !important;
   transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.issue-checkbox.is-selected {
+  background-color: #3273dc !important;
+  color: white !important;
+  border-color: #3273dc !important;
+}
+
+.issue-checkbox:hover {
+  background-color: #f5f5f5;
+}
+
+.issue-checkbox.is-selected:hover {
+  background-color: #2366d1 !important;
 }
 
 @media screen and (max-width: 768px) {
