@@ -1,213 +1,185 @@
 <div class="container">
   <div class="columns is-centered mt-6 mb-6">
     <div class="column is-10">
-      <div class="card">
-        
- <!-- Profile Header -->
-<div class="card-content">
-  <div class="columns is-vcentered">
-    <div class="column is-one-quarter">
-      <% if psychologist_profile.profile_img.attached? %>
-        <figure class="image" style="max-width: 180px;">
-          <%= image_tag url_for(psychologist_profile.profile_img), class: "is-rounded is-fullwidth", alt: "Profile image" %>
-        </figure>
-      <% else %>
-        <figure class="image" style="max-width: 180px;">
-          <img src="/api/placeholder/128/128" class="is-rounded is-fullwidth" alt="Profile placeholder">
-        </figure>
-      <% end %>
-    </div>
-    <div class="column">
-      <h2 class="title is-4 has-text-grey-dark">
-      <span class="has-text-link">
-        <%= "#{@psychologist_profile.first_name} #{@psychologist_profile.last_name}" %></span> 
-      </h2> <% if @psychologist_profile.languages.any? %>
-  <p><strong>Languages Spoken:</strong>
-    <%= @psychologist_profile.languages.map(&:name).to_sentence %>
-  </p>
-<% else %>
-  <p><strong>Languages Spoken:</strong> Not specified</p>
-<% end %>
-      <div class="tags">
-        
-        <% if psychologist_profile.is_doctor %>
-          <span class="tag is-light has-text-grey-dark">Doctor</span>
-        <% end %>
-        <% if psychologist_profile.is_degree_boolean%>
-          <span class="tag is-light has-text-grey-dark">Certified</span>
-        <% end %>
-        <span class="tag is-white has-text-grey"><%= psychologist_profile.gender %></span>
-        <span class="tag is-white has-text-grey"><%= psychologist_profile.years_of_experience %> yrs experience</span>
-      </div>
+      <div class="card has-background-white" style="box-shadow: none; ">
 
-      <p class="mt-2 has-text-grey">
-        <span class="icon has-text-grey"><i class="fas fa-map-marker-alt"></i></span>
-        <%= psychologist_profile.city %>, <%= psychologist_profile.country %>
-        <% if psychologist_profile.address.present? %>
-          • <%= psychologist_profile.address %>
-        <% end %>
-      </p>
-
-      <p class="has-text-grey">
-        <span class="icon has-text-grey"><i class="fas fa-id-card"></i></span>
-        License: <%= psychologist_profile.license_number %>
-      </p>
-    </div>
-  </div>
-</div>
-
-        <!-- About -->
-        <div class="card-content">
-          <h3 class="title is-5 has-text-link">About</h3>
-          <div class="content">
-            <p><%= psychologist_profile.about_me %></p>
+        <div class="dropdown is-right is-hoverable is-pulled-right">
+          <div class="dropdown-trigger">
+            <button class="button is-white" aria-haspopup="true">
+              <span class="icon has-text-grey-light"><i class="fas fa-ellipsis-v"></i></span>
+            </button>
+          </div>
+          <div class="dropdown-menu">
+            <div class="dropdown-content">
+              <a href="#about" class="dropdown-item has-text-grey-dark">About</a>
+              <a href="#services" class="dropdown-item has-text-grey-dark">Services</a>
+              <a href="#focus" class="dropdown-item has-text-grey-dark">Focus Areas</a>
+              <a href="#contact" class="dropdown-item has-text-grey-dark">Contact</a>
+            </div>
           </div>
         </div>
 
-        <hr class="has-background-light m-0">
+        <div class="card-content pt-5 pb-4">
+          <div class="columns is-vcentered is-mobile">
+            <div class="column is-narrow has-text-centered">
+              <% if psychologist_profile.profile_img.attached? %>
+                <figure class="image is-128x128 is-inline-block">
+                  <%= image_tag url_for(psychologist_profile.profile_img), class: "is-rounded" %>
+                </figure>
+              <% else %>
+                <figure class="image is-128x128 is-inline-block">
+                  <img src="https://bulma.io/images/placeholders/128x128.png" class="is-rounded" alt="Profile placeholder">
+                </figure>
+              <% end %>
+            </div>
+            <div class="column">
+              <h2 class="title is-4 has-text-dark mb-1">
+                <%= "#{@psychologist_profile.first_name} #{@psychologist_profile.last_name}" %>
+              </h2>
+              <% if @psychologist_profile.education.present? %>
+                <span class="tag is-info is-light ml-0 is-small has-tooltip-arrow" data-tooltip="<%= @psychologist_profile.education %>">
+                  🎓 <%= @psychologist_profile.education %>
+                </span>
+              <% end %>
 
-        <!-- Education -->
-        <div class="card-content">
-          <h3 class="title is-5 has-text-link">Education & Qualifications</h3>
-          <div class="content">
-            <p><%= psychologist_profile.education %></p>
+              <div class="icons mt-1">
+                <% if psychologist_profile.is_doctor %>
+                  <span class="icon has-text-info mr-1" title="Doctor"><i class="fas fa-user-md"></i></span>
+                <% end %>
+                <% if psychologist_profile.is_degree_boolean %>
+                  <span class="icon has-text-success mr-1" title="Certified"><i class="fas fa-certificate"></i></span>
+                <% end %>
+                <% case psychologist_profile.gender %>
+                <% when "male" %>
+                  <span class="icon has-text-info mr-1" title="Male"><i class="fas fa-mars"></i></span>
+                <% when "female" %>
+                  <span class="icon has-text-danger mr-1" title="Female"><i class="fas fa-venus"></i></span>
+                <% when "unspecified" %>
+                  <span class="icon has-text-grey-light mr-1" title="Unspecified"><i class="fas fa-genderless"></i></span>
+                <% end %>
+                <span class="has-text-grey-light">|</span>
+                <span class="has-text-grey ml-1"><%= psychologist_profile.years_of_experience %> yrs</span>
+              </div>
+
+              <p class="is-size-7 mt-2 has-text-grey">
+                <i class="fas fa-map-marker-alt mr-1"></i>
+                <%= psychologist_profile.city %>, <%= psychologist_profile.country %>
+                <% if psychologist_profile.address.present? %>
+                  <span class="ml-1">• <%= psychologist_profile.address %></span>
+                <% end %>
+              </p>
+            </div>
           </div>
         </div>
 
-        <hr class="has-background-light m-0">
 
-        
-        <div class="card-content">
-                  
-          <h3 class="title is-5 has-text-link">Services Offered</h3>
+        <div class="card-content pt-4 pb-5" id="about">
+          <h3 class="title is-5 has-text-grey-dark mb-3">About</h3>
+          <div class="content">
+            <p class="has-text-grey-dark"><%= simple_format(psychologist_profile.about_me) %></p>
+          </div>
+        </div>
+
+
+        <div class="card-content pt-4 pb-5" id="services">
+          <h3 class="title is-5 has-text-grey-dark mb-3">Services Offered</h3>
           <% if psychologist_profile.user.services.any? %>
             <div class="columns is-multiline">
               <% psychologist_profile.user.services.each do |service| %>
-                <div class="column is-half">
-                  <div class="box">
-                    <h4 class="title is-6 has-text-primary"><%= service.name %></h4>
-                    <div class="level is-mobile">
-                      <div class="level-left">
-                        <div class="level-item">
-                          <span class="tag is-link is-medium">
-                         <% if service.price == 0 %>
-                          Free
-                        <% else %>
-                          <%= service.price %> <%= service.currency %>
-                          <% if service.currency.present? && current_currency.present? %>
-                            <% converted = service.converted_rate(current_currency) %>
-                            <%= humanized_money_with_symbol(converted) if converted %>
+                <div class="column is-half pb-4">
+                  <h4 class="title is-6 has-text-info mb-1"><%= service.name %></h4>
+                  <div class="level is-mobile is-align-items-center">
+                    <div class="level-left">
+                      <span class="icon-text has-text-grey">
+                        <span class="icon is-small"><i class="fas fa-coins"></i></span>
+                        <span class="is-size-7 ml-1">
+                          <% if service.price == 0 %>
+                            Free
+                          <% else %>
+                            <% if service.currency.present? && current_currency.present? %>
+                              <% converted = service.converted_rate(current_currency) %>
+                              <%= humanized_money_with_symbol(converted) if converted %>
+                            <% end %>
                           <% end %>
-                        <% end %>
-                          </span>
-                        </div>
-                      </div>
-                      <div class="level-right">
-                        <div class="level-item">
-                          <span class="tag is-light"><%= service.duration_minutes %> min</span>
-                        </div>
-                        <div class="level-item">
-                          <span class="tag is-dark"><%= service.delivery_method %></span>
-                        </div>
-                      </div>
+                        </span>
+                      </span>
                     </div>
-                    <p><%= service.description %></p>
-                    <%= link_to "More Info", service, class: "button is-small is-link mt-2" %>
+                    <div class="level-right">
+                      <span class="icon-text has-text-grey mr-2 is-size-7" title="Duration"><span class="icon is-small"><i class="fas fa-clock"></i></span><span><%= service.duration_minutes %> min</span></span>
+                      <span class="icon is-small has-text-grey" title="Method">
+                        <% if service.delivery_method.downcase.include?("online") %>
+                          <i class="fas fa-laptop"></i>
+                        <% else %>
+                          <i class="fas fa-user"></i>
+                        <% end %>
+                      </span>
+                    </div>
                   </div>
+                  <p class="is-size-7 mt-2 has-text-grey-dark"><%= service.description %></p>
+                  <%= link_to "More Info", service, class: "button is-small is-link is-light mt-3" %>
                 </div>
               <% end %>
             </div>
           <% else %>
-            <p>No services available at this time.</p>
-            <%= link_to "Add your first service", new_service_path %>
+            <p class="has-text-grey-dark">No services available at this time.</p>
           <% end %>
-
-              <% if psychologist_profile.user.id = current_user %>
-                            <%= link_to "Add  a new service", new_service_path %>
-                      <% end %>
         </div>
 
-        <hr class="has-background-light m-0">
 
-        <!-- Specialties, Client Types, Issues -->
-        <div class="card-content">
-          <h3 class="title is-5 has-text-link">Areas of Focus</h3>
+        <div class="card-content pt-4 pb-5" id="focus">
+          <h3 class="title is-5 has-text-grey-dark mb-3">Areas of Focus</h3>
           <div class="columns">
             <div class="column">
-              <h4 class="subtitle is-6 has-text-weight-bold has-text-link-dark">Specialties</h4>
-              <ul>
-                <% @psychologist_profile.specialties.each do |specialty| %>
-                  <li><span class="tag is-info is-light mb-1"><%= specialty.name %></span></li>
-                <% end %>
-              </ul>
+              <h4 class="subtitle is-6 has-text-grey-dark">Specialties</h4>
+              <% @psychologist_profile.specialties.each do |specialty| %>
+                <span class="tag is-info is-light mb-1"><%= specialty.name %></span>
+              <% end %>
             </div>
             <div class="column">
-              <h4 class="subtitle is-6 has-text-weight-bold has-text-link-dark">Client Types</h4>
-              <ul>
-                <% @psychologist_profile.client_types.each do |client_type| %>
-                  <li><span class="tag is-primary is-light mb-1"><%= client_type.name %></span></li>
-                <% end %>
-              </ul>
+              <h4 class="subtitle is-6 has-text-grey-dark">Client Types</h4>
+              <% @psychologist_profile.client_types.each do |client_type| %>
+                <span class="tag is-primary is-light mb-1"><%= client_type.name %></span>
+              <% end %>
             </div>
             <div class="column">
-              <h4 class="subtitle is-6 has-text-weight-bold has-text-link-dark">Issues</h4>
-              <ul>
-                <% @psychologist_profile.issues.each do |issue| %>
-                  <li><span class="tag is-link is-light mb-1"><%= issue.name %></span></li>
-                <% end %>
-              </ul>
+              <h4 class="subtitle is-6 has-text-grey-dark">Issues</h4>
+              <% @psychologist_profile.issues.each do |issue| %>
+                <span class="tag is-link is-light mb-1"><%= issue.name %></span>
+              <% end %>
             </div>
           </div>
         </div>
 
-        <hr class="has-background-light m-0">
 
-        <!-- Contact Info -->
-        <div class="card-content">
-          <h3 class="title is-5 has-text-link">Contact Information</h3>
+        <div class="card-content pt-4 pb-5" id="contact">
+          <h3 class="title is-5 has-text-grey-dark mb-3">Contact Information</h3>
           <div class="columns is-multiline">
-            <div class="column is-half">
-              <div class="field">
-                <label class="label">Email</label>
-                <div class="control has-icons-left">
-                  <input class="input is-static" readonly value="<%= psychologist_profile.user.email %>">
-                  <span class="icon is-left"><i class="fas fa-envelope"></i></span>
-                </div>
-              </div>
-            </div>
+            <% contact_methods = {
+              "Email" => [psychologist_profile.user.email, 'fas fa-envelope'],
+              "Telegram" => [psychologist_profile.telegram, 'fab fa-telegram'],
+              "WhatsApp" => [psychologist_profile.whatsapp, 'fab fa-whatsapp'],
+              "Primary Phone" => [psychologist_profile.contact_phone, 'fas fa-phone'],
+              "Secondary Phone" => [psychologist_profile.contact_phone2, 'fas fa-phone'],
+              "Additional Phone" => [psychologist_profile.contact_phone3, 'fas fa-phone']
+            } %>
 
-            <% if psychologist_profile.telegram.present? %>
-              <div class="column is-half">
-                <div class="field">
-                  <label class="label">Telegram</label>
-                  <div class="control has-icons-left">
-                    <input class="input is-static" readonly value="<%= psychologist_profile.telegram %>">
-                    <span class="icon is-left"><i class="fab fa-telegram"></i></span>
-                  </div>
-                </div>
-              </div>
-            <% end %>
-
-            <% if psychologist_profile.whatsapp.present? %>
-              <div class="column is-half">
-                <div class="field">
-                  <label class="label">WhatsApp</label>
-                  <div class="control has-icons-left">
-                    <input class="input is-static" readonly value="<%= psychologist_profile.whatsapp %>">
-                    <span class="icon is-left"><i class="fab fa-whatsapp"></i></span>
-                  </div>
-                </div>
-              </div>
-            <% end %>
-
-            <% [psychologist_profile.contact_phone, psychologist_profile.contact_phone2, psychologist_profile.contact_phone3].compact.each_with_index do |phone, idx| %>
-              <div class="column is-half">
-                <div class="field">
-                  <label class="label"><%= ['Primary', 'Secondary', 'Additional'][idx] %> Phone</label>
-                  <div class="control has-icons-left">
-                    <input class="input is-static" readonly value="<%= phone %>">
-                    <span class="icon is-left"><i class="fas fa-phone"></i></span>
-                  </div>
+            <% contact_methods.each do |label, (value, icon)| %>
+              <% next unless value.present? %>
+              <div class="column is-half pb-3">
+                <div class="field has-addons">
+                  <p class="control">
+                     <a class="button is-static">
+                      <span class="icon is-small has-text-grey"><i class="<%= icon %>"></i></span>
+                    </a>
+                  </p>
+                  <p class="control is-expanded">
+                    <input class="input is-small has-text-grey-dark" readonly value="<%= value %>">
+                  </p>
+                   <p class="control">
+                    <button class="button is-small is-light copy-btn" data-value="<%= value %>" title="Copy">
+                      <span class="icon is-small has-text-info"><i class="fas fa-copy"></i></span>
+                    </button>
+                  </p>
                 </div>
               </div>
             <% end %>
@@ -218,3 +190,25 @@
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.copy-btn').forEach(button => {
+    button.addEventListener('click', (event) => {
+      // Get the value to copy
+      const valueToCopy = event.currentTarget.dataset.value;
+      navigator.clipboard.writeText(valueToCopy);
+
+      // Visual feedback
+      const icon = event.currentTarget.querySelector('.icon');
+      const originalHTML = icon.innerHTML;
+      icon.innerHTML = '<i class="fas fa-check"></i>'; // Change to checkmark
+      
+      // Revert after a short delay
+      setTimeout(() => {
+        icon.innerHTML = originalHTML;
+      }, 1500);
+    });
+  });
+});
+</script>

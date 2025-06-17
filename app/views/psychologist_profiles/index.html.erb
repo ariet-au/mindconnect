@@ -32,83 +32,7 @@
       <% end %>
     </div>
 
-    <!-- Active Filters Display -->
-    <% if any_filters_active?(params) %>
-      <div class="notification is-light">
-        <div class="field is-grouped is-grouped-multiline">
-          <% if params[:search].present? %>
-            <div class="control">
-              <div class="tags has-addons">
-                <span class="tag is-primary">Search: <%= truncate(params[:search], length: 20) %></span>
-                <%= link_to psychologist_profiles_path(request.query_parameters.except(:search)), class: "tag is-delete" do %>
-                  <i class="fas fa-times"></i>
-                <% end %>
-              </div>
-            </div>
-          <% end %>
-
-          <% (params[:specialty_ids] || []).each do |id| %>
-            <% specialty = Specialty.find_by(id: id) %>
-            <% if specialty %>
-              <div class="control">
-                <div class="tags has-addons">
-                  <span class="tag is-info"><%= specialty.name %></span>
-                  <%= link_to psychologist_profiles_path(request.query_parameters.except(:specialty_ids).merge(specialty_ids: request.query_parameters[:specialty_ids] - [id.to_s])), class: "tag is-delete" do %>
-                    <i class="fas fa-times"></i>
-                  <% end %>
-                </div>
-              </div>
-            <% end %>
-          <% end %>
-
-          <% (params[:issue_ids] || []).each do |id| %>
-            <% issue = Issue.find_by(id: id) %>
-            <% if issue %>
-              <div class="control">
-                <div class="tags has-addons">
-                  <span class="tag is-warning"><%= issue.name %></span>
-                  <%= link_to psychologist_profiles_path(request.query_parameters.except(:issue_ids).merge(issue_ids: request.query_parameters[:issue_ids] - [id.to_s])), class: "tag is-delete" do %>
-                    <i class="fas fa-times"></i>
-                  <% end %>
-                </div>
-              </div>
-            <% end %>
-          <% end %>
-
-          <% (params[:client_type_ids] || []).each do |id| %>
-            <% client_type = ClientType.find_by(id: id) %>
-            <% if client_type %>
-              <div class="control">
-                <div class="tags has-addons">
-                  <span class="tag is-success"><%= client_type.name %></span>
-                  <%= link_to psychologist_profiles_path(request.query_parameters.except(:client_type_ids).merge(client_type_ids: request.query_parameters[:client_type_ids] - [id.to_s])), class: "tag is-delete" do %>
-                    <i class="fas fa-times"></i>
-                  <% end %>
-                </div>
-              </div>
-            <% end %>
-          <% end %>
-
-          <% (params[:language_ids] || []).each do |id| %>
-            <% language = Language.find_by(id: id) %>
-            <% if language %>
-              <div class="control">
-                <div class="tags has-addons">
-                  <span class="tag is-link"><%= language.name %></span>
-                  <%= link_to psychologist_profiles_path(
-                        request.query_parameters.except(:language_ids)
-                          .merge(language_ids: request.query_parameters[:language_ids] - [id.to_s])
-                      ), 
-                      class: "tag is-delete" do %>
-                    <i class="fas fa-times"></i>
-                  <% end %>
-                </div>
-              </div>
-            <% end %>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
+  
 
     <!-- Collapsible Filters Section - Hidden only on mobile -->
     <div class="block" x-data="{ showFilters: window.innerWidth > 768 }">
@@ -179,8 +103,9 @@
                                    ClientType.all.map { |i| [i.name, i.id] },
                                    params[:client_type_id]
                                  ),
-                                 class: "select filter-select",
-                                 onchange: "this.form.submit()" %>
+                                 class: "select filter-select"
+                                  #,onchange: "this.form.submit()" 
+                                 %>
                 </div>
               </div>
             </div>
@@ -202,24 +127,33 @@
           </div>
         </div>
 
-        <!-- Delivery Method -->
-        <div class="field">
-          <label class="label">Delivery Method</label>
-          <div class="field is-grouped is-grouped-multiline">
-            <div class="control">
-              <label class="checkbox">
-                <%= check_box_tag "in_person", "1", params[:in_person] == "1", onchange: "this.form.submit()" %>
-                <span class="ml-2">In Person</span>
-              </label>
-            </div>
-            <div class="control">
-              <label class="checkbox">
-                <%= check_box_tag "online", "1", params[:online] == "1", onchange: "this.form.submit()" %>
-                <span class="ml-2">Online</span>
-              </label>
-            </div>
-          </div>
-        </div>
+<!-- Delivery Method - CSS Only Version -->
+<div class="delivery-method-container">
+  <div class="field">
+    <label class="label">Delivery Method</label>
+    <div class="field is-grouped is-grouped-multiline">
+      <div class="control">
+        <!-- Wrap the checkbox inside the label -->
+        <label class="button delivery-method">
+          <%= check_box_tag "in_person", "1", params[:in_person] == "1", class: "delivery-method-input" %>
+          <span class="icon">
+            <i class="fas fa-user"></i>
+          </span>
+          <span>In Person</span>
+        </label>
+      </div>
+      <div class="control">
+        <label class="button delivery-method">
+          <%= check_box_tag "online", "1", params[:online] == "1", class: "delivery-method-input" %>
+          <span class="icon">
+            <i class="fas fa-laptop"></i>
+          </span>
+          <span>Online</span>
+        </label>
+      </div>
+    </div>
+  </div>
+</div>
 
         <!-- Location Filters -->
         <div class="columns is-multiline">
@@ -236,7 +170,7 @@
                                   ),
                                   class: "select filter-select",
                                   id: "search-country",
-                                  onchange: "updateCityFilter(); this.form.submit()" %>
+                                  onchange: "updateCityFilter()" %>
                 </div>
               </div>
             </div>
@@ -254,7 +188,7 @@
   ),
   class: "select filter-select",
   id: "search-city",
-  onchange: "this.form.submit()",  # Auto-submit on change
+  #onchange: "this.form.submit()",  # Auto-submit on change
   disabled: params[:country].blank? %>
                 </div>
               </div>
@@ -262,65 +196,57 @@
           </div>
         </div>
 
-        <!-- Gender Filter -->
-        <div class="columns is-multiline">
-          <div class="column is-12-mobile is-6-tablet">
-            <div class="field">
-              <label class="label">Gender</label>
-              <div class="control">
-                <div class="select is-fullwidth">
-                  <%= select_tag :gender, 
-                    options_for_select(
-                      [['Any Gender', '']] + 
-                      @genders.map { |g| [g.humanize.titleize, g] },
-                      params[:gender]
-                    ),
-                    class: "select",
-                    onchange: "this.form.submit()" %>
-                </div>
-              </div>
-            </div>
-          </div>
+       <div class="columns is-multiline">
+  <!-- Gender -->
+  <div class="column is-6-tablet is-12-mobile">
+    <div class="field">
+      <label class="label">Gender</label>
+      <div class="control">
+        <div class="select is-fullwidth">
+          <%= select_tag :gender, 
+            options_for_select(
+              [['Any Gender', '']] + 
+              @genders.map { |g| [g.humanize.titleize, g] },
+              params[:gender]
+            ),
+            class: "select" %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Price Range: Min / Max / Currency -->
+  <div class="column is-6-tablet is-12-mobile">
+    <div class="field">
+      <label class="label">Price Range</label>
+      <div class="field has-addons">
+        <!-- Min -->
+        <div class="control is-expanded">
+          <%= number_field_tag :min_rate, params[:min_rate], 
+                step: 1, 
+                class: "input", 
+                min: 0,
+                placeholder: "Min" %>
         </div>
 
-        <!-- Price Range -->
-        <div class="field">
-          <label class="label">Price Range</label>
-          <div class="columns is-mobile">
-            <div class="column">
-              <div class="field">
-                <label class="label is-small">Min Rate</label>
-                <div class="control">
-                  <%= number_field_tag :min_rate, params[:min_rate], 
-                        step: 1, 
-                        class: "input", 
-                        min: 0,
-                        placeholder: "Min" %>
-                </div>
-              </div>
-            </div>
-            <div class="column">
-              <div class="field">
-                <label class="label is-small">Max Rate</label>
-                <div class="control">
-                  <%= number_field_tag :max_rate, params[:max_rate], 
-                        step: 1, 
-                        class: "input", 
-                        min: 0,
-                        placeholder: "Max" %>
-                </div>
-              </div>
-            </div>
-            <div class="column">
-              <div class="field">
-                <label class="label is-small">Currency</label>
-                <div class="control">
-                  <%= render 'layouts/currency_selector' %>
-                </div>
-              </div>
-            </div>
-          </div>
+        <!-- Max -->
+        <div class="control is-expanded">
+          <%= number_field_tag :max_rate, params[:max_rate], 
+                step: 1, 
+                class: "input", 
+                min: 0,
+                placeholder: "Max" %>
         </div>
+
+        <!-- Currency Display Only -->
+        <div class="control">
+          <input class="input is-static has-text-weight-semibold" type="text" readonly value="<%= current_currency %>">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 
         <!-- Apply Filters Button -->
         <div class="field">
@@ -340,7 +266,6 @@
 </div>
 
 <style>
-  /* Show filters by default on desktop */
   @media screen and (min-width: 769px) {
     [x-cloak] { 
       display: block !important; 
@@ -351,7 +276,6 @@
     }
   }
 
-  /* Mobile specific styles */
   @media screen and (max-width: 768px) {
     .box {
       margin: 0.5rem;
@@ -377,14 +301,77 @@
     }
   }
 
-  /* Ensure proper spacing */
   .field:not(:last-child) {
     margin-bottom: 1rem;
   }
 </style>
 
+<style>
+  /* Hide the actual checkbox - only for delivery method */
+  .delivery-method .delivery-method-input {
+    position: absolute;
+    opacity: 0;
+  }
+  
+  /* Style for unselected button - only delivery method buttons */
+  .delivery-method {
+    background-color: white;
+    border: 1px solid #dbdbdb;
+    color: #363636;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+  }
+  
+  /* Style for selected button - only delivery method */
+  .delivery-method:has(.delivery-method-input:checked) {
+    background-color: #485fc7; /* Bulma's primary color */
+    border-color: #485fc7;
+    color: white;
+  }
+  
+  /* More specific targeting for checked state - only delivery method */
+  .delivery-method .delivery-method-input:checked ~ .icon,
+  .delivery-method .delivery-method-input:checked ~ span {
+    color: white;
+  }
+  
+  /* Hover effect - only delivery method */
+  .delivery-method:hover {
+    border-color: #b5b5b5;
+  }
+  
+  /* Focus effect - only delivery method */
+  .delivery-method:focus-within {
+    box-shadow: 0 0 0 0.125em rgba(72, 95, 199, 0.25);
+  }
 
-
+  /* Basic field styling - scoped to delivery method container only */
+  .delivery-method-container .field {
+    margin-bottom: 1rem;
+  }
+  
+  .delivery-method-container .label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #363636;
+  }
+  
+  .delivery-method-container .is-grouped {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .delivery-method-container .control {
+    display: flex;
+    align-items: center;
+  }
+</style>
 
 
 
@@ -642,10 +629,7 @@
           plugins: ['remove_button'],
           persist: false,
           create: false,
-          placeholder: el.getAttribute('data-placeholder') || 'Выберите...',
-          onChange: function () {
-            el.form.submit();
-          }
+          placeholder: el.getAttribute('data-placeholder') || 'Выберите...'
         });
       }
     });
@@ -657,10 +641,8 @@
         plugins: ['remove_button'],
         persist: false,
         create: false,
-        placeholder: 'Выберите проблемы',
-        onChange: function () {
-          issuesSelect.form.submit();
-        }
+        placeholder: 'Выберите проблемы'
+
       });
     }
 
@@ -671,10 +653,7 @@
         plugins: ['remove_button'],
         persist: false,
         create: false,
-        placeholder: 'Выберите специальности',
-        onChange: function () {
-          specialtiesSelect.form.submit();
-        }
+        placeholder: 'Выберите специальности'
       });
     }
 

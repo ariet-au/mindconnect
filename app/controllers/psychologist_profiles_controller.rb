@@ -32,9 +32,12 @@ class PsychologistProfilesController < ApplicationController
 def index
    @psychologist_profiles = PsychologistProfile.all
 
-if params[:search].present?
-  @psychologist_profiles = @psychologist_profiles.search_full_text(params[:search])
-end
+    if params[:search].present?
+      @psychologist_profiles = @psychologist_profiles.search_full_text(params[:search])
+    end
+
+    session[:currency] = params[:currency] if params[:currency].present?
+
  
 
 

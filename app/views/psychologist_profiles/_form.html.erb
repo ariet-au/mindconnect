@@ -56,19 +56,19 @@
     </div>
 
    <!-- Gender -->
-    <div class="column is-half">
-      <div class="field">
-        <%= form.label :gender, class: "label" %>
-        <div class="control">
-          <div class="select">
-            <%= form.select :gender, 
-                PsychologistProfile.genders.map { |key, value| [key.humanize, key] },
-                { selected: 'unspecified' },
-                class: "input" %>
-          </div>
-        </div>
+<div class="column is-half">
+  <div class="field">
+    <%= form.label :gender, class: "label" %>
+    <div class="control">
+      <div class="select">
+        <%= form.select :gender,
+            PsychologistProfile.genders.map { |key, value| [key.humanize, key] },
+            {}, # No explicit 'selected' option needed here
+            class: "input" %>
       </div>
     </div>
+  </div>
+</div>
 
     <!-- Education -->
     <div class="column is-half">

@@ -6,7 +6,7 @@
 
 <div class="field mb-3">
     <%= f.select :role,
-        options_for_select([['Client', 'client'], ['Psychologist', 'psychologist']], selected: resource.role),
+        options_for_select([ ['Psychologist', 'psychologist'],['Client', 'client']], selected: resource.role),
         {},
         { class: "form-select" } %>
 
