@@ -167,6 +167,12 @@ end
 
   # PATCH/PUT /psychologist_profiles/1 or /psychologist_profiles/1.json
   def update
+    # Attach and resize image if cropped_blob is present
+    if params[:cropped_blob].present?
+      @psychologist_profile.profile_image.attach(params[:cropped_blob])
+      @psychologist_profile.resize_profile_image
+    end
+
     respond_to do |format|
       if @psychologist_profile.update(psychologist_profile_params)
         format.html { redirect_to @psychologist_profile, notice: "Psychologist profile was successfully updated." }
@@ -177,6 +183,7 @@ end
       end
     end
   end
+
 
   # DELETE /psychologist_profiles/1 or /psychologist_profiles/1.json
   def destroy

@@ -51,7 +51,20 @@ class PsychologistProfile < ApplicationRecord
     }
 
 
-  
+  def resize_profile_image
+    return unless profile_image.attached?
+
+    resized = ImageProcessing::MiniMagick
+      .source(profile_image.download)
+      .resize_to_limit(400, 400) # or use resize_to_fit / fill, depending on desired effect
+      .call
+
+    profile_image.attach(
+      io: StringIO.new(resized.read),
+      filename: "resized_#{profile_image.filename}",
+      content_type: profile_image.content_type
+    )
+  end
   # For demonstration purposes outside a full ActiveRecord context,
   # we'll add a simple initializer and accessors. In a real Rails app
   # with ActiveRecord, these would be handled by the ORM and `monetize`.

@@ -24,6 +24,13 @@ Rails.application.routes.draw do
 
   }
 
+
+   direct :rails_blob do |blob|
+    route_for(:rails_service_blob, blob.signed_id, blob.filename)
+  end
+  direct :rails_blob_variant do |variant|
+    route_for(:rails_blob_representation, variant.blob.signed_id, variant.variation.key, variant.blob.filename)
+  end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
