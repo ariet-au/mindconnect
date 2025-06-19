@@ -83,7 +83,7 @@ production:
     <<: *default
     database: mindconnect_production
     username: mindconnect
-    password: <%= ENV["MINDCONNECT_DATABASE_PASSWORD"] %>
+    password: <%= Rails.application.credentials.dig(:database, :password) %> # <-- CHANGE THIS LINE
   cache:
     <<: *primary_production
     database: mindconnect_production_cache
