@@ -25,10 +25,10 @@ Rails.application.configure do
   config.active_storage.service = :local
 
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
-  config.assume_ssl = true
+  config.assume_ssl = false
 
   # Force all access to the app over SSL, use Strict-Transport-Security, and use secure cookies.
-  config.force_ssl = true
+  config.force_ssl = false
 
   # Skip http-to-https redirect for the default health check endpoint.
   # config.ssl_options = { redirect: { exclude: ->(request) { request.path == "/up" } } }
@@ -57,14 +57,18 @@ Rails.application.configure do
 
   # Ignore bad email addresses and do not raise email delivery errors.
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
-  # config.action_mailer.raise_delivery_errors = false
-    config.action_mailer.default_url_options = { host: "46.62.133.105", port: 3000 }
+    config.action_mailer.raise_delivery_errors = true
+    config.action_mailer.default_url_options = { 
+      host: "46.62.133.105", 
+      port: 3000,            # Add this if you're running on port 3000
+      protocol: 'http'       # Keep as http
+    }
     config.action_mailer.perform_deliveries = true
     config.action_mailer.delivery_method = :smtp
     config.action_mailer.smtp_settings = {
       address: 'smtp.sendgrid.net',
       port: 587,
-      domain: 'localhost', # or your real domain
+      domain: '46.62.133.105', # or your real domain
       user_name: 'apikey',
       password: Rails.application.credentials.dig(:sendgrid, :password),
       authentication: :plain,
@@ -73,7 +77,7 @@ Rails.application.configure do
   
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "example.com" }
+#  config.action_mailer.default_url_options = { host: "example.com" }
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via rails credentials:edit.
   # config.action_mailer.smtp_settings = {
