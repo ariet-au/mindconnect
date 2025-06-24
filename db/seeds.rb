@@ -10,6 +10,6 @@
 
 
 
-%w[Kyrgyz Kazakh Russian Uzbek Tajik Turkish Uyghur Karakalpak Georgian Azeri Armenian Moldovan Dungan Tatar German Ukranian].each do |lang|
+%w[Kyrgyz Kazakh Russian Uzbek Tajik Turkish Uyghur Karakalpak English Dungan Turkish Ukranian].each do |lang|
   Language.find_or_create_by!(name: lang)
 end
