@@ -49,16 +49,19 @@
   <div class="container">
     <div class="navbar-brand">
       <a class="navbar-item" href="/">
-      <%= image_tag("ak_logo.png", alt: "Logo") %>
-        <strong class="has-text-weight-semibold">       
- AkSanaa</strong> 
-
-
+        <%= image_tag("ak_logo.png", alt: "Logo") %>
+        <strong class="has-text-weight-semibold">AkSanaa</strong>
       </a>
     </div>
 
     <div class="navbar-menu">
       <div class="navbar-end">
+        <!-- Find a Therapist Button -->
+        <div class="navbar-item">
+          <%= link_to 'Find a Therapist', search_landing_path, class: "button is-info is-outlined" %>
+        </div>
+        
+        <!-- User Menu -->
         <div class="navbar-item">
           <% if user_signed_in? %>
             <div class="dropdown is-right is-hoverable">
@@ -85,20 +88,19 @@
                   <% end %>
                   <hr class="dropdown-divider">
                   <%= link_to destroy_user_session_path,
-                  
                       data: { turbo_method: :delete }, 
                       class: "dropdown-item has-text-grey-darker" do %>
-                      <span class="icon">
-                        <i class="fas fa-sign-out-alt"></i>
-                      </span>
-                      <span>Sign Out</span>
-                    <% end %>
+                    <span class="icon">
+                      <i class="fas fa-sign-out-alt"></i>
+                    </span>
+                    <span>Sign Out</span>
+                  <% end %>
                 </div>
               </div>
             </div>
           <% else %>
             <div class="buttons">
-              <%= link_to 'Log in', new_user_session_path, class: "button is-light is-outlined" %>
+              <%= link_to 'Log in', new_user_session_path, class: "button is-primary is-outlined" %>
               <%= link_to 'Sign up', new_user_registration_path, class: "button is-primary is-outlined" %>
             </div>
           <% end %>
@@ -106,9 +108,11 @@
       </div>
     </div>
   </div>
-
-  <%= render 'layouts/currency_selector' %>
 </nav>
+
+
+
+
     <main class="main-content" style="padding-top: 4rem;"> <!-- Increased padding -->
     <div class="container">
       <%= yield %>
