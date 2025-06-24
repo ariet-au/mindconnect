@@ -462,7 +462,10 @@
               <% if profile.client_types.any? %>
                 <p class="is-size-7 has-text-grey mt-2">
                   <span class="icon is-small"><i class="fas fa-users"></i></span>
-                  <%= profile.client_types.map(&:name).join(" • ") %>
+                    <%= select_tag 'client_type_ids[]',
+          options_from_collection_for_select(@client_types, :id, :name, Array(params[:client_type_ids])),
+          multiple: true,
+          class: 'select is-multiple is-fullwidth' %>
                 </p>
               <% end %>
             </div>

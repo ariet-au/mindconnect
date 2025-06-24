@@ -59,7 +59,14 @@ def index
   # Sanitize multi-selects
   specialty_ids    = Array(params[:specialty_ids]).reject(&:blank?)
   issue_ids        = Array(params[:issue_ids]).reject(&:blank?)
-  client_type_ids  = Array(params[:client_type_ids]).reject(&:blank?)
+  #client_type_ids  = Array(params[:client_type_ids]).reject(&:blank?)
+  client_type_ids = if params[:client_type_ids].present?
+  Array(params[:client_type_ids]).reject(&:blank?)
+elsif params[:client_type_id].present?
+  [params[:client_type_id]]
+else
+  []
+end
   language_ids     = Array(params[:language_ids]).reject(&:blank?)
 
   if language_ids.any?

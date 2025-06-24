@@ -194,8 +194,6 @@
                 <option value="partner">My Partner / Spouse</option>
                 <option value="child">My Child</option>
                 <option value="parent">My Parent</option>
-                <option value="sibling">My Sibling</option>
-                <option value="friend">A Friend</option>
                 <option value="other">Other</option>
               </select>
             </div>
@@ -206,7 +204,7 @@
 
     <div id="group-output" class="notification is-info is-light is-hidden mt-4"></div>
 
-    <%= hidden_field_tag 'client_type_ids[]', '', id: "client_type_input" %>
+    <%= hidden_field_tag 'client_type_id', '', id: "client_type_input" %>
   </div>
   
   <div class="field is-grouped is-grouped-centered mt-4">
@@ -536,8 +534,7 @@ document.addEventListener('turbo:load', function () {
 
     if (relationship === "partner") return "romantic_couple";
     if (["parent", "child"].includes(relationship)) return "parent_child";
-    if (relationship === "sibling") return "sibling_pair";
-    if (relationship === "friend") return "friend_pair";
+    if (relationship === "other") return "other_pair";
     return "other";
   }
 
