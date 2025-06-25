@@ -11,7 +11,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   def after_sign_up_path_for(resource)
     if resource.psychologist?
-      resource.create_psychologist_profile! unless resource.psychologist_profile
+      #resource.create_psychologist_profile! unless resource.psychologist_profile
       edit_psychologist_profile_path(resource.psychologist_profile)
     else
       root_path

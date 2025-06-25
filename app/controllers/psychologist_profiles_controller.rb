@@ -202,6 +202,9 @@ end
     end
   end
 
+  def landing_psych
+  end
+
   def authorize_user!
     unless @psychologist_profile.user == current_user
       redirect_to root_path, alert: "You are not authorized to edit this profile."
