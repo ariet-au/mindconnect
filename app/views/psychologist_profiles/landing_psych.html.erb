@@ -1,141 +1,277 @@
 <!-- Hero Section -->
-<section class="hero is-primary is-large">
+<section class="hero is-medium" style="background: linear-gradient(135deg, #f8f9ff 0%, #e8f2ff 100%);">
   <div class="hero-body">
     <div class="container">
       <div class="columns is-vcentered">
-        <div class="column is-6">
-          <h1 class="title is-1 has-text-weight-bold">
-            Развивайте Свою Психологическую Практику
+        <div class="column is-half">
+          <h1 class="title is-1 has-text-primary">
+            AkSanaa
           </h1>
-          <h2 class="subtitle is-4">
-            Подключайтесь к квалифицированным клиентам, которые активно ищут вашу экспертизу. Присоединяйтесь к платформе, которая ставит вашу практику на первое место.
+          <h2 class="subtitle is-3 has-text-dark">
+            Развивайте свою практику.<br>
+            Находите квалифицированных клиентов.
           </h2>
-          <div class="buttons">
-            <%= link_to "Создать Бесплатный Профиль", new_user_registration_path, class: "button is-warning is-large is-rounded has-text-weight-semibold" %>
-            <button class="button is-light is-large is-rounded">Узнать Больше</button>
-          </div>
+          <p class="has-text-grey-dark is-size-5 mb-5">
+            Хватит гоняться за направлениями. Начните помогать большему количеству людей.
+          </p>
+          <%= link_to "Присоединиться к AkSanaa", new_user_registration_path, class: "button is-primary is-large is-rounded" %>
+
         </div>
-        <div class="column is-6">
-          <figure class="image">
-            <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Профессиональный психолог" style="border-radius: 15px;">
-          </figure>
+        <div class="column is-half has-text-centered">
+          <svg width="280" height="280" viewBox="0 0 200 200">
+            <!-- Psychologist figure -->
+            <circle cx="100" cy="50" r="25" fill="#fff" stroke="#3273dc" stroke-width="3"/>
+            <rect x="75" y="75" width="50" height="80" rx="5" fill="#fff" stroke="#3273dc" stroke-width="3"/>
+            <!-- Clipboard -->
+            <rect x="120" y="85" width="30" height="40" rx="3" fill="#fff" stroke="#3273dc" stroke-width="2"/>
+            <line x1="125" y1="95" x2="145" y2="95" stroke="#3273dc" stroke-width="2"/>
+            <line x1="125" y1="105" x2="145" y2="105" stroke="#3273dc" stroke-width="2"/>
+            <!-- Client connections -->
+            <circle cx="50" cy="150" r="15" fill="#e8f2ff" stroke="#3273dc" stroke-width="2"/>
+            <circle cx="150" cy="150" r="15" fill="#e8f2ff" stroke="#3273dc" stroke-width="2"/>
+            <line x1="75" y1="130" x2="60" y2="140" stroke="#3273dc" stroke-width="2" stroke-dasharray="5,5"/>
+            <line x1="125" y1="130" x2="140" y2="140" stroke="#3273dc" stroke-width="2" stroke-dasharray="5,5"/>
+          </svg>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Key Benefits Section -->
-<section class="section">
+<!-- Comparison Section -->
+<section class="section has-background-white">
   <div class="container">
-    <h2 class="title is-2 has-text-centered has-text-weight-bold">
-      Почему Психологи Выбирают Нашу Платформу
+    <h2 class="title is-2 has-text-centered has-text-dark mb-6">
+      Старый способ vs  AkSanaa
+    </h2>
+    <div class="columns is-variable is-8">
+      <div class="column">
+        <div class="card" style="height: 100%; border: 2px solid #ffdd57;">
+          <div class="card-content">
+            <div class="has-text-centered mb-4">
+              <svg width="120" height="120" viewBox="0 0 200 200">
+                <circle cx="100" cy="100" r="60" fill="none" stroke="#ff6b6b" stroke-width="3" stroke-dasharray="10,5"/>
+                <circle cx="70" cy="80" r="8" fill="#ff6b6b"/>
+                <circle cx="130" cy="120" r="8" fill="#ff6b6b"/>
+                <circle cx="100" cy="60" r="8" fill="#ff6b6b"/>
+                <text x="100" y="170" text-anchor="middle" fill="#ff6b6b" font-size="12">Старый способ</text>
+              </svg>
+            </div>
+            <h3 class="title is-4 has-text-warning">Старый способ (Instagram)</h3>
+            <div class="content has-text-grey-dark">
+              <p><strong class="has-text-danger">Широкая аудитория, низкие намерения:</strong> Клиенты просто просматривают контент, не ищут активно терапию.</p>
+              <p><strong class="has-text-danger">DIY маркетинг:</strong> Вы тратите часы на создание контента, надеясь быть замеченным нужным человеком.</p>
+              <p><strong class="has-text-danger">Ограниченная презентация:</strong> Instagram хорош для визуалов, но плохо передает квалификацию.</p>
+              <p><strong class="has-text-danger">Непостоянный поток клиентов:</strong> Зависимость от органического охвата с неопределенным ROI.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column">
+        <div class="card" style="height: 100%; border: 2px solid #48c774;">
+          <div class="card-content">
+            <div class="has-text-centered mb-4">
+              <svg width="120" height="120" viewBox="0 0 200 200">
+                <circle cx="100" cy="100" r="15" fill="#48c774"/>
+                <circle cx="100" cy="50" r="12" fill="#48c774"/>
+                <circle cx="100" cy="150" r="12" fill="#48c774"/>
+                <circle cx="60" cy="100" r="12" fill="#48c774"/>
+                <circle cx="140" cy="100" r="12" fill="#48c774"/>
+                <line x1="100" y1="85" x2="100" y2="65" stroke="#48c774" stroke-width="3"/>
+                <line x1="100" y1="115" x2="100" y2="135" stroke="#48c774" stroke-width="3"/>
+                <line x1="85" y1="100" x2="72" y2="100" stroke="#48c774" stroke-width="3"/>
+                <line x1="115" y1="100" x2="128" y2="100" stroke="#48c774" stroke-width="3"/>
+                <text x="100" y="180" text-anchor="middle" fill="#48c774" font-size="12">AkSanaa</text>
+              </svg>
+            </div>
+            <h3 class="title is-4 has-text-success"> AkSanaa</h3>
+            <div class="content has-text-grey-dark">
+              <p><strong class="has-text-success">Клиенты с высокими намерениями:</strong> Клиенты активно ищут психолога по специализации и потребностям.</p>
+              <p><strong class="has-text-success">Автоматическое обнаружение:</strong> Ваш профиль находят клиенты, ищущие именно вашу экспертизу.</p>
+              <p><strong class="has-text-success">Профессиональное присутствие:</strong> Ваш профиль четко показывает квалификацию и подход.</p>
+              <p><strong class="has-text-success">Постоянные направления:</strong> AkSanaa создан для связи с готовыми к работе клиентами.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Benefits Section -->
+<section class="section" style="background: #f8f9ff;">
+  <div class="container">
+    <h2 class="title is-2 has-text-centered has-text-dark mb-6">
+      Преимущества: Будьте замечены. Сосредоточьтесь на том, что делаете лучше всего.
     </h2>
     <div class="columns is-multiline">
-      <div class="column is-4">
-        <div class="card has-background-light" style="height: 100%;">
-          <div class="card-content has-text-centered">
-            <div class="has-text-primary mb-4">
-              <i class="fas fa-users fa-3x"></i>
-            </div>
-            <h3 class="title is-4">Привлекайте Квалифицированных Клиентов</h3>
-            <p class="content">
-              Наша интеллектуальная система поиска соединяет вас с клиентами, которые специально ищут ваши специализации и терапевтические подходы.
-            </p>
+      <div class="column is-half">
+        <div class="has-text-centered mb-4">
+          <div class="is-inline-block p-4" style="background: #e8f2ff; border-radius: 50%;">
+            <svg width="60" height="60" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="30" fill="none" stroke="#3273dc" stroke-width="4"/>
+              <path d="M35 50 L45 60 L65 40" stroke="#3273dc" stroke-width="4" fill="none"/>
+            </svg>
           </div>
         </div>
+        <h3 class="title is-4 has-text-primary has-text-centered">Легкое привлечение клиентов</h3>
+        <p class="has-text-grey-dark has-text-centered">Хватит тратить часы на маркетинг. Наша платформа приводит квалифицированных клиентов прямо к вам.</p>
       </div>
       
-      <div class="column is-4">
-        <div class="card has-background-light" style="height: 100%;">
-          <div class="card-content has-text-centered">
-            <div class="has-text-info mb-4">
-              <i class="fas fa-chart-line fa-3x"></i>
-            </div>
-            <h3 class="title is-4">Развивайте Репутацию</h3>
-            <p class="content">
-              Делитесь своей экспертизой через посты, демонстрируйте знания с помощью интерактивных викторин и устанавливайте себя как лидера мнений.
-            </p>
+      <div class="column is-half">
+        <div class="has-text-centered mb-4">
+          <div class="is-inline-block p-4" style="background: #e8f2ff; border-radius: 50%;">
+            <svg width="60" height="60" viewBox="0 0 100 100">
+              <rect x="20" y="20" width="60" height="60" rx="5" fill="none" stroke="#3273dc" stroke-width="4"/>
+              <circle cx="50" cy="40" r="8" fill="#3273dc"/>
+              <rect x="30" y="55" width="40" height="4" fill="#3273dc"/>
+              <rect x="30" y="65" width="25" height="4" fill="#3273dc"/>
+            </svg>
           </div>
         </div>
+        <h3 class="title is-4 has-text-primary has-text-centered">Покажите свою экспертизу</h3>
+        <p class="has-text-grey-dark has-text-centered">Ваш профиль AkSanaa - это комплексная профессиональная веб-страница с вашими квалификациями и услугами.</p>
       </div>
       
-      <div class="column is-4">
-        <div class="card has-background-light" style="height: 100%;">
-          <div class="card-content has-text-centered">
-            <div class="has-text-success mb-4">
-              <i class="fas fa-rocket fa-3x"></i>
-            </div>
-            <h3 class="title is-4">Расширяйте Практику</h3>
-            <p class="content">
-              Продвигайте специальные предложения, делитесь ценными идеями и соединяйтесь с потенциальными клиентами в профессиональной, доверенной среде.
-            </p>
+      <div class="column is-half">
+        <div class="has-text-centered mb-4">
+          <div class="is-inline-block p-4" style="background: #e8f2ff; border-radius: 50%;">
+            <svg width="60" height="60" viewBox="0 0 100 100">
+              <circle cx="30" cy="30" r="15" fill="#3273dc"/>
+              <circle cx="70" cy="70" r="15" fill="#3273dc"/>
+              <line x1="45" y1="30" x2="55" y2="70" stroke="#3273dc" stroke-width="4"/>
+            </svg>
           </div>
         </div>
+        <h3 class="title is-4 has-text-primary has-text-centered">Связь с идеальными клиентами</h3>
+        <p class="has-text-grey-dark has-text-centered">Наш умный подбор гарантирует, что вас найдут люди, чьи потребности идеально совпадают с вашими специализациями.</p>
+      </div>
+      
+      <div class="column is-half">
+        <div class="has-text-centered mb-4">
+          <div class="is-inline-block p-4" style="background: #e8f2ff; border-radius: 50%;">
+            <svg width="60" height="60" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="25" fill="none" stroke="#3273dc" stroke-width="4"/>
+              <line x1="50" y1="30" x2="50" y2="50" stroke="#3273dc" stroke-width="4"/>
+              <line x1="50" y1="50" x2="65" y2="65" stroke="#3273dc" stroke-width="4"/>
+            </svg>
+          </div>
+        </div>
+        <h3 class="title is-4 has-text-primary has-text-centered">Верните свое время</h3>
+        <p class="has-text-grey-dark has-text-centered">Уменьшите административные расходы и сосредоточьте энергию на оказании качественной помощи клиентам.</p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- Features Section -->
-<section class="section has-background-white-bis">
+<!-- How It Works Section -->
+<section class="section has-background-white">
   <div class="container">
-    <h2 class="title is-2 has-text-centered has-text-weight-bold mb-6">
-      Всё Необходимое для Успеха
+    <h2 class="title is-2 has-text-centered has-text-dark mb-6">
+      Как это работает: Простые шаги к большему количеству клиентов
     </h2>
-    <div class="columns is-multiline">
-      <div class="column is-6">
-        <div class="media">
-          <div class="media-left">
-            <span class="icon is-large has-text-primary">
-              <i class="fas fa-id-card fa-2x"></i>
-            </span>
+    <div class="columns">
+      <div class="column is-4 has-text-centered">
+        <div class="mb-4">
+          <div class="is-inline-flex is-justify-content-center is-align-items-center" 
+               style="width: 60px; height: 60px; background: #3273dc; border-radius: 50%; color: white; font-weight: bold; font-size: 1.5rem;">
+            1
           </div>
-          <div class="media-content">
-            <h4 class="title is-5">Профессиональный Профиль</h4>
-            <p>Создайте подробный профиль, демонстрирующий ваши квалификации, специализации и терапевтические подходы.</p>
+        </div>
+        <h3 class="title is-4 has-text-primary">Зарегистрируйтесь</h3>
+        <p class="has-text-grey-dark">Создайте свой комплексный профессиональный профиль на AkSanaa. Укажите квалификации, специализации и услуги.</p>
+      </div>
+      
+      <div class="column is-4 has-text-centered">
+        <div class="mb-4">
+          <div class="is-inline-flex is-justify-content-center is-align-items-center" 
+               style="width: 60px; height: 60px; background: #3273dc; border-radius: 50%; color: white; font-weight: bold; font-size: 1.5rem;">
+            2
+          </div>
+        </div>
+        <h3 class="title is-4 has-text-primary">Будьте найдены</h3>
+        <p class="has-text-grey-dark">Наша платформа обеспечивает легкий поиск вашего профиля клиентами, ищущими конкретную экспертизу.</p>
+      </div>
+      
+      <div class="column is-4 has-text-centered">
+        <div class="mb-4">
+          <div class="is-inline-flex is-justify-content-center is-align-items-center" 
+               style="width: 60px; height: 60px; background: #3273dc; border-radius: 50%; color: white; font-weight: bold; font-size: 1.5rem;">
+            3
+          </div>
+        </div>
+        <h3 class="title is-4 has-text-primary">Получайте звонки</h3>
+        <p class="has-text-grey-dark">Когда клиент найдет вас и решит, что вы подходите, он свяжется напрямую. Просто - пусть звонки приходят к вам!</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing Section -->
+<section class="section" style="background: #f8f9ff;">
+  <div class="container">
+    <div class="has-text-centered mb-6">
+      <h2 class="title is-2 has-text-dark">Цены: Всегда бесплатный профиль</h2>
+      <p class="subtitle is-4 has-text-grey-dark">Специальные преимущества для первых пользователей!</p>
+    </div>
+    
+    <div class="columns is-centered">
+      <div class="column is-half">
+        <div class="card" style="border: 3px solid #48c774;">
+          <div class="card-content has-text-centered">
+            <h3 class="title is-3 has-text-success">Бесплатно навсегда</h3>
+            <p class="has-text-grey-dark mb-4">Ваш профессиональный профиль на AkSanaa всегда будет бесплатным. Мы верим в предоставление базовой платформы для каждого квалифицированного психолога.</p>
+            
+            <div class="notification is-warning is-light">
+              <p class="has-text-weight-bold">🎉 Специальное предложение!</p>
+              <p>Первые 50 психологов получат значительные преимущества как часть нашей эксклюзивной программы для ранних пользователей.</p>
+            </div>
+            
+            <%= link_to "Присоединиться сейчас", new_user_registration_path , class: "button is-success is-large is-fullwidth" %>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Roadmap Section -->
+<section class="section has-background-white">
+  <div class="container">
+    <h2 class="title is-2 has-text-centered has-text-dark mb-6">
+      Дорожная карта AkSanaa: Что доступно и что будет
+    </h2>
+    
+    <div class="columns">
+      <div class="column is-half">
+        <h3 class="title is-4 has-text-success">✅ Сейчас доступно:</h3>
+        <div class="content">
+          <div class="box" style="border-left: 4px solid #48c774;">
+            <p class="has-text-weight-bold has-text-success">Страница профессионального профиля</p>
+            <p class="has-text-grey-dark">Ваше выделенное пространство для демонстрации услуг и квалификаций.</p>
+          </div>
+          <div class="box" style="border-left: 4px solid #48c774;">
+            <p class="has-text-weight-bold has-text-success">Поиск и обнаружение клиентов</p>
+            <p class="has-text-grey-dark">Клиенты могут найти подходящих психологов на основе своих потребностей.</p>
           </div>
         </div>
       </div>
       
-      <div class="column is-6">
-        <div class="media">
-          <div class="media-left">
-            <span class="icon is-large has-text-info">
-              <i class="fas fa-search fa-2x"></i>
-            </span>
+      <div class="column is-half">
+        <h3 class="title is-4 has-text-primary">🔮 Что мы строим:</h3>
+        <div class="content">
+          <div class="box" style="border-left: 4px solid #3273dc;">
+            <p class="has-text-weight-bold has-text-primary">Тест</p>
+            <p class="has-text-grey-dark">Интерактивные инструменты для клиентов, чтобы лучше понять свои потребности.</p>
           </div>
-          <div class="media-content">
-            <h4 class="title is-5">Умная Видимость в Поиске</h4>
-            <p>Появляйтесь в релевантных поисках, когда клиенты ищут ваши конкретные услуги и экспертизу.</p>
+          <div class="box" style="border-left: 4px solid #3273dc;">
+            <p class="has-text-weight-bold has-text-primary">Посты</p>
+            <p class="has-text-grey-dark">Платформа для обмена идеями и статьями с потенциальными клиентами.</p>
           </div>
-        </div>
-      </div>
-      
-      <div class="column is-6">
-        <div class="media">
-          <div class="media-left">
-            <span class="icon is-large has-text-success">
-              <i class="fas fa-bullhorn fa-2x"></i>
-            </span>
-          </div>
-          <div class="media-content">
-            <h4 class="title is-5">Рекламные Посты</h4>
-            <p>Делитесь специальными предложениями, семинарами и важными обновлениями с вашей целевой аудиторией.</p>
-          </div>
-        </div>
-      </div>
-      
-      <div class="column is-6">
-        <div class="media">
-          <div class="media-left">
-            <span class="icon is-large has-text-warning">
-              <i class="fas fa-brain fa-2x"></i>
-            </span>
-          </div>
-          <div class="media-content">
-            <h4 class="title is-5">Образовательный Контент</h4>
-            <p>Создавайте викторины и делитесь знаниями для демонстрации экспертизы и помощи потенциальным клиентам.</p>
+          <div class="box" style="border-left: 4px solid #3273dc;">
+            <p class="has-text-weight-bold has-text-primary">Поделиться в Instagram</p>
+            <p class="has-text-grey-dark">Легко делитесь своим профилем или контентом прямо в Instagram. Интеграция с вашими другими платфрормами</p>
           </div>
         </div>
       </div>
@@ -143,127 +279,24 @@
   </div>
 </section>
 
-<!-- Testimonial Section -->
-<section class="section has-background-primary">
-  <div class="container">
-    <div class="has-text-centered">
-      <blockquote class="is-size-4 has-text-white has-text-weight-light" style="font-style: italic;">
-        "Эта платформа преобразила то, как я соединяюсь с клиентами. С момента присоединения я увидела увеличение квалифицированных запросов на 40%, и возможность делиться экспертизой действительно выделила меня."
-      </blockquote>
-      <p class="has-text-white has-text-weight-semibold mt-4">
-        - Доктор Сара Джонсон, Лицензированный Клинический Психолог
-      </p>
-    </div>
-  </div>
-</section>
-
-<!-- Value Proposition Section -->
-<section class="section">
-  <div class="container">
-    <div class="columns is-vcentered">
-      <div class="column is-6">
-        <h2 class="title is-2 has-text-weight-bold">
-          Превратите Свою Экспертизу в Рост
-        </h2>
-        <div class="content is-medium">
-          <p><strong>Хватит ждать, пока клиенты найдут вас.</strong> Наша платформа ставит вас перед людьми, активно ищущими психологические услуги.</p>
-          
-          <p><strong>Качество важнее количества.</strong> Наша система поиска обеспечивает соединение с клиентами, которые подходят для вашей практики.</p>
-          
-          <p><strong>Развивайте свой бренд.</strong> Делитесь идеями, создавайте образовательный контент и устанавливайте себя как доверенного эксперта в своей области.</p>
-          
-          <p><strong>Гибкое продвижение.</strong> Делитесь специальными предложениями, анонсируйте новые услуги или продвигайте семинары напрямую вашей целевой аудитории.</p>
-        </div>
-      </div>
-      <div class="column is-6">
-        <div class="box has-background-light">
-          <h3 class="title is-4 has-text-centered">Быстрая Статистика</h3>
-          <div class="columns is-multiline">
-            <div class="column is-6 has-text-centered">
-              <p class="title is-3 has-text-primary">85%</p>
-              <p class="subtitle is-6">Больше квалифицированных лидов</p>
+<!-- CTA Section -->
+<section class="section" id="signup" style="background: linear-gradient(135deg, #3273dc 0%, #667eea 100%);">
+  <div class="container has-text-centered">
+    <h2 class="title is-2 has-text-white mb-4">
+      Готовы трансформировать свою практику?
+    </h2>
+    <p class="subtitle is-4 has-text-white-ter mb-6">
+      Присоединяйтесь к AkSanaa сегодня и начните общаться со своими идеальными клиентами.
+    </p>
+    
+    <div class="columns is-centered">
+      <div class="column is-half">
+       <div class="field">
+            <div class="control">
+                <%= link_to "Присоединиться к AkSanaa", new_user_registration_path, class: "button is-success is-large is-fullwidth" %>
             </div>
-            <div class="column is-6 has-text-centered">
-              <p class="title is-3 has-text-info">3x</p>
-              <p class="subtitle is-6">Быстрее привлечение клиентов</p>
             </div>
-            <div class="column is-6 has-text-centered">
-              <p class="title is-3 has-text-success">92%</p>
-              <p class="subtitle is-6">Удовлетворенность психологов</p>
-            </div>
-            <div class="column is-6 has-text-centered">
-              <p class="title is-3 has-text-warning">24/7</p>
-              <p class="subtitle is-6">Видимость профиля</p>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>
 </section>
-
-<!-- Call to Action Section -->
-<section class="section has-background-dark">
-  <div class="container">
-    <div class="columns is-vcentered is-centered">
-      <div class="column is-8 has-text-centered">
-        <h2 class="title is-2 has-text-white has-text-weight-bold">
-          Готовы Развивать Свою Практику?
-        </h2>
-        <p class="subtitle is-4 has-text-white-ter">
-          Присоединяйтесь к сотням психологов, которые уже соединяются с квалифицированными клиентами. Настройте свой профиль за минуты и начните расти уже сегодня.
-        </p>
-        <div class="content has-text-white-ter">
-          <p>✓ <strong>Бесплатный старт</strong> - Никаких настроечных сборов или скрытых расходов</p>
-          <p>✓ <strong>Полный контроль</strong> - Обновляйте профиль и услуги в любое время</p>
-          <p>✓ <strong>Квалифицированные лиды</strong> - Соединяйтесь с клиентами, ищущими вашу экспертизу</p>
-        </div>
-        <div class="mt-5">
-          <%= link_to "Создать Мой Профиль", new_user_registration_path, class: "button is-warning is-large is-rounded has-text-weight-semibold" %>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-
-<style>
-  .hero.is-primary.is-large .hero-body {
-    padding: 6rem 1.5rem;
-  }
-  
-  .card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-  }
-  
-  .media {
-    margin-bottom: 2rem;
-  }
-  
-  .media:last-child {
-    margin-bottom: 0;
-  }
-  
-  blockquote {
-    border: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .button.is-warning {
-    background-color: #ffdd57;
-    border-color: #ffdd57;
-    color: rgba(0, 0, 0, 0.7);
-  }
-  
-  .button.is-warning:hover {
-    background-color: #ffdb4a;
-    border-color: #ffdb4a;
-  }
-</style>
