@@ -54,6 +54,9 @@
       </a>
     </div>
 
+
+
+
     <div class="navbar-menu">
       <div class="navbar-end">
         <!-- Find a Therapist Button -->
@@ -108,7 +111,12 @@
               <%= link_to 'Sign up', new_user_registration_path, class: "button is-primary is-outlined" %>
             </div>
           <% end %>
+
+       
         </div>
+              <div class="buttons">
+                                <%= render 'layouts/currency_selector' %>   
+            </div>
       </div>
     </div>
   </div>

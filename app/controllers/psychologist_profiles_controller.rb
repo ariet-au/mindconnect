@@ -30,7 +30,7 @@ class PsychologistProfilesController < ApplicationController
   end
 
 def index
-   @psychologist_profiles = PsychologistProfile.all
+   @psychologist_profiles = PsychologistProfile.verified.order(created_at: :desc)
 
     if params[:search].present?
       @psychologist_profiles = @psychologist_profiles.search_full_text(params[:search])

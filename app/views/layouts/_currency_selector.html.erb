@@ -1,4 +1,17 @@
-<!-- app/views/layouts/_currency_selector.html.erb -->
-<%= form_with url: set_currency_path, method: :post, local: true do %>
-  <%= select_tag :currency, options_for_select(['KGS', 'KZT', 'UZS', 'RUB'], current_currency), onchange: 'this.form.submit();', id: 'nav-bar-currency-select' %>
-<% end %>
+
+
+<div class="navbar-item">
+  <div class="field">
+    <div class="control">
+      <div class="select is-medium">
+        <%= form_with url: set_currency_path, method: :post, local: true do %>
+          <%= select_tag :currency, 
+               options_for_select(['KGS', 'KZT', 'UZS', 'RUB'], current_currency),
+               onchange: 'this.form.submit();',
+               class: 'is-medium' %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
