@@ -15,4 +15,13 @@
   <%= link_to "Back to psychologist profiles", psychologist_profiles_path %>
   <% end %>
   
+
+
+<%= button_to "Destroy this psychologist profile",
+              @psychologist_profile,
+              method: :delete,
+              data: { confirm: "Are you sure you want to delete this profile?" },
+              form_class: "mt-4", # optional margin-top
+              class: "button is-danger is-light" %>
+
 </div>

@@ -1,4 +1,3 @@
-    <%= button_to "Destroy this psychologist profile", @psychologist_profile, method: :delete %>
 
 <%= form_with(model: psychologist_profile, local: true, html: { multipart: true, class: 'box' }) do |form| %>
   <% if psychologist_profile.errors.any? %>
@@ -79,44 +78,47 @@
         </div>
       </div>
     </div>
-    <!-- Specialties -->
-    <div class="column is-one-third">
-      <div class="field">
-        <%= form.label :specialty_ids, "Select Specialties", class: "label" %>
-        <div class="control">
-          <div class="select is-multiple">
-            <%= form.collection_select :specialty_ids, Specialty.all, :id, :name, {}, { multiple: true, size: 5, class: "input" } %>
-          </div>
-        </div>
-      </div>
+
+
+<!-- Client Types -->
+<div class="column is-one-third">
+  <div class="field">
+    <%= form.label :client_type_ids, "Select Client Types", class: "label" %>
+    <div class="control">
+      <%= form.collection_select :client_type_ids, ClientType.all, :id, :name, 
+          { prompt: "Select client types..." }, 
+          { multiple: true, class: "tom-select-client-types", data: { tom_select: true } } %>
     </div>
+  </div>
+</div>
 
-    <!-- Client Types -->
-    <div class="column is-one-third">
-      <div class="field">
-        <%= form.label :client_type_ids, "Select Client Types", class: "label" %>
-        <div class="control">
-          <div class="select is-multiple">
-            <%= form.collection_select :client_type_ids, ClientType.all, :id, :name, {}, { multiple: true, size: 5, class: "input" } %>
-          </div>
-        </div>
-      </div>
+
+
+<!-- Specialties -->
+<div class="column is-one-third">
+  <div class="field">
+    <%= form.label :specialty_ids, "Select Specialties", class: "label" %>
+    <div class="control">
+      <%= form.collection_select :specialty_ids, Specialty.all, :id, :name, 
+          { prompt: "Select specialties..." }, 
+          { multiple: true, class: "tom-select-specialties", data: { tom_select: true } } %>
     </div>
+  </div>
+</div>
 
-
-
-
-    <!-- Issues -->
-    <div class="column is-one-third">
-      <div class="field">
-        <%= form.label :issue_ids, "Select Issues", class: "label" %>
-        <div class="control">
-          <div class="select is-multiple">
-            <%= form.collection_select :issue_ids, Issue.all, :id, :name, {}, { multiple: true, size: 5, class: "input" } %>
-          </div>
-        </div>
-      </div>
+<!-- Issues -->
+<div class="column is-one-third">
+  <div class="field">
+    <%= form.label :issue_ids, "Select Issues", class: "label" %>
+    <div class="control">
+      <%= form.collection_select :issue_ids, Issue.all, :id, :name, 
+          { prompt: "Select issues..." }, 
+          { multiple: true, class: "tom-select-issues", data: { tom_select: true } } %>
     </div>
+  </div>
+</div>
+
+
 
 
     <!-- Standard Rate -->
@@ -277,14 +279,21 @@
     </div>
 
 
+
+
+
+
     <div class="column is-12">
   <div class="field">
     <div class="control">
       <label class="checkbox">
-<%= form.collection_select :language_ids, Language.all, :id, :name,
-      { prompt: "Select languages", selected: form.object.language_ids },
-      { multiple: true, class: "select is-multiple" } %>
-      </label>
+ <%= form.collection_select :language_ids, Language.all, :id, :name,
+            { prompt: "Select languages" },
+            { multiple: true, class: "tom-select-languages", data: { tom_select: true } } %>
+    
+
+
+      
     </div>
   </div>
 </div>
@@ -399,10 +408,20 @@ confirmCrop.addEventListener("click", () => {
 
     if (!countrySelect || !citySelect) return;
 
-    countrySelect.addEventListener('change', function() {
+   countrySelect.addEventListener('change', function () {
       const selectedCountry = this.value;
-      citySelect.innerHTML = '<option value="">Select City</option>';
+
+      // Clear and reset city select
+      citySelect.innerHTML = ''; // clear all
       citySelect.disabled = !selectedCountry;
+
+      // Add 'Select City' placeholder manually
+      const placeholder = document.createElement('option');
+      placeholder.value = '';
+      placeholder.textContent = 'Select City';
+      placeholder.disabled = true;
+      placeholder.selected = true;
+      citySelect.appendChild(placeholder);
 
       if (selectedCountry) {
         const country = countryData.find(c => c.name === selectedCountry);
@@ -412,10 +431,11 @@ confirmCrop.addEventListener("click", () => {
             citySelect.add(option);
           });
 
-          // Preselect saved value if it matches one of the cities
+          // Set saved city if it's valid
           const savedCity = '<%= j @psychologist_profile.city %>';
-          if (savedCity) {
+          if (savedCity && country.cities.includes(savedCity)) {
             citySelect.value = savedCity;
+            placeholder.selected = false; // unselect placeholder
           }
         }
       }
@@ -425,7 +445,31 @@ confirmCrop.addEventListener("click", () => {
     if (countrySelect.value) {
       countrySelect.dispatchEvent(new Event('change'));
     }
+
+
+       // Fixed TomSelect Configuration
+const config = {
+    plugins: ['remove_button'],
+    maxItems: null,             // allow multiple selections
+    persist: false,
+    create: false,
+    closeAfterSelect: false,    // keep dropdown open after selection
+  };
+
+  document.querySelectorAll('.tom-select-issues, .tom-select-specialties, .tom-select-client-types, .tom-select-languages')
+    .forEach((el) => {
+      if (!el.tomselect) {
+        new TomSelect(el, {
+          ...config,
+          placeholder: el.getAttribute('placeholder') || 'Select...'
+        });
+      }
+    });
+
+
+
   });
 
 
 </script>
+
