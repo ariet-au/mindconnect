@@ -147,7 +147,7 @@
   
 </body>
 <style>
-/* Navbar base styling */
+
 .navbar {
   background: #ffffff;
   border-bottom: 1px solid #e8e8e8;
@@ -163,10 +163,10 @@
 
 .navbar-brand .navbar-item:hover {
   background-color: transparent;
-  color: #007bff;
+  color: #007bff; /* Original Blue */
 }
 
-/* Navigation links */
+
 .nav-link {
   color: #6c757d;
   text-decoration: none;
@@ -177,7 +177,7 @@
 }
 
 .nav-link:hover {
-  color: #007bff;
+  color: #007bff; /* Original Blue */
   text-decoration: none;
 }
 
@@ -188,7 +188,7 @@
   left: 0;
   width: 0;
   height: 2px;
-  background-color: #007bff;
+  background-color: #007bff; /* Original Blue */
   transition: width 0.3s ease;
 }
 
@@ -196,7 +196,7 @@
   width: 100%;
 }
 
-/* User dropdown */
+/* User dropdown button within navbar */
 .user-dropdown-btn {
   background: transparent;
   border: none;
@@ -205,26 +205,29 @@
   border-radius: 4px;
   transition: all 0.2s ease;
   cursor: pointer;
+  display: flex; /* Ensures icon and text are inline */
+  align-items: center;
+  gap: 0.5rem; /* Space between icon, email, and arrow */
 }
 
 .user-dropdown-btn:hover {
   background: #f8f9fa;
-  color: #007bff;
+  color: #007bff; /* Original Blue */
 }
 
 .user-email {
-  max-width: 150px;
+  max-width: 150px; /* Limit width of email to prevent overflow */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Dropdown menu */
+/* Dropdown menu and items */
 .dropdown-menu {
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   border: 1px solid #e8e8e8;
-  margin-top: 0.5rem;
+  margin-top: 0; /* Fix for dropdown disappearing issue */
 }
 
 .dropdown-content {
@@ -237,12 +240,14 @@
   padding: 0.75rem 1.25rem;
   color: #6c757d;
   transition: all 0.2s ease;
-  text-decoration: none;
+  text-decoration: none; /* Ensure links are not underlined */
+  display: flex; /* For icon and text alignment */
+  align-items: center;
 }
 
 .dropdown-item:hover {
   background: #f8f9fa;
-  color: #007bff;
+  color: #007bff; /* Original Blue */
   text-decoration: none;
 }
 
@@ -250,7 +255,7 @@
   margin-right: 0.5rem;
 }
 
-/* Auth buttons */
+/* Auth buttons (Login/Registration) */
 .auth-buttons {
   display: flex;
   gap: 1rem;
@@ -266,23 +271,23 @@
 }
 
 .auth-btn-login {
-  color: #007bff;
-  border-color: #007bff;
+  color: #007bff; /* Original Blue text */
+  border-color: #007bff; /* Original Blue border */
 }
 
 .auth-btn-login:hover {
-  background: #007bff;
+  background: #007bff; /* Fill with Original Blue on hover */
   color: white;
   text-decoration: none;
 }
 
 .auth-btn-signup {
-  background: #007bff;
+  background: #007bff; /* Original Blue background */
   color: white;
 }
 
 .auth-btn-signup:hover {
-  background: #0056b3;
+  background: #0056b3; /* Slightly darker blue on hover */
   text-decoration: none;
 }
 
@@ -295,67 +300,87 @@
 
 .navbar-burger:hover {
   background-color: #f8f9fa;
-  color: #007bff;
+  color: #007bff; /* Original Blue */
 }
 
 .navbar-burger.is-active {
-  color: #007bff;
+  color: #007bff; /* Original Blue */
 }
 
-/* Mobile responsive */
+/* --- Responsive Layout (Mobile & Desktop) --- */
+
+/* On desktop, hide the burger and show the full menu */
+@media screen and (min-width: 1024px) {
+  .navbar-burger {
+    display: none; /* Hide hamburger on desktop */
+  }
+  .navbar-menu {
+    display: flex !important; /* Ensure menu is always visible and horizontal on desktop */
+  }
+}
+
+/* On mobile, hide the menu by default and show the burger */
 @media screen and (max-width: 1023px) {
   .navbar-menu {
+    display: none; /* Hides the menu by default on mobile */
     background: white;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     padding: 1rem;
   }
-  
+
+  /* When the burger is clicked (and .navbar-menu gets .is-active) */
+  .navbar-menu.is-active {
+    display: block !important; /* Shows the menu when active (stacked vertically) */
+  }
+
+  /* Mobile specific adjustments for navbar content */
   .navbar-end {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .navbar-end .navbar-item {
     margin: 0.25rem 0;
   }
-  
+
   .nav-link {
     display: block;
     padding: 0.75rem;
     border-radius: 4px;
   }
-  
+
   .nav-link:hover {
     background: #f8f9fa;
   }
-  
+
   .nav-link::before {
-    display: none;
+    display: none; /* Hide underline animation on mobile nav links */
   }
-  
+
   .auth-buttons {
     flex-direction: column;
     width: 100%;
     gap: 0.5rem;
   }
-  
+
   .auth-btn {
     width: 100%;
     text-align: center;
     padding: 0.75rem;
   }
-  
+
+  /* Dropdown behavior for mobile menu - make it static for full expansion */
   .dropdown {
-    position: static !important;
+    position: static !important; /* Allow dropdown to expand within the mobile menu */
   }
-  
+
   .dropdown-menu {
-    position: static !important;
-    box-shadow: none;
-    border: 1px solid #e8e8e8;
-    margin-top: 0.5rem;
+    position: static !important; /* Allow dropdown menu to expand within the mobile menu */
+    box-shadow: none; /* Remove shadows for cleaner look within mobile menu */
+    border: none; /* Remove border for cleaner look within mobile menu */
+    margin-top: 0.5rem; /* Add some spacing back for mobile dropdown */
   }
-  
+
   .user-dropdown-btn {
     width: 100%;
     text-align: left;
@@ -364,16 +389,17 @@
   }
 }
 
+/* Smaller mobile screens (e.g., very narrow phones) */
 @media screen and (max-width: 768px) {
   .navbar-brand .navbar-item {
     font-size: 1.1rem;
     padding: 0.5rem;
   }
-  
+
   .navbar-brand img {
     max-height: 2rem;
   }
-  
+
   .user-email {
     max-width: 120px;
   }
