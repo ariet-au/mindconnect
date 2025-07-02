@@ -78,19 +78,23 @@
                     <span class="icon">
                       <i class="fas fa-user-circle has-text-grey-dark"></i>
                     </span>
-                    <span class="has-text-grey-dark"><%= current_user.email %></span>
+                    <%= link_to psychologist_profile_path(current_user.psychologist_profile) do %>
+                          <span class="has-text-grey-dark"><%= current_user.email %></span>
+                          <% end %>
                   </span>
                 </button>
               </div>
               <div class="dropdown-menu" id="user-menu" role="menu">
+
+              
                 <div class="dropdown-content has-background-white">
                   <% if current_user.psychologist? && current_user.psychologist_profile.present? %>
-                    <%= link_to edit_psychologist_profile_path(current_user.psychologist_profile), 
+                    <%= link_to psychologist_profile_path(current_user.psychologist_profile), 
                         class: "dropdown-item has-text-grey-darker" do %>
                       <span class="icon">
                         <i class="fas fa-user-edit"></i>
                       </span>
-                      <span>Edit Profile</span>
+                      <span>My Profile</span>
                     <% end %>
                   <% end %>
                   <hr class="dropdown-divider">
