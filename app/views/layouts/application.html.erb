@@ -4,7 +4,8 @@
     <title><%= content_for(:title) || "AkSanaa" %></title>
         <%= favicon_link_tag 'favicon.ico', type: 'image/x-icon' %>
 
-        
+    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+
 
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -52,20 +53,28 @@
         <%= image_tag("ak_logo.png", alt: "Logo") %>
         <strong class="has-text-weight-semibold">AkSanaa</strong>
       </a>
+      
+      <!-- Mobile hamburger menu -->
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar-menu">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
     </div>
 
-
-
-
-    <div class="navbar-menu">
+    <div id="navbar-menu" class="navbar-menu">
       <div class="navbar-end">
-        <!-- Find a Therapist Button -->
+        <!-- Navigation Links -->
         <div class="navbar-item">
-          <%= link_to 'Find a Therapist', search_landing_path, class: "button is-info is-outlined" %>
+          <%= link_to 'Подобрать Психолога', search_landing_path, class: "nav-link" %>
         </div>
 
-          <div class="navbar-item">
-          <%= link_to 'Для Психологов', landing_psych_path, class: "button is-info is-outlined" %>
+        <div class="navbar-item">
+          <%= link_to 'Для Психологов', landing_psych_path, class: "nav-link" %>
+        </div>
+        
+        <div class="navbar-item">
+          <%= link_to 'Контакты', contact_us_path, class: "nav-link" %>
         </div>
         
         <!-- User Menu -->
@@ -73,54 +82,52 @@
           <% if user_signed_in? %>
             <div class="dropdown is-right is-hoverable">
               <div class="dropdown-trigger">
-                <button class="button is-white" aria-haspopup="true" aria-controls="user-menu">
+                <button class="user-dropdown-btn" aria-haspopup="true" aria-controls="user-menu">
                   <span class="icon-text">
                     <span class="icon">
-                      <i class="fas fa-user-circle has-text-grey-dark"></i>
+                      <i class="fas fa-user-circle"></i>
                     </span>
-                    <%= link_to psychologist_profile_path(current_user.psychologist_profile) do %>
-                          <span class="has-text-grey-dark"><%= current_user.email %></span>
-                          <% end %>
+                    <span class="user-email"><%= current_user.email %></span>
+                    <span class="icon">
+                      <i class="fas fa-chevron-down"></i>
+                    </span>
                   </span>
                 </button>
               </div>
               <div class="dropdown-menu" id="user-menu" role="menu">
-
-              
-                <div class="dropdown-content has-background-white">
+                <div class="dropdown-content">
                   <% if current_user.psychologist? && current_user.psychologist_profile.present? %>
                     <%= link_to psychologist_profile_path(current_user.psychologist_profile), 
-                        class: "dropdown-item has-text-grey-darker" do %>
+                        class: "dropdown-item" do %>
                       <span class="icon">
                         <i class="fas fa-user-edit"></i>
                       </span>
-                      <span>My Profile</span>
+                      <span>Мой Профиль</span>
                     <% end %>
                   <% end %>
                   <hr class="dropdown-divider">
                   <%= link_to destroy_user_session_path,
                       data: { turbo_method: :delete }, 
-                      class: "dropdown-item has-text-grey-darker" do %>
+                      class: "dropdown-item" do %>
                     <span class="icon">
                       <i class="fas fa-sign-out-alt"></i>
                     </span>
-                    <span>Sign Out</span>
+                    <span>Выйти</span>
                   <% end %>
                 </div>
               </div>
             </div>
           <% else %>
-            <div class="buttons">
-              <%= link_to 'Log in', new_user_session_path, class: "button is-primary is-outlined" %>
-              <%= link_to 'Sign up', new_user_registration_path, class: "button is-primary is-outlined" %>
+            <div class="auth-buttons">
+              <%= link_to 'Войти', new_user_session_path, class: "auth-btn auth-btn-login" %>
+              <%= link_to 'Регистрация', new_user_registration_path, class: "auth-btn auth-btn-signup" %>
             </div>
           <% end %>
-
-       
         </div>
-              <div class="buttons">
-                                <%= render 'layouts/currency_selector' %>   
-            </div>
+        
+        <div class="navbar-item">
+          <%= render 'layouts/currency_selector' %>   
+        </div>
       </div>
     </div>
   </div>
@@ -139,4 +146,332 @@
   <script src="https://kit.fontawesome.com/your-code.js" crossorigin="anonymous"></script>
   
 </body>
+<style>
+/* Navbar base styling */
+.navbar {
+  background: #ffffff;
+  border-bottom: 1px solid #e8e8e8;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.navbar-brand .navbar-item {
+  font-size: 1.25rem;
+  color: #2c3e50;
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+}
+
+.navbar-brand .navbar-item:hover {
+  background-color: transparent;
+  color: #007bff;
+}
+
+/* Navigation links */
+.nav-link {
+  color: #6c757d;
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 0;
+  position: relative;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.nav-link::before {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #007bff;
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::before {
+  width: 100%;
+}
+
+/* User dropdown */
+.user-dropdown-btn {
+  background: transparent;
+  border: none;
+  color: #6c757d;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.user-dropdown-btn:hover {
+  background: #f8f9fa;
+  color: #007bff;
+}
+
+.user-email {
+  max-width: 150px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e8e8e8;
+  margin-top: 0.5rem;
+}
+
+.dropdown-content {
+  border-radius: 8px;
+  padding: 0.5rem 0;
+  background: white;
+}
+
+.dropdown-item {
+  padding: 0.75rem 1.25rem;
+  color: #6c757d;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.dropdown-item:hover {
+  background: #f8f9fa;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.dropdown-item .icon {
+  margin-right: 0.5rem;
+}
+
+/* Auth buttons */
+.auth-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.auth-btn {
+  text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.auth-btn-login {
+  color: #007bff;
+  border-color: #007bff;
+}
+
+.auth-btn-login:hover {
+  background: #007bff;
+  color: white;
+  text-decoration: none;
+}
+
+.auth-btn-signup {
+  background: #007bff;
+  color: white;
+}
+
+.auth-btn-signup:hover {
+  background: #0056b3;
+  text-decoration: none;
+}
+
+/* Mobile hamburger */
+.navbar-burger {
+  height: 3.25rem;
+  width: 3.25rem;
+  color: #6c757d;
+}
+
+.navbar-burger:hover {
+  background-color: #f8f9fa;
+  color: #007bff;
+}
+
+.navbar-burger.is-active {
+  color: #007bff;
+}
+
+/* Mobile responsive */
+@media screen and (max-width: 1023px) {
+  .navbar-menu {
+    background: white;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+  }
+  
+  .navbar-end {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .navbar-end .navbar-item {
+    margin: 0.25rem 0;
+  }
+  
+  .nav-link {
+    display: block;
+    padding: 0.75rem;
+    border-radius: 4px;
+  }
+  
+  .nav-link:hover {
+    background: #f8f9fa;
+  }
+  
+  .nav-link::before {
+    display: none;
+  }
+  
+  .auth-buttons {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.5rem;
+  }
+  
+  .auth-btn {
+    width: 100%;
+    text-align: center;
+    padding: 0.75rem;
+  }
+  
+  .dropdown {
+    position: static !important;
+  }
+  
+  .dropdown-menu {
+    position: static !important;
+    box-shadow: none;
+    border: 1px solid #e8e8e8;
+    margin-top: 0.5rem;
+  }
+  
+  .user-dropdown-btn {
+    width: 100%;
+    text-align: left;
+    padding: 0.75rem;
+    border-radius: 4px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .navbar-brand .navbar-item {
+    font-size: 1.1rem;
+    padding: 0.5rem;
+  }
+  
+  .navbar-brand img {
+    max-height: 2rem;
+  }
+  
+  .user-email {
+    max-width: 120px;
+  }
+}
+</style>
+<style>
+/* White Background, Blue Outline/Text Button */
+.button.is-primary-blue {
+  background-color: #fff; /* White background */
+  border: 1px solid #007bff; /* Original Blue outline */
+  color: #007bff; /* Original Blue text */
+  /* Remove Bulma's default box-shadow if present or add your own subtle one */
+  box-shadow: none;
+  /* Optional: Adjust padding/font-size for desired minimalistic feel */
+  /* padding: 0.75em 1.5em; */
+  /* font-size: 1em; */
+}
+
+.button.is-primary-blue:hover,
+.button.is-primary-blue.is-hovered {
+  background-color: #007bff; /* Fill with original blue on hover */
+  border-color: #007bff; /* Keep border blue */
+  color: #fff; /* White text on hover */
+  cursor: pointer;
+}
+
+.button.is-primary-blue:focus,
+.button.is-primary-blue.is-focused {
+  background-color: #007bff; /* Fill with original blue on focus */
+  border-color: #007bff; /* Keep border blue */
+  color: #fff; /* White text on focus */
+  outline: none; /* Remove default browser outline */
+  /* Subtle shadow for focus ring (original blue, semi-transparent) */
+  box-shadow: 0 0 0 0.125em rgba(0, 123, 255, 0.25);
+}
+
+.button.is-primary-blue:active,
+.button.is-primary-blue.is-active {
+  background-color: #0056b3; /* Slightly darker blue on active/click */
+  border-color: #0056b3;
+  color: #fff;
+}
+
+.button.is-primary-blue[disabled],
+fieldset[disabled] .button.is-primary-blue {
+  background-color: #fff; /* Still white background */
+  border
+</style>
+
+<script>
+// Mobile navbar toggle functionality
+document.addEventListener('DOMContentLoaded', () => {
+  // Get all navbar burger elements
+  const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+  
+  // Add click event to each burger
+  if ($navbarBurgers.length > 0) {
+    $navbarBurgers.forEach(el => {
+      el.addEventListener('click', () => {
+        // Get the target from the data-target attribute
+        const target = el.dataset.target;
+        const $target = document.getElementById(target);
+        
+        // Toggle the "is-active" class on both the burger and the menu
+        el.classList.toggle('is-active');
+        $target.classList.toggle('is-active');
+      });
+    });
+  }
+  
+  // Close mobile menu when clicking outside
+  document.addEventListener('click', (e) => {
+    const navbarMenu = document.getElementById('navbar-menu');
+    const navbarBurger = document.querySelector('.navbar-burger');
+    
+    if (navbarMenu && navbarBurger && 
+        !navbarMenu.contains(e.target) && 
+        !navbarBurger.contains(e.target) && 
+        navbarMenu.classList.contains('is-active')) {
+      
+      navbarMenu.classList.remove('is-active');
+      navbarBurger.classList.remove('is-active');
+    }
+  });
+  
+  // Close mobile menu when clicking on nav links
+  const navLinks = document.querySelectorAll('.nav-link');
+  navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+      const navbarMenu = document.getElementById('navbar-menu');
+      const navbarBurger = document.querySelector('.navbar-burger');
+      
+      if (navbarMenu && navbarBurger) {
+        navbarMenu.classList.remove('is-active');
+        navbarBurger.classList.remove('is-active');
+      }
+    });
+  });
+});
+</script>
 </html>

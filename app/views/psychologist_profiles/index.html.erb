@@ -12,7 +12,7 @@
         </span>
       </div>
       <div class="control">
-        <button class="button is-primary is-medium" type="submit">
+        <button class="button is-primary-blue is-medium" type="submit">
           <span class="icon is-hidden-mobile">
             <i class="fas fa-search"></i>
           </span>
@@ -22,7 +22,7 @@
       </div>
       <% if any_filters_active?(params) %>
         <div class="control">
-          <%= link_to psychologist_profiles_path, class: "button is-light is-medium" do %>
+          <%= link_to psychologist_profiles_path, class: "button is-primary-blue is-medium" do %>
             <span class="icon">
               <i class="fas fa-times"></i>
             </span>
@@ -240,7 +240,7 @@
 
         <!-- Currency Display Only -->
         <div class="control">
-          <input class="input is-static has-text-weight-semibold" type="text" readonly value="<%= current_currency %>">
+          <input class="input is-static has-text-weight-semibold" type="text" readonly value="  <%= current_currency %>">
         </div>
       </div>
     </div>
@@ -251,7 +251,7 @@
         <!-- Apply Filters Button -->
         <div class="field">
           <div class="control">
-            <button type="submit" class="button is-primary is-fullwidth">
+            <button type="submit" class="button is-primary-blue is-fullwidth">
               <span class="icon">
                 <i class="fas fa-check"></i>
               </span>
@@ -493,25 +493,25 @@
               <!-- Contact Icons -->
               <div class="contact-icons mt-2">
                 <% if profile.contact_phone.present? %>
-                  <a href="tel:<%= profile.contact_phone %>" class="icon-link mr-1" title="Phone">
+                  <a href="tel:<%= profile.contact_phone %>" class="is-primary-blue mr-1" title="Phone">
                     <span class="icon"><i class="fas fa-phone"></i></span>
                   </a>
                 <% end %>
                 
                 <% if profile.user.email.present? %>
-                  <a href="mailto:<%= profile.user.email %>" class="icon-link mr-1" title="Email">
+                  <a href="mailto:<%= profile.user.email %>" class="is-primary-blue mr-1" title="Email">
                     <span class="icon"><i class="fas fa-envelope"></i></span>
                   </a>
                 <% end %>
                 
                 <% if profile.telegram.present? %>
-                  <a href="https://t.me/<%= profile.telegram %>" target="_blank" class="icon-link mr-1" title="Telegram">
+                  <a href="https://t.me/<%= profile.telegram %>" target="_blank" class="is-primary-blue mr-1" title="Telegram">
                     <span class="icon"><i class="fab fa-telegram"></i></span>
                   </a>
                 <% end %>
                 
                 <% if profile.whatsapp.present? %>
-                  <a href="https://wa.me/<%= profile.whatsapp %>" target="_blank" class="icon-link" title="WhatsApp">
+                  <a href="https://wa.me/<%= profile.whatsapp %>" target="_blank" class="is-primary-blue" title="WhatsApp">
                     <span class="icon"><i class="fab fa-whatsapp"></i></span>
                   </a>
                 <% end %>
