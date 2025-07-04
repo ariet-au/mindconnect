@@ -1,14 +1,26 @@
-<h2>Sign up</h2>
 
+
+
+<h2><b>Sign up</b></h2>
+<br>
+<p>
+Пожалуйстя проверьте спам папку. Gmail хорошо работает. 
+
+Есть проблемы с Мейл ру. Если что можете использовать temp-mail.org, для временного имейла. 
+
+если у вас будут проблемы в контактах есть наш телеграм и имейл. 
+</p>
+<br>
+<br>
 <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
   <%= render "devise/shared/error_messages", resource: resource %>
 
 
 <div class="field mb-3">
-    <%= f.select :role,
-        options_for_select([ ['Psychologist', 'psychologist'],['Client', 'client']], selected: resource.role),
+   <span>Я </span>  <%= f.select :role,
+        options_for_select([ ['Психолог/Терапевт', 'psychologist'],['Клиент', 'client']], selected: resource.role),
         {},
-        { class: "form-select" } %>
+        { class: "form-select" } %> 
 
   </div>
 

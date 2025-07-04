@@ -13,7 +13,7 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
     # Your custom path after confirmation
     sign_in(resource) # Optional: Automatically sign in after confirmation
     if resource.psychologist?
-      psychologist_profile_edit_path
+        edit_psychologist_profile_path(resource.psychologist_profile)
     else
       # Default path for non-psychologists
       root_path

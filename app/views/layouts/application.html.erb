@@ -136,7 +136,7 @@
 
 
 
-    <main class="main-content" style="padding-top: 4rem;"> <!-- Increased padding -->
+<main class="main-content" style="margin-top: 4rem;">
     <div class="container">
       <%= yield %>
     </div>
@@ -147,11 +147,17 @@
   
 </body>
 <style>
+.main-content {
+  display: flow-root; 
+  padding-top: 6rem; /* Adjust this value as needed to clear the navbar */
+  margin-top: 0 !important; /* Reset this if you're using padding-top */
+}
 
 .navbar {
   background: #ffffff;
   border-bottom: 1px solid #e8e8e8;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+                    
 }
 
 .navbar-brand .navbar-item {
