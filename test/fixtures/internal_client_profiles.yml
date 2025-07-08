@@ -1,0 +1,57 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  first_name: MyString
+  last_name: MyString
+  phone_number1: MyString
+  phone_number2: MyString
+  telegram: MyString
+  whatsapp: MyString
+  gender: MyString
+  dob: 2025-07-09
+  country: MyString
+  city: MyString
+  address: MyText
+  internal_reference_number: MyString
+  preferred_contact_method: MyString
+  emergency_contact_name: MyString
+  emergency_contact_phone: MyString
+  emergency_contact_relationship: MyString
+  reason_for_referral: MyText
+  gp_name: MyString
+  gp_contact_info: MyText
+  initial_assessment_summary: MyText
+  risk_assessment_summary: MyText
+  treatment_plan_summary: MyText
+  first_time_therapy: false
+  status: 1
+  psychologist_profile: one
+  client_profile: one
+
+two:
+  first_name: MyString
+  last_name: MyString
+  phone_number1: MyString
+  phone_number2: MyString
+  telegram: MyString
+  whatsapp: MyString
+  gender: MyString
+  dob: 2025-07-09
+  country: MyString
+  city: MyString
+  address: MyText
+  internal_reference_number: MyString
+  preferred_contact_method: MyString
+  emergency_contact_name: MyString
+  emergency_contact_phone: MyString
+  emergency_contact_relationship: MyString
+  reason_for_referral: MyText
+  gp_name: MyString
+  gp_contact_info: MyText
+  initial_assessment_summary: MyText
+  risk_assessment_summary: MyText
+  treatment_plan_summary: MyText
+  first_time_therapy: false
+  status: 1
+  psychologist_profile: two
+  client_profile: two

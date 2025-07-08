@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @internal_client_profile %>
+
+<div>
+  <%= link_to "Edit this internal client profile", edit_internal_client_profile_path(@internal_client_profile) %> |
+  <%= link_to "Back to internal client profiles", internal_client_profiles_path %>
+
+  <%= button_to "Destroy this internal client profile", @internal_client_profile, method: :delete %>
+</div>

@@ -9,6 +9,8 @@ class PsychologistProfile < ApplicationRecord
 
   belongs_to :user
   has_one_attached :profile_img
+  has_many :internal_client_profiles, dependent: :destroy # Add this line
+
 
   #specialities 
   has_many :psychologist_specialties, dependent: :destroy
@@ -41,15 +43,14 @@ class PsychologistProfile < ApplicationRecord
     other: 3      
   }
 
-  pg_search_scope :search_full_text,
-    against: [:first_name, :last_name, :about_me, :education, :license_number, :city, :country],
-    associated_against: {
-       # optional, if you want to search user's email
-      services: [:name, :description] # adjust fields based on your Service model
-    },
-    using: {
-      tsearch: { prefix: true }
-    }
+pg_search_scope :search_full_text,
+  against: [:first_name, :last_name, :about_me, :education, :license_number, :city, :country],
+  associated_against: {
+    services: [:name, :description]
+  },
+  using: {
+    tsearch: { prefix: true }
+  }
 
 
   def resize_profile_image

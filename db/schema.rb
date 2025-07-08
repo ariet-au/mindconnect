@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_06_08_151340) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_08_145702) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -42,6 +42,25 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_08_151340) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "client_profiles", force: :cascade do |t|
+    t.string "frist_name"
+    t.string "last_name"
+    t.date "dob"
+    t.string "gender"
+    t.string "country"
+    t.string "city"
+    t.text "address"
+    t.string "timezone"
+    t.string "phone_number1"
+    t.string "phone_number2"
+    t.string "telegram"
+    t.string "whatsapp"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_client_profiles_on_user_id", unique: true
+  end
+
   create_table "client_types", force: :cascade do |t|
     t.string "name"
     t.string "description"
@@ -55,6 +74,40 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_08_151340) do
     t.index ["client_type_id", "issue_id"], name: "index_client_types_issues_on_client_type_id_and_issue_id", unique: true
     t.index ["client_type_id"], name: "index_client_types_issues_on_client_type_id"
     t.index ["issue_id"], name: "index_client_types_issues_on_issue_id"
+  end
+
+  create_table "internal_client_profiles", force: :cascade do |t|
+    t.string "first_name"
+    t.string "last_name"
+    t.string "phone_number1"
+    t.string "phone_number2"
+    t.string "telegram"
+    t.string "whatsapp"
+    t.string "gender"
+    t.date "dob"
+    t.string "country"
+    t.string "city"
+    t.text "address"
+    t.string "internal_reference_number"
+    t.string "preferred_contact_method"
+    t.string "emergency_contact_name"
+    t.string "emergency_contact_phone"
+    t.string "emergency_contact_relationship"
+    t.text "reason_for_referral"
+    t.string "gp_name"
+    t.text "gp_contact_info"
+    t.text "initial_assessment_summary"
+    t.text "risk_assessment_summary"
+    t.text "treatment_plan_summary"
+    t.boolean "first_time_therapy"
+    t.integer "status"
+    t.bigint "psychologist_profile_id", null: false
+    t.bigint "client_profile_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_profile_id"], name: "index_internal_client_profiles_on_client_profile_id"
+    t.index ["psychologist_profile_id", "internal_reference_number"], name: "idx_internal_client_ref_per_psych", unique: true
+    t.index ["psychologist_profile_id"], name: "index_internal_client_profiles_on_psychologist_profile_id"
   end
 
   create_table "issues", force: :cascade do |t|
@@ -134,6 +187,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_08_151340) do
     t.string "currency"
     t.boolean "in_person"
     t.boolean "online"
+    t.text "about_clients"
+    t.text "about_issues"
+    t.text "about_specialties"
+    t.string "primary_contact_method"
     t.index ["user_id"], name: "index_psychologist_profiles_on_user_id"
   end
 
@@ -187,8 +244,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_08_151340) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "client_profiles", "users"
   add_foreign_key "client_types_issues", "client_types"
   add_foreign_key "client_types_issues", "issues"
+  add_foreign_key "internal_client_profiles", "client_profiles"
+  add_foreign_key "internal_client_profiles", "psychologist_profiles"
   add_foreign_key "psychologist_client_types", "client_types"
   add_foreign_key "psychologist_client_types", "psychologist_profiles"
   add_foreign_key "psychologist_issues", "issues"

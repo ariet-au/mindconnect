@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  resources :internal_client_profiles
+  resources :client_profiles
   resources :issues do
     collection do
       get :filtered

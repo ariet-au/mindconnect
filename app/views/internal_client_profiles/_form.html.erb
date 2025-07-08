@@ -1,0 +1,147 @@
+<%= form_with(model: internal_client_profile) do |form| %>
+  <% if internal_client_profile.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(internal_client_profile.errors.count, "error") %> prohibited this internal_client_profile from being saved:</h2>
+
+      <ul>
+        <% internal_client_profile.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :first_name, style: "display: block" %>
+    <%= form.text_field :first_name %>
+  </div>
+
+  <div>
+    <%= form.label :last_name, style: "display: block" %>
+    <%= form.text_field :last_name %>
+  </div>
+
+  <div>
+    <%= form.label :phone_number1, style: "display: block" %>
+    <%= form.text_field :phone_number1 %>
+  </div>
+
+  <div>
+    <%= form.label :phone_number2, style: "display: block" %>
+    <%= form.text_field :phone_number2 %>
+  </div>
+
+  <div>
+    <%= form.label :telegram, style: "display: block" %>
+    <%= form.text_field :telegram %>
+  </div>
+
+  <div>
+    <%= form.label :whatsapp, style: "display: block" %>
+    <%= form.text_field :whatsapp %>
+  </div>
+
+  <div>
+    <%= form.label :gender, style: "display: block" %>
+    <%= form.text_field :gender %>
+  </div>
+
+  <div>
+    <%= form.label :dob, style: "display: block" %>
+    <%= form.date_field :dob %>
+  </div>
+
+  <div>
+    <%= form.label :country, style: "display: block" %>
+    <%= form.text_field :country %>
+  </div>
+
+  <div>
+    <%= form.label :city, style: "display: block" %>
+    <%= form.text_field :city %>
+  </div>
+
+  <div>
+    <%= form.label :address, style: "display: block" %>
+    <%= form.textarea :address %>
+  </div>
+
+  <div>
+    <%= form.label :internal_reference_number, style: "display: block" %>
+    <%= form.text_field :internal_reference_number %>
+  </div>
+
+  <div>
+    <%= form.label :preferred_contact_method, style: "display: block" %>
+    <%= form.text_field :preferred_contact_method %>
+  </div>
+
+  <div>
+    <%= form.label :emergency_contact_name, style: "display: block" %>
+    <%= form.text_field :emergency_contact_name %>
+  </div>
+
+  <div>
+    <%= form.label :emergency_contact_phone, style: "display: block" %>
+    <%= form.text_field :emergency_contact_phone %>
+  </div>
+
+  <div>
+    <%= form.label :emergency_contact_relationship, style: "display: block" %>
+    <%= form.text_field :emergency_contact_relationship %>
+  </div>
+
+  <div>
+    <%= form.label :reason_for_referral, style: "display: block" %>
+    <%= form.textarea :reason_for_referral %>
+  </div>
+
+  <div>
+    <%= form.label :gp_name, style: "display: block" %>
+    <%= form.text_field :gp_name %>
+  </div>
+
+  <div>
+    <%= form.label :gp_contact_info, style: "display: block" %>
+    <%= form.textarea :gp_contact_info %>
+  </div>
+
+  <div>
+    <%= form.label :initial_assessment_summary, style: "display: block" %>
+    <%= form.textarea :initial_assessment_summary %>
+  </div>
+
+  <div>
+    <%= form.label :risk_assessment_summary, style: "display: block" %>
+    <%= form.textarea :risk_assessment_summary %>
+  </div>
+
+  <div>
+    <%= form.label :treatment_plan_summary, style: "display: block" %>
+    <%= form.textarea :treatment_plan_summary %>
+  </div>
+
+  <div>
+    <%= form.label :first_time_therapy, style: "display: block" %>
+    <%= form.checkbox :first_time_therapy %>
+  </div>
+
+  <div>
+    <%= form.label :status, style: "display: block" %>
+    <%= form.number_field :status %>
+  </div>
+
+  <div>
+    <%= form.label :psychologist_profile_id, style: "display: block" %>
+    <%= form.text_field :psychologist_profile_id %>
+  </div>
+
+  <div>
+    <%= form.label :client_profile_id, style: "display: block" %>
+    <%= form.text_field :client_profile_id %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

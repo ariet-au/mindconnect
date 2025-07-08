@@ -12,6 +12,17 @@
     </div>
   <% end %>
 
+          <!-- Image Upload -->
+    <div class="column is-full">
+      <div class="field">
+        <label class="button is-link is-light">
+          Upload Profile Image
+          <input type="file" id="imageInput" accept="image/*" hidden>
+        </label>
+        <input type="file" id="croppedImageInput" name="psychologist_profile[profile_img]" hidden>
+      </div>
+    </div>
+
   <div class="columns is-multiline">
     <!-- First Name -->
     <div class="column is-half">
@@ -43,16 +54,99 @@
       </div>
     </div>
 
-        <!-- Image Upload -->
-    <div class="column is-full">
+
+
+    <!-- Education -->
+    <div class="column is-half">
       <div class="field">
-        <label class="button is-link is-light">
-          Upload Profile Image
-          <input type="file" id="imageInput" accept="image/*" hidden>
-        </label>
-        <input type="file" id="croppedImageInput" name="psychologist_profile[profile_img]" hidden>
+        <%= form.label :education, class: "label" %>
+        <div class="control">
+          <%= form.text_field :education, class: "input" %>
+        </div>
       </div>
     </div>
+
+   <!-- Years of Experience -->
+    <div class="column is-half">
+      <div class="field">
+        <%= form.label :years_of_experience, class: "label" %>
+        <div class="control">
+          <%= form.number_field :years_of_experience, class: "input" %>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+<!-- Client Types -->
+<div class="column is-full">
+  <div class="field">
+    <%= form.label :client_type_ids, "Select Client Types", class: "label" %>
+    <div class="control">
+      <%= form.collection_select :client_type_ids, ClientType.all, :id, :name, 
+          { prompt: "Select client types..." }, 
+          { multiple: true, class: "tom-select-client-types", data: { tom_select: true } } %>
+    </div>
+  </div>
+</div>
+
+<div class="column is-full">
+  <div class="field">
+    <%= form.label :about_clients, "About Clients", class: "label" %>
+    <div class="control">
+      <%= form.text_area :about_clients, class: "textarea" %>
+    </div>
+  </div>
+</div>
+
+<!-- Issues -->
+<div class="column is-full">
+  <div class="field">
+    <%= form.label :issue_ids, "Select Issues", class: "label" %>
+    <div class="control">
+      <%= form.collection_select :issue_ids, Issue.all, :id, :name, 
+          { prompt: "Select issues..." }, 
+          { multiple: true, class: "tom-select-issues", data: { tom_select: true } } %>
+    </div>
+  </div>
+</div>
+
+<div class="column is-full">
+  <div class="field">
+    <%= form.label :about_issues, "About Issues", class: "label" %>
+    <div class="control">
+      <%= form.text_area :about_issues, class: "textarea" %>
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- Specialties -->
+<div class="column is-full">
+  <div class="field">
+    <%= form.label :specialty_ids, "Select Specialties", class: "label" %>
+    <div class="control">
+      <%= form.collection_select :specialty_ids, Specialty.all, :id, :name, 
+          { prompt: "Select specialties..." }, 
+          { multiple: true, class: "tom-select-specialties", data: { tom_select: true } } %>
+    </div>
+  </div>
+</div>
+<div class="column is-full">
+  <div class="field">
+    <%= form.label :about_specialties, "About Specialties", class: "label" %>
+    <div class="control">
+      <%= form.text_area :about_specialties, class: "textarea" %>
+    </div>
+  </div>
+</div>
+
+
+
 
    <!-- Gender -->
 <div class="column is-half">
@@ -68,58 +162,6 @@
     </div>
   </div>
 </div>
-
-    <!-- Education -->
-    <div class="column is-half">
-      <div class="field">
-        <%= form.label :education, class: "label" %>
-        <div class="control">
-          <%= form.text_field :education, class: "input" %>
-        </div>
-      </div>
-    </div>
-
-
-<!-- Client Types -->
-<div class="column is-one-third">
-  <div class="field">
-    <%= form.label :client_type_ids, "Select Client Types", class: "label" %>
-    <div class="control">
-      <%= form.collection_select :client_type_ids, ClientType.all, :id, :name, 
-          { prompt: "Select client types..." }, 
-          { multiple: true, class: "tom-select-client-types", data: { tom_select: true } } %>
-    </div>
-  </div>
-</div>
-
-
-
-<!-- Specialties -->
-<div class="column is-one-third">
-  <div class="field">
-    <%= form.label :specialty_ids, "Select Specialties", class: "label" %>
-    <div class="control">
-      <%= form.collection_select :specialty_ids, Specialty.all, :id, :name, 
-          { prompt: "Select specialties..." }, 
-          { multiple: true, class: "tom-select-specialties", data: { tom_select: true } } %>
-    </div>
-  </div>
-</div>
-
-<!-- Issues -->
-<div class="column is-one-third">
-  <div class="field">
-    <%= form.label :issue_ids, "Select Issues", class: "label" %>
-    <div class="control">
-      <%= form.collection_select :issue_ids, Issue.all, :id, :name, 
-          { prompt: "Select issues..." }, 
-          { multiple: true, class: "tom-select-issues", data: { tom_select: true } } %>
-    </div>
-  </div>
-</div>
-
-
-
 
     <!-- Standard Rate -->
 <div class="column is-one-quarter">
@@ -144,17 +186,8 @@
   </div>
 </div>
 
-    <!-- Years of Experience -->
-    <div class="column is-half">
-      <div class="field">
-        <%= form.label :years_of_experience, class: "label" %>
-        <div class="control">
-          <%= form.number_field :years_of_experience, class: "input" %>
-        </div>
-      </div>
-    </div>
-
-
+ 
+  
 
     <!-- Country -->
 <div class="column is-half">
@@ -195,7 +228,6 @@
 </div>
 
 
-
     <!-- Address -->
     <div class="column is-full">
       <div class="field">
@@ -205,6 +237,7 @@
         </div>
       </div>
     </div>
+
 
     <!-- Contact Information -->
     <div class="column is-half">
@@ -255,6 +288,24 @@
       </div>
     </div>
 
+    <div class="column is-full">
+  <div class="field">
+    <%= form.label :primary_contact_method, "Primary Contact Method", class: "label" %>
+    <div class="control">
+      <div class="select is-fullwidth">
+        <%= form.select :primary_contact_method,
+            options_for_select(
+              [['Telegram', 'telegram'], ['WhatsApp', 'whatsapp'], 
+               ['Phone 1', 'contact_phone'], ['Phone 2', 'contact_phone2'], 
+               ['Phone 3', 'contact_phone3']],
+              selected: @psychologist_profile.primary_contact_method
+            ),
+            { include_blank: 'Select Primary Contact' } %>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 
  
@@ -277,6 +328,8 @@
         </label>
       </div>
     </div>
+
+
 
 
 

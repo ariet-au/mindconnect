@@ -32,9 +32,11 @@ class PsychologistProfilesController < ApplicationController
 def index
    @psychologist_profiles = PsychologistProfile.verified.order(created_at: :desc)
 
-    if params[:search].present?
-      @psychologist_profiles = @psychologist_profiles.search_full_text(params[:search])
-    end
+  if params[:search].present?
+    @psychologist_profiles = PsychologistProfile
+      .joins(:services) # only if services are part of search
+      .merge(PsychologistProfile.search_full_text(params[:search]))
+  end
 
     session[:currency] = params[:currency] if params[:currency].present?
 
@@ -62,12 +64,12 @@ def index
   #client_type_ids  = Array(params[:client_type_ids]).reject(&:blank?)
   client_type_ids = if params[:client_type_ids].present?
   Array(params[:client_type_ids]).reject(&:blank?)
-elsif params[:client_type_id].present?
-  [params[:client_type_id]]
-else
-  []
-end
-  language_ids     = Array(params[:language_ids]).reject(&:blank?)
+  elsif params[:client_type_id].present?
+    [params[:client_type_id]]
+  else
+    []
+  end
+    language_ids     = Array(params[:language_ids]).reject(&:blank?)
 
   if language_ids.any?
     @psychologist_profiles = @psychologist_profiles.joins(:languages).where(languages: { id: language_ids }).distinct
@@ -93,15 +95,6 @@ end
     @psychologist_profiles = @psychologist_profiles.where("city ILIKE ?", "%#{params[:city]}%")
   end
 
-  # if params[:keywords].present?
-  #   @psychologist_profiles = @psychologist_profiles.where("title ILIKE ?", "%#{params[:keywords]}%")
-  # end
-
-  # if params[:search].present?
-  # @psychologist_profiles = PsychologistProfile.search_full_text(params[:search]).includes(:user, :services)
-  # else
-  #   @psychologist_profiles = PsychologistProfile.includes(:user).all
-  # end
 
   # Filter by currency - do this AFTER all ActiveRecord filtering
   target_currency = current_currency.upcase
@@ -254,6 +247,7 @@ end
             :country, :city, :address, :telegram, :whatsapp, :contact_phone,
             :contact_phone2, :contact_phone3, :gender, :education, :is_doctor, :in_person, :online, 
             :is_degree_boolean, :profile_img,
+            :about_clients, :about_issues, :about_specialties, :primary_contact_method,
             issue_ids: [],         # <-- Add this
             client_type_ids: [],  # <-- And this
             specialty_ids: [] ,     # <-- And this,

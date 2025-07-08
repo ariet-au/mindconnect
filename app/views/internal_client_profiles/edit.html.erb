@@ -1,0 +1,12 @@
+<% content_for :title, "Editing internal client profile" %>
+
+<h1>Editing internal client profile</h1>
+
+<%= render "form", internal_client_profile: @internal_client_profile %>
+
+<br>
+
+<div>
+  <%= link_to "Show this internal client profile", @internal_client_profile %> |
+  <%= link_to "Back to internal client profiles", internal_client_profiles_path %>
+</div>

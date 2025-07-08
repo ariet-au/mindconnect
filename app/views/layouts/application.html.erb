@@ -105,6 +105,15 @@
                       <span>Мой Профиль</span>
                     <% end %>
                   <% end %>
+                  <% if current_user.client? && current_user.client_profile.present? %>
+                    <%= link_to client_profile_path(current_user.client_profile), 
+                        class: "dropdown-item" do %>
+                      <span class="icon">
+                        <i class="fas fa-user-edit"></i>
+                      </span>
+                      <span>Мой Профиль</span>
+                    <% end %>
+                  <% end %>
                   <hr class="dropdown-divider">
                   <%= link_to destroy_user_session_path,
                       data: { turbo_method: :delete }, 
