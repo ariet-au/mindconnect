@@ -1,0 +1,127 @@
+<div class="container is-fluid p-4">
+  <div class="box p-6">
+    <h1 class="title is-3 has-text-centered has-text-grey-dark mb-5">
+      <%= @psychologist_profile.first_name %>'s Availability
+    </h1>
+
+    <% if notice %>
+      <div class="notification is-success is-light mb-4">
+        <button class="delete"></button>
+        <%= notice %>
+      </div>
+    <% end %>
+
+    <% if alert %>
+      <div class="notification is-danger is-light mb-4">
+        <button class="delete"></button>
+        <%= alert %>
+      </div>
+    <% end %>
+
+    <div class="has-text-centered mb-5">
+      <p class="subtitle is-5 has-text-grey-dark mb-2">
+        Your current timezone: <span class="has-text-info has-text-weight-semibold"><%= @psychologist_profile.timezone %></span>
+      </p>
+      <p class="has-text-grey is-size-7">
+        All availability slots are managed in this timezone.
+      </p>
+    </div>
+
+    <h2 class="title is-4 has-text-grey-dark mb-4 pb-2 border-bottom">
+      Manage Your Availabilities
+    </h2>
+
+    <% if @availabilities.empty? %>
+      <p class="has-text-grey has-text-centered is-size-5 py-5">No availability set yet. This should not happen if setup correctly.</p>
+    <% else %>
+      <div class="space-y-6">
+        <% @availabilities.each do |availability| %>
+          <div class="box p-4 is-flex is-flex-direction-column is-align-items-center-mobile is-flex-direction-row-tablet is-justify-content-space-between-tablet">
+            <%= form_with(model: [ @psychologist_profile, availability ], local: true, class: "is-fullwidth is-flex is-flex-direction-column is-flex-direction-row-tablet is-align-items-center-tablet is-justify-content-space-between-tablet") do |form| %>
+              <div class="field is-grouped is-grouped-multiline is-fullwidth is-align-items-center">
+                <div class="control is-narrow">
+                  <p class="tag is-large is-info is-light has-text-weight-bold">
+                    <%= availability.day_name %>
+                  </p>
+                  <%= form.hidden_field :day_of_week %>
+                </div>
+
+                <%# Start Time Picker %>
+                <div class="control is-expanded">
+                  <label class="label is-sr-only">Start Time</label>
+                  <div class="field has-addons">
+                    <div class="control">
+                      <div class="select">
+                        <%= form.select :start_time_of_day_hour, options_for_select((0..23).map { |h| ["%02d" % h, h] }, availability.start_time_of_day&.hour), { include_blank: 'HH' }, data: { time_input: true }, class: "time-input" %>
+                      </div>
+                    </div>
+                    <div class="control">
+                      <div class="select">
+                        <%= form.select :start_time_of_day_minute, options_for_select((0..59).step(15).map { |m| ["%02d" % m, m] }, availability.start_time_of_day&.min), { include_blank: 'MM' }, data: { time_input: true }, class: "time-input" %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <%# End Time Picker %>
+                <div class="control is-expanded">
+                  <label class="label is-sr-only">End Time</label>
+                  <div class="field has-addons">
+                    <div class="control">
+                      <div class="select">
+                        <%= form.select :end_time_of_day_hour, options_for_select((0..23).map { |h| ["%02d" % h, h] }, availability.end_time_of_day&.hour), { include_blank: 'HH' }, data: { time_input: true }, class: "time-input" %>
+                      </div>
+                    </div>
+                    <div class="control">
+                      <div class="select">
+                        <%= form.select :end_time_of_day_minute, options_for_select((0..59).step(15).map { |m| ["%02d" % m, m] }, availability.end_time_of_day&.min), { include_blank: 'MM' }, data: { time_input: true }, class: "time-input" %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="control">
+                  <%= form.submit "Update", class: "button is-info is-light is-hidden", data: { update_button: true } %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+  </div>
+</div>
+
+<style>
+  .border-bottom {
+    border-bottom: 1px solid #dbdbdb;
+  }
+
+  .space-y-6 > *:not(:first-child) {
+    margin-top: 1.5rem;
+  }
+</style>
+
+<script>
+  document.addEventListener('turbo:load', function () {
+    // Dismissible notifications
+    (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
+      const $notification = $delete.parentNode;
+      $delete.addEventListener('click', () => {
+        $notification.parentNode.removeChild($notification);
+      });
+    });
+
+    // Show update button on input change
+    document.querySelectorAll('.time-input').forEach(input => {
+      input.addEventListener('change', (event) => {
+        const form = event.target.closest('form');
+        const updateButton = form.querySelector('[data-update-button]');
+        if (updateButton) {
+          updateButton.classList.remove('is-hidden');
+        }
+      });
+    });
+  });
+</script>

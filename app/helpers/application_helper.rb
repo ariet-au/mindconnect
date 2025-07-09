@@ -20,5 +20,21 @@ module ApplicationHelper
     end
 
 
+    def format_timezone_offset(timezone_identifier)
+        return "N/A" unless timezone_identifier.present?
+
+        begin
+        tz = TZInfo::Timezone.get(timezone_identifier)
+        # Get the current period to account for Daylight Saving Time
+        current_period = tz.current_period
+        # Calculate the UTC offset in hours
+        offset_hours = current_period.offset.utc_total_offset / 3600.0
+        # Format as "GMT+X" or "GMT-X"
+        "GMT#{offset_hours >= 0 ? '+' : ''}#{offset_hours.to_i}"
+        rescue TZInfo::InvalidTimezoneIdentifier
+            "Invalid Time Zone" # Or handle as per your error policy
+        end
+    end
+
 end
 

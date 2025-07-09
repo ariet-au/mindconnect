@@ -68,3 +68,5 @@ gem 'countries'
 gem 'money-rails'
 gem 'redis'
 gem 'pg_search'
+
+

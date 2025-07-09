@@ -13,13 +13,36 @@
   <% end %>
 
           <!-- Image Upload -->
-    <div class="column is-full">
+    <div class="column is-half">
       <div class="field">
         <label class="button is-link is-light">
           Upload Profile Image
           <input type="file" id="imageInput" accept="image/*" hidden>
         </label>
         <input type="file" id="croppedImageInput" name="psychologist_profile[profile_img]" hidden>
+      </div>
+    </div>
+
+             <!-- Timezone -->
+    <div class="column is-half">
+      <div class="field">
+        <%= form.label :timezone, "Time Zone" %><br>
+        <%= form.select :timezone,
+          TZInfo::Timezone.all_identifiers.map { |id|
+            # Ensure the time zone object is valid before trying to get its current_period
+            begin
+              tz = TZInfo::Timezone.get(id)
+              # Use current_period to get the offset, handling DST
+              offset = tz.current_period.offset.utc_total_offset / 3600.0
+              formatted_offset = "GMT#{offset >= 0 ? '+' : ''}#{offset.to_i}" # Use .to_i for cleaner integer offset
+              ["(#{formatted_offset}) #{id}", id]
+            rescue TZInfo::InvalidTimezoneIdentifier # Handle cases where TZInfo might not recognize an ID
+              nil # Skip this ID if it's invalid
+            end
+          }.compact, # Remove any nil entries from the map
+          { prompt: "Select your time zone" }, # Options for the select helper
+          { id: "timezone_select", class: "w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500" } # HTML attributes for the select tag
+        %>
       </div>
     </div>
 
@@ -500,24 +523,67 @@ confirmCrop.addEventListener("click", () => {
     }
 
 
-       // Fixed TomSelect Configuration
-const config = {
+  const commonConfig = {
     plugins: ['remove_button'],
-    maxItems: null,             // allow multiple selections
+    maxItems: null,             // allow multiple selections (for these common ones)
     persist: false,
     create: false,
     closeAfterSelect: false,    // keep dropdown open after selection
   };
 
+  // Initialize TomSelect for your existing elements
   document.querySelectorAll('.tom-select-issues, .tom-select-specialties, .tom-select-client-types, .tom-select-languages')
     .forEach((el) => {
-      if (!el.tomselect) {
+      if (!el.tomselect) { // Prevent re-initialization
         new TomSelect(el, {
-          ...config,
+          ...commonConfig, // Spread the common configuration
           placeholder: el.getAttribute('placeholder') || 'Select...'
         });
       }
     });
+
+  // --- Specific Configuration and Initialization for Time Zone Select ---
+
+  const timezoneSelectElement = document.getElementById('timezone_select');
+
+  if (timezoneSelectElement && !timezoneSelectElement.tomselect) { // Check if element exists and not already initialized
+    const timezoneConfig = {
+      // Inherit some common settings if desired, or define them specifically
+      // For a single select, maxItems should be 1
+      maxItems: 1,
+      persist: false,
+      create: false,
+      // Specific plugins for the timezone select
+      plugins: ['dropdown_input'], // Ensures the search input is always visible
+      sortField: {
+        field: "text", // Sort by the displayed text
+        direction: "asc"
+      },
+      placeholder: timezoneSelectElement.getAttribute('data-placeholder') || "Select your time zone", // Use data-placeholder or a default
+      allowEmptyOption: true, // Allow the prompt option
+    };
+
+    // Initialize Tom Select for the timezone dropdown
+    const tomSelectInstance = new TomSelect(timezoneSelectElement, timezoneConfig);
+
+    // Attempt to auto-detect the user's browser timezone and set the dropdown value
+    if (typeof Intl !== 'undefined' && typeof Intl.DateTimeFormat !== 'undefined') {
+      try {
+        const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        console.log("Detected browser time zone:", browserTimeZone);
+
+        // Set the value using the Tom Select instance's API
+        // Tom Select will only set the value if it's a valid option
+        tomSelectInstance.setValue(browserTimeZone);
+        console.log("Time zone set to browser default:", browserTimeZone);
+
+      } catch (error) {
+        console.error("Error detecting browser time zone:", error);
+      }
+    } else {
+      console.warn("Intl.DateTimeFormat API not supported. Cannot auto-detect time zone.");
+    }
+  }
 
 
 

@@ -1,0 +1,109 @@
+<h2>Manage Unavailability</h2>
+<div id="calendar-container" data-psychologist-profile-id="<%= @psychologist_profile.id %>">
+  <div id="calendar"></div> </div>
+
+
+<div id="calendar"></div>
+
+
+
+<script>
+
+
+document.addEventListener('turbo:load', function () {
+    const calendarEl = document.getElementById('calendar');
+    const container = document.getElementById('calendar-container');
+    if (!calendarEl || !container) return;
+
+    const psychologistProfileId = container.dataset.psychologistProfileId;
+    if (!psychologistProfileId) {
+        console.error("Missing psychologist profile ID");
+        return;
+    }
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'timeGridWeek', // Your specified view
+        slotMinTime: "06:00:00",
+        slotMaxTime: "22:00:00",
+        allDaySlot: false,
+        editable: true,
+        selectable: true,
+        firstDay: 1, // Monday
+
+        select: function(info) {
+            var reason = prompt("Reason for unavailability?");
+            if (reason === null || reason.trim() === "") { // Handles cancelled prompt or empty reason
+                alert("Unavailability reason cannot be blank.");
+                return; // Stop processing if no valid reason
+            }
+
+            fetch('/psychologist_unavailabilities.json', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': document.querySelector("[name='csrf-token']").content
+                },
+                body: JSON.stringify({
+                    psychologist_unavailability: {
+                        // For timeGridWeek, info.start and info.end are Date objects representing
+                        // the exact date and time of the selection.
+                        // toISOString() is the best way to serialize them for Rails.
+                        start_time: info.start.toISOString(),
+                        end_time: info.end.toISOString(),
+                        reason: reason,
+                        // THIS IS THE CRITICAL MISSING PIECE IN YOUR POST DATA:
+                        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                        // DO NOT send 'recurring' or 'day_of_week' from here,
+                        // as this is for a specific date/time unavailability.
+                    }
+                })
+            }).then(response => {
+                if (response.ok) {
+                    calendar.refetchEvents(); // Refresh the calendar to show the new event
+                } else {
+                    // Improved error handling to show specific Rails validation messages
+                    response.json().then(errors => {
+                        console.error("Server-side validation errors:", errors);
+                        alert("Error saving unavailability: " + JSON.stringify(errors));
+                    }).catch(() => {
+                        alert("Error saving unavailability. Could not parse error response from server.");
+                    });
+                }
+            }).catch(error => { // Catch network errors too
+                console.error("Network or Fetch error:", error);
+                alert("A network error occurred while saving unavailability.");
+            });
+        },
+
+        // ... eventClick and eventSources (which should be correct for rendering) ...
+        eventSources: [
+            {
+                url: '/psychologist_unavailabilities.json',
+                method: 'GET',
+                color: '#d9534f',
+                textColor: 'white'
+            },
+            {
+                url: `/psychologist_profiles/${psychologistProfileId}/psychologist_availabilities/calendar_blocks`, // <--- THIS URL
+                method: 'GET',
+                extraParams: {},
+                failure: () => alert('There was an error fetching availability.'),
+                display: 'background',
+                color: '#d4edda'
+            }
+        ]
+    });
+      window.myCalendar = calendar; // <-- ADD THIS LINE
+
+
+    calendar.render();
+});
+</script>
+
+<style>
+.fc-bg-event {
+    background-color: #d4edda !important; /* Force the color */
+    opacity: 0.5 !important;             
+    z-index: 1 !important;               
+}
+</style>

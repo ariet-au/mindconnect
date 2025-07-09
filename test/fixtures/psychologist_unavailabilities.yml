@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  psychologist_profile: one
+  start_time: 2025-07-09 18:32:25
+  end_time: 2025-07-09 18:32:25
+  reason: MyString
+  recurring: false
+  day_of_week: 1
+  recurring_until: 2025-07-09
+
+two:
+  psychologist_profile: two
+  start_time: 2025-07-09 18:32:25
+  end_time: 2025-07-09 18:32:25
+  reason: MyString
+  recurring: false
+  day_of_week: 1
+  recurring_until: 2025-07-09

@@ -29,6 +29,15 @@ class PsychologistProfile < ApplicationRecord
   has_many :psychologist_languages
   has_many :languages, through: :psychologist_languages
 
+
+
+  #bookings
+    # Add this line:
+  has_many :psychologist_availabilities, dependent: :destroy
+
+  # You probably also want:
+  has_many :psychologist_unavailabilities, dependent: :destroy
+
   scope :verified, -> { joins(:user).where.not(users: { confirmed_at: nil }) }
   #monetize :standard_rate, as: :standard_rate_money, with_model_currency: :currency ,allow_nil: true , as_subunit: false
   monetize :standard_rate, as: :standard_rate_money, 

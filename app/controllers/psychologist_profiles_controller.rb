@@ -247,7 +247,7 @@ end
             :country, :city, :address, :telegram, :whatsapp, :contact_phone,
             :contact_phone2, :contact_phone3, :gender, :education, :is_doctor, :in_person, :online, 
             :is_degree_boolean, :profile_img,
-            :about_clients, :about_issues, :about_specialties, :primary_contact_method,
+            :about_clients, :about_issues, :about_specialties, :primary_contact_method, :timezone,
             issue_ids: [],         # <-- Add this
             client_type_ids: [],  # <-- And this
             specialty_ids: [] ,     # <-- And this,

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_08_145702) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_09_105805) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -40,6 +40,23 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_08_145702) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "bookings", force: :cascade do |t|
+    t.bigint "psychologist_profile_id", null: false
+    t.bigint "service_id", null: false
+    t.bigint "client_profile_id", null: false
+    t.bigint "internal_client_profile_id", null: false
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.string "status"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_profile_id"], name: "index_bookings_on_client_profile_id"
+    t.index ["internal_client_profile_id"], name: "index_bookings_on_internal_client_profile_id"
+    t.index ["psychologist_profile_id"], name: "index_bookings_on_psychologist_profile_id"
+    t.index ["service_id"], name: "index_bookings_on_service_id"
   end
 
   create_table "client_profiles", force: :cascade do |t|
@@ -135,6 +152,17 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_08_145702) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "psychologist_availabilities", force: :cascade do |t|
+    t.bigint "psychologist_profile_id", null: false
+    t.integer "day_of_week"
+    t.time "start_time_of_day"
+    t.time "end_time_of_day"
+    t.string "timezone"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["psychologist_profile_id"], name: "index_psychologist_availabilities_on_psychologist_profile_id"
+  end
+
   create_table "psychologist_client_types", force: :cascade do |t|
     t.bigint "psychologist_profile_id", null: false
     t.bigint "client_type_id", null: false
@@ -191,6 +219,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_08_145702) do
     t.text "about_issues"
     t.text "about_specialties"
     t.string "primary_contact_method"
+    t.string "timezone"
     t.index ["user_id"], name: "index_psychologist_profiles_on_user_id"
   end
 
@@ -201,6 +230,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_08_145702) do
     t.datetime "updated_at", null: false
     t.index ["psychologist_profile_id"], name: "index_psychologist_specialties_on_psychologist_profile_id"
     t.index ["specialty_id"], name: "index_psychologist_specialties_on_specialty_id"
+  end
+
+  create_table "psychologist_unavailabilities", force: :cascade do |t|
+    t.bigint "psychologist_profile_id", null: false
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.string "reason"
+    t.boolean "recurring", default: false
+    t.integer "day_of_week"
+    t.date "recurring_until"
+    t.string "timezone"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["psychologist_profile_id"], name: "index_psychologist_unavailabilities_on_psychologist_profile_id"
   end
 
   create_table "services", force: :cascade do |t|
@@ -244,11 +287,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_08_145702) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "bookings", "client_profiles"
+  add_foreign_key "bookings", "internal_client_profiles"
+  add_foreign_key "bookings", "psychologist_profiles"
+  add_foreign_key "bookings", "services"
   add_foreign_key "client_profiles", "users"
   add_foreign_key "client_types_issues", "client_types"
   add_foreign_key "client_types_issues", "issues"
   add_foreign_key "internal_client_profiles", "client_profiles"
   add_foreign_key "internal_client_profiles", "psychologist_profiles"
+  add_foreign_key "psychologist_availabilities", "psychologist_profiles"
   add_foreign_key "psychologist_client_types", "client_types"
   add_foreign_key "psychologist_client_types", "psychologist_profiles"
   add_foreign_key "psychologist_issues", "issues"
@@ -258,5 +306,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_08_145702) do
   add_foreign_key "psychologist_profiles", "users"
   add_foreign_key "psychologist_specialties", "psychologist_profiles"
   add_foreign_key "psychologist_specialties", "specialties"
+  add_foreign_key "psychologist_unavailabilities", "psychologist_profiles"
   add_foreign_key "services", "users"
 end

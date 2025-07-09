@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  psychologist_profile: one
+  service: one
+  client_profile: one
+  internal_client_profile: one
+  start_time: 2025-07-09 18:35:38
+  end_time: 2025-07-09 18:35:38
+  status: MyString
+  notes: MyText
+
+two:
+  psychologist_profile: two
+  service: two
+  client_profile: two
+  internal_client_profile: two
+  start_time: 2025-07-09 18:35:38
+  end_time: 2025-07-09 18:35:38
+  status: MyString
+  notes: MyText

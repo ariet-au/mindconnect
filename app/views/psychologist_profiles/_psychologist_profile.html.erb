@@ -6,7 +6,7 @@
 
        
         <% if psychologist_profile.user == current_user %>
-          <div class="is-pulled-right" style="position: absolute; top: 1rem; right: 4.5rem; z-index: 10;">
+          <div class="is-pulled-right" >
             <%= link_to edit_psychologist_profile_path, class: "button is-primary-custom is-small" do %>
             <span class="icon"><i class="fas fa-edit"></i></span>
             <span>Edit Profile</span>
@@ -15,22 +15,24 @@
         <% end %>
 
 
-        <div class="dropdown is-right is-hoverable is-pulled-right" style="position: absolute; top: 1rem; right: 1rem; z-index: 10;">
-          <div class="dropdown-trigger">
-            <button class="button is-white nav-button" aria-haspopup="true">
-              <span class="icon"><i class="fas fa-ellipsis-v"></i></span>
-            </button>
+        <% if @psychologist_profile.user == current_user %>
+          <div class="is-pulled-right" >
+            <%= link_to psychologist_profile_psychologist_availabilities_path(@psychologist_profile), class: "button is-primary-custom is-small" do %>
+              <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+              <span>Manage Availability</span>
+            <% end %>
           </div>
-          <div class="dropdown-menu">
-            <div class="dropdown-content">
-              <a href="#about" class="dropdown-item">About</a>
-              <a href="#services" class="dropdown-item">Services</a>
-              <a href="#focus" class="dropdown-item">Focus Areas</a>
-              <a href="#contact" class="dropdown-item">Contact</a>
-            </div>
-          </div>
-        </div>
+        <% end %>
+    <div class="is-pulled-right" >
+    
+          <%= link_to psychologist_profile_calendar_path(@psychologist_profile), class: "button is-info is-small" do %>
+            <span class="icon"><i class="fas fa-ban"></i></span>
+            <span>Block Unavailability</span>
+          <% end %>
 
+
+
+    </div>
         <div class="card-content header-section pt-5 pb-4">
           <div class="columns is-vcentered is-mobile">
             <div class="column is-narrow has-text-centered">
@@ -55,6 +57,14 @@
                     🎓 <%= @psychologist_profile.education %>
                   </span>
                 <% end %>
+
+                 
+                    <% if @psychologist_profile.timezone.present? %>
+                      <span class="tag is-gradient is-medium mb-2">
+                        🌐 <%= format_timezone_offset(@psychologist_profile.timezone) %>
+                      </span>
+                    <% end %>
+                  
                 
                 <div class="icons-row mt-2">
                   <% if psychologist_profile.is_doctor %>
