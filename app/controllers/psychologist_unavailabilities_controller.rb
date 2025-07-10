@@ -33,32 +33,89 @@ class PsychologistUnavailabilitiesController < ApplicationController
     render json: all_events
   end
 
-  def create
+def create
+  # Assuming @psychologist_profile is already set
+  psychologist_profile_id = @psychologist_profile.id
+  psychologist_timezone = @psychologist_profile.timezone # Or params[:psychologist_unavailability][:timezone]
+
+  # Set the current Time.zone for parsing based on the psychologist's timezone
+  original_time_zone = Time.zone
+  Time.zone = psychologist_timezone
+
+  if params[:psychologist_unavailability][:recurring] == 'true'
+    # For recurring events, the 'start_time' and 'end_time' from the frontend
+    # are based on a DUMMY_DATE but should represent the time of day in the psychologist's TZ.
+    # Extract just the time component or parse carefully.
+
+    # Example: Input "2000-01-01T08:00:00"
+    # We want to ensure 08:00 is interpreted as AM.
+    start_time_str = params[:psychologist_unavailability][:start_time] # e.g., "2000-01-01T08:00:00"
+    end_time_str = params[:psychologist_unavailability][:end_time]   # e.g., "2000-01-01T09:00:00"
+
+    # Explicitly parse to avoid ambiguity with AM/PM for "HH:MM:SS"
+    # If your input is always "YYYY-MM-DDTHH:MM:SS", then Time.zone.parse should be fine,
+    # but if there's a locale issue, you might need more explicit parsing.
+    # Let's try parsing the full string assuming it's in the set Time.zone
+    parsed_start_time = Time.zone.parse(start_time_str)
+    parsed_end_time = Time.zone.parse(end_time_str)
+
+    Rails.logger.debug "Recurring input start_time_str: #{start_time_str}"
+    Rails.logger.debug "Recurring parsed_start_time (in #{Time.zone.name}): #{parsed_start_time.inspect}"
+    Rails.logger.debug "Recurring parsed_start_time UTC: #{parsed_start_time.utc.inspect}"
+
     processed_params = psychologist_unavailability_params.to_h.merge(
-      psychologist_profile_id: @psychologist_profile.id,
-      timezone: @psychologist_profile.timezone
+      psychologist_profile_id: psychologist_profile_id,
+      start_time: parsed_start_time, # Use the parsed time object
+      end_time: parsed_end_time,     # Use the parsed time object
+      timezone: psychologist_timezone
     )
 
-    if processed_params[:recurring] == 'true'
-      @psychologist_unavailability = PsychologistUnavailability.build_for_recurring(processed_params)
-    else
-      @psychologist_unavailability = @psychologist_profile.psychologist_unavailabilities.new(processed_params)
-    end
+    @psychologist_unavailability = PsychologistUnavailability.build_for_recurring(processed_params)
+  else
+    # For one-off events, the 'start_time' and 'end_time' from FullCalendar
+    # are already ISO strings representing the selected time in the psychologist's timezone
+    # (because FullCalendar's timeZone is set to psychologistTimeZone during selection).
+    # So, Time.zone.parse will correctly interpret them.
 
-    if @psychologist_unavailability.save
-      render json: {
-        id: @psychologist_unavailability.id,
-        title: @psychologist_unavailability.reason,
-        start: @psychologist_unavailability.start_time.in_time_zone(@psychologist_unavailability.timezone).iso8601,
-        end: @psychologist_unavailability.end_time.in_time_zone(@psychologist_unavailability.timezone).iso8601,
-        recurring: @psychologist_unavailability.recurring,
-        allDay: false,
-        timezone: @psychologist_unavailability.timezone
-      }, status: :created
-    else
-      render json: @psychologist_unavailability.errors, status: :unprocessable_entity
-    end
+    start_time_iso = params[:psychologist_unavailability][:start_time] # This comes as ISO from FullCalendar select
+    end_time_iso = params[:psychologist_unavailability][:end_time]     # This comes as ISO from FullCalendar select
+
+    parsed_start_time = Time.zone.parse(start_time_iso)
+    parsed_end_time = Time.zone.parse(end_time_iso)
+
+    Rails.logger.debug "One-off input start_time_iso: #{start_time_iso}"
+    Rails.logger.debug "One-off parsed_start_time (in #{Time.zone.name}): #{parsed_start_time.inspect}"
+    Rails.logger.debug "One-off parsed_start_time UTC: #{parsed_start_time.utc.inspect}"
+
+    processed_params = psychologist_unavailability_params.to_h.merge(
+      psychologist_profile_id: psychologist_profile_id,
+      start_time: parsed_start_time,
+      end_time: parsed_end_time,
+      timezone: psychologist_timezone
+    )
+    @psychologist_unavailability = @psychologist_profile.psychologist_unavailabilities.new(processed_params)
   end
+
+  if @psychologist_unavailability.save
+    render json: {
+      id: @psychologist_unavailability.id,
+      title: @psychologist_unavailability.reason,
+      # Ensure these are converted to the psychologist's timezone for the ISO string output
+      start: @psychologist_unavailability.start_time.in_time_zone(@psychologist_unavailability.timezone).iso8601,
+      end: @psychologist_unavailability.end_time.in_time_zone(@psychologist_unavailability.timezone).iso8601,
+      recurring: @psychologist_unavailability.recurring,
+      allDay: false,
+      timezone: @psychologist_unavailability.timezone,
+      # Add extendedProps if you have them for debugging/info
+      extendedProps: { recurring: @psychologist_unavailability.recurring }
+    }, status: :created
+  else
+    render json: @psychologist_unavailability.errors, status: :unprocessable_entity
+  end
+ensure
+  # Restore original time zone after the request to avoid side effects
+  Time.zone = original_time_zone
+end
 
   def destroy
     @psychologist_unavailability = PsychologistUnavailability.find(params[:id])
