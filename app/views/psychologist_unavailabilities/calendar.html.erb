@@ -1,40 +1,138 @@
 <h2>Manage Unavailability</h2>
-<div id="calendar-container" data-psychologist-profile-id="<%= @psychologist_profile.id %>">
-  <div id="calendar"></div> </div>
 
+<button type="button" class="btn btn-primary mb-3" id="openRecurringModalBtn">
+  Add Recurring Unavailability
+</button>
 
-<div id="calendar"></div>
+<div id="calendar-container"
+     data-psychologist-profile-id="<%= @psychologist_profile.id %>"
+     data-psychologist-timezone="<%= @psychologist_profile.timezone %>"><%= @psychologist_profile.timezone %> <div id="calendar"></div>
+</div>
 
+<div class="custom-modal-overlay" id="recurringUnavailabilityModal">
+  <div class="custom-modal-content">
+    <div class="custom-modal-header">
+      <h5 class="custom-modal-title" id="recurringUnavailabilityModalLabel">Add Recurring Unavailability</h5>
+      <button type="button" class="custom-modal-close" id="closeRecurringModalBtn" aria-label="Close">&times;</button>
+    </div>
+    <div class="custom-modal-body">
+    
+      <form id="recurringUnavailabilityForm">
+        <div class="mb-3">
+          <label for="recurringReason" class="form-label">Reason</label>
+          <input type="text" class="form-control" id="recurringReason" required>
+        </div>
+        <div class="mb-3">
+          <label for="recurringStartTime" class="form-label">Start Time</label>
+          <input type="time" class="form-control" id="recurringStartTime" required>
+        </div>
+        <div class="mb-3">
+          <label for="recurringEndTime" class="form-label">End Time</label>
+          <input type="time" class="form-control" id="recurringEndTime" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Repeat On</label><br>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="recurring_day_of_week" id="dayMon" value="1">
+            <label class="form-check-label" for="dayMon">Mon</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="recurring_day_of_week" id="dayTue" value="2">
+            <label class="form-check-label" for="dayTue">Tue</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="recurring_day_of_week" id="dayWed" value="3">
+            <label class="form-check-label" for="dayWed">Wed</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="recurring_day_of_week" id="dayThu" value="4">
+            <label class="form-check-label" for="dayThu">Thu</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="recurring_day_of_week" id="dayFri" value="5">
+            <label class="form-check-label" for="dayFri">Fri</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="recurring_day_of_week" id="daySat" value="6">
+            <label class="form-check-label" for="daySat">Sat</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="recurring_day_of_week" id="daySun" value="0">
+            <label class="form-check-label" for="daySun">Sun</label>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="recurringUntilDate" class="form-label">Repeat Until (Optional)</label>
+          <input type="date" class="form-control" id="recurringUntilDate">
+        </div>
+        <input type="hidden" id="recurringTimezone">
+    <input type="hidden" id="recurringTimezoneInput" name="psychologist_unavailability[timezone]">
 
+        <button type="submit" class="btn btn-success">Save Recurring Unavailability</button>
+      </form>
+    </div>
+  </div>
+</div>
 
 <script>
-
-
 document.addEventListener('turbo:load', function () {
     const calendarEl = document.getElementById('calendar');
     const container = document.getElementById('calendar-container');
-    if (!calendarEl || !container) return;
+    const psychologistProfileId = container ? container.dataset.psychologistProfileId : null;
+    const psychologistTimeZone = container ? container.dataset.psychologistTimezone : null; // Get timezone from data attribute
 
-    const psychologistProfileId = container.dataset.psychologistProfileId;
-    if (!psychologistProfileId) {
-        console.error("Missing psychologist profile ID");
+    if (!calendarEl || !container || !psychologistProfileId || !psychologistTimeZone) {
+        console.error("Critical elements, psychologist profile ID, or timezone missing. Calendar cannot initialize.");
+        if (!psychologistTimeZone) {
+            alert("Your profile timezone is not set. Please update your profile to ensure calendar displays correctly.");
+        }
         return;
     }
 
+    // You have a redundant check here, the first `if` already covers this. You can remove the second one.
+    // if (!calendarEl || !container || !psychologistProfileId) {
+    //     console.error("Critical elements or psychologist profile ID missing. Calendar cannot initialize.");
+    //     return;
+    // }
+
     const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'timeGridWeek', // Your specified view
+        initialView: 'timeGridWeek',
         slotMinTime: "06:00:00",
         slotMaxTime: "22:00:00",
         allDaySlot: false,
         editable: true,
         selectable: true,
         firstDay: 1, // Monday
+        timeZone: psychologistTimeZone, // This is correct for FullCalendar display
+        displayEventTime: true,
 
+        // ... (rest of FullCalendar options like eventTimeFormat, slotLabelFormat, headerToolbar) ...
+        eventTimeFormat: {
+            hour: 'numeric',
+            minute: '2-digit',
+            meridiem: 'short',
+            timeZoneName: 'short'
+        },
+        slotLabelFormat: {
+            hour: 'numeric',
+            minute: '2-digit',
+            omitZeroMinute: false,
+            meridiem: 'short'
+        },
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+
+
+
+        // Event creation via selection (one-off)
         select: function(info) {
-            var reason = prompt("Reason for unavailability?");
-            if (reason === null || reason.trim() === "") { // Handles cancelled prompt or empty reason
-                alert("Unavailability reason cannot be blank.");
-                return; // Stop processing if no valid reason
+            const reason = prompt("Reason for one-off unavailability?");
+            if (reason === null || reason.trim() === "") {
+                alert("Unavailability reason cannot be blank. One-off event not created.");
+                return;
             }
 
             fetch('/psychologist_unavailabilities.json', {
@@ -45,65 +143,358 @@ document.addEventListener('turbo:load', function () {
                 },
                 body: JSON.stringify({
                     psychologist_unavailability: {
-                        // For timeGridWeek, info.start and info.end are Date objects representing
-                        // the exact date and time of the selection.
-                        // toISOString() is the best way to serialize them for Rails.
+                        psychologist_profile_id: psychologistProfileId,
+                        // FullCalendar's info.start/end.toISOString() will correctly include the offset
+                        // based on the calendar's `timeZone` option.
                         start_time: info.start.toISOString(),
                         end_time: info.end.toISOString(),
                         reason: reason,
-                        // THIS IS THE CRITICAL MISSING PIECE IN YOUR POST DATA:
-                        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-                        // DO NOT send 'recurring' or 'day_of_week' from here,
-                        // as this is for a specific date/time unavailability.
+                        recurring: false,
+                        timezone: psychologistTimeZone // Ensure this is explicitly sent
                     }
                 })
-            }).then(response => {
+            })
+            .then(response => {
                 if (response.ok) {
-                    calendar.refetchEvents(); // Refresh the calendar to show the new event
+                    calendar.refetchEvents();
+                    alert("One-off unavailability saved successfully!");
                 } else {
-                    // Improved error handling to show specific Rails validation messages
                     response.json().then(errors => {
-                        console.error("Server-side validation errors:", errors);
-                        alert("Error saving unavailability: " + JSON.stringify(errors));
+                        console.error("Server-side validation errors for one-off:", errors);
+                        alert("Error saving one-off unavailability: " + JSON.stringify(errors));
                     }).catch(() => {
-                        alert("Error saving unavailability. Could not parse error response from server.");
+                        alert("Error saving one-off unavailability. Could not parse error response from server.");
                     });
                 }
-            }).catch(error => { // Catch network errors too
-                console.error("Network or Fetch error:", error);
-                alert("A network error occurred while saving unavailability.");
+            })
+            .catch(error => {
+                console.error("Network or Fetch error for one-off:", error);
+                alert("A network error occurred while saving one-off unavailability.");
             });
         },
 
-        // ... eventClick and eventSources (which should be correct for rendering) ...
+        eventClick: function(info) {
+            const isUnavailability = info.event.source && info.event.source.url === `/psychologist_unavailabilities.json?psychologist_profile_id=${psychologistProfileId}`;
+
+            if (isUnavailability && info.event.id) {
+                const isRecurringInstance = info.event.extendedProps && info.event.extendedProps.recurring;
+
+                let confirmationMessage = '';
+                if (isRecurringInstance) {
+                    confirmationMessage = `This is a recurring unavailability instance. Do you want to delete the ENTIRE recurring rule (all future occurrences) for "${info.event.title}"?`;
+                } else {
+                    confirmationMessage = `Are you sure you want to delete this one-off unavailability from ${info.event.start.toLocaleString()} to ${info.event.end.toLocaleString()}?`;
+                }
+
+                if (confirm(confirmationMessage)) {
+                    fetch(`/psychologist_unavailabilities/${info.event.id}.json`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-Token': document.querySelector("[name='csrf-token']").content
+                        }
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            calendar.refetchEvents();
+                            alert("Unavailability deleted successfully.");
+                        } else {
+                            response.json().then(errors => {
+                                console.error("Server-side deletion errors:", errors);
+                                alert("Error deleting unavailability: " + JSON.stringify(errors));
+                            }).catch(() => {
+                                alert(`Error deleting unavailability. Status: ${response.status} ${response.statusText}. Could not parse error response.`);
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Network or Fetch error during deletion:", error);
+                        alert("A network error occurred while deleting unavailability.");
+                    });
+                }
+            } else {
+                alert("This event is not an unavailability record or cannot be deleted from here.");
+            }
+        },
+
         eventSources: [
             {
-                url: '/psychologist_unavailabilities.json',
+                url: `/psychologist_unavailabilities.json?psychologist_profile_id=${psychologistProfileId}`,
                 method: 'GET',
                 color: '#d9534f',
-                textColor: 'white'
+                textColor: 'white',
+                failure: function() {
+                    alert('There was an error fetching your unavailabilities.');
+                }
             },
             {
-                url: `/psychologist_profiles/${psychologistProfileId}/psychologist_availabilities/calendar_blocks`, // <--- THIS URL
+                url: `/psychologist_profiles/${psychologistProfileId}/psychologist_availabilities/calendar_blocks`,
                 method: 'GET',
-                extraParams: {},
-                failure: () => alert('There was an error fetching availability.'),
                 display: 'background',
-                color: '#d4edda'
+                color: '#d4edda',
+                failure: function() {
+                    alert('There was an error fetching your general availability blocks.');
+                }
             }
         ]
     });
-      window.myCalendar = calendar; // <-- ADD THIS LINE
-
 
     calendar.render();
+    window.myCalendar = calendar;
+
+    // --- Custom Modal Handling (NO BOOTSTRAP) ---
+    const recurringUnavailabilityModal = document.getElementById('recurringUnavailabilityModal');
+    const openRecurringModalBtn = document.getElementById('openRecurringModalBtn');
+    const closeRecurringModalBtn = document.getElementById('closeRecurringModalBtn');
+    const recurringUnavailabilityForm = document.getElementById('recurringUnavailabilityForm');
+    
+    // Make sure recurringTimezoneInput points to an actual input element.
+    // Assuming you have a hidden input like: <input type="hidden" id="recurringTimezoneInput" name="psychologist_unavailability[timezone]">
+    const recurringTimezoneInput = document.getElementById('recurringTimezoneInput');
+
+
+    openRecurringModalBtn.addEventListener('click', function() {
+        recurringUnavailabilityModal.style.display = 'flex';
+    });
+
+    function hideRecurringModal() {
+        recurringUnavailabilityModal.style.display = 'none';
+        recurringUnavailabilityForm.reset();
+    }
+
+    closeRecurringModalBtn.addEventListener('click', hideRecurringModal);
+
+    recurringUnavailabilityModal.addEventListener('click', function(event) {
+        if (event.target === recurringUnavailabilityModal) {
+            hideRecurringModal();
+        }
+    });
+
+    // ****** IMPORTANT CHANGE HERE ******
+    // Set the hidden input's value to the psychologist's actual timezone, NOT the browser's local timezone.
+    if (recurringTimezoneInput) { // Ensure the element exists before trying to set its value
+        recurringTimezoneInput.value = psychologistTimeZone;
+    } else {
+        console.warn("Hidden recurringTimezoneInput not found. Timezone might not be correctly submitted for recurring unavailabilities.");
+    }
+    // **********************************
+
+    recurringUnavailabilityForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const reason = document.getElementById('recurringReason').value.trim();
+        const startTime = document.getElementById('recurringStartTime').value;
+        const endTime = document.getElementById('recurringEndTime').value;
+        const recurringUntil = document.getElementById('recurringUntilDate').value;
+        const timezone = recurringTimezoneInput.value; // This will now correctly use psychologistTimeZone
+
+        const selectedDays = Array.from(document.querySelectorAll('input[name="recurring_day_of_week"]:checked'))
+                                .map(cb => parseInt(cb.value));
+
+        if (!reason) {
+            alert("Please provide a reason for the recurring unavailability.");
+            return;
+        }
+        if (!startTime || !endTime) {
+            alert("Please provide both start and end times for the recurring unavailability.");
+            return;
+        }
+        if (selectedDays.length === 0) {
+            alert("Please select at least one day of the week for recurrence.");
+            return;
+        }
+
+        const DUMMY_DATE = '2000-01-01';
+
+        const fetchPromises = selectedDays.map(dayOfWeek => {
+            return fetch('/psychologist_unavailabilities.json', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': document.querySelector("[name='csrf-token']").content
+                },
+                body: JSON.stringify({
+                    psychologist_unavailability: {
+                        psychologist_profile_id: psychologistProfileId,
+                        start_time: `${DUMMY_DATE}T${startTime}:00`,
+                        end_time: `${DUMMY_DATE}T${endTime}:00`,
+                        reason: reason,
+                        recurring: true,
+                        day_of_week: dayOfWeek,
+                        recurring_until: recurringUntil || null,
+                        timezone: timezone // This now sends the correct psychologist's timezone
+                    }
+                })
+            });
+        });
+
+        Promise.all(fetchPromises)
+            .then(responses => {
+                let allSuccessful = true;
+                const allErrors = [];
+
+                return Promise.all(responses.map((response, index) => {
+                    if (!response.ok) {
+                        allSuccessful = false;
+                        const dayName = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][selectedDays[index]];
+                        return response.json().then(data => {
+                            if (data && typeof data === 'object') {
+                                const errorMessages = Object.entries(data).map(([key, value]) => `${key}: ${value.join(', ')}`).join('; ');
+                                allErrors.push(`Error for ${dayName}: ${errorMessages}`);
+                            } else {
+                                allErrors.push(`Error for ${dayName}: ${response.statusText}`);
+                            }
+                        }).catch(() => {
+                            allErrors.push(`Error for ${dayName}: ${response.status} ${response.statusText} (Could not parse error response).`);
+                        });
+                    }
+                    return Promise.resolve();
+                })).then(() => {
+                    if (allSuccessful) {
+                        alert("Recurring unavailability(ies) saved successfully!");
+                        hideRecurringModal();
+                        calendar.refetchEvents();
+                    } else {
+                        const finalErrorMessage = "Some recurring unavailabilities failed to save:\n" + allErrors.join("\n");
+                        alert(finalErrorMessage);
+                        calendar.refetchEvents();
+                    }
+                });
+            })
+            .catch(error => {
+                console.error("Overall Network or Fetch error during recurring unavailability save:", error);
+                alert("A network error occurred while saving recurring unavailabilities.");
+            });
+    });
 });
 </script>
 
 <style>
-.fc-bg-event {
-    background-color: #d4edda !important; /* Force the color */
-    opacity: 0.5 !important;             
-    z-index: 1 !important;               
+.custom-modal-overlay {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1000; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    align-items: center; /* Center content vertically */
+    justify-content: center; /* Center content horizontally */
+}
+
+.custom-modal-content {
+    background-color: #fefefe;
+    margin: auto; /* For browsers that don't support align-items/justify-content */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Could be responsive */
+    max-width: 500px; /* Max width for larger screens */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    position: relative; /* Needed for close button positioning */
+}
+
+.custom-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.custom-modal-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 500;
+}
+
+.custom-modal-close {
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+}
+
+.custom-modal-close:hover,
+.custom-modal-close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Basic styling for form elements to make them look decent without Bootstrap */
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.form-control {
+    display: block;
+    width: 100%;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-check-inline {
+    display: inline-block;
+    margin-right: 1rem;
+}
+
+.form-check-input {
+    margin-right: 0.375rem;
+}
+
+.btn {
+    display: inline-block;
+    font-weight: 400;
+    color: #212529;
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    user-select: none;
+    background-color: transparent;
+    border: 1px solid transparent;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    border-radius: 0.25rem;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+    color: #fff;
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+.btn-success {
+    color: #fff;
+    background-color: #198754;
+    border-color: #198754;
+}
+
+.btn-success:hover {
+    color: #fff;
+    background-color: #157347;
+    border-color: #146c43;
 }
 </style>
