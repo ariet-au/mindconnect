@@ -8,7 +8,9 @@ class ClientProfile < ApplicationRecord
 
   # Add validations for presence and format as needed
 
-  
+  def full_name
+    "#{first_name} #{last_name}" # or however you want it displayed
+  end
   # Example validation for profile image type/size (optional)
   # validates :profile_image, content_type: ['image/png', 'image/jpeg'],
   #                           max_size: 5.megabytes,

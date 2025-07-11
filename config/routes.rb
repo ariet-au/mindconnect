@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   resources :psychological_issues
   resources :client_types
   resources :specialties
-  resources :services
+  
 
   get 'find-a-psychologist', to: 'psychologist_profiles#search_landing', as: :search_landing
   get 'for-psychologists', to: 'psychologist_profiles#landing_psych', as: :landing_psych
@@ -41,17 +41,28 @@ Rails.application.routes.draw do
   #   end
   # end
   #bookings
-resources :psychologist_profiles do
-  collection do
-    post 'toggle_filter'
-  end
+# config/routes.rb
+resources :services do
+  resources :bookings, only: [:new]  # /services/:service_id/bookings/new
+end
 
-  resources :psychologist_availabilities, except: [:show] do
-    collection do
-      get 'calendar_blocks' # /psychologist_profiles/:id/psychologist_availabilities/calendar_blocks
-    end
+resources :bookings, only: [:create, :show, :index, :update, :edit, :destroy] do
+  collection do
+    get 'calendar_bookings'  # /bookings/calendar_bookings
   end
 end
+
+  resources :psychologist_profiles do
+    collection do
+      post 'toggle_filter'
+    end
+
+    resources :psychologist_availabilities, except: [:show] do
+      collection do
+        get 'calendar_blocks' # /psychologist_profiles/:id/psychologist_availabilities/calendar_blocks
+      end
+    end
+  end
 
 get '/calendar', to: 'psychologist_unavailabilities#calendar'
 get 'psychologist_profiles/:psychologist_profile_id/calendar', to: 'psychologist_unavailabilities#calendar', as: :psychologist_profile_calendar

@@ -12,6 +12,35 @@ class PsychologistUnavailabilitiesController < ApplicationController
     end
   end
 
+  def calendar_bookings
+    psychologist_profile_id = params[:psychologist_profile_id]
+
+    bookings = Booking.includes(:service, :client_profile, :internal_client_profile)
+                      .where(psychologist_profile_id: psychologist_profile_id)
+
+    events = bookings.map do |booking|
+      {
+        id: booking.id,
+        title: booking.service&.name || "Session",
+        start: booking.start_time.iso8601,
+        end: booking.end_time.iso8601,
+        extendedProps: {
+          client_name: booking.client_profile&.full_name || booking.internal_client_profile&.label || "N/A",
+          status: booking.status,
+          notes: booking.notes
+        },
+        color: booking.internal_client_profile_id.present? ? '#6f42c1' : '#0d6efd',
+        textColor: 'white'
+      }
+    end
+
+    render json: events
+  end
+
+
+
+
+
   def index
     unavailabilities = PsychologistUnavailability.where(psychologist_profile_id: @psychologist_profile.id)
 

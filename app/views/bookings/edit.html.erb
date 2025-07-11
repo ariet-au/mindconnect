@@ -1,0 +1,127 @@
+<h2>Edit Booking for <%= @booking.service.name %></h2>
+
+<% if @booking.errors.any? %>
+  <div class="notification is-danger">
+    <h2><%= pluralize(@booking.errors.count, "error") %> prevented this booking from saving:</h2>
+    <ul>
+      <% @booking.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: @booking, url: booking_path(@booking), method: :patch do |f| %>
+  <%= f.hidden_field :service_id %>
+  <%= f.hidden_field :psychologist_profile_id %>
+
+  <% if current_user.psychologist? %>
+    <div class="field">
+      <%= f.label :client_profile_id, "Client Profile (if external)" %>
+      <%= f.collection_select :client_profile_id, ClientProfile.all, :id, :full_name, { selected: @booking.client_profile_id }, class: "form-control" %>
+    </div>
+    <div class="field">
+      <%= f.label :internal_client_profile_id, "Internal Client (for notes)" %>
+      <%= f.collection_select :internal_client_profile_id, InternalClientProfile.all, :id, :label, { selected: @booking.internal_client_profile_id }, class: "form-control" %>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :start_time %>
+    <%
+      # The timezone is only for displaying the hint, Rails handles the values internally
+      timezone = @booking.psychologist_profile.timezone || 'UTC'
+    %>
+    <%= f.datetime_select :start_time, {
+          start_year: Time.current.year,
+          end_year: Time.current.year + 1,
+          minute_step: 15
+        }, {
+          class: "form-control start-time-select",
+          id: "start_time_select"
+        } %>
+    <small class="text-muted">
+      Psychologist's timezone: <%= timezone %>
+    </small>
+  </div>
+
+  <div class="field">
+    <%= f.label :end_time %>
+    <div id="calculated_end_time" class="form-control-plaintext">
+      <%# Display the *current* calculated end time when the page loads %>
+      <%= @booking.end_time.in_time_zone(timezone).strftime("%a %b %d at %H:%M") if @booking.end_time.present? %>
+    </div>
+    <%# REMOVED: <%= f.hidden_field :end_time, value: @booking.end_time.iso8601, id: "booking_end_time" %> %>
+    <small class="form-text text-muted">Duration: <%= @booking.service.duration_minutes %> minutes</small>
+  </div>
+
+  <div class="field">
+    <%= f.label :status %>
+    <%= f.select :status, Booking::VALID_STATUSES.map { |s| [s.humanize, s] }, { selected: @booking.status }, class: "form-control" %>
+  </div>
+
+  <div class="field">
+    <%= f.label :notes %>
+    <%= f.text_area :notes, class: "form-control" %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit "Update Booking", class: "btn btn-primary" %>
+    <%= link_to "Cancel", booking_path(@booking), class: "btn btn-secondary" %>
+  </div>
+<% end %>
+
+<script>
+// Only for display calculation now
+document.addEventListener("turbo:load", function() {
+  const duration = parseInt(<%= @booking.service.duration_minutes %>);
+  const endTimeDisplay = document.getElementById('calculated_end_time');
+  // const endTimeHiddenField = document.getElementById('booking_end_time'); // Removed
+
+  function updateEndTime() {
+    const year = document.querySelector('select[name="booking[start_time(1i)]"]')?.value;
+    const month = document.querySelector('select[name="booking[start_time(2i)]"]')?.value;
+    const day = document.querySelector('select[name="booking[start_time(3i)]"]')?.value;
+    const hour = document.querySelector('select[name="booking[start_time(4i)]"]')?.value;
+    const minute = document.querySelector('select[name="booking[start_time(5i)]"]')?.value;
+
+    // Get the timezone offset from the psychologist's timezone string.
+    // This is a rough way; a more robust solution might involve a JS library like moment-timezone
+    // or passing the current timezone offset from Ruby.
+    const psychologistTimezone = '<%= @booking.psychologist_profile.timezone || 'UTC' %>';
+    let browserTimezoneOffsetMs = 0; // Default to 0 for simplicity or if not adjusting in JS
+    
+    // If you need to convert the JS date to the psychologist's timezone for display,
+    // you'll need a more robust JS solution than what's practical here without a library.
+    // For now, let's assume the browser's Date object will be fine for local calculation.
+
+    if (year && month && day && hour && minute) {
+      // Create a Date object in the browser's local timezone.
+      // Date.UTC would create it in UTC, which might be better if you want to be precise,
+      // but then you'd need to convert to the psychologist's timezone for display.
+      const startTime = new Date(year, month - 1, day, hour, minute);
+      
+      const endTime = new Date(startTime.getTime() + duration * 60000);
+
+      const formatted = endTime.toLocaleString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      }).replace(',', '');
+
+      if (endTimeDisplay) endTimeDisplay.textContent = formatted;
+      // if (endTimeHiddenField) endTimeHiddenField.value = endTime.toISOString(); // Removed
+    }
+  }
+
+  document.querySelectorAll('select[name^="booking[start_time"]').forEach(select => {
+    select.addEventListener('change', updateEndTime);
+  });
+
+  // Call once on load to ensure end time is correct if start time is already set
+  updateEndTime();
+});
+</script>

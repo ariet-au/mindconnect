@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_09_105805) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_11_135157) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -44,9 +44,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_09_105805) do
 
   create_table "bookings", force: :cascade do |t|
     t.bigint "psychologist_profile_id", null: false
-    t.bigint "service_id", null: false
-    t.bigint "client_profile_id", null: false
-    t.bigint "internal_client_profile_id", null: false
+    t.bigint "service_id"
+    t.bigint "client_profile_id"
+    t.bigint "internal_client_profile_id"
     t.datetime "start_time"
     t.datetime "end_time"
     t.string "status"

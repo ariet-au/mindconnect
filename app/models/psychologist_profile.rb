@@ -34,9 +34,13 @@ class PsychologistProfile < ApplicationRecord
   #bookings
     # Add this line:
   has_many :psychologist_availabilities, dependent: :destroy
+  
 
   # You probably also want:
   has_many :psychologist_unavailabilities, dependent: :destroy
+
+    has_many :bookings
+
 
   scope :verified, -> { joins(:user).where.not(users: { confirmed_at: nil }) }
   #monetize :standard_rate, as: :standard_rate_money, with_model_currency: :currency ,allow_nil: true , as_subunit: false
@@ -61,6 +65,9 @@ pg_search_scope :search_full_text,
     tsearch: { prefix: true }
   }
 
+    def full_name
+      "#{first_name} #{last_name}" # or however you want it displayed
+    end
 
   def resize_profile_image
     return unless profile_image.attached?
@@ -92,6 +99,29 @@ pg_search_scope :search_full_text,
     end
   end
 
+  # next avail slot
+def available_at?(datetime)
+  datetime = datetime.in_time_zone(timezone)
+  day_of_week = datetime.wday
+  time_of_day = datetime.strftime('%H:%M:%S')
+
+  # Check regular availability
+  available_today = availabilities.where(day_of_week: day_of_week)
+                                 .where("? BETWEEN start_time_of_day AND end_time_of_day", time_of_day)
+                                 .exists?
+
+  # Check unavailabilities
+  unavailable = unavailabilities.where(
+    "(recurring = true AND day_of_week = ? AND (recurring_until IS NULL OR recurring_until >= ?)) OR
+    (recurring = false AND (start_time, end_time) OVERLAPS (?, ?))",
+    day_of_week,
+    datetime.to_date,
+    datetime,
+    datetime
+  ).exists?
+
+  available_today && !unavailable
+end
 
   # This method converts the standard_rate_money from its current currency to the target_currency.
   # It leverages the ExchangeRateService to perform the actual rate calculation and conversion.

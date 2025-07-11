@@ -1,0 +1,48 @@
+<div class="flash-messages-container">
+  <% flash.each do |type, msg| %>
+    <% css_class = case type.to_sym
+                   when :notice then "alert-success"
+                   when :alert  then "alert-danger"
+                   else "alert-info"
+                   end %>
+    <div class="alert <%= css_class %>" role="alert">
+      <%= msg %>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+  <% end %>
+</div>
+
+<h1>All Bookings</h1>
+<table>
+  <thead>
+    <tr>
+      <th>Service</th>
+      <th>Psychologist</th>
+      <th>Client</th>
+      <th>Start Time</th>
+      <th>End Time</th>
+      <th>Status</th>
+          <th>Duration</th>
+          <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @bookings.each do |booking| %>
+      <tr>
+        <td><%= booking.service.name %></td>
+        <td><%= booking.psychologist_profile&.first_name || 'N/A' %></td>
+        <td><%= booking.client_profile&.first_name || 'N/A' %></td>
+        <td><%= booking.start_time %> </td>
+        <td><%= booking.end_time %> </td>
+        <td><%= booking.status %></td>
+           <td><%= booking.service.duration_minutes %> minutes </td>
+        <td>
+          <%= link_to 'Edit', edit_booking_path(booking) %> |
+          <%= link_to 'Delete', booking_path(booking), data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

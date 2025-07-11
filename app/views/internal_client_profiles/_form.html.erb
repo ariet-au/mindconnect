@@ -10,6 +10,10 @@
       </ul>
     </div>
   <% end %>
+  <div>
+    <%= form.label :internal_reference_number, style: "display: block" %>
+    <%= form.text_field :internal_reference_number %>
+  </div>
 
   <div>
     <%= form.label :first_name, style: "display: block" %>
@@ -66,10 +70,6 @@
     <%= form.textarea :address %>
   </div>
 
-  <div>
-    <%= form.label :internal_reference_number, style: "display: block" %>
-    <%= form.text_field :internal_reference_number %>
-  </div>
 
   <div>
     <%= form.label :preferred_contact_method, style: "display: block" %>
@@ -131,10 +131,6 @@
     <%= form.number_field :status %>
   </div>
 
-  <div>
-    <%= form.label :psychologist_profile_id, style: "display: block" %>
-    <%= form.text_field :psychologist_profile_id %>
-  </div>
 
   <div>
     <%= form.label :client_profile_id, style: "display: block" %>

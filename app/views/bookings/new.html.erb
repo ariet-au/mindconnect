@@ -1,0 +1,154 @@
+<h2>New Booking for <%= @service.name %></h2>
+
+<% if @booking.errors.any? %>
+  <div class="notification is-danger">
+    <h2><%= pluralize(@booking.errors.count, "error") %> prevented this booking from saving:</h2>
+    <ul>
+      <% @booking.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%= form_with model: @booking, url: bookings_path do |f| %>
+  <%= f.hidden_field :service_id, value: @service&.id %>
+  <%= f.hidden_field :psychologist_profile_id, value: @psychologist_profile&.id %>
+  <%= f.hidden_field :status, value: current_user.psychologist? ? 'confirmed' : 'pending' %>
+
+  <% if current_user.psychologist? %>
+    <div class="field">
+      <%= f.label :client_profile_id, "Client Profile (if external)" %>
+      <%= f.collection_select :client_profile_id, ClientProfile.all, :id, :full_name, { include_blank: true }, class: "form-control" %>
+    </div>
+    <div class="field">
+      <%= f.label :internal_client_profile_id, "Internal Client (for notes)" %>
+      <%= f.collection_select :internal_client_profile_id, InternalClientProfile.all, :id, :label, { include_blank: true }, class: "form-control" %>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :start_time %>
+    <% 
+      # Get timezone-aware availability
+      timezone = @psychologist_profile.timezone || 'UTC'
+      now_in_tz = Time.current.in_time_zone(timezone)
+      
+      # Round up to nearest 15 minutes in psychologist's timezone
+      rounded_minutes = (now_in_tz.min / 15.0).ceil * 15
+      rounded_time = if rounded_minutes >= 60
+        now_in_tz.beginning_of_hour + 1.hour + (rounded_minutes - 60).minutes
+      else
+        now_in_tz.beginning_of_hour + rounded_minutes.minutes
+      end
+      
+      # Find next available slot
+      slot_finder = TimezoneAwareSlotFinder.new(
+        @psychologist_profile.id,
+        @service.duration_minutes,
+        timezone
+      )
+      @default_start_time = slot_finder.next_available_slot(rounded_time) || rounded_time
+    %>
+    
+    <%= f.datetime_select :start_time, { 
+          default: @default_start_time,
+          start_year: Time.current.year,
+          end_year: Time.current.year + 1,
+          minute_step: 15,
+          start_hour: @default_start_time.hour,
+          end_hour: 23,
+          minute_options: (0..45).step(15)
+        }, { 
+          class: "form-control start-time-select",
+          id: "start_time_select" 
+        } %>
+    <small class="text-muted">
+      Psychologist's timezone: <%= @psychologist_profile.timezone %><br>
+      Next available: <%= @default_start_time.in_time_zone(timezone).strftime("%a %b %d at %H:%M") %>
+    </small>
+  </div>
+
+  <div class="field">
+    <%= f.label :end_time %>
+    <div id="calculated_end_time" class="form-control-plaintext">
+      <%= (@default_start_time + @service.duration_minutes.minutes).in_time_zone(timezone).strftime("%a %b %d at %H:%M") %>
+    </div>
+    <%= f.hidden_field :end_time, value: (@default_start_time + @service.duration_minutes.minutes).iso8601, id: "booking_end_time" %>
+    <small class="form-text text-muted">Duration: <%= @service.duration_minutes %> minutes</small>
+  </div>
+
+  <div class="field">
+    <%= f.label :notes %>
+    <%= f.text_area :notes, class: "form-control" %>
+  </div>
+
+  <div class="actions">
+    <%= f.submit "Create Booking", class: "btn btn-primary" %>
+  </div>
+<% end %>
+
+
+<script>
+document.addEventListener("turbo:load", function() {
+  const duration = parseInt(<%= @service.duration_minutes %>);
+  const endTimeDisplay = document.getElementById('calculated_end_time');
+  const endTimeHiddenField = document.getElementById('booking_end_time');
+  
+  function updateEndTime() {
+    const year = document.querySelector('select[name="booking[start_time(1i)]"]')?.value;
+    const month = document.querySelector('select[name="booking[start_time(2i)]"]')?.value;
+    const day = document.querySelector('select[name="booking[start_time(3i)]"]')?.value;
+    const hour = document.querySelector('select[name="booking[start_time(4i)]"]')?.value;
+    const minute = document.querySelector('select[name="booking[start_time(5i)]"]')?.value;
+    
+    if (year && month && day && hour && minute) {
+      const startTime = new Date(year, month - 1, day, hour, minute);
+      const endTime = new Date(startTime.getTime() + duration * 60000);
+      
+      // Format for display in psychologist's timezone
+      const formatted = endTime.toLocaleString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      }).replace(',', '');
+      
+      if (endTimeDisplay) endTimeDisplay.textContent = formatted;
+      if (endTimeHiddenField) endTimeHiddenField.value = endTime.toISOString();
+    }
+  }
+  
+  // Add event listeners to all start time selects
+  document.querySelectorAll('select[name^="booking[start_time"]').forEach(select => {
+    select.addEventListener('change', updateEndTime);
+  });
+  
+  // Initial calculation
+  updateEndTime();
+});
+</script>
+
+<%= content_tag :div, '', id: 'browser_timezone_data', 
+                data: { timezone: Time.zone.name } %>
+
+<%= javascript_tag do %>
+  document.addEventListener('turbo:load', function() {
+    const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const timezoneField = document.getElementById('browser_timezone_data');
+    
+    // Send to server if not already set
+    if (timezoneField.dataset.timezone !== browserTimezone) {
+      fetch('/set_timezone', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector("[name='csrf-token']").content
+        },
+        body: JSON.stringify({ timezone: browserTimezone })
+      });
+    }
+  });
+<% end %>
