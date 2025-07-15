@@ -51,6 +51,7 @@ resources :bookings, only: [:create, :show, :index, :update, :edit, :destroy] do
     get 'calendar_bookings'  # /bookings/calendar_bookings
   end
 end
+  post '/set_timezone', to: 'application#set_timezone', as: :set_timezone_path
 
   resources :psychologist_profiles do
     collection do
@@ -60,6 +61,11 @@ end
     resources :psychologist_availabilities, except: [:show] do
       collection do
         get 'calendar_blocks' # /psychologist_profiles/:id/psychologist_availabilities/calendar_blocks
+      end
+    end
+    resources :unavailabilities, controller: 'psychologist_unavailabilities', only: [:index, :create, :destroy] do
+      collection do
+        get :calendar
       end
     end
   end

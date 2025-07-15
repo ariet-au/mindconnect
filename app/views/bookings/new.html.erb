@@ -1,153 +1,190 @@
-<h2>New Booking for <%= @service.name %></h2>
 
-<% if @booking.errors.any? %>
-  <div class="notification is-danger">
-    <h2><%= pluralize(@booking.errors.count, "error") %> prevented this booking from saving:</h2>
-    <ul>
-      <% @booking.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-    </ul>
-  </div>
-<% end %>
+<div class="container is-max-desktop">
+  <h2 class="title is-2 has-text-centered">New Booking for <%= @service.name %></h2>
+  <p class="subtitle is-5 has-text-centered">Duration: <%= @service.duration_minutes %> minutes</p>
 
-<%= form_with model: @booking, url: bookings_path do |f| %>
-  <%= f.hidden_field :service_id, value: @service&.id %>
-  <%= f.hidden_field :psychologist_profile_id, value: @psychologist_profile&.id %>
-  <%= f.hidden_field :status, value: current_user.psychologist? ? 'confirmed' : 'pending' %>
-
-  <% if current_user.psychologist? %>
-    <div class="field">
-      <%= f.label :client_profile_id, "Client Profile (if external)" %>
-      <%= f.collection_select :client_profile_id, ClientProfile.all, :id, :full_name, { include_blank: true }, class: "form-control" %>
-    </div>
-    <div class="field">
-      <%= f.label :internal_client_profile_id, "Internal Client (for notes)" %>
-      <%= f.collection_select :internal_client_profile_id, InternalClientProfile.all, :id, :label, { include_blank: true }, class: "form-control" %>
+  <% if @booking.errors.any? %>
+    <div class="notification is-danger">
+      <h4 class="title is-4">
+        <%= pluralize(@booking.errors.count, "error") %> prevented this booking from saving:
+      </h4>
+      <ul>
+        <% @booking.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
     </div>
   <% end %>
 
-  <div class="field">
-    <%= f.label :start_time %>
-    <% 
-      # Get timezone-aware availability
-      timezone = @psychologist_profile.timezone || 'UTC'
-      now_in_tz = Time.current.in_time_zone(timezone)
-      
-      # Round up to nearest 15 minutes in psychologist's timezone
-      rounded_minutes = (now_in_tz.min / 15.0).ceil * 15
-      rounded_time = if rounded_minutes >= 60
-        now_in_tz.beginning_of_hour + 1.hour + (rounded_minutes - 60).minutes
-      else
-        now_in_tz.beginning_of_hour + rounded_minutes.minutes
-      end
-      
-      # Find next available slot
-      slot_finder = TimezoneAwareSlotFinder.new(
-        @psychologist_profile.id,
-        @service.duration_minutes,
-        timezone
-      )
-      @default_start_time = slot_finder.next_available_slot(rounded_time) || rounded_time
-    %>
+  <%= form_with model: @booking, url: bookings_path, class: "box" do |f| %>
+    <%= f.hidden_field :service_id, value: @service&.id %>
+    <%= f.hidden_field :psychologist_profile_id, value: @psychologist_profile&.id %>
+    <%= f.hidden_field :status, value: current_user.psychologist? ? 'confirmed' : 'pending' %>
     
-    <%= f.datetime_select :start_time, { 
-          default: @default_start_time,
-          start_year: Time.current.year,
-          end_year: Time.current.year + 1,
-          minute_step: 15,
-          start_hour: @default_start_time.hour,
-          end_hour: 23,
-          minute_options: (0..45).step(15)
-        }, { 
-          class: "form-control start-time-select",
-          id: "start_time_select" 
-        } %>
-    <small class="text-muted">
-      Psychologist's timezone: <%= @psychologist_profile.timezone %><br>
-      Next available: <%= @default_start_time.in_time_zone(timezone).strftime("%a %b %d at %H:%M") %>
-    </small>
-  </div>
+    <%= f.hidden_field :start_time, id: 'booking_start_time_utc' %>
 
-  <div class="field">
-    <%= f.label :end_time %>
-    <div id="calculated_end_time" class="form-control-plaintext">
-      <%= (@default_start_time + @service.duration_minutes.minutes).in_time_zone(timezone).strftime("%a %b %d at %H:%M") %>
+    <% if current_user.psychologist? %>
+      <div class="field">
+        <%= f.label :client_profile_id, "Client Profile (if external)", class: "label" %>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <%# Ensure @external_clients is populated in your controller, e.g., @external_clients = ClientProfile.all %>
+            <%= f.collection_select :client_profile_id, @external_clients || ClientProfile.all, :id, :full_name, { include_blank: true }, class: "input" %>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <%= f.label :internal_client_profile_id, "Internal Client (for notes)", class: "label" %>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <%# Ensure @internal_clients is populated in your controller, e.g., @internal_clients = InternalClientProfile.all %>
+            <%= f.collection_select :internal_client_profile_id, @internal_clients || InternalClientProfile.all, :id, :label, { include_blank: true }, class: "input" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="field">
+      <label class="label">Select an Available Time Slot</label>
+      <p class="help">
+        Displaying times in your local timezone: <strong><%= @display_timezone %></strong>
+      </p>
+
+      <% if @available_slots.empty? %>
+        <div class="notification is-warning">
+          <p>We're sorry, but there are no available slots for this service in the next 14 days. Please check back later.</p>
+        </div>
+      <% else %>
+        <div class="slots-container" style="max-height: 400px; overflow-y: auto; border: 1px solid #dbdbdb; padding: 1rem; border-radius: 4px;">
+          <% @available_slots.sort.to_h.each do |date, slots| %>
+            <fieldset class="mb-4">
+              <legend class="title is-6"><%= date.strftime("%A, %B %d, %Y") %></legend>
+              <div class="control is-flex is-flex-wrap-wrap">
+                <% slots.each do |slot| %>
+                  <div class="mr-2 mb-2">
+                    <%= f.radio_button :selected_slot, slot.utc.iso8601,
+                        id: "slot_#{slot.to_i}",
+                        class: "is-checkradio is-info slot-radio",
+                        checked: slot.to_i == @next_available_time&.to_i %>
+                    <label for="slot_<%= slot.to_i %>" class="button"><%= slot.in_time_zone(@display_timezone).strftime("%H:%M") %></label>
+                  </div>
+                <% end %>
+              </div>
+            </fieldset>
+          <% end %>
+        </div>
+      <% end %>
     </div>
-    <%= f.hidden_field :end_time, value: (@default_start_time + @service.duration_minutes.minutes).iso8601, id: "booking_end_time" %>
-    <small class="form-text text-muted">Duration: <%= @service.duration_minutes %> minutes</small>
-  </div>
+    
+    <hr>
+    
+    <div class="field">
+        <%= f.label :end_time, "Calculated End Time", class: "label" %>
+        <div class="control">
+            <p class="input is-static" id="calculated_end_time_display">
+                <% if @booking.end_time %>
+                    <%= @booking.end_time.in_time_zone(@display_timezone).strftime("%a %b %d at %H:%M") %>
+                <% else %>
+                    Please select a start time.
+                <% end %>
+            </p>
+        </div>
+        <% if @display_timezone != @psychologist_profile.timezone %>
+            <p class="help">
+                In psychologist's time (<%= @psychologist_profile.timezone %>): <span id="end_time_display_psych_tz"></span>
+            </p>
+        <% end %>
+    </div>
 
-  <div class="field">
-    <%= f.label :notes %>
-    <%= f.text_area :notes, class: "form-control" %>
-  </div>
-
-  <div class="actions">
-    <%= f.submit "Create Booking", class: "btn btn-primary" %>
-  </div>
-<% end %>
-
+    <div class="field">
+      <%= f.label :notes, class: "label" %>
+      <div class="control">
+        <%= f.text_area :notes, class: "textarea", placeholder: "Any specific notes for this booking?" %>
+      </div>
+    </div>
+  
+    <div class="field is-grouped">
+      <div class="control">
+        <%= f.submit "Create Booking", class: "button is-primary", disabled: @available_slots.empty? %>
+      </div>
+      <div class="control">
+        <%= link_to "Cancel", bookings_path, class: "button is-link is-light" %>
+      </div>
+    </div>
+  <% end %>
+</div>
 
 <script>
-document.addEventListener("turbo:load", function() {
-  const duration = parseInt(<%= @service.duration_minutes %>);
-  const endTimeDisplay = document.getElementById('calculated_end_time');
-  const endTimeHiddenField = document.getElementById('booking_end_time');
+document.addEventListener("turbo:load", function () {
+  const durationMinutes = parseInt(<%= @service.duration_minutes %>, 10);
+  const displayTz = "<%= @display_timezone || 'UTC' %>"; // Added fallback for displayTz
+  const psychTz = "<%= @psychologist_profile.timezone || 'UTC' %>"; // Added fallback for psychTz
   
-  function updateEndTime() {
-    const year = document.querySelector('select[name="booking[start_time(1i)]"]')?.value;
-    const month = document.querySelector('select[name="booking[start_time(2i)]"]')?.value;
-    const day = document.querySelector('select[name="booking[start_time(3i)]"]')?.value;
-    const hour = document.querySelector('select[name="booking[start_time(4i)]"]')?.value;
-    const minute = document.querySelector('select[name="booking[start_time(5i)]"]')?.value;
-    
-    if (year && month && day && hour && minute) {
-      const startTime = new Date(year, month - 1, day, hour, minute);
-      const endTime = new Date(startTime.getTime() + duration * 60000);
-      
-      // Format for display in psychologist's timezone
-      const formatted = endTime.toLocaleString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-      }).replace(',', '');
-      
-      if (endTimeDisplay) endTimeDisplay.textContent = formatted;
-      if (endTimeHiddenField) endTimeHiddenField.value = endTime.toISOString();
+  const $startHidden = document.getElementById('booking_start_time_utc');
+  const $endDisplay = document.getElementById('calculated_end_time_display');
+  const $endPsychTzDisplay = document.getElementById('end_time_display_psych_tz');
+  const $slotRadios = document.querySelectorAll('.slot-radio');
+
+  const formatOptions = { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false };
+
+  function formatDateInTimezone(date, tz) {
+    try {
+      return new Intl.DateTimeFormat('en-US', { ...formatOptions, timeZone: tz }).format(date);
+    } catch (e) {
+      console.error("Error formatting date:", e);
+      return date.toISOString(); // Fallback
     }
   }
-  
-  // Add event listeners to all start time selects
-  document.querySelectorAll('select[name^="booking[start_time"]').forEach(select => {
-    select.addEventListener('change', updateEndTime);
-  });
-  
-  // Initial calculation
-  updateEndTime();
-});
-</script>
 
-<%= content_tag :div, '', id: 'browser_timezone_data', 
-                data: { timezone: Time.zone.name } %>
+  function updateTimes(startTimeUtcString) {
+    if (!startTimeUtcString || !$startHidden) return;
+
+    // Update hidden start time field
+    $startHidden.value = startTimeUtcString;
+    
+    const startTimeUtc = new Date(startTimeUtcString);
+    const endTimeUtc = new Date(startTimeUtc.getTime() + durationMinutes * 60000);
+
+    // Update end time displays
+    if ($endDisplay) {
+      $endDisplay.textContent = formatDateInTimezone(endTimeUtc, displayTz);
+    }
+    if ($endPsychTzDisplay) {
+      $endPsychTzDisplay.textContent = formatDateInTimezone(endTimeUtc, psychTz);
+    }
+  }
+
+  // Add event listener to all radio buttons
+  $slotRadios.forEach(radio => {
+    radio.addEventListener('change', (event) => {
+      if (event.target.checked) {
+        updateTimes(event.target.value);
+      }
+    });
+  });
+
+  // Initial update based on the default checked radio
+  const initiallyChecked = document.querySelector('.slot-radio:checked');
+  if (initiallyChecked) {
+    updateTimes(initiallyChecked.value);
+  }
+});
+
+<%= content_tag :div, '', id: 'browser_timezone_data', data: { timezone: Time.zone.name } %>
 
 <%= javascript_tag do %>
-  document.addEventListener('turbo:load', function() {
-    const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    const timezoneField = document.getElementById('browser_timezone_data');
-    
-    // Send to server if not already set
-    if (timezoneField.dataset.timezone !== browserTimezone) {
+  document.addEventListener('turbo:load', function () {
+    const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const serverTz = document.getElementById('browser_timezone_data')?.dataset.timezone;
+
+    if (serverTz && serverTz !== browserTz) {
       fetch('/set_timezone', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRF-Token': document.querySelector("[name='csrf-token']").content
+          'X-CSRF-Token': document.querySelector("meta[name='csrf-token']").content
         },
-        body: JSON.stringify({ timezone: browserTimezone })
+        body: JSON.stringify({ timezone: browserTz })
       });
     }
   });

@@ -28,13 +28,9 @@ class User < ApplicationRecord
       # Create a client profile if the user's role is 'client'
       # Provide default values for mandatory fields (null: false)
       create_client_profile!(
-        name: "New Client User", # Provide a default name
-        dob: Date.current - 25.years, # Example: default to 25 years ago
-        gender: "Unspecified", # Default gender
-        country: "Australia", # Default country (adjust based on your primary audience)
-        city: "Unknown City", # Default city
-        timezone: "Australia/Melbourne", # Default timezone (adjust or infer later)
-        phone_number1: "N/A" # Default phone number
+
+        timezone: "Asia/Bishkek" # Default timezone (adjust or infer later)
+
       )
     end
   end

@@ -45,28 +45,33 @@ class PsychologistAvailabilitiesController < ApplicationController
     redirect_to psychologist_profile_psychologist_availabilities_path(@psychologist_profile), notice: 'Availability was successfully destroyed.'
   end
 
-def calendar_blocks
-  @psychologist_profile = PsychologistProfile.find(params[:psychologist_profile_id])
+  def calendar_blocks
+    @psychologist_profile = PsychologistProfile.find(params[:psychologist_profile_id])
 
-  @availabilities = @psychologist_profile.psychologist_availabilities.reject do |avail|
-    avail.start_time_of_day.nil? || avail.end_time_of_day.nil?
-  end
-
-  respond_to do |format|
-    format.json do
-      render json: @availabilities.map { |a|
-        {
-          daysOfWeek: [a.day_of_week],
-          startTime: a.start_time_of_day.strftime("%H:%M"),
-          endTime: a.end_time_of_day.strftime("%H:%M")
-        }
-      }
+    @availabilities = @psychologist_profile.psychologist_availabilities.reject do |avail|
+      avail.start_time_of_day.nil? || avail.end_time_of_day.nil?
     end
 
-    # Optional: fallback to avoid HTML render error
-    format.html { head :not_found }
+    respond_to do |format|
+      format.json do
+        json_payload = @availabilities.map do |a|
+          # Convert UTC times from DB to the psychologist's local timezone for display
+          local_start = a.start_time_of_day.in_time_zone(@psychologist_profile.timezone)
+          local_end = a.end_time_of_day.in_time_zone(@psychologist_profile.timezone)
+
+          {
+            daysOfWeek: [a.day_of_week],
+            startTime: local_start.strftime("%H:%M"),
+            endTime: local_end.strftime("%H:%M")
+          }
+        end
+        render json: json_payload
+      end
+
+      # Optional: fallback to avoid HTML render error
+      format.html { head :not_found }
+    end
   end
-end
 
 
 

@@ -47,38 +47,42 @@
                 </div>
 
                 <%# Start Time Picker %>
-                <div class="control is-expanded">
-                  <label class="label is-sr-only">Start Time</label>
-                  <div class="field has-addons">
-                    <div class="control">
-                      <div class="select">
-                        <%= form.select :start_time_of_day_hour, options_for_select((0..23).map { |h| ["%02d" % h, h] }, availability.start_time_of_day&.hour), { include_blank: 'HH' }, data: { time_input: true }, class: "time-input" %>
+                  <div class="control is-expanded">
+                    <label class="label is-sr-only">Start Time</label>
+                    <div class="field has-addons">
+                      <div class="control">
+                        <div class="select">
+                          <%# CORRECTED: Use the virtual attribute for the selected value %>
+                          <%= form.select :start_time_of_day_hour, options_for_select((0..23).map { |h| ["%02d" % h, h] }, availability.start_time_of_day_hour), { include_blank: 'HH' }, data: { time_input: true }, class: "time-input" %>
+                        </div>
                       </div>
-                    </div>
-                    <div class="control">
-                      <div class="select">
-                        <%= form.select :start_time_of_day_minute, options_for_select((0..59).step(15).map { |m| ["%02d" % m, m] }, availability.start_time_of_day&.min), { include_blank: 'MM' }, data: { time_input: true }, class: "time-input" %>
+                      <div class="control">
+                        <div class="select">
+                          <%# CORRECTED: Use the virtual attribute for the selected value %>
+                          <%= form.select :start_time_of_day_minute, options_for_select((0..59).step(15).map { |m| ["%02d" % m, m] }, availability.start_time_of_day_minute), { include_blank: 'MM' }, data: { time_input: true }, class: "time-input" %>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-                <%# End Time Picker %>
-                <div class="control is-expanded">
-                  <label class="label is-sr-only">End Time</label>
-                  <div class="field has-addons">
-                    <div class="control">
-                      <div class="select">
-                        <%= form.select :end_time_of_day_hour, options_for_select((0..23).map { |h| ["%02d" % h, h] }, availability.end_time_of_day&.hour), { include_blank: 'HH' }, data: { time_input: true }, class: "time-input" %>
+                  <%# End Time Picker %>
+                  <div class="control is-expanded">
+                    <label class="label is-sr-only">End Time</label>
+                    <div class="field has-addons">
+                      <div class="control">
+                        <div class="select">
+                          <%# CORRECTED: Use the virtual attribute for the selected value %>
+                          <%= form.select :end_time_of_day_hour, options_for_select((0..23).map { |h| ["%02d" % h, h] }, availability.end_time_of_day_hour), { include_blank: 'HH' }, data: { time_input: true }, class: "time-input" %>
+                        </div>
                       </div>
-                    </div>
-                    <div class="control">
-                      <div class="select">
-                        <%= form.select :end_time_of_day_minute, options_for_select((0..59).step(15).map { |m| ["%02d" % m, m] }, availability.end_time_of_day&.min), { include_blank: 'MM' }, data: { time_input: true }, class: "time-input" %>
+                      <div class="control">
+                        <div class="select">
+                          <%# CORRECTED: Use the virtual attribute for the selected value %>
+                          <%= form.select :end_time_of_day_minute, options_for_select((0..59).step(15).map { |m| ["%02d" % m, m] }, availability.end_time_of_day_minute), { include_blank: 'MM' }, data: { time_input: true }, class: "time-input" %>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
                 <div class="control">
                   <%= form.submit "Update", class: "button is-info is-light is-hidden", data: { update_button: true } %>
@@ -104,24 +108,318 @@
 </style>
 
 <script>
-  document.addEventListener('turbo:load', function () {
-    // Dismissible notifications
-    (document.querySelectorAll('.notification .delete') || []).forEach(($delete) => {
-      const $notification = $delete.parentNode;
-      $delete.addEventListener('click', () => {
-        $notification.parentNode.removeChild($notification);
-      });
+document.addEventListener('turbo:load', function () {
+    const calendarEl = document.getElementById('calendar');
+    const container = document.getElementById('calendar-container');
+    const psychologistProfileId = container ? container.dataset.psychologistProfileId : null;
+    const psychologistTimeZone = container ? container.dataset.psychologistTimezone : null;
+    const displayedTimezoneSpan = document.getElementById('displayedTimezone');
+
+    if (!calendarEl || !container || !psychologistProfileId || !psychologistTimeZone) {
+        console.error("Critical elements, psychologist profile ID, or timezone missing. Calendar cannot initialize.");
+        if (!psychologistTimeZone) {
+            console.error("Your profile timezone is not set. Please update your profile to ensure calendar displays correctly.");
+        }
+        return;
+    }
+
+    // Update the displayed timezone
+    if (displayedTimezoneSpan) {
+        displayedTimezoneSpan.textContent = psychologistTimeZone;
+    }
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'timeGridWeek',
+        slotMinTime: "06:00:00",
+        slotMaxTime: "22:00:00",
+        allDaySlot: false,
+        editable: true,
+        selectable: true,
+        // *** THIS IS THE ONLY CHANGE YOU NEED FOR THE DISPLAY ORDER ***
+        firstDay: 1, // <<< Sets Monday as the first DAY DISPLAYED in the week view.
+                     //    It does NOT change how FullCalendar interprets `daysOfWeek` values,
+                     //    which remain 0=Sunday, 1=Monday, etc.
+        timeZone: psychologistTimeZone,
+        displayEventTime: true,
+
+        eventTimeFormat: {
+            hour: 'numeric',
+            minute: '2-digit',
+            meridiem: 'short'
+        },
+        slotLabelFormat: {
+            hour: 'numeric',
+            minute: '2-digit',
+            omitZeroMinute: false,
+            meridiem: 'short'
+        },
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+
+        // Event creation via selection (one-off)
+        select: function(info) {
+            // ... (Your existing select function code - no changes needed here as it sends specific date/time)
+            showCustomPrompt("Reason for one-off unavailability?", function(reason) {
+                if (reason === null || reason.trim() === "") {
+                    showCustomAlert("Unavailability reason cannot be blank. One-off event not created.");
+                    return;
+                }
+
+                const startTimeToSend = info.startStr;
+                const endTimeToSend = info.endStr;
+
+                console.log("Sending one-off start_time to backend:", startTimeToSend);
+
+                fetch('/psychologist_unavailabilities.json', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': document.querySelector("[name='csrf-token']").content
+                    },
+                    body: JSON.stringify({
+                        psychologist_unavailability: {
+                            psychologist_profile_id: psychologistProfileId,
+                            start_time: startTimeToSend,
+                            end_time: endTimeToSend,
+                            reason: reason,
+                            recurring: false, // One-off event
+                            timezone: psychologistTimeZone
+                        }
+                    })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        calendar.refetchEvents();
+                        showCustomAlert("One-off unavailability saved successfully!");
+                    } else {
+                        response.json().then(errors => {
+                            console.error("Server-side validation errors for one-off:", errors);
+                            showCustomAlert("Error saving one-off unavailability: " + JSON.stringify(errors));
+                        }).catch(() => {
+                            showCustomAlert("Error saving one-off unavailability. Could not parse error response from server.");
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error("Network or Fetch error for one-off:", error);
+                    showCustomAlert("A network error occurred while saving one-off unavailability.");
+                });
+            });
+        },
+
+        eventClick: function(info) {
+            const isUnavailability = info.event.source && info.event.source.url === `/psychologist_unavailabilities.json?psychologist_profile_id=${psychologistProfileId}`;
+
+            if (isUnavailability && info.event.id) {
+                const isRecurringInstance = info.event.extendedProps && info.event.extendedProps.recurring;
+
+                const formatOptions = {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    meridiem: 'short',
+                    timeZoneName: 'short'
+                };
+                const startTime = calendar.formatDate(info.event.start, formatOptions);
+                const endTime = calendar.formatDate(info.event.end, formatOptions);
+
+                let confirmationMessage = '';
+                if (isRecurringInstance) {
+                    confirmationMessage = `This is a recurring unavailability instance. Do you want to delete the ENTIRE recurring rule (all future occurrences) for "${info.event.title}"?`;
+                } else {
+                    confirmationMessage = `Are you sure you want to delete this one-off unavailability from ${startTime} to ${endTime}?`;
+                }
+
+                showCustomConfirm(confirmationMessage, function(confirmed) {
+                    if (confirmed) {
+                        fetch(`/psychologist_unavailabilities/${info.event.id}.json`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-Token': document.querySelector("[name='csrf-token']").content
+                                }
+                            })
+                            .then(response => {
+                                if (response.ok) {
+                                    calendar.refetchEvents();
+                                    showCustomAlert("Unavailability deleted successfully.");
+                                } else {
+                                    response.json().then(errors => {
+                                        console.error("Server-side deletion errors:", errors);
+                                        showCustomAlert("Error deleting unavailability: " + JSON.stringify(errors));
+                                    }).catch(() => {
+                                        showCustomAlert(`Error deleting unavailability. Status: ${response.status} ${response.statusText}. Could not parse error response.`);
+                                    });
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Network or Fetch error during deletion:", error);
+                                showCustomAlert("A network error occurred while deleting unavailability.");
+                            });
+                    }
+                });
+            } else {
+                showCustomAlert("This event is not an unavailability record or cannot be deleted from here.");
+            }
+        },
+
+        eventSources: [
+            {
+                // Source for recurring availabilities (background events)
+                url: `/psychologist_profiles/${psychologistProfileId}/psychologist_availabilities/calendar_blocks`,
+                method: 'GET',
+                display: 'background',
+                color: '#d4edda', // Light green for availability
+                failure: function() {
+                    showCustomAlert('There was an error fetching your general availability blocks.');
+                },
+                // *** IMPORTANT: NO eventDataTransform NEEDED HERE! ***
+                // Your backend's day_of_week (0=Sun, 1=Mon, ..., 6=Sat)
+                // already matches FullCalendar's `daysOfWeek` internal values.
+                // FullCalendar will correctly map the 'daysOfWeek' from your data
+                // to its internal representation, and 'firstDay: 1' will handle the display.
+            },
+            {
+                // Source for one-off unavailabilities (fetched from a separate endpoint)
+                url: `/psychologist_unavailabilities.json?psychologist_profile_id=${psychologistProfileId}`,
+                method: 'GET',
+                color: '#f8d7da', // Light red for unavailability
+                textColor: '#721c24',
+                failure: function() {
+                    showCustomAlert('There was an error fetching your one-off unavailability events.');
+                },
+                // For unavailabilities, if they are `recurring: true`,
+                // you would need a similar `eventDataTransform` if their `day_of_week`
+                // in the backend differs from FullCalendar's default.
+                // Assuming `recurring: true` unavailabilities would also follow
+                // the `0=Sunday, 1=Monday` backend convention, then NO transform
+                // is needed for them either.
+                eventDataTransform: function(eventData) {
+                    if (eventData.recurring) {
+                        // For recurring unavailabilities, transform day_of_week if needed.
+                        // Based on your latest clarification, your backend uses
+                        // 0=Sun, 1=Mon, which matches FC. So, no explicit transform
+                        // for day_of_week is needed here either.
+                        return {
+                            id: eventData.id,
+                            title: eventData.reason,
+                            daysOfWeek: [eventData.day_of_week], // Assuming backend 0=Sun, 1=Mon
+                            startTime: eventData.start_time.substring(11, 19),
+                            endTime: eventData.end_time.substring(11, 19),
+                            display: 'background', // Or 'block' if you want it clickable
+                            color: '#f8d7da',
+                            textColor: '#721c24',
+                            extendedProps: {
+                                recurring: true // Mark as recurring
+                            }
+                        };
+                    } else {
+                        // For one-off unavailabilities, FullCalendar handles start/end datetimes directly.
+                        return {
+                            id: eventData.id,
+                            title: eventData.reason,
+                            start: eventData.start_time,
+                            end: eventData.end_time,
+                            color: '#f8d7da',
+                            textColor: '#721c24',
+                            extendedProps: {
+                                recurring: false // Mark as one-off
+                            }
+                        };
+                    }
+                }
+            }
+        ]
     });
 
-    // Show update button on input change
-    document.querySelectorAll('.time-input').forEach(input => {
-      input.addEventListener('change', (event) => {
-        const form = event.target.closest('form');
-        const updateButton = form.querySelector('[data-update-button]');
-        if (updateButton) {
-          updateButton.classList.remove('is-hidden');
-        }
+    calendar.render();
+});
+
+</script>
+
+<script>
+  document.addEventListener('turbo:load', function () {
+    const container = document.querySelector('.space-y-6');
+    if (!container) return;
+
+    const boxes = Array.from(container.querySelectorAll('.box'));
+
+    const dayOrder = {
+      'Monday': 0,
+      'Tuesday': 1,
+      'Wednesday': 2,
+      'Thursday': 3,
+      'Friday': 4,
+      'Saturday': 5,
+      'Sunday': 6
+    };
+
+    boxes.sort((a, b) => {
+      const aDay = a.querySelector('.tag')?.textContent.trim();
+      const bDay = b.querySelector('.tag')?.textContent.trim();
+      return dayOrder[aDay] - dayOrder[bDay];
+    });
+
+    boxes.forEach(box => container.appendChild(box)); // Re-append in new order
+  });
+</script>
+
+<p class="has-text-grey is-size-6">
+  Current UTC time: <%= Time.current.utc.strftime('%Y-%m-%d %H:%M:%S') %> UTC
+</p>
+
+<p class="has-text-grey is-size-6">
+  Current time in psychologist timezone (<%= @psychologist_profile.timezone %>): 
+  <%= Time.current.in_time_zone(@psychologist_profile.timezone).strftime('%Y-%m-%d %H:%M:%S') %>
+</p>
+
+
+ <% @availabilities.each do |availability| %>
+<div class="has-text-grey is-size-7 mb-4">
+  <p><strong><%= availability.day_name %> Availability Times:</strong></p>
+
+  <ul>
+    <li>
+      🕒 <strong>Start:</strong>
+      <%= availability.start_time_of_day.utc.strftime('%Y-%m-%d %H:%M:%S') %> UTC |
+      <%= availability.start_time_of_day.in_time_zone(@psychologist_profile.timezone).strftime('%Y-%m-%d %H:%M:%S %Z') %> |
+
+      <span class="browser-time" data-time="<%= availability.start_time_of_day.iso8601 %>">Browser time loading…</span>
+    </li>
+    <li>
+      🕓 <strong>End:</strong>
+      <%= availability.end_time_of_day.utc.strftime('%Y-%m-%d %H:%M:%S') %> UTC |
+      <%= availability.end_time_of_day.in_time_zone(@psychologist_profile.timezone).strftime('%Y-%m-%d %H:%M:%S %Z') %> |
+      <span class="browser-time" data-time="<%= availability.end_time_of_day.iso8601 %>">Browser time loading…</span>
+    </li>
+    
+  </ul>
+</div>
+<% end %>
+
+<script>
+  document.addEventListener('turbo:load', function () {
+    document.querySelectorAll('.browser-time').forEach(span => {
+      const isoTime = span.dataset.time;
+      if (!isoTime) return;
+
+      const localDate = new Date(isoTime);
+      const formatted = localDate.toLocaleString(undefined, {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
       });
+
+      span.textContent = `${formatted} (your local time)`;
     });
   });
 </script>

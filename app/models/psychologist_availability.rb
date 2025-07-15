@@ -1,65 +1,74 @@
 # app/models/psychologist_availability.rb
+
 class PsychologistAvailability < ApplicationRecord
   belongs_to :psychologist_profile
 
   validates :day_of_week, inclusion: { in: 0..6 }, uniqueness: { scope: :psychologist_profile_id, message: "can only have one default availability per day" }
   validates :timezone, presence: true
-
-  # Removed presence validation for start_time_of_day and end_time_of_day
   validate :start_before_end, if: -> { start_time_of_day.present? && end_time_of_day.present? }
 
-  # Accessors for the hour and minute parts from the form
+  # Virtual attributes to capture form input for hours and minutes
   attr_accessor :start_time_of_day_hour, :start_time_of_day_minute,
                 :end_time_of_day_hour, :end_time_of_day_minute
 
-  # Callback to populate hour/minute accessors when an object is initialized (e.g., loaded from DB)
-  after_initialize :set_time_parts_for_form, if: :persisted?
-
-  # Callback to combine hour/minute into full time before validation/save
-  before_validation :combine_time_parts
+  # === CALLBACKS FOR TIMEZONE CONVERSION ===
+  # When loading from DB (UTC -> Local), set virtual attributes for the form
+  after_initialize :set_local_time_parts_for_form, if: -> { persisted? && timezone.present? }
+  # Before saving (Local -> UTC), combine virtual attributes into time fields
+  before_validation :set_utc_times_from_form_parts
 
   def start_before_end
-    errors.add(:end_time_of_day, "must be after start") if end_time_of_day <= start_time_of_day
+    # This comparison works correctly because both are time objects
+    errors.add(:end_time_of_day, "must be after start time") if end_time_of_day <= start_time_of_day
   end
 
   def day_name
-    # Ensure Monday = 0 is consistent with Date::DAYNAMES which starts with Sunday
-    Date::DAYNAMES.rotate(1)[day_of_week]
+    # Monday = 0, Sunday = 6. Rotates Date::DAYNAMES which starts with Sunday.
+    Date::DAYNAMES[day_of_week]
   end
 
   private
 
-  # Sets the hour and minute parts for the form's select fields
-  def set_time_parts_for_form
+  # CONVERT FROM UTC (DATABASE) TO PSYCHOLOGIST'S LOCAL TIME (FORM)
+  def set_local_time_parts_for_form
+    # Set Start Time Parts
     if start_time_of_day.present?
-      self.start_time_of_day_hour = start_time_of_day.hour
-      self.start_time_of_day_minute = start_time_of_day.min
+      local_start_time = start_time_of_day.in_time_zone(self.timezone)
+      self.start_time_of_day_hour ||= local_start_time.hour
+      self.start_time_of_day_minute ||= local_start_time.min
     end
+
+    # Set End Time Parts
     if end_time_of_day.present?
-      self.end_time_of_day_hour = end_time_of_day.hour
-      self.end_time_of_day_minute = end_time_of_day.min
+      local_end_time = end_time_of_day.in_time_zone(self.timezone)
+      self.end_time_of_day_hour ||= local_end_time.hour
+      self.end_time_of_day_minute ||= local_end_time.min
     end
   end
 
-  # Combines the hour and minute parts into the actual time attributes
-  def combine_time_parts
-    # For start_time_of_day
-    if start_time_of_day_hour.present? && start_time_of_day_minute.present?
-      hour = start_time_of_day_hour.to_i
-      minute = start_time_of_day_minute.to_i
-      # Use Time.zone.parse for consistency with application's timezone
-      self.start_time_of_day = Time.zone.parse("#{format('%02d', hour)}:#{format('%02d', minute)}")
-    else
-      self.start_time_of_day = nil # Set to nil if parts are missing
-    end
+  # CONVERT FROM PSYCHOLOGIST'S LOCAL TIME (FORM) TO UTC (DATABASE)
+  def set_utc_times_from_form_parts
+    # Use the psychologist's specific timezone to correctly interpret the time parts
+    Time.use_zone(self.timezone) do
+      # Process Start Time
+      if start_time_of_day_hour.present? && start_time_of_day_minute.present?
+        hour = start_time_of_day_hour.to_i
+        minute = start_time_of_day_minute.to_i
+        # Time.zone.parse creates a time in the psychologist's local zone.
+        # Rails automatically saves its UTC equivalent to the database.
+        self.start_time_of_day = Time.zone.parse("#{format('%02d', hour)}:#{format('%02d', minute)}")
+      elsif start_time_of_day_hour.blank? && start_time_of_day_minute.blank?
+        self.start_time_of_day = nil # User cleared the time
+      end
 
-    # For end_time_of_day
-    if end_time_of_day_hour.present? && end_time_of_day_minute.present?
-      hour = end_time_of_day_hour.to_i
-      minute = end_time_of_day_minute.to_i
-      self.end_time_of_day = Time.zone.parse("#{format('%02d', hour)}:#{format('%02d', minute)}")
-    else
-      self.end_time_of_day = nil # Set to nil if parts are missing
+      # Process End Time
+      if end_time_of_day_hour.present? && end_time_of_day_minute.present?
+        hour = end_time_of_day_hour.to_i
+        minute = end_time_of_day_minute.to_i
+        self.end_time_of_day = Time.zone.parse("#{format('%02d', hour)}:#{format('%02d', minute)}")
+      elsif end_time_of_day_hour.blank? && end_time_of_day_minute.blank?
+        self.end_time_of_day = nil # User cleared the time
+      end
     end
   end
 end

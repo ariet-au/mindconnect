@@ -38,31 +38,31 @@
                 <div class="mb-3">
                     <label class="form-label">Repeat On</label><br>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="recurring_day_of_week" id="dayMon" value="1">
-                        <label class="form-check-label" for="dayMon">Mon</label>
+                        <input class="form-check-input" type="checkbox" name="recurring_day_of_week" id="dayMon" value="0">
+                        <label class="form-check-label" for="dayMon">Mon</label> 
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="recurring_day_of_week" id="dayTue" value="2">
+                        <input class="form-check-input" type="checkbox" name="recurring_day_of_week" id="dayTue" value="1">
                         <label class="form-check-label" for="dayTue">Tue</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="recurring_day_of_week" id="dayWed" value="3">
+                        <input class="form-check-input" type="checkbox" name="recurring_day_of_week" id="dayWed" value="2">
                         <label class="form-check-label" for="dayWed">Wed</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="recurring_day_of_week" id="dayThu" value="4">
+                        <input class="form-check-input" type="checkbox" name="recurring_day_of_week" id="dayThu" value="3">
                         <label class="form-check-label" for="dayThu">Thu</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="recurring_day_of_week" id="dayFri" value="5">
+                        <input class="form-check-input" type="checkbox" name="recurring_day_of_week" id="dayFri" value="4">
                         <label class="form-check-label" for="dayFri">Fri</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="recurring_day_of_week" id="daySat" value="6">
+                        <input class="form-check-input" type="checkbox" name="recurring_day_of_week" id="daySat" value="5">
                         <label class="form-check-label" for="daySat">Sat</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input class="form-check-input" type="checkbox" name="recurring_day_of_week" id="daySun" value="0">
+                        <input class="form-check-input" type="checkbox" name="recurring_day_of_week" id="daySun" value="6">
                         <label class="form-check-label" for="daySun">Sun</label>
                     </div>
                 </div>
@@ -106,7 +106,7 @@ document.addEventListener('turbo:load', function () {
         editable: true,
         selectable: true,
         firstDay: 1, // Monday
-        timeZone: psychologistTimeZone, // Display everything in psychologist's timezone
+        timeZone: psychologistTimeZone, 
         displayEventTime: true,
 
         eventTimeFormat: {
@@ -135,13 +135,10 @@ document.addEventListener('turbo:load', function () {
                     return;
                 }
 
-                // FullCalendar's info.startStr and info.endStr are already ISO8601 strings
-                // formatted according to the calendar's timeZone setting (psychologistTimeZone).
-                // This is the correct string to send to the backend for proper timezone interpretation.
+             
                 const startTimeToSend = info.startStr;
                 const endTimeToSend = info.endStr;
 
-                // Optional: Log to verify what you're sending
                 console.log("Sending one-off start_time to backend:", startTimeToSend);
 
                 fetch('/psychologist_unavailabilities.json', {
@@ -178,74 +175,70 @@ document.addEventListener('turbo:load', function () {
                     console.error("Network or Fetch error for one-off:", error);
                     showCustomAlert("A network error occurred while saving one-off unavailability.");
                 });
-            }); // End of showCustomPrompt callback
+            }); 
         },
 
-        eventClick: function(info) {
-            const isUnavailability = info.event.source && info.event.source.url === `/psychologist_unavailabilities.json?psychologist_profile_id=${psychologistProfileId}`;
+        // PASTE THIS ENTIRE UPDATED FUNCTION INTO YOUR SCRIPT
 
-            if (isUnavailability && info.event.id) {
-                const isRecurringInstance = info.event.extendedProps && info.event.extendedProps.recurring;
+eventClick: function(info) {
+    const isUnavailability = info.event.source && info.event.source.url === `/psychologist_unavailabilities.json?psychologist_profile_id=${psychologistProfileId}`;
 
-                const startTime = info.event.start.toLocaleString('en-US', {
-                    timeZone: psychologistTimeZone,
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    timeZoneName: 'short'
-                });
-                const endTime = info.event.end.toLocaleString('en-US', {
-                    timeZone: psychologistTimeZone,
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                    hour: 'numeric',
-                    minute: '2-digit',
-                    timeZoneName: 'short'
-                });
+    if (isUnavailability && info.event.id) {
+        const isRecurringInstance = info.event.extendedProps && info.event.extendedProps.recurring;
 
-                let confirmationMessage = '';
-                if (isRecurringInstance) {
-                    confirmationMessage = `This is a recurring unavailability instance. Do you want to delete the ENTIRE recurring rule (all future occurrences) for "${info.event.title}"?`;
-                } else {
-                    confirmationMessage = `Are you sure you want to delete this one-off unavailability from ${startTime} to ${endTime}?`;
-                }
+        // CHANGED: Use calendar.formatDate for cleaner, consistent formatting
+        const formatOptions = {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            meridiem: 'short',
+            timeZoneName: 'short'
+        };
+        const startTime = calendar.formatDate(info.event.start, formatOptions);
+        const endTime = calendar.formatDate(info.event.end, formatOptions);
 
-                // Using custom confirmation modal
-                showCustomConfirm(confirmationMessage, function(confirmed) {
-                    if (confirmed) {
-                        fetch(`/psychologist_unavailabilities/${info.event.id}.json`, {
-                            method: 'DELETE',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-Token': document.querySelector("[name='csrf-token']").content
-                            }
-                        })
-                        .then(response => {
-                            if (response.ok) {
-                                calendar.refetchEvents();
-                                showCustomAlert("Unavailability deleted successfully.");
-                            } else {
-                                response.json().then(errors => {
-                                    console.error("Server-side deletion errors:", errors);
-                                    showCustomAlert("Error deleting unavailability: " + JSON.stringify(errors));
-                                }).catch(() => {
-                                    showCustomAlert(`Error deleting unavailability. Status: ${response.status} ${response.statusText}. Could not parse error response.`);
-                                });
-                            }
-                        })
-                        .catch(error => {
-                            console.error("Network or Fetch error during deletion:", error);
-                            showCustomAlert("A network error occurred while deleting unavailability.");
-                        });
-                    }
-                }); // End of showCustomConfirm callback
-            } else {
-                showCustomAlert("This event is not an unavailability record or cannot be deleted from here.");
+        let confirmationMessage = '';
+        if (isRecurringInstance) {
+            confirmationMessage = `This is a recurring unavailability instance. Do you want to delete the ENTIRE recurring rule (all future occurrences) for "${info.event.title}"?`;
+        } else {
+            confirmationMessage = `Are you sure you want to delete this one-off unavailability from ${startTime} to ${endTime}?`;
+        }
+
+        // Using custom confirmation modal
+        showCustomConfirm(confirmationMessage, function(confirmed) {
+            if (confirmed) {
+                fetch(`/psychologist_unavailabilities/${info.event.id}.json`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-Token': document.querySelector("[name='csrf-token']").content
+                        }
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            calendar.refetchEvents();
+                            showCustomAlert("Unavailability deleted successfully.");
+                        } else {
+                            response.json().then(errors => {
+                                console.error("Server-side deletion errors:", errors);
+                                showCustomAlert("Error deleting unavailability: " + JSON.stringify(errors));
+                            }).catch(() => {
+                                showCustomAlert(`Error deleting unavailability. Status: ${response.status} ${response.statusText}. Could not parse error response.`);
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Network or Fetch error during deletion:", error);
+                        showCustomAlert("A network error occurred while deleting unavailability.");
+                    });
             }
-        },
+        }); // End of showCustomConfirm callback
+    } else {
+        showCustomAlert("This event is not an unavailability record or cannot be deleted from here.");
+    }
+},
 
         eventSources: [
             {
@@ -515,6 +508,12 @@ document.addEventListener('turbo:load', function () {
 });
 
 </script>
+
+
+
+
+
+
 <style>
     /* FullCalendar CSS */
     @import url('https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/main.min.css');

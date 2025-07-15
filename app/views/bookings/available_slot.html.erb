@@ -1,0 +1,34 @@
+
+  <div class="container mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-4">Available Booking Slots for <%= @psychologist.name %></h1>
+    <p class="text-gray-600 mb-4">Duration: <%= @duration_minutes %> minutes | Timezone: <%= @user_timezone %></p>
+
+    <% if @slots_by_date.empty? %>
+      <p class="text-red-500">No available slots found for the next 14 days.</p>
+    <% else %>
+      <% @slots_by_date.each do |date, slots| %>
+        <div class="mb-6">
+          <h2 class="text-xl font-semibold mb-2"><%= date.strftime('%B %d, %Y') %></h2>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            <% slots.each do |slot| %>
+              <button
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                onclick="bookSlot('<%= slot.iso8601 %>')"
+              >
+                <%= slot.strftime('%I:%M %p') %>
+              </button>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+
+  <script>
+    function bookSlot(slotTime) {
+      // Redirect to a booking creation page or trigger a form submission
+      // For simplicity, this alerts the selected time. In a real app, you'd redirect or make an AJAX call.
+      alert('Selected slot: ' + slotTime);
+      // Example: window.location.href = `/bookings/new?start_time=${slotTime}&psychologist_id=<%= @psychologist.id %>`;
+    }
+  </script>

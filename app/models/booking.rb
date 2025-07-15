@@ -7,18 +7,12 @@ class Booking < ApplicationRecord
 
   validates :start_time, :end_time, :status, presence: true
   validate :at_least_one_client_present
-  # validate :start_before_end
 
-
-    # Add this callback
   before_validation :set_end_time, if: :start_time_changed?
 
-  # Ensure you have validations for start_time and end_time order
   validate :end_time_after_start_time
 
     VALID_STATUSES = ['pending', 'confirmed', 'cancelled', 'completed'].freeze
-
-  # Optional: Add a validation to ensure the status is one of the valid ones
   validates :status, inclusion: { in: VALID_STATUSES }
 
   def at_least_one_client_present
@@ -27,16 +21,9 @@ class Booking < ApplicationRecord
     end
   end
 
-  # def start_before_end
-  #   if start_time && end_time && end_time <= start_time
-  #     errors.add(:end_time, "must be after start_time")
-  #   end
-  # end
-
   private
 
   def set_end_time
-    # Ensure service and start_time are present before calculating
     if service.present? && start_time.present?
       self.end_time = start_time + service.duration_minutes.minutes
     else

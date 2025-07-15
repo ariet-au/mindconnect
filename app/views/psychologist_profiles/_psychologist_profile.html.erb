@@ -1,852 +1,886 @@
-<div class="container">
-  <div class="columns is-centered mt-6 mb-6">
-    <div class="column is-10">
-      <div class="card profile-card has-background-white">
-
-
-       
+<div class="profile-container">
+  <div class="profile-card">
+    
+    <!-- Header Section -->
+    <div class="profile-header">
+      <!-- Action Buttons -->
+      <div class="header-actions">
         <% if psychologist_profile.user == current_user %>
-          <div class="is-pulled-right" >
-            <%= link_to edit_psychologist_profile_path, class: "button is-primary-custom is-small" do %>
+          <%= link_to edit_psychologist_profile_path, class: "button is-primary-blue is-small" do %>
             <span class="icon"><i class="fas fa-edit"></i></span>
             <span>Edit Profile</span>
           <% end %>
-          </div>
         <% end %>
-
 
         <% if @psychologist_profile.user == current_user %>
-          <div class="is-pulled-right" >
-            <%= link_to psychologist_profile_psychologist_availabilities_path(@psychologist_profile), class: "button is-primary-custom is-small" do %>
-              <span class="icon"><i class="fas fa-calendar-alt"></i></span>
-              <span>Manage Availability</span>
-            <% end %>
-          </div>
-        <% end %>
-    <div class="is-pulled-right" >
-    
-          <%= link_to psychologist_profile_calendar_path(@psychologist_profile), class: "button is-info is-small" do %>
-            <span class="icon"><i class="fas fa-ban"></i></span>
-            <span>Block Unavailability</span>
+          <%= link_to psychologist_profile_psychologist_availabilities_path(@psychologist_profile), class: "button is-primary-blue is-small" do %>
+            <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+            <span>Manage Availability</span>
           <% end %>
+        <% end %>
 
+        <%= link_to psychologist_profile_calendar_path(@psychologist_profile), class: "button is-primary-blue is-small" do %>
+          <span class="icon"><i class="fas fa-ban"></i></span>
+          <span>Block Unavailability</span>
+        <% end %>
+      </div>
 
-
-    </div>
-        <div class="card-content header-section pt-5 pb-4">
-          <div class="columns is-vcentered is-mobile">
-            <div class="column is-narrow has-text-centered">
-              <% if psychologist_profile.profile_img.attached? %>
-                <figure class="image is-128x128 is-inline-block">
-                  <%= image_tag url_for(psychologist_profile.profile_img.variant(resize_to_limit: [128, 128])), class: "is-rounded profile-image" %>
-                </figure>
-              <% else %>
-                <figure class="image is-128x128 is-inline-block">
-                  <img src="https://bulma.io/images/placeholders/128x128.png" class="is-rounded profile-image" alt="Profile placeholder">
-                </figure>
-              <% end %>
-            </div>
-            <div class="column">
-              <h2 class="title is-4 has-text-primary mb-2">
-                <%= "#{@psychologist_profile.first_name} #{@psychologist_profile.last_name}" %>
-              </h2>
-              
-              <div class="credentials-section mb-3">
-                <% if @psychologist_profile.education.present? %>
-                  <span class="tag is-gradient is-medium mb-2">
-                    🎓 <%= @psychologist_profile.education %>
-                  </span>
-                <% end %>
-
-                 
-                    <% if @psychologist_profile.timezone.present? %>
-                      <span class="tag is-gradient is-medium mb-2">
-                        🌐 <%= format_timezone_offset(@psychologist_profile.timezone) %>
-                      </span>
-                    <% end %>
-                  
-                
-                <div class="icons-row mt-2">
-                  <% if psychologist_profile.is_doctor %>
-                    <span class="icon-badge" title="Doctor">
-                      <i class="fas fa-user-md"></i>
-                    </span>
-                  <% end %>
-                  <% if psychologist_profile.is_degree_boolean %>
-                    <span class="icon-badge" title="Certified">
-                      <i class="fas fa-certificate"></i>
-                    </span>
-                  <% end %>
-                  <% case psychologist_profile.gender %>
-                  <% when "male" %>
-                    <span class="icon-badge" title="Male">
-                      <i class="fas fa-mars"></i>
-                    </span>
-                  <% when "female" %>
-                    <span class="icon-badge" title="Female">
-                      <i class="fas fa-venus"></i>
-                    </span>
-                  <% when "unspecified" %>
-                    <span class="icon-badge" title="Unspecified">
-                      <i class="fas fa-genderless"></i>
-                    </span>
-                  <% end %>
-                  <span class="experience-text">
-                    <%= psychologist_profile.years_of_experience %> years experience
-                  </span>
-                </div>
-              </div>
-
-              <p class="location-info">
-                <span class="icon is-small mr-1"><i class="fas fa-map-marker-alt"></i></span>
-                <%= psychologist_profile.city %>, <%= psychologist_profile.country %>
-                <% if psychologist_profile.address.present? %>
-                  <span class="ml-1">• <%= psychologist_profile.address %></span>
-                <% end %>
-              </p>
-            </div>
-          </div>
+      <!-- Profile Info -->
+      <div class="profile-info">
+        <div class="profile-avatar">
+          <% if psychologist_profile.profile_img.attached? %>
+            <figure class="image is-128x128">
+              <%= image_tag url_for(psychologist_profile.profile_img.variant(resize_to_limit: [128, 128])), class: "is-rounded" %>
+            </figure>
+          <% else %>
+            <figure class="image is-128x128">
+              <img src="https://bulma.io/images/placeholders/128x128.png" class="is-rounded" alt="Profile placeholder">
+            </figure>
+          <% end %>
         </div>
 
-        <div class="card-content section-content" id="about">
-          <h3 class="section-title">
-            <span class="icon-wrapper">
-              <i class="fas fa-user-circle"></i>
-            </span>
-            About Me
-          </h3>
-          <div class="content">
-            <p class="section-text"><%= simple_format(psychologist_profile.about_me) %></p>
-          </div>
-        </div>
-
-        <div class="card-content section-content">
-          <h3 class="section-title">
-            <span class="icon-wrapper">
-              <i class="fas fa-graduation-cap"></i>
-            </span>
-            Education
-          </h3>
-          <div class="education-info">
-            <% if @psychologist_profile.education.present? %>
-              <div class="education-card">
-                <div class="education-content">
-                  <h4 class="education-title"><%= @psychologist_profile.education %></h4>
-                  <p class="education-meta">Professional qualification</p>
-                </div>
-              </div>
-            <% else %>
-              <div class="empty-state">
-                <p>No education details provided.</p>
-              </div>
-            <% end %>
-          </div>
-        </div>
-
-
-
-        <div class="card-content section-content">
-          <h3 class="section-title">
-            <span class="icon-wrapper">
-              <i class="fas fa-users"></i>
-            </span>
-            Clients
-          </h3>
-          <div class="content">
-            <% if psychologist_profile.about_clients.present? %>
-              <p class="section-text mb-4"><%= simple_format(psychologist_profile.about_clients) %></p>
-            <% end %>
-            <div class="tags-grid">
-              <% if @psychologist_profile.client_types.any? %>
-                <% @psychologist_profile.client_types.each do |client_type| %>
-                  <span class="modern-tag"><%= client_type.name %></span>
-                <% end %>
-              <% else %>
-                <span class="empty-text">No client types specified.</span>
-              <% end %>
-            </div>
-          </div>
-        </div>
-
-
-        <div class="card-content section-content">
-          <h3 class="section-title">
-            <span class="icon-wrapper">
-              <i class="fas fa-heart"></i>
-            </span>
-            Issues
-          </h3>
-          <div class="content">
-            <% if psychologist_profile.about_issues.present? %>
-              <p class="section-text mb-4"><%= simple_format(psychologist_profile.about_issues) %></p>
-            <% end %>
-            <div class="tags-grid">
-              <% if @psychologist_profile.issues.any? %>
-                <% @psychologist_profile.issues.each do |issue| %>
-                  <span class="modern-tag" ><%= issue.name %></span>
-                <% end %>
-              <% else %>
-                <span class="empty-text">No issues specified.</span>
-              <% end %>
-            </div>
-          </div>
-        </div>
-
-      
-
-        <div class="card-content section-content">
-          <h3 class="section-title">
-            <span class="icon-wrapper">
-              <i class="fas fa-star"></i>
-            </span>
-            Specialisations
-          </h3>
-          <div class="content">
-            <% if psychologist_profile.about_specialties.present? %>
-              <p class="section-text mb-4"><%= simple_format(psychologist_profile.about_specialties) %></p>
-            <% end %>
-            <div class="tags-grid">
-              <% if @psychologist_profile.specialties.any? %>
-                <% @psychologist_profile.specialties.each do |specialty| %>
-                  <span class="modern-tag accent"><%= specialty.name %></span>
-                <% end %>
-              <% else %>
-                <span class="empty-text">No specialisations specified.</span>
-              <% end %>
-            </div>
-          </div>
-        </div>
-
-        
-
-        <div class="card-content section-content" id="services">
-          <div class="level mb-4">
-            <div class="level-left">
-              <h3 class="section-title">
-                <span class="icon-wrapper">
-                  <i class="fas fa-briefcase"></i>
-                </span>
-                Services Offered
-              </h3>
-            </div>
-            <div class="level-right">
-              <% if psychologist_profile.user == current_user %>
-                <%= link_to "Add New Service", new_service_path, class: "button is-primary-custom is-small" %>
-              <% end %>
-            </div>
-          </div>
+        <div class="profile-details">
+          <h1 class="profile-name">
+            <%= "#{@psychologist_profile.first_name} #{@psychologist_profile.last_name}" %>
+          </h1>
           
-          <% if psychologist_profile.user.services.any? %>
-            <div class="columns is-multiline">
-              <% psychologist_profile.user.services.each do |service| %>
-                <div class="column is-half pb-4">
-                  <div class="service-card">
-                    <div class="service-header">
-                      <h4 class="service-title"><%= service.name %></h4>
-                      <div class="service-meta">
-                        <span class="price-tag">
-                          <i class="fas fa-coins"></i>
-                          <% if service.price == 0 %>
-                            Free
-                          <% else %>
-                            <% if service.currency.present? && current_currency.present? %>
-                              <% converted = service.converted_rate(current_currency) %>
-                              <%= humanized_money_with_symbol(converted) if converted %>
-                            <% end %>
-                          <% end %>
-                        </span>
-                        <span class="duration-tag">
-                          <i class="fas fa-clock"></i>
-                          <%= service.duration_minutes %> min
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div class="service-delivery">
-                      <% if service.delivery_method.downcase.include?("online") %>
-                        <span class="delivery-badge online">
-                          <i class="fas fa-laptop"></i>
-                          Online
-                        </span>
+          <div class="profile-credentials">
+            <% if @psychologist_profile.education.present? %>
+              <span class="credential-tag">
+                <i class="fas fa-graduation-cap"></i>
+                <%= @psychologist_profile.education %>
+              </span>
+            <% end %>
+            
+            <% if @psychologist_profile.timezone.present? %>
+              <span class="credential-tag">
+                <i class="fas fa-globe"></i>
+                <%= format_timezone_offset(@psychologist_profile.timezone) %>
+              </span>
+            <% end %>
+          </div>
+
+          <div class="profile-badges">
+            <% if psychologist_profile.is_doctor %>
+              <span class="badge-item" title="Doctor">
+                <i class="fas fa-user-md"></i>
+                <span>Doctor</span>
+              </span>
+            <% end %>
+            
+            <% if psychologist_profile.is_degree_boolean %>
+              <span class="badge-item" title="Certified">
+                <i class="fas fa-certificate"></i>
+                <span>Certified</span>
+              </span>
+            <% end %>
+            
+            <span class="badge-item">
+              <i class="fas fa-clock"></i>
+              <span><%= psychologist_profile.years_of_experience %> years experience</span>
+            </span>
+          </div>
+
+          <div class="profile-location">
+            <i class="fas fa-map-marker-alt"></i>
+            <span><%= psychologist_profile.city %>, <%= psychologist_profile.country %></span>
+            <% if psychologist_profile.address.present? %>
+              <span>• <%= psychologist_profile.address %></span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- About Section -->
+    <div class="profile-section">
+      <h2 class="section-title">
+        <i class="fas fa-user-circle"></i>
+        About Me
+      </h2>
+      <div class="section-content">
+        <p><%= simple_format(psychologist_profile.about_me) %></p>
+      </div>
+    </div>
+
+    <!-- Experience Section -->
+    <div class="profile-section">
+      <h2 class="section-title">
+        <i class="fas fa-briefcase"></i>
+        Professional Background
+      </h2>
+      <div class="section-content">
+        <% if @psychologist_profile.education.present? %>
+          <div class="experience-item">
+            <div class="experience-header">
+              <h3><%= @psychologist_profile.education %></h3>
+              <span class="experience-type">Professional Qualification</span>
+            </div>
+          </div>
+        <% else %>
+          <p class="empty-text">No education details provided.</p>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Specializations Section -->
+    <div class="profile-section">
+      <h2 class="section-title">
+        <i class="fas fa-star"></i>
+        Specializations
+      </h2>
+      <div class="section-content">
+        <% if psychologist_profile.about_specialties.present? %>
+          <p class="section-description"><%= simple_format(psychologist_profile.about_specialties) %></p>
+        <% end %>
+        <div class="tags-container">
+          <% if @psychologist_profile.specialties.any? %>
+            <% @psychologist_profile.specialties.each do |specialty| %>
+              <span class="tag-item featured"><%= specialty.name %></span>
+            <% end %>
+          <% else %>
+            <span class="empty-text">No specializations specified.</span>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Client Types Section -->
+    <div class="profile-section">
+      <h2 class="section-title">
+        <i class="fas fa-users"></i>
+        Client Types
+      </h2>
+      <div class="section-content">
+        <% if psychologist_profile.about_clients.present? %>
+          <p class="section-description"><%= simple_format(psychologist_profile.about_clients) %></p>
+        <% end %>
+        <div class="tags-container">
+          <% if @psychologist_profile.client_types.any? %>
+            <% @psychologist_profile.client_types.each do |client_type| %>
+              <span class="tag-item"><%= client_type.name %></span>
+            <% end %>
+          <% else %>
+            <span class="empty-text">No client types specified.</span>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Issues Section -->
+    <div class="profile-section">
+      <h2 class="section-title">
+        <i class="fas fa-heart"></i>
+        Areas of Focus
+      </h2>
+      <div class="section-content">
+        <% if psychologist_profile.about_issues.present? %>
+          <p class="section-description"><%= simple_format(psychologist_profile.about_issues) %></p>
+        <% end %>
+        <div class="tags-container">
+          <% if @psychologist_profile.issues.any? %>
+            <% @psychologist_profile.issues.each do |issue| %>
+              <span class="tag-item"><%= issue.name %></span>
+            <% end %>
+          <% else %>
+            <span class="empty-text">No issues specified.</span>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Services Section -->
+    <div class="profile-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <i class="fas fa-briefcase"></i>
+          Services Offered
+        </h2>
+        <% if psychologist_profile.user == current_user %>
+          <%= link_to "Add New Service", new_service_path, class: "button is-primary-blue is-small" %>
+        <% end %>
+      </div>
+      
+      <div class="section-content">
+        <% if psychologist_profile.user.services.any? %>
+          <div class="services-grid">
+            <% psychologist_profile.user.services.each do |service| %>
+              <div class="service-card">
+                <div class="service-header">
+                  <h3 class="service-title"><%= service.name %></h3>
+                  <div class="service-meta">
+                    <span class="service-price">
+                      <i class="fas fa-tag"></i>
+                      <% if service.price == 0 %>
+                        Free
                       <% else %>
-                        <span class="delivery-badge in-person">
-                          <i class="fas fa-user"></i>
-                          In-Person
-                        </span>
+                        <% if service.currency.present? && current_currency.present? %>
+                          <% converted = service.converted_rate(current_currency) %>
+                          <%= humanized_money_with_symbol(converted) if converted %>
+                        <% end %>
                       <% end %>
-                    </div>
-                    
-                    <p class="service-description"><%= simple_format(service.description) %></p>
-                    
-                    <div class="service-actions">
-                      <%= link_to "More Info", service, class: "button is-outline-primary" %>
-                    </div>
+                    </span>
+                    <span class="service-duration">
+                      <i class="fas fa-clock"></i>
+                      <%= service.duration_minutes %> min
+                    </span>
                   </div>
                 </div>
-              <% end %>
-            </div>
-          <% else %>
-            <div class="empty-state">
-              <p>No services available at this time.</p>
-            </div>
-          <% end %>
-        </div>
-
-        <div class="card-content section-content" id="contact">
-          <h3 class="section-title">
-            <span class="icon-wrapper">
-              <i class="fas fa-envelope"></i>
-            </span>
-            Contact Information
-          </h3>
-          
-          <div class="contact-grid">
-            <% contact_methods = {
-              "Email" => [psychologist_profile.user.email, 'fas fa-envelope'],
-              "Telegram" => [psychologist_profile.telegram, 'fab fa-telegram'],
-              "WhatsApp" => [psychologist_profile.whatsapp, 'fab fa-whatsapp'],
-              "Primary Phone" => [psychologist_profile.contact_phone, 'fas fa-phone'],
-              "Secondary Phone" => [psychologist_profile.contact_phone2, 'fas fa-phone'],
-              "Additional Phone" => [psychologist_profile.contact_phone3, 'fas fa-phone']
-            } %>
-
-            <% contact_methods.each do |label, (value, icon)| %>
-              <% next unless value.present? %>
-              <div class="contact-item">
-                <div class="contact-label">
-                  <i class="<%= icon %>"></i>
-                  <span><%= label %></span>
+                
+                <div class="service-delivery">
+                  <% if service.delivery_method.downcase.include?("online") %>
+                    <span class="delivery-badge online">
+                      <i class="fas fa-laptop"></i>
+                      Online
+                    </span>
+                  <% else %>
+                    <span class="delivery-badge in-person">
+                      <i class="fas fa-user"></i>
+                      In-Person
+                    </span>
+                  <% end %>
                 </div>
-                <div class="contact-value">
+                
+                <p class="service-description"><%= simple_format(service.description) %></p>
+                
+                <div class="service-actions">
+                  <%= link_to "Book This Service", new_service_booking_path(service), class: "button is-primary-blue is-fullwidth" %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="empty-text">No services available at this time.</p>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Contact Section -->
+    <div class="profile-section">
+      <h2 class="section-title">
+        <i class="fas fa-envelope"></i>
+        Contact Information
+      </h2>
+      
+      <div class="section-content">
+        <% contact_methods = {
+          "Email" => [psychologist_profile.user.email, 'fas fa-envelope', "mailto:#{psychologist_profile.user.email}"],
+          "Telegram" => [psychologist_profile.telegram, 'fab fa-telegram', "https://t.me/#{psychologist_profile.telegram}"],
+          "WhatsApp" => [psychologist_profile.whatsapp, 'fab fa-whatsapp', "https://wa.me/#{psychologist_profile.whatsapp}"],
+          "Primary Phone" => [psychologist_profile.contact_phone, 'fas fa-phone', "tel:#{psychologist_profile.contact_phone}"],
+          "Secondary Phone" => [psychologist_profile.contact_phone2, 'fas fa-phone', "tel:#{psychologist_profile.contact_phone2}"],
+          "Additional Phone" => [psychologist_profile.contact_phone3, 'fas fa-phone', "tel:#{psychologist_profile.contact_phone3}"]
+        } %>
+
+        <% primary_method = contact_methods.find { |label, (value, _icon, _link)| value.present? && @psychologist_profile.primary_contact_method == label.downcase.gsub(' ', '_') } %>
+        
+        <% if primary_method %>
+          <% label, (value, icon, link) = primary_method %>
+          <div class="primary-contact">
+            <a href="<%= link %>" class="contact-cta">
+              <i class="<%= icon %>"></i>
+              <span>Contact me via <%= label %></span>
+            </a>
+          </div>
+        <% end %>
+
+        <div class="other-contacts">
+          <button class="toggle-contacts" aria-expanded="false">
+            <span class="toggle-text">Show all contact methods</span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="contact-list" style="display: none;">
+            <% contact_methods.each do |label, (value, icon, link)| %>
+              <% next unless value.present? %>
+              <% next if label.downcase.gsub(' ', '_') == @psychologist_profile.primary_contact_method %>
+              <div class="contact-item">
+                <div class="contact-info">
+                  <i class="<%= icon %>"></i>
+                  <span class="contact-label"><%= label %></span>
+                </div>
+                <div class="contact-actions">
                   <input class="contact-input" readonly value="<%= value %>">
                   <button class="copy-button" data-value="<%= value %>" title="Copy">
                     <i class="fas fa-copy"></i>
                   </button>
+                  <a href="<%= link %>" class="contact-link" target="_blank">
+                    <i class="fas fa-external-link-alt"></i>
+                  </a>
                 </div>
               </div>
             <% end %>
           </div>
         </div>
-
       </div>
     </div>
+
   </div>
 </div>
+
 <style>
-/* Custom CSS Variables */
 :root {
-    --primary-blue: #007bff;
-    --secondary-grey: #6C757D;
-    --white: #FFFFFF;
-    --muted-bg: #F8F9FA;
-    --light-grey: #F1F5F9;
-    --medium-grey: #64748B;
-    --dark-grey: #334155;
-    --text-primary: #1E293B;
-    --text-secondary: #64748B;
-    --border-color: #E2E8F0;
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --primary-blue: #007bff;
+  --text-primary: #2c3e50;
+  --text-secondary: #6c757d;
+  --border-light: #e9ecef;
+  --bg-light: #f8f9fa;
+  --white: #ffffff;
+  --shadow-subtle: 0 2px 4px rgba(0,0,0,0.05);
+  --shadow-card: 0 4px 12px rgba(0,0,0,0.08);
 }
 
 body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--muted-bg);
-    color: var(--text-primary);
-    line-height: 1.6;
-    font-weight: 400;
-    letter-spacing: -0.01em;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.profile-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
 .profile-card {
-    background: var(--white);
-    border-radius: 20px;
-    box-shadow: var(--shadow-lg);
-    border: 1px solid var(--border-color);
-    overflow: hidden;
-    position: relative;
-}
-
-.profile-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, var(--primary-blue), var(--teal), var(--pink));
-}
-
-/* Navigation */
-.nav-button {
-    border: none !important;
-    background: rgba(255, 255, 255, 0.9) !important;
-    box-shadow: var(--shadow-sm);
-    border-radius: 12px;
-    transition: all 0.3s ease;
-}
-
-
-.nav-button:hover {
-    background: var(--primary-blue) !important;
-    color: var(--white) !important;
-}
-
-.dropdown-item {
-    color: var(--text-primary);
-    font-weight: 500;
-    font-size: 0.9rem;
-    padding: 0.75rem 1rem;
-    transition: all 0.3s ease;
-}
-
-.dropdown-item:hover {
-    background: var(--primary-blue);
-    color: var(--white);
+  background: var(--white);
+  border-radius: 12px;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
 }
 
 /* Header Section */
-.header-section {
-    background: linear-gradient(135deg, rgba(34, 23, 186, 0.03), rgba(11, 83, 81, 0.03));
-    border-bottom: 1px solid var(--border-color);
-    padding: 2rem 1.5rem;
+.profile-header {
+  padding: 40px 30px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-bottom: 1px solid var(--border-light);
+  position: relative;
 }
 
-.profile-image {
-    border: 3px solid var(--white);
-    box-shadow: var(--shadow-md);
-    transition: transform 0.3s ease;
+.header-actions {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-.profile-image:hover {
-    transform: scale(1.05);
+.profile-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 25px;
+  margin-top: 20px;
 }
 
-.has-text-primary {
-    color: var(--primary-blue) !important;
+.profile-avatar .image {
+  margin: 0;
 }
 
-.tag.is-gradient {
-    background: linear-gradient(135deg, var(--primary-blue), var(--teal));
-    color: #363636;
-    border: none;
-    font-weight: 600;
-    font-size: 0.85rem;
-    padding: 0.5rem 1rem;
-    border-radius: 25px;
-    letter-spacing: 0.01em;
-    box-shadow: var(--shadow-sm);
+.profile-avatar img {
+  border: 3px solid var(--white);
+  box-shadow: var(--shadow-subtle);
 }
 
-.icons-row {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex-wrap: wrap;
+.profile-details {
+  flex: 1;
 }
 
-.icon-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    background: var(--light-grey);
-    border-radius: 50%;
-    color: var(--text-primary);
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
+.profile-name {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  line-height: 1.2;
 }
 
-.icon-badge:hover {
-    background: var(--primary-blue);
-    color: var(--white);
-    transform: scale(1.1);
+.profile-credentials {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
 }
 
-.experience-text {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    font-weight: 500;
+.credential-tag {
+  background: var(--bg-light);
+  border: 1px solid var(--border-light);
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
-.location-info {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    font-weight: 400;
-    margin-top: 0.5rem;
+.credential-tag i {
+  color: var(--primary-blue);
 }
 
-/* Section Content */
-.section-content {
-    padding: 2rem 1.5rem;
-    border-bottom: 1px solid var(--border-color);
+.profile-badges {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
 }
 
-.section-content:last-child {
-    border-bottom: none;
+.badge-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.badge-item i {
+  color: var(--primary-blue);
+}
+
+.profile-location {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.profile-location i {
+  color: var(--primary-blue);
+}
+
+/* Profile Sections */
+.profile-section {
+  padding: 30px;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.profile-section:last-child {
+  border-bottom: none;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 .section-title {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
 }
 
-.icon-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    background: linear-gradient(135deg, var(--primary-blue), var(--teal));
-    border-radius: 12px;
-    color: var(--white);
-    font-size: 1rem;
+.section-title i {
+  color: var(--primary-blue);
+  font-size: 1.1rem;
 }
 
-.section-text {
-    color: var(--text-secondary);
-    font-size: 0.95rem;
-    line-height: 1.7;
-    margin: 0;
+.section-content {
+  color: var(--text-secondary);
+  line-height: 1.7;
 }
 
-/* Education Card */
-.education-card {
-    background: linear-gradient(135deg, rgba(34, 23, 186, 0.05), rgba(11, 83, 81, 0.05));
-    border: 1px solid var(--border-color);
-    border-left: 4px solid var(--primary-blue);
-    border-radius: 12px;
-    padding: 1.5rem;
-    transition: all 0.3s ease;
+.section-description {
+  margin-bottom: 20px;
+  color: var(--text-secondary);
 }
 
-.education-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+/* Experience Item */
+.experience-item {
+  padding: 20px;
+  background: var(--bg-light);
+  border-radius: 8px;
+  border-left: 4px solid var(--primary-blue);
 }
 
-.education-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin-bottom: 0.25rem;
+.experience-header h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
 }
 
-.education-meta {
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-    font-weight: 500;
+.experience-type {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
 }
 
-/* Tags Grid */
-.tags-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-top: 0.5rem;
+/* Tags */
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.modern-tag {
-    background: var(--light-grey);
-    color: var(--text-primary);
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    border: 1px solid var(--border-color);
-    transition: all 0.3s ease;
+.tag-item {
+  background: var(--bg-light);
+  border: 1px solid var(--border-light);
+  border-radius: 16px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
 }
 
-.modern-tag:hover {
-    background: var(--primary-blue);
-    color: var(--white);
-    transform: translateY(-1px);
+.tag-item:hover {
+  background: var(--primary-blue);
+  color: var(--white);
+  border-color: var(--primary-blue);
 }
 
-.modern-tag.accent {
-    background: linear-gradient(135deg, var(--pink), var(--primary-blue));
-    color: var(--white);
-    border: none;
+.tag-item.featured {
+  background: rgba(0, 123, 255, 0.1);
+  border-color: var(--primary-blue);
+  color: var(--primary-blue);
 }
 
-/* Service Cards */
+/* Services Grid */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
 .service-card {
-    background: var(--white);
-    border: 1px solid var(--border-color);
-    border-radius: 16px;
-    padding: 1.5rem;
-    transition: all 0.3s ease;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  padding: 20px;
+  transition: all 0.2s ease;
 }
 
 .service-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
-    border-color: var(--primary-blue);
-}
-
-.service-header {
-    margin-bottom: 1rem;
+  box-shadow: var(--shadow-card);
+  border-color: var(--primary-blue);
 }
 
 .service-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--primary-blue);
-    margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 12px;
 }
 
 .service-meta {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 0.75rem;
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
 }
 
-.price-tag, .duration-tag {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-    font-weight: 500;
+.service-price,
+.service-duration {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.service-price i,
+.service-duration i {
+  color: var(--primary-blue);
 }
 
 .service-delivery {
-    margin-bottom: 1rem;
+  margin-bottom: 16px;
 }
 
 .delivery-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.375rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
 }
 
 .delivery-badge.online {
-    background: rgba(34, 23, 186, 0.1);
-    color: var(--primary-blue);
+  background: rgba(0, 123, 255, 0.1);
+  color: var(--primary-blue);
 }
 
 .delivery-badge.in-person {
-    background: rgba(11, 83, 81, 0.1);
-    color: var(--teal);
+  background: rgba(40, 167, 69, 0.1);
+  color: #28a745;
 }
 
 .service-description {
-    color: var(--text-secondary);
-    font-size: 0.9rem;
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
-    flex-grow: 1;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 20px;
 }
 
-.service-actions {
-    margin-top: auto;
+/* Contact Section */
+.primary-contact {
+  margin-bottom: 20px;
 }
 
-.button.is-outline-primary {
-    background: transparent;
-    border: 2px solid var(--primary-blue);
-    color: var(--primary-blue);
-    font-weight: 600;
-    border-radius: 25px;
-    padding: 0.5rem 1.5rem;
-    transition: all 0.3s ease;
+.contact-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--primary-blue);
+  color: var(--white);
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
 
-.button.is-outline-primary:hover {
-    background: var(--primary-blue);
-    color: var(--white);
+.contact-cta:hover {
+  background: #0056b3;
+  color: var(--white);
+  transform: translateY(-1px);
 }
 
-.button.is-primary-custom {
-    background: linear-gradient(135deg, var(--primary-blue), var(--teal));
-    color: black;
-    border: none;
-    font-weight: 600;
-    border-radius: 25px;
-    padding: 0.5rem 1.5rem;
-    transition: all 0.3s ease;
+.toggle-contacts {
+  background: none;
+  border: none;
+  color: var(--primary-blue);
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  margin-bottom: 16px;
 }
 
-.button.is-primary-custom:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
+.toggle-contacts:hover {
+  text-decoration: underline;
 }
 
-/* Contact Grid */
-.contact-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
+.contact-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 .contact-item {
-    background: var(--light-grey);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 1rem;
-    transition: all 0.3s ease;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: var(--bg-light);
+  border-radius: 8px;
+  border: 1px solid var(--border-light);
 }
 
-.contact-item:hover {
-    background: var(--white);
-    box-shadow: var(--shadow-sm);
+.contact-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.contact-info i {
+  color: var(--primary-blue);
+  width: 16px;
 }
 
 .contact-label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.75rem;
-    color: var(--text-primary);
-    font-size: 0.9rem;
-    font-weight: 500;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  min-width: 80px;
 }
 
-.contact-value {
-    display: flex;
-    gap: 0.5rem;
+.contact-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
 .contact-input {
-    flex: 1;
-    background: var(--white);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 0.5rem 0.75rem;
-    font-size: 0.9rem;
-    color: var(--text-primary);
-    outline: none;
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  padding: 6px 8px;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  width: 200px;
 }
 
-.copy-button {
-    background: var(--white);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 0.5rem 0.75rem;
-    color: var(--text-secondary);
-    cursor: pointer;
-    transition: all 0.3s ease;
+.copy-button,
+.contact-link {
+  background: var(--white);
+  border: 1px solid var(--border-light);
+  border-radius: 4px;
+  padding: 6px 8px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.copy-button:hover {
-    background: var(--primary-blue);
-    color: var(--white);
-    border-color: var(--primary-blue);
+.copy-button:hover,
+.contact-link:hover {
+  background: var(--primary-blue);
+  color: var(--white);
+  border-color: var(--primary-blue);
 }
 
 /* Empty States */
-.empty-state, .empty-text {
-    color: var(--text-secondary);
-    font-style: italic;
-    text-align: center;
-    padding: 2rem;
-    background: var(--light-grey);
-    border-radius: 12px;
-}
-
 .empty-text {
-    display: inline-block;
-    padding: 0.5rem 1rem;
-    background: var(--light-grey);
-    border-radius: 20px;
-    font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  font-size: 0.9rem;
 }
 
-/* Responsive Design */
+/* Button Styles */
+.button.is-primary-blue {
+  background-color: var(--white);
+  border: 1px solid var(--primary-blue);
+  color: var(--primary-blue);
+  box-shadow: none;
+  font-weight: 500;
+  border-radius: 6px;
+}
+
+.button.is-primary-blue:hover,
+.button.is-primary-blue.is-hovered {
+  background-color: var(--primary-blue);
+  border-color: var(--primary-blue);
+  color: var(--white);
+}
+
+.button.is-primary-blue:focus,
+.button.is-primary-blue.is-focused {
+  background-color: var(--primary-blue);
+  border-color: var(--primary-blue);
+  color: var(--white);
+  box-shadow: 0 0 0 0.125em rgba(0, 123, 255, 0.25);
+}
+
+/* Mobile Responsive */
 @media screen and (max-width: 768px) {
-    .header-section {
-        padding: 1.5rem 1rem;
-    }
-    
-    .section-content {
-        padding: 1.5rem 1rem;
-    }
-    
-    .contact-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .service-meta {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-    
-    .icons-row {
-        flex-wrap: wrap;
-        gap: 0.5rem;
-    }
-    
-    .tags-grid {
-        gap: 0.5rem;
-    }
+  .profile-container {
+    padding: 10px;
+  }
+  
+  .profile-header {
+    padding: 20px;
+  }
+  
+  .header-actions {
+    position: static;
+    margin-bottom: 20px;
+    justify-content: flex-start;
+  }
+  
+  .profile-info {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+  }
+  
+  .profile-name {
+    font-size: 1.5rem;
+  }
+  
+  .profile-section {
+    padding: 20px;
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .service-meta {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .contact-item {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  
+  .contact-input {
+    width: 100%;
+  }
+  
+  .contact-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .profile-badges {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .credential-tag {
+    font-size: 0.8rem;
+  }
 }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // Copy functionality
-    document.querySelectorAll('.copy-button').forEach(button => {
-        button.addEventListener('click', async (event) => {
-            const valueToCopy = event.currentTarget.dataset.value;
-            const icon = event.currentTarget.querySelector('i');
-            
-            try {
-                if (navigator.clipboard && navigator.clipboard.writeText) {
-                    await navigator.clipboard.writeText(valueToCopy);
-                } else {
-                    // Fallback for older browsers
-                    const textarea = document.createElement('textarea');
-                    textarea.value = valueToCopy;
-                    textarea.style.position = 'fixed';
-                    textarea.style.opacity = '0';
-                    document.body.appendChild(textarea);
-                    textarea.focus();
-                    textarea.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(textarea);
-                }
-
-                // Visual feedback
-                const originalClass = icon.className;
-                icon.className = 'fas fa-check';
-                
-                setTimeout(() => {
-                    icon.className = originalClass;
-                }, 1500);
-
-            } catch (err) {
-                console.error('Failed to copy text: ', err);
-            }
-        });
+  // Toggle contacts functionality
+  const toggleButton = document.querySelector('.toggle-contacts');
+  if (toggleButton) {
+    toggleButton.addEventListener('click', function() {
+      const contactList = document.querySelector('.contact-list');
+      const isExpanded = this.getAttribute('aria-expanded') === 'true';
+      
+      this.setAttribute('aria-expanded', !isExpanded);
+      this.querySelector('.toggle-text').textContent = isExpanded ? 'Show all contact methods' : 'Hide contact methods';
+      this.querySelector('i').classList.toggle('fa-chevron-down');
+      this.querySelector('i').classList.toggle('fa-chevron-up');
+      contactList.style.display = isExpanded ? 'none' : 'flex';
     });
-    
-    // Smooth scrolling for navigation links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
-            }
-        });
+  }
+
+  // Copy functionality
+  document.querySelectorAll('.copy-button').forEach(button => {
+    button.addEventListener('click', async (event) => {
+      const valueToCopy = event.currentTarget.dataset.value;
+      const icon = event.currentTarget.querySelector('i');
+      
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(valueToCopy);
+        } else {
+          // Fallback for older browsers
+          const textarea = document.createElement('textarea');
+          textarea.value = valueToCopy;
+          textarea.style.position = 'fixed';
+          textarea.style.opacity = '0';
+          document.body.appendChild(textarea);
+          textarea.focus();
+          textarea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textarea);
+        }
+
+        // Visual feedback
+        const originalClass = icon.className;
+        icon.className = 'fas fa-check';
+        
+        setTimeout(() => {
+          icon.className = originalClass;
+        }, 1500);
+
+      } catch (err) {
+        console.error('Failed to copy text: ', err);
+      }
     });
+  });
 });
 </script>
