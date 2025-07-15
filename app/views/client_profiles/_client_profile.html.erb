@@ -1,67 +1,204 @@
-<div id="<%= dom_id client_profile %>">
-  <p>
-    <strong>First Name:</strong>
-    <%= client_profile.first_name %>
-  </p>
+<!-- Main container for the dashboard layout -->
+<div class="container is-max-desktop py-5">
+    <!-- Profile Header Section -->
+    <div class="box  has-text-centered py-5 mb-5" style="border-radius: 12px; box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);">
+        <p class="title is-2 has-text-primary mb-2">
+            <%= client_profile.first_name %> <%= client_profile.last_name %>
+        </p>
+        <p class="subtitle is-5 has-text-weight-bold">
+            Your Personal Information Dashboard
+        </p>
+    </div>
 
-    <p>
-    <strong>Last Name:</strong>
-    <%= client_profile.last_name %>
-  </p>
+    <!-- Main content area with two columns for details and potentially other sections -->
+    <div class="columns is-desktop">
+        <!-- Left Column for Personal and Contact Details -->
+        <div class="column is-two-thirds">
+            <!-- Personal Information Section -->
+            <div class="box mb-5" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);">
+                <h4 class="title is-5 has-text-grey-darker mb-4">
+                    <i class="fas fa-user-circle mr-2"></i>Personal Information
+                </h4>
+                <div class="content">
+                    <div class="columns is-multiline is-gapless">
+                        <div class="column is-half">
+                            <p class="has-text-weight-semibold">First Name:</p>
+                            <p class="has-text-grey-dark"><%= client_profile.first_name %></p>
+                        </div>
+                        <div class="column is-half">
+                            <p class="has-text-weight-semibold">Last Name:</p>
+                            <p class="has-text-grey-dark"><%= client_profile.last_name %></p>
+                        </div>
+                        <div class="column is-half mt-3">
+                            <p class="has-text-weight-semibold">Date of Birth:</p>
+                            <p class="has-text-grey-dark"><%= client_profile.dob %></p>
+                        </div>
+                        <div class="column is-half mt-3">
+                            <p class="has-text-weight-semibold">Gender:</p>
+                            <p class="has-text-grey-dark"><%= client_profile.gender %></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-  <p>
-    <strong>Dob:</strong>
-    <%= client_profile.dob %>
-  </p>
+            <!-- Contact Details Section -->
+            <div class="box mb-5" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);">
+                <h4 class="title is-5 has-text-grey-darker mb-4">
+                    <i class="fas fa-address-book mr-2"></i>Contact Details
+                </h4>
+                <div class="content">
+                    <div class="columns is-multiline is-gapless">
+                        <div class="column is-half">
+                            <p class="has-text-weight-semibold">Phone Number 1:</p>
+                            <p class="has-text-grey-dark"><%= client_profile.phone_number1 %></p>
+                        </div>
+                        <div class="column is-half">
+                            <p class="has-text-weight-semibold">Phone Number 2:</p>
+                            <p class="has-text-grey-dark"><%= client_profile.phone_number2 %></p>
+                        </div>
+                        <div class="column is-half mt-3">
+                            <p class="has-text-weight-semibold">Telegram:</p>
+                            <p class="has-text-grey-dark"><%= client_profile.telegram %></p>
+                        </div>
+                        <div class="column is-half mt-3">
+                            <p class="has-text-weight-semibold">Whatsapp:</p>
+                            <p class="has-text-grey-dark"><%= client_profile.whatsapp %></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-  <p>
-    <strong>Gender:</strong>
-    <%= client_profile.gender %>
-  </p>
+        <!-- Right Column for Location Details -->
+        <div class="column is-one-third">
+            <div class="box" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);">
+                <h4 class="title is-5 has-text-grey-darker mb-4">
+                    <i class="fas fa-map-marker-alt mr-2"></i>Location Details
+                </h4>
+                <div class="content">
+                    <p class="has-text-weight-semibold">Country:</p>
+                    <p class="has-text-grey-dark mb-3"><%= client_profile.country %></p>
 
-  <p>
-    <strong>Country:</strong>
-    <%= client_profile.country %>
-  </p>
+                    <p class="has-text-weight-semibold">City:</p>
+                    <p class="has-text-grey-dark mb-3"><%= client_profile.city %></p>
 
-  <p>
-    <strong>City:</strong>
-    <%= client_profile.city %>
-  </p>
+                    <p class="has-text-weight-semibold">Address:</p>
+                    <p class="has-text-grey-dark mb-3"><%= client_profile.address %></p>
 
-  <p>
-    <strong>Address:</strong>
-    <%= client_profile.address %>
-  </p>
+                    <p class="has-text-weight-semibold">Timezone:</p>
+                    <p class="has-text-grey-dark"><%= client_profile.timezone %></p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  <p>
-    <strong>Timezone:</strong>
-    <%= client_profile.timezone %>
-  </p>
+    <!-- Bookings Section - Full Width -->
+    <div class="box mt-5" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);">
+        <h4 class="title is-5 has-text-grey-darker mb-4">
+            <i class="fas fa-calendar-alt mr-2"></i>Upcoming Bookings
+        </h4>
 
-  <p>
-    <strong>Phone number1:</strong>
-    <%= client_profile.phone_number1 %>
-  </p>
+        <%
+            # Filter bookings to only show future ones
+            future_bookings = []
+            if client_profile.respond_to?(:bookings) && client_profile.bookings
+                future_bookings = client_profile.bookings.select do |booking|
+                    booking.start_time && booking.start_time > Time.current
+                end.sort_by(&:start_time) # Sort by start time for better readability
+            end
+        %>
 
-  <p>
-    <strong>Phone number2:</strong>
-    <%= client_profile.phone_number2 %>
-  </p>
-
-  <p>
-    <strong>Telegram:</strong>
-    <%= client_profile.telegram %>
-  </p>
-
-  <p>
-    <strong>Whatsapp:</strong>
-    <%= client_profile.whatsapp %>
-  </p>
-
-  <p>
-    <strong>User:</strong>
-    <%= client_profile.user_id %>
-  </p>
-
+        <% if future_bookings.any? %>
+            <div class="table-container">
+                <table class="table is-fullwidth is-striped is-hoverable is-bordered">
+                    <thead>
+                        <tr>
+                            <th>Date & Time (Local)</th>
+                            <th>Duration</th>
+                            <th>Psychologist</th>
+                            <th>Service</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% future_bookings.each do |booking| %>
+                            <tr>
+                                <td class="booking-time"
+                                    data-start-time="<%= booking.start_time.iso8601 if booking.start_time %>"
+                                    data-end-time="<%= booking.end_time.iso8601 if booking.end_time %>">
+                                    <% if booking.start_time && booking.end_time %>
+                                        <!-- Placeholder for JavaScript to fill -->
+                                        Loading Time...
+                                    <% else %>
+                                        N/A
+                                    <% end %>
+                                </td>
+                                <td>
+                                    <% if booking.start_time && booking.end_time %>
+                                        <% duration_seconds = booking.end_time - booking.start_time %>
+                                        <% hours = (duration_seconds / 3600).to_i %>
+                                        <% minutes = ((duration_seconds % 3600) / 60).to_i %>
+                                        <%= "#{hours}h #{minutes}m" %>
+                                    <% else %>
+                                        N/A
+                                    <% end %>
+                                </td>
+                                <td>
+                                    <%= booking.psychologist_profile.full_name if booking.psychologist_profile.respond_to?(:full_name) %>
+                                </td>
+                                <td>
+                                    <%= booking.service.name if booking.service.respond_to?(:name) %>
+                                </td>
+                                <td>
+                                    <% case booking.status %>
+                                    <% when 'confirmed' %>
+                                        <span class="tag is-success is-light">Confirmed</span>
+                                    <% when 'pending' %>
+                                        <span class="tag is-warning is-light">Pending</span>
+                                    <% when 'cancelled' %>
+                                        <span class="tag is-danger is-light">Cancelled</span>
+                                    <% else %>
+                                        <span class="tag is-info is-light"><%= booking.status.capitalize %></span>
+                                    <% end %>
+                                </td>
+                            </tr>
+                        <% end %>
+                    </tbody>
+                </table>
+            </div>
+        <% else %>
+            <p class="has-text-grey">No upcoming bookings found for this client.</p>
+        <% end %>
+    </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const bookingTimeCells = document.querySelectorAll('.booking-time');
+
+        bookingTimeCells.forEach(cell => {
+            const startTimeStr = cell.dataset.startTime;
+            const endTimeStr = cell.dataset.endTime;
+
+            if (startTimeStr && endTimeStr) {
+                try {
+                    const startTime = new Date(startTimeStr);
+                    const endTime = new Date(endTimeStr);
+
+                    // Format options for local timezone
+                    const dateOptions = { year: 'numeric', month: '2-digit', day: '2-digit' };
+                    const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: true };
+
+                    const formattedDate = startTime.toLocaleDateString(undefined, dateOptions);
+                    const formattedStartTime = startTime.toLocaleTimeString(undefined, timeOptions);
+                    const formattedEndTime = endTime.toLocaleTimeString(undefined, timeOptions);
+
+                    cell.textContent = `${formattedDate} ${formattedStartTime} - ${formattedEndTime}`;
+                } catch (error) {
+                    console.error("Error parsing date or formatting time:", error);
+                    cell.textContent = "Invalid Time"; // Fallback for parsing errors
+                }
+            }
+        });
+    });
+</script>

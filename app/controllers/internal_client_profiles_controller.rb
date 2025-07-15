@@ -1,9 +1,29 @@
 class InternalClientProfilesController < ApplicationController
+  # Ensure the user is authenticated before any action, if not already handled globally
+  # before_action :authenticate_user! # Uncomment if you use Devise or similar for authentication
+
   before_action :set_internal_client_profile, only: %i[ show edit update destroy ]
+  # You might want to add an authorization check here to ensure
+  # a psychologist can only manage their own client profiles:
+  # before_action :authorize_psychologist_profile, only: %i[ show edit update destroy ]
 
   # GET /internal_client_profiles or /internal_client_profiles.json
   def index
-    @internal_client_profiles = InternalClientProfile.all
+    # Ensure current_user and current_user.psychologist_profile are available
+    # This assumes a 'psychologist_profile' association exists on your User model,
+    # and that the user is logged in.
+    if current_user && current_user.psychologist_profile
+      @internal_client_profiles = InternalClientProfile.where(
+        psychologist_profile_id: current_user.psychologist_profile.id
+      ).order(created_at: :desc) # Optional: order by creation date
+    else
+      # Handle cases where the user is not logged in or doesn't have a psychologist profile
+      # You might redirect them, show an error, or render an empty list.
+      # For now, we'll set it to an empty array to prevent errors in the view.
+      @internal_client_profiles = []
+      flash[:alert] = "You are not authorized to view this page or your psychologist profile is not set up."
+      redirect_to root_path # Or wherever appropriate for unauthorized access
+    end
   end
 
   # GET /internal_client_profiles/1 or /internal_client_profiles/1.json
@@ -20,16 +40,17 @@ class InternalClientProfilesController < ApplicationController
   end
 
   # POST /internal_client_profiles or /internal_client_profiles.json
-def create
-  @internal_client_profile = InternalClientProfile.new(internal_client_profile_params)
-  @internal_client_profile.psychologist_profile = current_user.psychologist_profile
+  def create
+    @internal_client_profile = InternalClientProfile.new(internal_client_profile_params)
+    # Assign the current psychologist's profile to the new internal client profile
+    @internal_client_profile.psychologist_profile = current_user.psychologist_profile
 
-  if @internal_client_profile.save
-    redirect_to @internal_client_profile, notice: "Profile created!"
-  else
-    render :new, status: :unprocessable_entity
+    if @internal_client_profile.save
+      redirect_to @internal_client_profile, notice: "Profile created!"
+    else
+      render :new, status: :unprocessable_entity
+    end
   end
-end
 
   # PATCH/PUT /internal_client_profiles/1 or /internal_client_profiles/1.json
   def update
@@ -57,21 +78,30 @@ end
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_internal_client_profile
-      @internal_client_profile = InternalClientProfile.find(params.expect(:id))
+      # Ensure that the found profile also belongs to the current psychologist
+      @internal_client_profile = InternalClientProfile.find(params[:id])
+      # Add authorization check here:
+      unless @internal_client_profile.psychologist_profile == current_user.psychologist_profile
+        flash[:alert] = "You are not authorized to access this client profile."
+        redirect_to internal_client_profiles_path # Redirect to their list of clients
+      end
     end
-    def assign_psychologist_profile
-      @internal_client_profile.psychologist_profile_id = current_user.psychologist_profile.id
-    end
+
+    # This method is no longer needed as the assignment is done directly in `create`
+    # def assign_psychologist_profile
+    #   @internal_client_profile.psychologist_profile_id = current_user.psychologist_profile.id
+    # end
 
     # Only allow a list of trusted parameters through.
     def internal_client_profile_params
-      params.expect(internal_client_profile: [ :first_name,
-       :last_name, :phone_number1, :phone_number2, :telegram, 
-       :whatsapp, :gender, :dob, :country, :city, :address,
-        :internal_reference_number, :preferred_contact_method, 
+      params.require(:internal_client_profile).permit(
+        :first_name, :last_name, :phone_number1, :phone_number2, :telegram,
+        :whatsapp, :gender, :dob, :country, :city, :address,
+        :internal_reference_number, :preferred_contact_method,
         :emergency_contact_name, :emergency_contact_phone, :emergency_contact_relationship,
-         :reason_for_referral, :gp_name, :gp_contact_info, :initial_assessment_summary,
-          :risk_assessment_summary, :treatment_plan_summary, :first_time_therapy, :status, 
-           :client_profile_id ])
+        :reason_for_referral, :gp_name, :gp_contact_info, :initial_assessment_summary,
+        :risk_assessment_summary, :treatment_plan_summary, :first_time_therapy, :status,
+        :client_profile_id # Ensure client_profile_id is permitted if it's set via form
+      )
     end
 end

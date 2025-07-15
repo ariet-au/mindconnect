@@ -1,143 +1,251 @@
-<%= form_with(model: internal_client_profile) do |form| %>
-  <% if internal_client_profile.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(internal_client_profile.errors.count, "error") %> prohibited this internal_client_profile from being saved:</h2>
+<div class="box p-5" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);">
+  <%= form_with(model: internal_client_profile) do |form| %>
+    <% if internal_client_profile.errors.any? %>
+      <div class="notification is-danger is-light" style="border-radius: 6px;">
+        <button class="delete"></button>
+        <p class="title is-6"><%= pluralize(internal_client_profile.errors.count, "error") %> prohibited this internal client profile from being saved:</p>
+        <ul>
+          <% internal_client_profile.errors.each do |error| %>
+            <li><%= error.full_message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
 
-      <ul>
-        <% internal_client_profile.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
+    <div class="field">
+      <%= form.label :internal_reference_number, class: "label" %>
+      <div class="control">
+        <%= form.text_field :internal_reference_number, class: "input is-rounded", placeholder: "e.g., PSY001" %>
+      </div>
+    </div>
+
+    <div class="columns is-multiline">
+      <div class="column is-half">
+        <div class="field">
+          <%= form.label :first_name, class: "label" %>
+          <div class="control">
+            <%= form.text_field :first_name, class: "input is-rounded", placeholder: "First Name" %>
+          </div>
+        </div>
+      </div>
+      <div class="column is-half">
+        <div class="field">
+          <%= form.label :last_name, class: "label" %>
+          <div class="control">
+            <%= form.text_field :last_name, class: "input is-rounded", placeholder: "Last Name" %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="columns is-multiline">
+      <div class="column is-half">
+        <div class="field">
+          <%= form.label :phone_number1, class: "label" %>
+          <div class="control">
+            <%= form.text_field :phone_number1, class: "input is-rounded", placeholder: "Primary Phone" %>
+          </div>
+        </div>
+      </div>
+      <div class="column is-half">
+        <div class="field">
+          <%= form.label :phone_number2, class: "label" %>
+          <div class="control">
+            <%= form.text_field :phone_number2, class: "input is-rounded", placeholder: "Secondary Phone (Optional)" %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="columns is-multiline">
+      <div class="column is-half">
+        <div class="field">
+          <%= form.label :telegram, class: "label" %>
+          <div class="control">
+            <%= form.text_field :telegram, class: "input is-rounded", placeholder: "Telegram Username" %>
+          </div>
+        </div>
+      </div>
+      <div class="column is-half">
+        <div class="field">
+          <%= form.label :whatsapp, class: "label" %>
+          <div class="control">
+            <%= form.text_field :whatsapp, class: "input is-rounded", placeholder: "WhatsApp Number" %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="columns is-multiline">
+      <div class="column is-half">
+        <div class="field">
+          <%= form.label :gender, class: "label" %>
+          <div class="control">
+            <div class="select is-rounded is-fullwidth">
+              <%= form.select :gender, options_for_select(['Male', 'Female', 'Non-binary', 'Prefer not to say'], internal_client_profile.gender), { include_blank: 'Select Gender' }, class: "input" %>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="column is-half">
+        <div class="field">
+          <%= form.label :dob, class: "label" %>
+          <div class="control">
+            <%= form.date_field :dob, class: "input is-rounded" %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="columns is-multiline">
+      <div class="column is-one-third">
+        <div class="field">
+          <%= form.label :country, class: "label" %>
+          <div class="control">
+            <%= form.text_field :country, class: "input is-rounded", placeholder: "Country" %>
+          </div>
+        </div>
+      </div>
+      <div class="column is-one-third">
+        <div class="field">
+          <%= form.label :city, class: "label" %>
+          <div class="control">
+            <%= form.text_field :city, class: "input is-rounded", placeholder: "City" %>
+          </div>
+        </div>
+      </div>
+      <div class="column is-one-third">
+        <div class="field">
+          <%= form.label :address, class: "label" %>
+          <div class="control">
+            <%= form.text_area :address, class: "textarea is-rounded", placeholder: "Full Address", rows: 1 %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <%= form.label :preferred_contact_method, class: "label" %>
+      <div class="control">
+        <div class="select is-rounded is-fullwidth">
+          <%= form.select :preferred_contact_method, options_for_select(['Phone', 'Email', 'Telegram', 'WhatsApp'], internal_client_profile.preferred_contact_method), { include_blank: 'Select Preferred Method' }, class: "input" %>
+        </div>
+      </div>
+    </div>
+
+    <hr> <p class="title is-6 has-text-grey-darker mb-4">Emergency Contact Information</p>
+
+    <div class="columns is-multiline">
+      <div class="column is-one-third">
+        <div class="field">
+          <%= form.label :emergency_contact_name, class: "label" %>
+          <div class="control">
+            <%= form.text_field :emergency_contact_name, class: "input is-rounded", placeholder: "Name" %>
+          </div>
+        </div>
+      </div>
+      <div class="column is-one-third">
+        <div class="field">
+          <%= form.label :emergency_contact_phone, class: "label" %>
+          <div class="control">
+            <%= form.text_field :emergency_contact_phone, class: "input is-rounded", placeholder: "Phone Number" %>
+          </div>
+        </div>
+      </div>
+      <div class="column is-one-third">
+        <div class="field">
+          <%= form.label :emergency_contact_relationship, class: "label" %>
+          <div class="control">
+            <%= form.text_field :emergency_contact_relationship, class: "input is-rounded", placeholder: "Relationship (e.g., Parent, Sibling)" %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr> <p class="title is-6 has-text-grey-darker mb-4">Clinical Information</p>
+
+    <div class="field">
+      <%= form.label :reason_for_referral, class: "label" %>
+      <div class="control">
+        <%= form.text_area :reason_for_referral, class: "textarea is-rounded", placeholder: "Reason for referral", rows: 3 %>
+      </div>
+    </div>
+
+    <div class="columns">
+      <div class="column is-half">
+        <div class="field">
+          <%= form.label :gp_name, class: "label" %>
+          <div class="control">
+            <%= form.text_field :gp_name, class: "input is-rounded", placeholder: "GP's Name" %>
+          </div>
+        </div>
+      </div>
+      <div class="column is-half">
+        <div class="field">
+          <%= form.label :gp_contact_info, class: "label" %>
+          <div class="control">
+            <%= form.text_area :gp_contact_info, class: "textarea is-rounded", placeholder: "GP's Contact Info", rows: 1 %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <%= form.label :initial_assessment_summary, class: "label" %>
+      <div class="control">
+        <%= form.text_area :initial_assessment_summary, class: "textarea is-rounded", placeholder: "Summary of initial assessment", rows: 3 %>
+      </div>
+    </div>
+
+    <div class="field">
+      <%= form.label :risk_assessment_summary, class: "label" %>
+      <div class="control">
+        <%= form.text_area :risk_assessment_summary, class: "textarea is-rounded", placeholder: "Summary of risk assessment", rows: 3 %>
+      </div>
+    </div>
+
+    <div class="field">
+      <%= form.label :treatment_plan_summary, class: "label" %>
+      <div class="control">
+        <%= form.text_area :treatment_plan_summary, class: "textarea is-rounded", placeholder: "Summary of treatment plan", rows: 3 %>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="control">
+        <label class="checkbox">
+          <%= form.check_box :first_time_therapy %>
+          First time in therapy?
+        </label>
+      </div>
+    </div>
+
+    <div class="field">
+      <%= form.label :status, class: "label" %>
+      <div class="control">
+        <div class="select is-rounded is-fullwidth">
+          <%= form.select :status, options_for_select([['Active', 1], ['Inactive', 0], ['On Hold', 2]], internal_client_profile.status), { include_blank: 'Select Status' }, class: "input" %>
+        </div>
+      </div>
+    </div>
+
+    <%# The client_profile_id field is likely for linking to an external client profile. %>
+    <%# If this is meant to be automatically set or not editable by the psychologist, %>
+    <%# consider making it a hidden field or removing it from the form. %>
+    <div class="field">
+      <%= form.label :client_profile_id, class: "label" %>
+      <div class="control">
+        <%= form.text_field :client_profile_id, class: "input is-rounded", placeholder: "Associated Client Profile ID (Optional)" %>
+      </div>
+    </div>
+
+    <div class="field is-grouped is-grouped-centered mt-5">
+      <div class="control">
+        <%= form.submit "Save Profile", class: "button is-primary is-rounded" %>
+      </div>
+      <div class="control">
+        <%= link_to "Cancel", internal_client_profiles_path, class: "button is-light is-rounded" %>
+      </div>
     </div>
   <% end %>
-  <div>
-    <%= form.label :internal_reference_number, style: "display: block" %>
-    <%= form.text_field :internal_reference_number %>
-  </div>
-
-  <div>
-    <%= form.label :first_name, style: "display: block" %>
-    <%= form.text_field :first_name %>
-  </div>
-
-  <div>
-    <%= form.label :last_name, style: "display: block" %>
-    <%= form.text_field :last_name %>
-  </div>
-
-  <div>
-    <%= form.label :phone_number1, style: "display: block" %>
-    <%= form.text_field :phone_number1 %>
-  </div>
-
-  <div>
-    <%= form.label :phone_number2, style: "display: block" %>
-    <%= form.text_field :phone_number2 %>
-  </div>
-
-  <div>
-    <%= form.label :telegram, style: "display: block" %>
-    <%= form.text_field :telegram %>
-  </div>
-
-  <div>
-    <%= form.label :whatsapp, style: "display: block" %>
-    <%= form.text_field :whatsapp %>
-  </div>
-
-  <div>
-    <%= form.label :gender, style: "display: block" %>
-    <%= form.text_field :gender %>
-  </div>
-
-  <div>
-    <%= form.label :dob, style: "display: block" %>
-    <%= form.date_field :dob %>
-  </div>
-
-  <div>
-    <%= form.label :country, style: "display: block" %>
-    <%= form.text_field :country %>
-  </div>
-
-  <div>
-    <%= form.label :city, style: "display: block" %>
-    <%= form.text_field :city %>
-  </div>
-
-  <div>
-    <%= form.label :address, style: "display: block" %>
-    <%= form.textarea :address %>
-  </div>
-
-
-  <div>
-    <%= form.label :preferred_contact_method, style: "display: block" %>
-    <%= form.text_field :preferred_contact_method %>
-  </div>
-
-  <div>
-    <%= form.label :emergency_contact_name, style: "display: block" %>
-    <%= form.text_field :emergency_contact_name %>
-  </div>
-
-  <div>
-    <%= form.label :emergency_contact_phone, style: "display: block" %>
-    <%= form.text_field :emergency_contact_phone %>
-  </div>
-
-  <div>
-    <%= form.label :emergency_contact_relationship, style: "display: block" %>
-    <%= form.text_field :emergency_contact_relationship %>
-  </div>
-
-  <div>
-    <%= form.label :reason_for_referral, style: "display: block" %>
-    <%= form.textarea :reason_for_referral %>
-  </div>
-
-  <div>
-    <%= form.label :gp_name, style: "display: block" %>
-    <%= form.text_field :gp_name %>
-  </div>
-
-  <div>
-    <%= form.label :gp_contact_info, style: "display: block" %>
-    <%= form.textarea :gp_contact_info %>
-  </div>
-
-  <div>
-    <%= form.label :initial_assessment_summary, style: "display: block" %>
-    <%= form.textarea :initial_assessment_summary %>
-  </div>
-
-  <div>
-    <%= form.label :risk_assessment_summary, style: "display: block" %>
-    <%= form.textarea :risk_assessment_summary %>
-  </div>
-
-  <div>
-    <%= form.label :treatment_plan_summary, style: "display: block" %>
-    <%= form.textarea :treatment_plan_summary %>
-  </div>
-
-  <div>
-    <%= form.label :first_time_therapy, style: "display: block" %>
-    <%= form.checkbox :first_time_therapy %>
-  </div>
-
-  <div>
-    <%= form.label :status, style: "display: block" %>
-    <%= form.number_field :status %>
-  </div>
-
-
-  <div>
-    <%= form.label :client_profile_id, style: "display: block" %>
-    <%= form.text_field :client_profile_id %>
-  </div>
-
-  <div>
-    <%= form.submit %>
-  </div>
-<% end %>
+</div>

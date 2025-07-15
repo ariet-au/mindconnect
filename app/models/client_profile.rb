@@ -1,7 +1,7 @@
 # app/models/client_profile.rb
 class ClientProfile < ApplicationRecord
   belongs_to :user
-
+  has_many :bookings
   # For the profile image
   has_one_attached :profile_img
 

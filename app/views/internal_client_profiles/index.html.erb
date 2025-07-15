@@ -1,16 +1,153 @@
-<p style="color: green"><%= notice %></p>
+<div class="container py-5">
+  <p class="has-text-success"><%= notice %></p>
+  <p class="has-text-danger"><%= alert %></p> <%# Display alert messages from controller %>
 
-<% content_for :title, "Internal client profiles" %>
+  <h1 class="title is-2 mb-4">
+    <i class="fas fa-users mr-3"></i>Your Internal Clients
+  </h1>
 
-<h1>Internal client profiles</h1>
+  <div class="mb-5">
+    <%= link_to new_internal_client_profile_path, class: "button is-primary is-light is-rounded" do %>
+      <span class="icon">
+        <i class="fas fa-plus"></i>
+      </span>
+      <span>New Internal Client Profile</span>
+    <% end %>
+  </div>
 
-<div id="internal_client_profiles">
-  <% @internal_client_profiles.each do |internal_client_profile| %>
-    <%= render internal_client_profile %>
-    <p>
-      <%= link_to "Show this internal client profile", internal_client_profile %>
-    </p>
-  <% end %>
+  <div class="columns is-desktop">
+    <!-- Left Column: Client List (where many profiles are shown) -->
+    <div class="column is-one-third">
+      <h2 class="title is-4 mb-3">Client List</h2>
+      <div id="client-list" style="max-height: 70vh; overflow-y: auto; padding-right: 10px;">
+        <% if @internal_client_profiles.any? %>
+          <% @internal_client_profiles.each do |internal_client_profile| %>
+            <div class="box client-list-item mb-3 p-4"
+                 data-client-id="<%= internal_client_profile.id %>"
+                 style="cursor: pointer; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); transition: all 0.2s ease-in-out;">
+              <p class="title is-6 mb-1">
+                <%= internal_client_profile.first_name %> <%= internal_client_profile.last_name %>
+              </p>
+              <p class="subtitle is-7 has-text-grey">
+                Ref: <%= internal_client_profile.internal_reference_number || 'N/A' %>
+              </p>
+              <div class="buttons is-right mt-3">
+                <%= link_to internal_client_profile_path(internal_client_profile), class: "button is-info is-small is-rounded is-outlined" do %>
+                  <span class="icon is-small">
+                    <i class="fas fa-external-link-alt"></i>
+                  </span>
+                  <span>View Full Profile</span>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="notification is-info is-light has-text-centered" style="border-radius: 8px;">
+            <p class="is-size-6">
+              <i class="fas fa-info-circle mr-2"></i>No internal client profiles found.
+            </p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Right Column: Client Details Pane (where the selected client's partial is rendered) -->
+    <div class="column is-two-thirds">
+      <h2 class="title is-4 mb-3">Client Details</h2>
+      <div id="client-details-pane" class="box p-5" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08); min-height: 70vh;">
+        <% if @internal_client_profiles.any? %>
+          <% @internal_client_profiles.each do |internal_client_profile| %>
+            <div id="client-details-<%= internal_client_profile.id %>" class="client-detail-content" style="display: none;">
+              <%# This is where the _internal_client_profile.html.erb partial is rendered for each client %>
+              <%= render internal_client_profile %>
+            </div>
+          <% end %>
+          <div id="no-client-selected-message" class="has-text-centered has-text-grey is-size-5 py-6">
+            <i class="fas fa-hand-point-left mr-2"></i>Please select a client from the list to view their details.
+          </div>
+        <% else %>
+          <div class="notification is-info is-light has-text-centered" style="border-radius: 8px;">
+            <p class="is-size-5">
+              <i class="fas fa-info-circle mr-2"></i>No client details to display.
+            </p>
+            <p class="mt-3">
+              Add a new client to get started.
+            </p>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
 </div>
 
-<%= link_to "New internal client profile", new_internal_client_profile_path %>
+<style>
+  .client-list-item:hover {
+    background-color: #f5f5f5; /* Light grey on hover */
+    transform: translateY(-2px);
+  }
+  .client-list-item.is-active {
+    border: 2px solid #00d1b2; /* Bulma primary color border */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #e6fffa; /* Light teal background */
+  }
+</style>
+
+<script>
+  document.addEventListener('turbo:load', function() {
+    const clientListItems = document.querySelectorAll('.client-list-item');
+    const clientDetailContents = document.querySelectorAll('.client-detail-content');
+    const noClientSelectedMessage = document.getElementById('no-client-selected-message');
+
+    // Function to show a specific client's details
+    function showClientDetails(clientId) {
+      // Hide all detail contents
+      clientDetailContents.forEach(content => {
+        content.style.display = 'none';
+      });
+
+      // Remove active state from all list items
+      clientListItems.forEach(item => {
+        item.classList.remove('is-active');
+      });
+
+      // Show the selected client's details
+      const selectedClientDetails = document.getElementById(`client-details-${clientId}`);
+      if (selectedClientDetails) {
+        selectedClientDetails.style.display = 'block';
+        if (noClientSelectedMessage) {
+          noClientSelectedMessage.style.display = 'none';
+        }
+      }
+
+      // Add active state to the clicked list item
+      const clickedListItem = document.querySelector(`.client-list-item[data-client-id="${clientId}"]`);
+      if (clickedListItem) {
+        clickedListItem.classList.add('is-active');
+      }
+    }
+
+    // Add click event listeners to each client list item
+    clientListItems.forEach(item => {
+      // Prevent the click on the "View Full Profile" button from triggering the panel display
+      // by checking if the click target is the button itself or inside it.
+      item.addEventListener('click', function(event) {
+        if (!event.target.closest('.button')) {
+          const clientId = this.dataset.clientId;
+          showClientDetails(clientId);
+        }
+      });
+    });
+
+    // Optionally, if there's only one client, show their details by default
+    // Or if you want to select the first client by default
+    if (clientListItems.length > 0) {
+      // You can uncomment the line below to automatically select the first client on load
+      // showClientDetails(clientListItems[0].dataset.clientId);
+    } else {
+        // If no clients, ensure the "No client details to display" message is visible
+        if (noClientSelectedMessage) {
+            noClientSelectedMessage.style.display = 'block';
+        }
+    }
+  });
+</script>
