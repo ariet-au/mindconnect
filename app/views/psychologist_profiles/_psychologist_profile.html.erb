@@ -1,40 +1,51 @@
 <div class="profile-container">
   <div class="profile-card">
     
+    <!-- Psychologist Navigation Bar - Only visible for profile owner -->
+    <% if @psychologist_profile.user == current_user %>
+      <div class="psychologist-nav">
+        <div class="nav-content">
+          <h3 class="nav-title">
+            <i class="fas fa-user-cog"></i>
+            Dashboard
+          </h3>
+          <div class="nav-actions">
+            <%= link_to psychologist_profile_psychologist_availabilities_path(@psychologist_profile), class: "button is-primary-blue is-small" do %>
+              <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+              <span>Manage Availability</span>
+            <% end %>
+
+            <%= link_to psychologist_profile_calendar_path(@psychologist_profile), class: "button is-primary-blue is-small" do %>
+              <span class="icon"><i class="fas fa-ban"></i></span>
+              <span>Block Unavailability</span>
+            <% end %>
+
+            <%= link_to psychologist_bookings_bookings_path, class: "button is-info is-small" do %>
+              <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+              <span>View My Bookings</span>
+            <% end %>
+
+            <%= link_to internal_client_profiles_path, class: "button is-primary-blue is-small" do %>
+              <span class="icon"><i class="fas fa-book"></i></span>
+              <span>Notes</span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+    
     <!-- Header Section -->
     <div class="profile-header">
-      <!-- Action Buttons -->
-      <div class="header-actions">
-        <% if psychologist_profile.user == current_user %>
+      <!-- Edit Profile Button - Only visible for profile owner -->
+      <% if psychologist_profile.user == current_user %>
+        <div class="header-actions">
           <%= link_to edit_psychologist_profile_path, class: "button is-primary-blue is-small" do %>
             <span class="icon"><i class="fas fa-edit"></i></span>
             <span>Edit Profile</span>
           <% end %>
-        <% end %>
-
-        <% if @psychologist_profile.user == current_user %>
-          <%= link_to psychologist_profile_psychologist_availabilities_path(@psychologist_profile), class: "button is-primary-blue is-small" do %>
-            <span class="icon"><i class="fas fa-calendar-alt"></i></span>
-            <span>Manage Availability</span>
-          <% end %>
-       
-
-        <%= link_to psychologist_profile_calendar_path(@psychologist_profile), class: "button is-primary-blue is-small" do %>
-          <span class="icon"><i class="fas fa-ban"></i></span>
-          <span>Block Unavailability</span>
-        <% end %>
-
-        <%= link_to psychologist_bookings_bookings_path, class: "button is-info is-small" do %>
-          <span class="icon"><i class="fas fa-calendar-alt"></i></span>
-          <span>View My Bookings</span>
-        <% end %>
-
-      <%= link_to internal_client_profiles_path, class: "button is-primary-blue is-small" do %>
-        <span class="icon"><i class="fas fa-book"></i></span>
-        <span>Notes</span>
+        </div>
       <% end %>
-      </div>
-           <% end %>
+
       <!-- Profile Info -->
       <div class="profile-info">
         <div class="profile-avatar">
@@ -326,6 +337,7 @@
 
   </div>
 </div>
+
 
 <style>
 :root {
