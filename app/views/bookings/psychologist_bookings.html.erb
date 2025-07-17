@@ -1,0 +1,40 @@
+<h1 class="title is-4">Your Bookings</h1>
+
+<table class="table is-striped is-fullwidth">
+  <thead>
+    <tr>
+      <th>Client</th>
+      <th>Start Time</th>
+      <th>End Time</th>
+      <th>Duration</th>
+      <th>Type</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @bookings.each do |booking| %>
+      <tr>
+        <td>
+          <% if booking.internal_client_profile.present? %>
+            <%= booking.internal_client_profile.first_name %> <%= booking.internal_client_profile.last_name %> (Internal)
+          <% elsif booking.client_profile.present? %>
+            <%= booking.client_profile.full_name %> (Client)
+          <% else %>
+            Unknown
+          <% end %>
+        </td>
+        <td><%= booking.start_time.strftime('%Y-%m-%d %H:%M') %></td>
+        <td><%= booking.end_time.strftime('%Y-%m-%d %H:%M') %></td>
+        <td>
+          <% if booking.start_time && booking.end_time %>
+            <%= distance_of_time_in_words(booking.start_time, booking.end_time) %>
+          <% else %>
+            N/A
+          <% end %>
+        </td>
+        <td><%= booking.service&.name || 'N/A' %></td>
+        <td><%= booking.status || 'N/A' %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

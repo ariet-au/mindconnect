@@ -1,0 +1,17 @@
+<%# app/views/therapy_plans/edit.html.erb %>
+
+<%# This file contains the view for editing an existing therapy plan. %>
+<%# It renders the _form.html.erb partial to display the form fields. %>
+
+<section class="section">
+  <div class="container">
+    <h1 class="title is-4">Edit Therapy Plan</h1>
+
+    <%# Form for editing the therapy plan %>
+    <%= form_with(model: [@internal_client_profile, @therapy_plan], local: true) do |f| %>
+      <%# Render the form partial, passing the form object `f` %>
+      <%= render 'form', f: f,
+                 internal_client_profile: @internal_client_profile %>
+    <% end %>
+  </div>
+</section>

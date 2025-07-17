@@ -17,14 +17,24 @@
             <span class="icon"><i class="fas fa-calendar-alt"></i></span>
             <span>Manage Availability</span>
           <% end %>
-        <% end %>
+       
 
         <%= link_to psychologist_profile_calendar_path(@psychologist_profile), class: "button is-primary-blue is-small" do %>
           <span class="icon"><i class="fas fa-ban"></i></span>
           <span>Block Unavailability</span>
         <% end %>
-      </div>
 
+        <%= link_to psychologist_bookings_bookings_path, class: "button is-info is-small" do %>
+          <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+          <span>View My Bookings</span>
+        <% end %>
+
+      <%= link_to internal_client_profiles_path, class: "button is-primary-blue is-small" do %>
+        <span class="icon"><i class="fas fa-book"></i></span>
+        <span>Notes</span>
+      <% end %>
+      </div>
+           <% end %>
       <!-- Profile Info -->
       <div class="profile-info">
         <div class="profile-avatar">
@@ -47,14 +57,14 @@
           <div class="profile-credentials">
             <% if @psychologist_profile.education.present? %>
               <span class="credential-tag">
-                <i class="fas fa-graduation-cap"></i>
+                <i class="fas fa-graduation-cap icon-education"></i>
                 <%= @psychologist_profile.education %>
               </span>
             <% end %>
             
             <% if @psychologist_profile.timezone.present? %>
               <span class="credential-tag">
-                <i class="fas fa-globe"></i>
+                <i class="fas fa-globe icon-timezone"></i>
                 <%= format_timezone_offset(@psychologist_profile.timezone) %>
               </span>
             <% end %>
@@ -63,26 +73,26 @@
           <div class="profile-badges">
             <% if psychologist_profile.is_doctor %>
               <span class="badge-item" title="Doctor">
-                <i class="fas fa-user-md"></i>
+                <i class="fas fa-user-md icon-doctor"></i>
                 <span>Doctor</span>
               </span>
             <% end %>
             
             <% if psychologist_profile.is_degree_boolean %>
               <span class="badge-item" title="Certified">
-                <i class="fas fa-certificate"></i>
+                <i class="fas fa-certificate icon-certified"></i>
                 <span>Certified</span>
               </span>
             <% end %>
             
             <span class="badge-item">
-              <i class="fas fa-clock"></i>
+              <i class="fas fa-clock icon-time"></i>
               <span><%= psychologist_profile.years_of_experience %> years experience</span>
             </span>
           </div>
 
           <div class="profile-location">
-            <i class="fas fa-map-marker-alt"></i>
+            <i class="fas fa-map-marker-alt icon-location"></i>
             <span><%= psychologist_profile.city %>, <%= psychologist_profile.country %></span>
             <% if psychologist_profile.address.present? %>
               <span>• <%= psychologist_profile.address %></span>
@@ -95,7 +105,7 @@
     <!-- About Section -->
     <div class="profile-section">
       <h2 class="section-title">
-        <i class="fas fa-user-circle"></i>
+        <i class="fas fa-user-circle icon-about"></i>
         About Me
       </h2>
       <div class="section-content">
@@ -106,7 +116,7 @@
     <!-- Experience Section -->
     <div class="profile-section">
       <h2 class="section-title">
-        <i class="fas fa-briefcase"></i>
+        <i class="fas fa-briefcase icon-experience"></i>
         Professional Background
       </h2>
       <div class="section-content">
@@ -126,7 +136,7 @@
     <!-- Specializations Section -->
     <div class="profile-section">
       <h2 class="section-title">
-        <i class="fas fa-star"></i>
+        <i class="fas fa-star icon-specialization"></i>
         Specializations
       </h2>
       <div class="section-content">
@@ -148,7 +158,7 @@
     <!-- Client Types Section -->
     <div class="profile-section">
       <h2 class="section-title">
-        <i class="fas fa-users"></i>
+        <i class="fas fa-users icon-clients"></i>
         Client Types
       </h2>
       <div class="section-content">
@@ -170,7 +180,7 @@
     <!-- Issues Section -->
     <div class="profile-section">
       <h2 class="section-title">
-        <i class="fas fa-heart"></i>
+        <i class="fas fa-heart icon-issues"></i>
         Areas of Focus
       </h2>
       <div class="section-content">
@@ -193,7 +203,7 @@
     <div class="profile-section">
       <div class="section-header">
         <h2 class="section-title">
-          <i class="fas fa-briefcase"></i>
+          <i class="fas fa-briefcase icon-services"></i>
           Services Offered
         </h2>
         <% if psychologist_profile.user == current_user %>
@@ -210,7 +220,7 @@
                   <h3 class="service-title"><%= service.name %></h3>
                   <div class="service-meta">
                     <span class="service-price">
-                      <i class="fas fa-tag"></i>
+                      <i class="fas fa-tag icon-price"></i>
                       <% if service.price == 0 %>
                         Free
                       <% else %>
@@ -221,7 +231,7 @@
                       <% end %>
                     </span>
                     <span class="service-duration">
-                      <i class="fas fa-clock"></i>
+                      <i class="fas fa-clock icon-duration"></i>
                       <%= service.duration_minutes %> min
                     </span>
                   </div>
@@ -258,18 +268,18 @@
     <!-- Contact Section -->
     <div class="profile-section">
       <h2 class="section-title">
-        <i class="fas fa-envelope"></i>
+        <i class="fas fa-envelope icon-contact"></i>
         Contact Information
       </h2>
       
       <div class="section-content">
         <% contact_methods = {
-          "Email" => [psychologist_profile.user.email, 'fas fa-envelope', "mailto:#{psychologist_profile.user.email}"],
-          "Telegram" => [psychologist_profile.telegram, 'fab fa-telegram', "https://t.me/#{psychologist_profile.telegram}"],
-          "WhatsApp" => [psychologist_profile.whatsapp, 'fab fa-whatsapp', "https://wa.me/#{psychologist_profile.whatsapp}"],
-          "Primary Phone" => [psychologist_profile.contact_phone, 'fas fa-phone', "tel:#{psychologist_profile.contact_phone}"],
-          "Secondary Phone" => [psychologist_profile.contact_phone2, 'fas fa-phone', "tel:#{psychologist_profile.contact_phone2}"],
-          "Additional Phone" => [psychologist_profile.contact_phone3, 'fas fa-phone', "tel:#{psychologist_profile.contact_phone3}"]
+          "Email" => [psychologist_profile.user.email, 'fas fa-envelope icon-email', "mailto:#{psychologist_profile.user.email}"],
+          "Telegram" => [psychologist_profile.telegram, 'fab fa-telegram icon-telegram', "https://t.me/#{psychologist_profile.telegram}"],
+          "WhatsApp" => [psychologist_profile.whatsapp, 'fab fa-whatsapp icon-whatsapp', "https://wa.me/#{psychologist_profile.whatsapp}"],
+          "Primary Phone" => [psychologist_profile.contact_phone, 'fas fa-phone icon-phone', "tel:#{psychologist_profile.contact_phone}"],
+          "Secondary Phone" => [psychologist_profile.contact_phone2, 'fas fa-phone icon-phone', "tel:#{psychologist_profile.contact_phone2}"],
+          "Additional Phone" => [psychologist_profile.contact_phone3, 'fas fa-phone icon-phone', "tel:#{psychologist_profile.contact_phone3}"]
         } %>
 
         <% primary_method = contact_methods.find { |label, (value, _icon, _link)| value.present? && @psychologist_profile.primary_contact_method == label.downcase.gsub(' ', '_') } %>
@@ -327,6 +337,26 @@
   --white: #ffffff;
   --shadow-subtle: 0 2px 4px rgba(0,0,0,0.05);
   --shadow-card: 0 4px 12px rgba(0,0,0,0.08);
+  
+  --color-education: #374151;
+  --color-time: grey;
+  --color-location: #374151;
+  --color-doctor: #059669;
+  --color-certified: #f59e0b;
+  --color-timezone: #06b6d4;
+  --color-about: #8b5cf6;
+  --color-experience: #374151;
+  --color-specialization: #f59e0b;
+  --color-clients: #06b6d4;
+  --color-issues: #ef4444;
+  --color-services: #374151;
+  --color-contact: #6366f1;
+  --color-price: #059669;
+  --color-duration: grey;
+  --color-email: #6366f1;
+  --color-telegram: #0088cc;
+  --color-whatsapp: #25d366;
+  --color-phone: #374151;
 }
 
 body {
@@ -349,6 +379,27 @@ body {
   border: 1px solid var(--border-light);
   overflow: hidden;
 }
+
+/* Icon Color Classes */
+.icon-education { color: var(--color-education) !important; }
+.icon-time { color: var(--color-time) !important; }
+.icon-location { color: var(--color-location) !important; }
+.icon-doctor { color: var(--color-doctor) !important; }
+.icon-certified { color: var(--color-certified) !important; }
+.icon-timezone { color: var(--color-timezone) !important; }
+.icon-about { color: var(--color-about) !important; }
+.icon-experience { color: var(--color-experience) !important; }
+.icon-specialization { color: var(--color-specialization) !important; }
+.icon-clients { color: var(--color-clients) !important; }
+.icon-issues { color: var(--color-issues) !important; }
+.icon-services { color: var(--color-services) !important; }
+.icon-contact { color: var(--color-contact) !important; }
+.icon-price { color: var(--color-price) !important; }
+.icon-duration { color: var(--color-duration) !important; }
+.icon-email { color: var(--color-email) !important; }
+.icon-telegram { color: var(--color-telegram) !important; }
+.icon-whatsapp { color: var(--color-whatsapp) !important; }
+.icon-phone { color: var(--color-phone) !important; }
 
 /* Header Section */
 .profile-header {
@@ -414,10 +465,6 @@ body {
   gap: 6px;
 }
 
-.credential-tag i {
-  color: var(--primary-blue);
-}
-
 .profile-badges {
   display: flex;
   gap: 16px;
@@ -433,20 +480,12 @@ body {
   color: var(--text-secondary);
 }
 
-.badge-item i {
-  color: var(--primary-blue);
-}
-
 .profile-location {
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 0.9rem;
   color: var(--text-secondary);
-}
-
-.profile-location i {
-  color: var(--primary-blue);
 }
 
 /* Profile Sections */
@@ -477,7 +516,6 @@ body {
 }
 
 .section-title i {
-  color: var(--primary-blue);
   font-size: 1.1rem;
 }
 
@@ -496,7 +534,7 @@ body {
   padding: 20px;
   background: var(--bg-light);
   border-radius: 8px;
-  border-left: 4px solid var(--primary-blue);
+  border-left: 4px solid var(--color-experience);
 }
 
 .experience-header h3 {
@@ -535,9 +573,9 @@ body {
 }
 
 .tag-item.featured {
-  background: rgba(0, 123, 255, 0.1);
-  border-color: var(--primary-blue);
-  color: var(--primary-blue);
+  background: rgba(245, 158, 11, 0.1);
+  border-color: var(--color-specialization);
+  color: var(--color-specialization);
 }
 
 /* Services Grid */
@@ -582,11 +620,6 @@ body {
   color: var(--text-secondary);
 }
 
-.service-price i,
-.service-duration i {
-  color: var(--primary-blue);
-}
-
 .service-delivery {
   margin-bottom: 16px;
 }
@@ -602,13 +635,13 @@ body {
 }
 
 .delivery-badge.online {
-  background: rgba(0, 123, 255, 0.1);
-  color: var(--primary-blue);
+  background: rgba(6, 182, 212, 0.1);
+  color: var(--color-clients);
 }
 
 .delivery-badge.in-person {
-  background: rgba(40, 167, 69, 0.1);
-  color: #28a745;
+  background: rgba(5, 150, 105, 0.1);
+  color: var(--color-doctor);
 }
 
 .service-description {
@@ -681,7 +714,6 @@ body {
 }
 
 .contact-info i {
-  color: var(--primary-blue);
   width: 16px;
 }
 

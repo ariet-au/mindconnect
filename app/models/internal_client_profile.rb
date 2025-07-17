@@ -1,6 +1,9 @@
 class InternalClientProfile < ApplicationRecord
   belongs_to :psychologist_profile
   belongs_to :client_profile, optional: true
+  has_many :therapy_plans, dependent: :destroy
+  has_many :bookings
+
 
 
 

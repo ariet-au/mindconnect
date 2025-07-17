@@ -1,0 +1,68 @@
+<%# app/views/progress_notes/_form.html.erb %>
+
+<%# This partial provides the common form fields for creating and editing progress notes. %>
+<%# It assumes the form object `f` is passed to it, along with `@internal_client_profile` and `@therapy_plan`. %>
+
+<%# Display validation errors if any %>
+<% if f.object.errors.any? %>
+  <div class="notification is-danger">
+    <p><strong>Please correct the following errors:</strong></p>
+    <ul>
+      <% f.object.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
+
+<%# Note Date field %>
+<div class="field">
+  <%= f.label :note_date, class: "label" %>
+  <div class="control">
+    <%= f.date_field :note_date, class: "input" %>
+  </div>
+</div>
+
+<%# Notes text area %>
+<div class="field">
+  <%= f.label :notes, class: "label" %>
+  <div class="control">
+    <%= f.text_area :notes, rows: 6, class: "textarea" %>
+  </div>
+</div>
+
+<%# Homework Assigned text area %>
+<div class="field">
+  <%= f.label :homework_assigned, class: "label" %>
+  <div class="control">
+    <%= f.text_area :homework_assigned, rows: 3, class: "textarea" %>
+  </div>
+</div>
+
+<%# Assessment Score number field %>
+<div class="field">
+  <%= f.label :assessment_score, class: "label" %>
+  <div class="control">
+    <%= f.number_field :assessment_score, class: "input" %>
+  </div>
+</div>
+
+<%# Associated Booking select field %>
+<div class="field">
+  <%= f.label :booking_id, "Associated Booking (optional)", class: "label" %>
+  <div class="control">
+    <%# Ensure @therapy_plan.internal_client_profile.bookings is available and correctly populated %>
+    <%= f.collection_select :booking_id, @therapy_plan.internal_client_profile.bookings, :id, :start_time, { include_blank: true }, { class: "select" } %>
+  </div>
+</div>
+
+<%# Form submission buttons %>
+<div class="field is-grouped mt-4">
+  <div class="control">
+    <%= f.submit "Save Note", class: "button is-primary" %>
+  </div>
+  <div class="control">
+    <%# The cancel link should point back to the progress note's show page %>
+    <%= link_to "Cancel", [@internal_client_profile, @therapy_plan, f.object], class: "button is-light" %>
+  </div>
+</div>

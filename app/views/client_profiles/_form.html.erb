@@ -1,7 +1,7 @@
-<%= form_with(model: client_profile) do |form| %>
+<%= form_with(model: client_profile, html: { class: 'box' }) do |form| %>
   <% if client_profile.errors.any? %>
-    <div style="color: red">
-      <h2><%= pluralize(client_profile.errors.count, "error") %> prohibited this client_profile from being saved:</h2>
+    <div class="notification is-danger">
+      <h2 class="title is-4"><%= pluralize(client_profile.errors.count, "error") %> prohibited this client_profile from being saved:</h2>
 
       <ul>
         <% client_profile.errors.each do |error| %>
@@ -11,67 +11,100 @@
     </div>
   <% end %>
 
-  <div>
-    <%= form.label :first_name, style: "display: block" %>
-    <%= form.text_field :name %>
+  <div class="field">
+    <div class="columns">
+      <div class="column">
+        <%= form.label :first_name, class: "label" %>
+        <div class="control">
+          <%= form.text_field :first_name, class: "input" %>
+        </div>
+      </div>
+      <div class="column">
+        <%= form.label :last_name, class: "label" %>
+        <div class="control">
+          <%= form.text_field :last_name, class: "input" %>
+        </div>
+      </div>
+    </div>
   </div>
 
-   <div>
-    <%= form.label :last_name, style: "display: block" %>
-    <%= form.text_field :name %>
-  </div>
-  <div>
-    <%= form.label :dob, style: "display: block" %>
-    <%= form.date_field :dob %>
+  <div class="field">
+    <%= form.label :dob, class: "label" %>
+    <div class="control">
+      <%= form.date_field :dob, class: "input" %>
+    </div>
   </div>
 
-  <div>
-    <%= form.label :gender, style: "display: block" %>
-    <%= form.text_field :gender %>
+  <div class="field">
+    <%= form.label :gender, class: "label" %>
+    <div class="control">
+      <div class="select">
+        <%= form.select :gender, options_for_select(['Male', 'Female', 'Other']), { prompt: 'Select gender' }, class: "input" %>
+      </div>
+    </div>
   </div>
 
-  <div>
-    <%= form.label :country, style: "display: block" %>
-    <%= form.text_field :country %>
+  <div class="field">
+    <%= form.label :country, class: "label" %>
+    <div class="control">
+      <%= form.text_field :country, class: "input" %>
+    </div>
   </div>
 
-  <div>
-    <%= form.label :city, style: "display: block" %>
-    <%= form.text_field :city %>
+  <div class="field">
+    <%= form.label :city, class: "label" %>
+    <div class="control">
+      <%= form.text_field :city, class: "input" %>
+    </div>
   </div>
 
-  <div>
-    <%= form.label :address, style: "display: block" %>
-    <%= form.textarea :address %>
+  <div class="field">
+    <%= form.label :address, class: "label" %>
+    <div class="control">
+      <%= form.text_area :address, class: "textarea" %>
+    </div>
   </div>
 
-  <div>
-    <%= form.label :timezone, style: "display: block" %>
-    <%= form.text_field :timezone %>
+  <div class="field">
+    <%= form.label :timezone, class: "label" %>
+    <div class="control">
+      <div class="select">
+        <%= form.time_zone_select :timezone, nil, { default: 'UTC' }, { class: "input" } %>
+      </div>
+    </div>
   </div>
 
-  <div>
-    <%= form.label :phone_number1, style: "display: block" %>
-    <%= form.text_field :phone_number1 %>
+  <div class="field">
+    <%= form.label :phone_number1, class: "label" %>
+    <div class="control">
+      <%= form.telephone_field :phone_number1, class: "input" %>
+    </div>
   </div>
 
-  <div>
-    <%= form.label :phone_number2, style: "display: block" %>
-    <%= form.text_field :phone_number2 %>
+  <div class="field">
+    <%= form.label :phone_number2, class: "label" %>
+    <div class="control">
+      <%= form.telephone_field :phone_number2, class: "input" %>
+    </div>
   </div>
 
-  <div>
-    <%= form.label :telegram, style: "display: block" %>
-    <%= form.text_field :telegram %>
+  <div class="field">
+    <%= form.label :telegram, class: "label" %>
+    <div class="control">
+      <%= form.text_field :telegram, class: "input" %>
+    </div>
   </div>
 
-  <div>
-    <%= form.label :whatsapp, style: "display: block" %>
-    <%= form.text_field :whatsapp %>
+  <div class="field">
+    <%= form.label :whatsapp, class: "label" %>
+    <div class="control">
+      <%= form.text_field :whatsapp, class: "input" %>
+    </div>
   </div>
 
-
-  <div>
-    <%= form.submit %>
+  <div class="field">
+    <div class="control">
+      <%= form.submit class: "button is-primary" %>
+    </div>
   </div>
 <% end %>

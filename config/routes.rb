@@ -48,7 +48,8 @@ end
 
 resources :bookings, only: [:create, :show, :index, :update, :edit, :destroy] do
   collection do
-    get 'calendar_bookings'  # /bookings/calendar_bookings
+    get 'calendar_bookings'  # /bookings/calendar_bookings,
+    get :psychologist_bookings
   end
 end
   post '/set_timezone', to: 'application#set_timezone', as: :set_timezone_path
@@ -79,7 +80,11 @@ resources :psychologist_unavailabilities, only: [:index, :create, :destroy]
 
 
 
-
+resources :internal_client_profiles do
+  resources :therapy_plans do
+    resources :progress_notes
+  end
+end
 
 
 

@@ -131,6 +131,16 @@ class BookingsController < ApplicationController
     render json: bookings.map { |booking| booking_to_event(booking) }
   end
 
+  def psychologist_bookings
+    if current_user&.psychologist_profile
+      @bookings = Booking.includes(:client_profile, :internal_client_profile, :service)
+                   .where(psychologist_profile_id: current_user.psychologist_profile.id)
+                   .order(start_time: :desc)
+    else
+      redirect_to root_path, alert: "You must be logged in as a psychologist to view this page."
+    end
+  end
+
   private
 
   def booking_to_event(booking)

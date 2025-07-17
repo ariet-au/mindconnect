@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_14_232853) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_16_222302) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -143,6 +143,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_14_232853) do
     t.index ["name"], name: "index_languages_on_name", unique: true
   end
 
+  create_table "progress_notes", force: :cascade do |t|
+    t.bigint "therapy_plan_id", null: false
+    t.bigint "booking_id"
+    t.text "notes"
+    t.text "homework_assigned"
+    t.integer "assessment_score"
+    t.date "note_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["booking_id"], name: "index_progress_notes_on_booking_id"
+    t.index ["therapy_plan_id"], name: "index_progress_notes_on_therapy_plan_id"
+  end
+
   create_table "psychological_issues", force: :cascade do |t|
     t.string "name"
     t.text "description"
@@ -266,6 +279,27 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_14_232853) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "therapy_plans", force: :cascade do |t|
+    t.bigint "internal_client_profile_id", null: false
+    t.bigint "issue_id"
+    t.bigint "specialties_id"
+    t.text "diagnosis"
+    t.text "short_term_goals"
+    t.text "long_term_goals"
+    t.text "intervention_details"
+    t.string "frequency"
+    t.integer "duration_weeks"
+    t.text "progress_metrics"
+    t.string "status", default: "draft", null: false
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["internal_client_profile_id"], name: "index_therapy_plans_on_internal_client_profile_id"
+    t.index ["issue_id"], name: "index_therapy_plans_on_issue_id"
+    t.index ["specialties_id"], name: "index_therapy_plans_on_specialties_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -296,6 +330,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_14_232853) do
   add_foreign_key "client_types_issues", "issues"
   add_foreign_key "internal_client_profiles", "client_profiles"
   add_foreign_key "internal_client_profiles", "psychologist_profiles"
+  add_foreign_key "progress_notes", "bookings"
+  add_foreign_key "progress_notes", "therapy_plans"
   add_foreign_key "psychologist_availabilities", "psychologist_profiles"
   add_foreign_key "psychologist_client_types", "client_types"
   add_foreign_key "psychologist_client_types", "psychologist_profiles"
@@ -308,4 +344,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_14_232853) do
   add_foreign_key "psychologist_specialties", "specialties"
   add_foreign_key "psychologist_unavailabilities", "psychologist_profiles"
   add_foreign_key "services", "users"
+  add_foreign_key "therapy_plans", "internal_client_profiles"
+  add_foreign_key "therapy_plans", "issues"
+  add_foreign_key "therapy_plans", "specialties", column: "specialties_id"
 end

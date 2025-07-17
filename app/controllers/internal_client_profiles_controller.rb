@@ -9,17 +9,11 @@ class InternalClientProfilesController < ApplicationController
 
   # GET /internal_client_profiles or /internal_client_profiles.json
   def index
-    # Ensure current_user and current_user.psychologist_profile are available
-    # This assumes a 'psychologist_profile' association exists on your User model,
-    # and that the user is logged in.
     if current_user && current_user.psychologist_profile
       @internal_client_profiles = InternalClientProfile.where(
         psychologist_profile_id: current_user.psychologist_profile.id
       ).order(created_at: :desc) # Optional: order by creation date
     else
-      # Handle cases where the user is not logged in or doesn't have a psychologist profile
-      # You might redirect them, show an error, or render an empty list.
-      # For now, we'll set it to an empty array to prevent errors in the view.
       @internal_client_profiles = []
       flash[:alert] = "You are not authorized to view this page or your psychologist profile is not set up."
       redirect_to root_path # Or wherever appropriate for unauthorized access
