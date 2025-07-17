@@ -1,236 +1,306 @@
-<!-- Main container for the individual client profile details -->
-<div>
-    <!-- Action Buttons for this profile -->
-    <div class="buttons is-right mb-4">
-        <%= link_to edit_internal_client_profile_path(internal_client_profile), class: "button is-link is-small is-rounded is-outlined" do %>
-            <span class="icon is-small">
-                <i class="fas fa-edit"></i>
-            </span>
-            <span>Edit Profile</span>
+<%# app/views/internal_client_profiles/show.html.erb %>
+<%# This template displays the full details of an internal client profile and lists their therapy plans. %>
+<%# It assumes Bulma CSS and Font Awesome are loaded via the layout or asset pipeline. %>
+
+<section class="section">
+  <div class="container">
+    <%# Flash messages %>
+    <p class="has-text-success"><%= notice %></p>
+    <p class="has-text-danger"><%= alert %></p>
+
+    <h1 class="title is-2 mb-4">
+      <i class="fas fa-user-circle mr-3"></i>Client Profile: <%= @internal_client_profile.label %>
+    </h1>
+
+    <div class="buttons mb-5">
+      <%= link_to internal_client_profiles_path, class: "button is-light is-rounded is-small" do %> <%# Added is-small %>
+        <span class="icon is-small"><i class="fas fa-arrow-left"></i></span>
+        <span>Back to Client Dashboard</span>
+      <% end %>
+      <%= link_to edit_internal_client_profile_path(@internal_client_profile), class: "button is-info is-light is-rounded is-small" do %> <%# Added is-small %>
+        <span class="icon is-small"><i class="fas fa-edit"></i></span>
+        <span>Edit Profile</span>
+      <% end %>
+      <%= link_to @internal_client_profile, method: :delete, data: { turbo_confirm: "Are you sure you want to delete this client profile? This action cannot be undone." }, class: "button is-danger is-light is-rounded is-small" do %> <%# Added is-small %>
+        <span class="icon is-small"><i class="fas fa-trash"></i></span>
+        <span>Delete Profile</span>
+      <% end %>
+    </div>
+
+    <%# Personal Information Section %>
+    <div class="box p-5 mb-6" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);">
+      <h4 class="title is-5 has-text-grey-darker mb-4">
+        <i class="fas fa-id-card-alt mr-2"></i>Personal Information
+      </h4>
+      <div class="content">
+        <div class="columns is-multiline is-gapless">
+          <div class="column is-half">
+            <p class="has-text-weight-semibold">First Name:</p>
+            <p class="has-text-grey-dark"><%= @internal_client_profile.first_name || 'N/A' %></p>
+          </div>
+          <div class="column is-half">
+            <p class="has-text-weight-semibold">Last Name:</p>
+            <p class="has-text-grey-dark"><%= @internal_client_profile.last_name || 'N/A' %></p>
+          </div>
+          <div class="column is-half mt-3">
+            <p class="has-text-weight-semibold">Date of Birth:</p>
+            <p class="has-text-grey-dark"><%= @internal_client_profile.dob.present? ? @internal_client_profile.dob.strftime('%B %d, %Y') : 'N/A' %></p>
+          </div>
+          <div class="column is-half mt-3">
+            <p class="has-text-weight-semibold">Gender:</p>
+            <p class="has-text-grey-dark"><%= @internal_client_profile.gender || 'N/A' %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%# Contact Details Section %>
+    <div class="box p-5 mb-6" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);">
+      <h4 class="title is-5 has-text-grey-darker mb-4">
+        <i class="fas fa-phone-alt mr-2"></i>Contact Details
+      </h4>
+      <div class="content">
+        <div class="columns is-multiline is-gapless">
+          <div class="column is-half">
+            <p class="has-text-weight-semibold">Phone Number 1:</p>
+            <p class="has-text-grey-dark"><%= @internal_client_profile.phone_number1 || 'N/A' %></p>
+          </div>
+          <div class="column is-half">
+            <p class="has-text-weight-semibold">Phone Number 2:</p>
+            <p class="has-text-grey-dark"><%= @internal_client_profile.phone_number2 || 'N/A' %></p>
+          </div>
+          <div class="column is-half mt-3">
+            <p class="has-text-weight-semibold">Telegram:</p>
+            <p class="has-text-grey-dark"><%= @internal_client_profile.telegram || 'N/A' %></p>
+          </div>
+          <div class="column is-half mt-3">
+            <p class="has-text-weight-semibold">Whatsapp:</p>
+            <p class="has-text-grey-dark"><%= @internal_client_profile.whatsapp || 'N/A' %></p>
+          </div>
+          <div class="column is-full mt-3">
+            <p class="has-text-weight-semibold">Preferred Contact Method:</p>
+            <p class="has-text-grey-dark"><%= @internal_client_profile.preferred_contact_method || 'N/A' %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%# Location Details Section %>
+    <div class="box p-5 mb-6" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);">
+      <h4 class="title is-5 has-text-grey-darker mb-4">
+        <i class="fas fa-map-marker-alt mr-2"></i>Location Details
+      </h4>
+      <div class="content">
+        <p class="has-text-weight-semibold">Country:</p>
+        <p class="has-text-grey-dark mb-3"><%= @internal_client_profile.country || 'N/A' %></p>
+
+        <p class="has-text-weight-semibold">City:</p>
+        <p class="has-text-grey-dark mb-3"><%= @internal_client_profile.city || 'N/A' %></p>
+
+        <p class="has-text-weight-semibold">Address:</p>
+        <p class="has-text-grey-dark mb-3"><%= simple_format(@internal_client_profile.address) || 'N/A' %></p>
+      </div>
+    </div>
+
+    <%# Emergency Contact Section %>
+    <div class="box p-5 mb-6" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);">
+      <h4 class="title is-5 has-text-grey-darker mb-4">
+        <i class="fas fa-heartbeat mr-2"></i>Emergency Contact
+      </h4>
+      <div class="content">
+        <div class="columns is-multiline is-gapless">
+          <div class="column is-one-third">
+            <p class="has-text-weight-semibold">Name:</p>
+            <p class="has-text-grey-dark"><%= @internal_client_profile.emergency_contact_name || 'N/A' %></p>
+          </div>
+          <div class="column is-one-third">
+            <p class="has-text-weight-semibold">Phone:</p>
+            <p class="has-text-grey-dark"><%= @internal_client_profile.emergency_contact_phone || 'N/A' %></p>
+          </div>
+          <div class="column is-one-third">
+            <p class="has-text-weight-semibold">Relationship:</p>
+            <p class="has-text-grey-dark"><%= @internal_client_profile.emergency_contact_relationship || 'N/A' %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%# Referral & Assessment Section %>
+    <div class="box p-5 mb-6" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);">
+      <h4 class="title is-5 has-text-grey-darker mb-4">
+        <i class="fas fa-file-medical-alt mr-2"></i>Referral & Assessment
+      </h4>
+      <div class="content is-small">
+        <p class="has-text-weight-semibold mb-1">Reason for Referral:</p>
+        <p class="has-text-grey-dark mb-3"><%= simple_format(@internal_client_profile.reason_for_referral) || 'N/A' %></p>
+
+        <p class="has-text-weight-semibold mb-1">GP Name:</p>
+        <p class="has-text-grey-dark mb-3"><%= @internal_client_profile.gp_name || 'N/A' %></p>
+
+        <p class="has-text-weight-semibold mb-1">GP Contact Info:</p>
+        <p class="has-text-grey-dark mb-3"><%= simple_format(@internal_client_profile.gp_contact_info) || 'N/A' %></p>
+
+        <p class="has-text-weight-semibold mb-1">Initial Assessment Summary:</p>
+        <p class="has-text-grey-dark mb-3"><%= simple_format(@internal_client_profile.initial_assessment_summary) || 'N/A' %></p>
+
+        <p class="has-text-weight-semibold mb-1">Risk Assessment Summary:</p>
+        <p class="has-text-grey-dark mb-3"><%= simple_format(@internal_client_profile.risk_assessment_summary) || 'N/A' %></p>
+
+        <p class="has-text-weight-semibold mb-1">Treatment Plan Summary:</p>
+        <p class="has-text-grey-dark mb-3"><%= simple_format(@internal_client_profile.treatment_plan_summary) || 'N/A' %></p>
+
+        <p class="has-text-weight-semibold mb-1">First Time Therapy:</p>
+        <p class="has-text-grey-dark mb-3"><%= @internal_client_profile.first_time_therapy ? 'Yes' : 'No' %></p>
+
+        <p class="has-text-weight-semibold mb-1">Client Status:</p>
+        <% status_class = case @internal_client_profile.status&.to_sym
+                          when :active then "is-success"
+                          when :inactive then "is-danger"
+                          when :closed then "is-light"
+                          when :on_hold then "is-warning"
+                          else "is-info"
+                          end %>
+        <span class="tag is-medium <%= status_class %>">
+          <%= @internal_client_profile.status.present? ? @internal_client_profile.status.humanize : "Unknown Status" %>
+        </span>
+      </div>
+    </div>
+
+    <%# Upcoming Bookings Section %>
+    <div class="box p-5 mb-6" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);">
+      <h4 class="title is-5 has-text-grey-darker mb-4">
+        <i class="fas fa-calendar-check mr-2"></i>Upcoming Bookings
+      </h4>
+
+      <%# Filter bookings to only show future ones %>
+      <% future_bookings = @internal_client_profile.bookings.where('start_time > ?', Time.current).order(:start_time) %>
+
+      <% if future_bookings.any? %>
+        <div class="table-container">
+          <table class="table is-fullwidth is-striped is-hoverable is-bordered">
+            <thead>
+              <tr>
+                <th>Date & Time</th>
+                <th>Duration</th>
+                <th>Psychologist</th>
+                <th>Service</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% future_bookings.each do |booking| %>
+                <tr>
+                  <td>
+                    <% if booking.start_time && booking.end_time %>
+                      <%= booking.start_time.strftime("%Y-%m-%d %I:%M %p") %> - <%= booking.end_time.strftime("%I:%M %p") %>
+                    <% else %>
+                      N/A
+                    <% end %>
+                  </td>
+                  <td>
+                    <% if booking.start_time && booking.end_time %>
+                      <% duration_seconds = booking.end_time - booking.start_time %>
+                      <% hours = (duration_seconds / 3600).to_i %>
+                      <% minutes = ((duration_seconds % 3600) / 60).to_i %>
+                      <%= "#{hours}h #{minutes}m" %>
+                    <% else %>
+                      N/A
+                    <% end %>
+                  </td>
+                  <td>
+                    <%= booking.psychologist_profile&.label || 'N/A' %> <%# Assuming label method on PsychologistProfile %>
+                  </td>
+                  <td>
+                    <%= booking.service&.name || 'N/A' %> <%# Assuming name method on Service %>
+                  </td>
+                  <td>
+                    <% case booking.status&.to_sym
+                       when :confirmed %>
+                         <span class="tag is-success is-light">Confirmed</span>
+                       <% when :pending %>
+                         <span class="tag is-warning is-light">Pending</span>
+                       <% when :cancelled %>
+                         <span class="tag is-danger is-light">Cancelled</span>
+                       <% else %>
+                         <span class="tag is-info is-light"><%= booking.status.present? ? booking.status.humanize : 'Unknown' %></span>
+                       <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <p class="has-text-grey">No upcoming bookings found for this client.</p>
+      <% end %>
+    </div>
+
+    <%# Therapy Plans Section - This section remains the same as previously provided %>
+    <h2 class="title is-3 mb-4">Therapy Plans</h2>
+
+    <div class="mb-5">
+      <%= link_to new_internal_client_profile_therapy_plan_path(@internal_client_profile), class: "button is-primary is-light is-rounded" do %>
+        <span class="icon"><i class="fas fa-plus"></i></span>
+        <span>Create New Therapy Plan</span>
+      <% end %>
+    </div>
+
+    <% if @therapy_plans&.any? %> <%# Changed @therapy_plans.any? to @therapy_plans&.any? %>
+      <div class="columns is-multiline">
+        <% @therapy_plans.each do |therapy_plan| %>
+          <div class="column is-half-desktop is-full-tablet">
+            <div class="box therapy-plan-card p-5" style="border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);">
+              <div class="level is-mobile mb-3">
+                <div class="level-left">
+                  <p class="title is-5 mb-0">
+                    Plan: <%= truncate(therapy_plan.diagnosis, length: 40) %>
+                  </p>
+                </div>
+                <div class="level-right">
+                  <span class="tag is-medium
+                    <% plan_status_class = case therapy_plan.status&.to_sym
+                                          when :active then "is-success"
+                                          when :draft then "is-warning"
+                                          when :completed then "is-info"
+                                          when :archived then "is-light"
+                                          else "is-dark"
+                                          end %>
+                    <%= plan_status_class %>">
+                    <%= therapy_plan.status.present? ? therapy_plan.status.humanize : "Unknown" %>
+                  </span>
+                </div>
+              </div>
+
+              <div class="content is-small">
+                <p><strong>Goals:</strong> <%= truncate(therapy_plan.short_term_goals, length: 100) || 'N/A' %></p>
+                <p><strong>Frequency:</strong> <%= therapy_plan.frequency || 'N/A' %></p>
+                <p><strong>Duration:</strong> <%= therapy_plan.duration_weeks.present? ? "#{therapy_plan.duration_weeks} weeks" : 'N/A' %></p>
+                <p><strong>Dates:</strong>
+                  <%= therapy_plan.start_date.present? ? therapy_plan.start_date.strftime('%b %d, %Y') : 'N/A' %> -
+                  <%= therapy_plan.end_date.present? ? therapy_plan.end_date.strftime('%b %d, %Y') : 'N/A' %>
+                </p>
+              </div>
+
+              <div class="buttons is-right mt-4">
+                <%= link_to [@internal_client_profile, therapy_plan], class: "button is-info is-small is-rounded is-outlined" do %>
+                  <span class="icon is-small"><i class="fas fa-eye"></i></span>
+                  <span>View Plan</span>
+                <% end %>
+                <%= link_to edit_internal_client_profile_therapy_plan_path(@internal_client_profile, therapy_plan), class: "button is-warning is-small is-rounded is-outlined" do %>
+                  <span class="icon is-small"><i class="fas fa-edit"></i></span>
+                  <span>Edit Plan</span>
+                <% end %>
+              </div>
+            </div>
+          </div>
         <% end %>
-        <%= link_to internal_client_profile, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this client profile?" }, class: "button is-danger is-small is-rounded is-outlined" do %>
-            <span class="icon is-small">
-                <i class="fas fa-trash-alt"></i>
-            </span>
-            <span>Delete Profile</span>
-        <% end %>
-    </div>
-
-    <!-- Personal Information Section -->
-    <div class="box mb-5" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);">
-        <h4 class="title is-5 has-text-grey-darker mb-4">
-            <i class="fas fa-user-circle mr-2"></i>Personal Information
-        </h4>
-        <div class="content">
-            <div class="columns is-multiline is-gapless">
-                <div class="column is-half">
-                    <p class="has-text-weight-semibold">First Name:</p>
-                    <p class="has-text-grey-dark"><%= internal_client_profile.first_name %></p>
-                </div>
-                <div class="column is-half">
-                    <p class="has-text-weight-semibold">Last Name:</p>
-                    <p class="has-text-grey-dark"><%= internal_client_profile.last_name %></p>
-                </div>
-                <div class="column is-half mt-3">
-                    <p class="has-text-weight-semibold">Date of Birth:</p>
-                    <p class="has-text-grey-dark"><%= internal_client_profile.dob %></p>
-                </div>
-                <div class="column is-half mt-3">
-                    <p class="has-text-weight-semibold">Gender:</p>
-                    <p class="has-text-grey-dark"><%= internal_client_profile.gender %></p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Contact Details Section -->
-    <div class="box mb-5" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);">
-        <h4 class="title is-5 has-text-grey-darker mb-4">
-            <i class="fas fa-address-book mr-2"></i>Contact Details
-        </h4>
-        <div class="content">
-            <div class="columns is-multiline is-gapless">
-                <div class="column is-half">
-                    <p class="has-text-weight-semibold">Phone Number 1:</p>
-                    <p class="has-text-grey-dark"><%= internal_client_profile.phone_number1 %></p>
-                </div>
-                <div class="column is-half">
-                    <p class="has-text-weight-semibold">Phone Number 2:</p>
-                    <p class="has-text-grey-dark"><%= internal_client_profile.phone_number2 %></p>
-                </div>
-                <div class="column is-half mt-3">
-                    <p class="has-text-weight-semibold">Telegram:</p>
-                    <p class="has-text-grey-dark"><%= internal_client_profile.telegram %></p>
-                </div>
-                <div class="column is-half mt-3">
-                    <p class="has-text-weight-semibold">Whatsapp:</p>
-                    <p class="has-text-grey-dark"><%= internal_client_profile.whatsapp %></p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Location Details Section -->
-    <div class="box mb-5" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);">
-        <h4 class="title is-5 has-text-grey-darker mb-4">
-            <i class="fas fa-map-marker-alt mr-2"></i>Location Details
-        </h4>
-        <div class="content">
-            <p class="has-text-weight-semibold">Country:</p>
-            <p class="has-text-grey-dark mb-3"><%= internal_client_profile.country %></p>
-
-            <p class="has-text-weight-semibold">City:</p>
-            <p class="has-text-grey-dark mb-3"><%= internal_client_profile.city %></p>
-
-            <p class="has-text-weight-semibold">Address:</p>
-            <p class="has-text-grey-dark mb-3"><%= internal_client_profile.address %></p>
-
-
-        </div>
-    </div>
-
-    <!-- Additional Internal Client Profile Fields (from your provided snippet) -->
-    <div class="box mb-5" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);">
-        <h4 class="title is-5 has-text-grey-darker mb-4">
-            <i class="fas fa-info-circle mr-2"></i>Additional Profile Information
-        </h4>
-        <div class="content">
-            <div class="columns is-multiline is-gapless">
-                <div class="column is-half">
-                    <p class="has-text-weight-semibold">Internal Reference Number:</p>
-                    <p class="has-text-grey-dark"><%= internal_client_profile.internal_reference_number %></p>
-                </div>
-                <div class="column is-half">
-                    <p class="has-text-weight-semibold">Preferred Contact Method:</p>
-                    <p class="has-text-grey-dark"><%= internal_client_profile.preferred_contact_method %></p>
-                </div>
-                <div class="column is-half mt-3">
-                    <p class="has-text-weight-semibold">Emergency Contact Name:</p>
-                    <p class="has-text-grey-dark"><%= internal_client_profile.emergency_contact_name %></p>
-                </div>
-                <div class="column is-half mt-3">
-                    <p class="has-text-weight-semibold">Emergency Contact Phone:</p>
-                    <p class="has-text-grey-dark"><%= internal_client_profile.emergency_contact_phone %></p>
-                </div>
-                <div class="column is-half mt-3">
-                    <p class="has-text-weight-semibold">Emergency Contact Relationship:</p>
-                    <p class="has-text-grey-dark"><%= internal_client_profile.emergency_contact_relationship %></p>
-                </div>
-                <div class="column is-full mt-3">
-                    <p class="has-text-weight-semibold">Reason for Referral:</p>
-                    <p class="has-text-grey-dark"><%= internal_client_profile.reason_for_referral %></p>
-                </div>
-                <div class="column is-half mt-3">
-                    <p class="has-text-weight-semibold">GP Name:</p>
-                    <p class="has-text-grey-dark"><%= internal_client_profile.gp_name %></p>
-                </div>
-                <div class="column is-half mt-3">
-                    <p class="has-text-weight-semibold">GP Contact Info:</p>
-                    <p class="has-text-grey-dark"><%= internal_client_profile.gp_contact_info %></p>
-                </div>
-                <div class="column is-full mt-3">
-                    <p class="has-text-weight-semibold">Initial Assessment Summary:</p>
-                    <p class="has-text-grey-dark"><%= internal_client_profile.initial_assessment_summary %></p>
-                </div>
-                <div class="column is-full mt-3">
-                    <p class="has-text-weight-semibold">Risk Assessment Summary:</p>
-                    <p class="has-text-grey-dark"><%= internal_client_profile.risk_assessment_summary %></p>
-                </div>
-                <div class="column is-full mt-3">
-                    <p class="has-text-weight-semibold">Treatment Plan Summary:</p>
-                    <p class="has-text-grey-dark"><%= internal_client_profile.treatment_plan_summary %></p>
-                </div>
-                <div class="column is-half mt-3">
-                    <p class="has-text-weight-semibold">First Time Therapy:</p>
-                    <p class="has-text-grey-dark"><%= internal_client_profile.first_time_therapy ? 'Yes' : 'No' %></p>
-                </div>
-                <div class="column is-half mt-3">
-                    <p class="has-text-weight-semibold">Status:</p>
-                    <p class="has-text-grey-dark"><%= internal_client_profile.status %></p>
-                </div>
-                <%# Removed psychologist_profile_id and client_profile_id as per previous instructions to not show IDs %>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- Bookings Section - Full Width -->
-    <div class="box mt-5" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);">
-        <h4 class="title is-5 has-text-grey-darker mb-4">
-            <i class="fas fa-calendar-alt mr-2"></i>Upcoming Bookings
-        </h4>
-
-        <%
-            # Filter bookings to only show future ones
-            future_bookings = []
-            if internal_client_profile.respond_to?(:bookings) && internal_client_profile.bookings
-                future_bookings = internal_client_profile.bookings.select do |booking|
-                    booking.start_time && booking.start_time > Time.current
-                end.sort_by(&:start_time) # Sort by start time for better readability
-            end
-        %>
-
-        <% if future_bookings.any? %>
-            <div class="table-container">
-                <table class="table is-fullwidth is-striped is-hoverable is-bordered">
-                    <thead>
-                        <tr>
-                            <th>Date & Time</th> <%# Changed from (Local) %>
-                            <th>Duration</th>
-                            <th>Psychologist</th>
-                            <th>Service</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% future_bookings.each do |booking| %>
-                            <tr>
-                                <td>
-                                    <% if booking.start_time && booking.end_time %>
-                                        <%= booking.start_time.strftime("%Y-%m-%d %I:%M %p") %> - <%= booking.end_time.strftime("%I:%M %p") %>
-                                    <% else %>
-                                        N/A
-                                    <% end %>
-                                </td>
-                                <td>
-                                    <% if booking.start_time && booking.end_time %>
-                                        <% duration_seconds = booking.end_time - booking.start_time %>
-                                        <% hours = (duration_seconds / 3600).to_i %>
-                                        <% minutes = ((duration_seconds % 3600) / 60).to_i %>
-                                        <%= "#{hours}h #{minutes}m" %>
-                                    <% else %>
-                                        N/A
-                                    <% end %>
-                                </td>
-                                <td>
-                                    <%# Assuming booking.psychologist_profile is available and has a 'full_name' attribute %>
-                                    <%= booking.psychologist_profile.full_name if booking.psychologist_profile.respond_to?(:full_name) %>
-                                </td>
-                                <td>
-                                    <%# Assuming booking.service is available and has a 'name' attribute %>
-                                    <%= booking.service.name if booking.service.respond_to?(:name) %>
-                                </td>
-                                <td>
-                                    <% case booking.status %>
-                                    <% when 'confirmed' %>
-                                        <span class="tag is-success is-light">Confirmed</span>
-                                    <% when 'pending' %>
-                                        <span class="tag is-warning is-light">Pending</span>
-                                    <% when 'cancelled' %>
-                                        <span class="tag is-danger is-light">Cancelled</span>
-                                    <% else %>
-                                        <span class="tag is-info is-light"><%= booking.status.capitalize %></span>
-                                    <% end %>
-                                </td>
-                            </tr>
-                        <% end %>
-                    </tbody>
-                </table>
-            </div>
-        <% else %>
-            <p class="has-text-grey">No upcoming bookings found for this client.</p>
-        <% end %>
-    </div>
-</div>
-
-<%# Removed the JavaScript block as client-side timezone conversion is no longer needed %>
+      </div>
+    <% else %>
+      <div class="notification is-info is-light has-text-centered" style="border-radius: 8px;">
+        <p class="is-size-6">
+          <i class="fas fa-info-circle mr-2"></i>No therapy plans found for this client.
+        </p>
+      </div>
+    <% end %>
+  </div>
+</section>

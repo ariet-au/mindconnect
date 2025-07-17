@@ -1,10 +1,4 @@
 <p style="color: green"><%= notice %></p>
-<div>
-  <%= link_to "Edit this internal client profile", edit_internal_client_profile_path(@internal_client_profile) %> |
-  <%= link_to "Back to internal client profiles", internal_client_profiles_path %>
-
-  <%= button_to "Destroy this internal client profile", @internal_client_profile, method: :delete %>
-</div>
 
 
 
@@ -12,16 +6,3 @@
 
 
 
-<h2>Therapy Plans</h2>
-<%= link_to "New Therapy Plan", new_internal_client_profile_therapy_plan_path(@internal_client_profile) %>
-
-<% @internal_client_profile.therapy_plans.each do |plan| %>
-  <div class="therapy-plan-card">
-    <h3>Plan (Status: <%= plan.status %>)</h3>
-    <p><strong>Diagnosis:</strong> <%= plan.diagnosis %></p>
-    <p><strong>Short-term Goals:</strong> <%= plan.short_term_goals %></p>
-    <p><strong>Start:</strong> <%= plan.start_date %>, End: <%= plan.end_date %></p>
-    
-    <%= link_to "View Notes", internal_client_profile_therapy_plan_path(@internal_client_profile, plan) %>
-  </div>
-<% end %>
