@@ -67,15 +67,27 @@
       </div>
     </div>
 
-    <!-- About Me -->
-    <div class="column is-full">
-      <div class="field">
-        <%= form.label :about_me, class: "label" %>
-        <div class="control">
-          <%= form.text_area :about_me, class: "textarea" %>
-        </div>
-      </div>
+<!-- About Me -->
+<div class="column is-full">
+  <div class="field">
+    <%= form.label :about_me, class: "label" %>
+    <div class="control">
+      <%= form.text_area :about_me, class: "textarea" %>
     </div>
+  </div>
+
+  <!-- YouTube Video URL -->
+  <div class="field">
+    <%= form.label :youtube_video_url, "YouTube Video URL", class: "label" %>
+    <div class="control">
+      <%= form.text_field :youtube_video_url, class: "input", placeholder: "https://www.youtube.com/watch?v=abc123xyz" %>
+    </div>
+
+    <% if form.object.errors[:youtube_video_url].any? %>
+      <p class="help is-danger"><%= form.object.errors[:youtube_video_url].first %></p>
+    <% end %>
+  </div>
+</div>
 
 
 

@@ -56,6 +56,30 @@ class PsychologistProfile < ApplicationRecord
     other: 3      
   }
 
+   enum :status, {
+    pending_review: "pending_review",
+    published: "approved",
+    suspended: "suspended",
+    archived: "archived"
+  }
+
+  VALID_YOUTUBE_REGEX = %r{
+    \A
+    (https?:\/\/)?                                   # optional http or https
+    (www\.)?                                          # optional www
+    (youtube\.com\/watch\?v=|youtu\.be\/)            # required domain and path
+    [\w\-]{11}                                        # exactly 11-char video ID
+    (&.*)?                                            # optional query params
+    \z
+  }x
+  before_validation :strip_youtube_url
+  validates :youtube_video_url,
+    format: {
+      with: VALID_YOUTUBE_REGEX,
+      message: "must be a valid YouTube URL"
+    },
+    allow_blank: true
+
 pg_search_scope :search_full_text,
   against: [:first_name, :last_name, :about_me, :education, :license_number, :city, :country],
   associated_against: {
@@ -67,6 +91,10 @@ pg_search_scope :search_full_text,
 
     def full_name
       "#{first_name} #{last_name}" # or however you want it displayed
+    end
+
+    def strip_youtube_url
+      self.youtube_video_url = youtube_video_url.strip.presence if youtube_video_url.present?
     end
 
   def resize_profile_image

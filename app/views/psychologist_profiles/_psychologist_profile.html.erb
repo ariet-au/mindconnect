@@ -113,16 +113,36 @@
       </div>
     </div>
 
-    <!-- About Section -->
-    <div class="profile-section">
-      <h2 class="section-title">
-        <i class="fas fa-user-circle icon-about"></i>
-        About Me
-      </h2>
-      <div class="section-content">
-        <p><%= simple_format(psychologist_profile.about_me) %></p>
+      <!-- About Section -->
+      <div class="profile-section">
+        <h2 class="section-title">
+          <i class="fas fa-user-circle icon-about"></i>
+          About Me
+        </h2>
+        <div class="section-content">
+          <p><%= simple_format(psychologist_profile.about_me) %></p>
+
+          <% if psychologist_profile.youtube_video_url.present? %>
+            <% video_id = youtube_embed_url(psychologist_profile.youtube_video_url) %>
+            <% if video_id %>
+              <div class="video-wrapper">
+                <iframe width="560" height="315"
+                        src="https://www.youtube.com/embed/<%= video_id %>"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen>
+                </iframe>
+              </div>
+            <% else %>
+              <p class="has-text-danger">Invalid YouTube link format.</p>
+            <% end %>
+          <% end %>
+        </div>
       </div>
-    </div>
+
+
+
+    
 
     <!-- Experience Section -->
     <div class="profile-section">
@@ -189,26 +209,34 @@
     </div>
 
     <!-- Issues Section -->
-    <div class="profile-section">
-      <h2 class="section-title">
-        <i class="fas fa-heart icon-issues"></i>
-        Areas of Focus
-      </h2>
-      <div class="section-content">
-        <% if psychologist_profile.about_issues.present? %>
-          <p class="section-description"><%= simple_format(psychologist_profile.about_issues) %></p>
-        <% end %>
-        <div class="tags-container">
-          <% if @psychologist_profile.issues.any? %>
-            <% @psychologist_profile.issues.each do |issue| %>
+<div class="profile-section">
+  <h2 class="section-title">
+    <i class="fas fa-heart icon-issues"></i>
+    Areas of Focus
+  </h2>
+  <div class="section-content">
+    <% if psychologist_profile.about_issues.present? %>
+      <p class="section-description"><%= simple_format(psychologist_profile.about_issues) %></p>
+    <% end %>
+
+    <% grouped_issues = @psychologist_profile.issues.group_by(&:category) %>
+
+    <% if grouped_issues.any? %>
+      <% grouped_issues.each do |category, issues| %>
+        <div class="issue-category-group">
+          <h4 class="issue-category-title"><%= category %></h4>
+          <div class="tags-container">
+            <% issues.each do |issue| %>
               <span class="tag-item"><%= issue.name %></span>
             <% end %>
-          <% else %>
-            <span class="empty-text">No issues specified.</span>
-          <% end %>
+          </div>
         </div>
-      </div>
-    </div>
+      <% end %>
+    <% else %>
+      <span class="empty-text">No issues specified.</span>
+    <% end %>
+  </div>
+</div>
 
     <!-- Services Section -->
     <div class="profile-section">
@@ -871,6 +899,23 @@ body {
   .credential-tag {
     font-size: 0.8rem;
   }
+
+  
+}
+  .video-wrapper {
+  margin-top: 1rem;
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  height: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.video-wrapper iframe {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
 }
 </style>
 

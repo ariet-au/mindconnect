@@ -36,5 +36,18 @@ module ApplicationHelper
         end
     end
 
+     def youtube_embed_url(youtube_url)
+        return nil if youtube_url.blank?
+
+        uri = URI.parse(youtube_url)
+        if uri.host&.include?("youtube.com")
+        CGI.parse(uri.query)["v"]&.first
+        elsif uri.host&.include?("youtu.be")
+        uri.path[1..] # remove leading slash
+        end
+    rescue
+        nil
+    end
+
 end
 

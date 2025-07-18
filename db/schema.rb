@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_16_222302) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_18_115854) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -233,6 +233,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_16_222302) do
     t.text "about_specialties"
     t.string "primary_contact_method"
     t.string "timezone"
+    t.string "status", default: "pending_review", null: false
+    t.string "youtube_video_url"
     t.index ["user_id"], name: "index_psychologist_profiles_on_user_id"
   end
 
