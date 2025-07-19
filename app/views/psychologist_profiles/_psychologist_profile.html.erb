@@ -140,39 +140,31 @@
       </div>
     </div>
 
-    <!-- Professional Background Section -->
+    <!-- Education Section -->
     <% if @psychologist_profile.educations.any? %>
       <div class="profile-section">
         <h2 class="section-title">
           <i class="fas fa-briefcase icon-experience"></i>
-          Professional Background
+          Education 
         </h2>
         <div class="section-content">
           <% @psychologist_profile.educations.each do |education| %>
-            <div class="experience-item">
+            <div class="experience-item" style="margin-bottom: 1.5rem; background-color: #fafafa; padding: 1.25rem;">
               <div class="experience-header">
                 <h3>
-                  <%= education.degree %> in <%= education.field_of_study %>
+                  <%= education.degree %> of <%= education.field_of_study %>
                   <% if education.institution.present? %>
                     at <%= education.institution %>
                   <% end %>
                 </h3>
                 <span class="experience-type">
                   <% if education.graduation_year.present? %>
-                    Graduation: <%= education.graduation_year %>
+                    Graduated: <%= education.graduation_year %>
                   <% else %>
                     Professional Qualification
                   <% end %>
                 </span>
               </div>
-              <% if education.certificate_url.present? %>
-                <div class="certificate-link">
-                  <%= link_to "View Certificate", education.certificate_url, target: "_blank", rel: "noopener noreferrer", class: "button is-small is-info is-outlined" do %>
-                    <span class="icon"><i class="fas fa-external-link-alt"></i></span>
-                    <span>View Certificate</span>
-                  <% end %>
-                </div>
-              <% end %>
             </div>
           <% end %>
         </div>

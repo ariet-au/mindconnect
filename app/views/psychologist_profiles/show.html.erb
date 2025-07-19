@@ -1,9 +1,6 @@
 <p style="color: green"><%= notice %></p>
 
-<% if @psychologist_profile.user == current_user %>
-<%= link_to "Edit Profile", edit_psychologist_profile_path(current_user.psychologist_profile) %>
-    <%= link_to "New service", new_service_path %>
- <% end %>
+
 
 
  
@@ -12,23 +9,18 @@
 
 <div>
 
-  <% if @psychologist_profile.user == current_user %>
-    <%= link_to "Edit this psychologist profile", edit_psychologist_profile_path(@psychologist_profile) %> 
 
- 
-  <%= link_to "Back to psychologist profiles", psychologist_profiles_path %>
-
+  <%#
 <%= button_to "Destroy this psychologist profile",
               @psychologist_profile,
               method: :delete,
               data: { confirm: "Are you sure you want to delete this profile?" },
               form_class: "mt-4", # optional margin-top
-              class: "button is-danger is-light" %>
+              class: "button is-danger is-light" %>%>
 
 
-  <% end %>
+
   
 
 
 
-</div>
