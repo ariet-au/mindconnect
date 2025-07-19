@@ -109,6 +109,10 @@
               <span>• <%= @psychologist_profile.address %></span>
             <% end %>
           </div>
+
+
+
+
         </div>
       </div>
     </div>
@@ -247,71 +251,108 @@
       </div>
     </div>
 
-    <!-- Services Section -->
-    <div class="profile-section">
-      <div class="section-header">
-        <h2 class="section-title">
-          <i class="fas fa-briefcase icon-services"></i>
-          Services Offered
-        </h2>
-        <% if @psychologist_profile.user == current_user %>
-          <%= link_to "Add New Service", new_service_path, class: "button is-primary-blue is-small" %>
-        <% end %>
+<!-- Services Section -->
+<div class="profile-section">
+  <div class="section-header">
+    <h2 class="section-title">
+      <i class="fas fa-briefcase icon-services"></i>
+      Services Offered
+    </h2>
+    <% if @psychologist_profile.user == current_user %>
+      <%= link_to "Add New Service", new_service_path, class: "button is-primary-blue is-small" %>
+    <% end %>
+  </div>
+
+  <!-- Next Available Slot Info -->
+  <div class="availability-banner">
+    <div class="availability-content">
+      <div class="availability-icon">
+        <i class="fas fa-calendar-check"></i>
       </div>
-      
-      <div class="section-content">
-        <% if @psychologist_profile.user.services.any? %>
-          <div class="services-grid">
-            <% @psychologist_profile.user.services.each do |service| %>
-              <div class="service-card">
-                <div class="service-header">
-                  <h3 class="service-title"><%= service.name %></h3>
-                  <div class="service-meta">
-                    <span class="service-price">
-                      <i class="fas fa-tag icon-price"></i>
-                      <% if service.price == 0 %>
-                        Free
-                      <% else %>
-                        <% if service.currency.present? && current_currency.present? %>
-                          <% converted = service.converted_rate(current_currency) %>
-                          <%= humanized_money_with_symbol(converted) if converted %>
-                        <% end %>
-                      <% end %>
-                    </span>
-                    <span class="service-duration">
-                      <i class="fas fa-clock icon-duration"></i>
-                      <%= service.duration_minutes %> min
-                    </span>
-                  </div>
-                </div>
-                
-                <div class="service-delivery">
-                  <% if service.delivery_method.downcase.include?("online") %>
-                    <span class="delivery-badge online">
-                      <i class="fas fa-laptop"></i>
-                      Online
-                    </span>
-                  <% else %>
-                    <span class="delivery-badge in-person">
-                      <i class="fas fa-user"></i>
-                      In-Person
-                    </span>
-                  <% end %>
-                </div>
-                
-                <p class="service-description"><%= simple_format(service.description) %></p>
-                
-                <div class="service-actions">
-                  <%= link_to "Book This Service", new_service_booking_path(service), class: "button is-primary-blue is-fullwidth" %>
-                </div>
-              </div>
-            <% end %>
+      <div class="availability-info">
+        <% if @next_available_slot %>
+          <div class="availability-status available">
+            <span class="availability-label">
+              <i class="fas fa-clock icon-time"></i>
+              Next available appointment
+            </span>
+            <div class="availability-details">
+              <strong class="availability-time">
+                <%= l(@next_available_slot, format: :long) %>
+              </strong>
+              <span class="availability-timezone">
+                <i class="fas fa-globe icon-timezone"></i>
+                <%= @display_timezone %>
+              </span>
+            </div>
           </div>
         <% else %>
-          <p class="empty-text">No services available at this time.</p>
+          <div class="availability-status unavailable">
+            <span class="availability-label">
+              <i class="fas fa-calendar-times"></i>
+              Currently no availability
+            </span>
+            <p class="availability-message">Please check back later or contact directly</p>
+          </div>
         <% end %>
       </div>
     </div>
+  </div>
+  
+  <div class="section-content">
+    <% if @psychologist_profile.user.services.any? %>
+      <div class="services-grid">
+        <% @psychologist_profile.user.services.each do |service| %>
+          <div class="service-card">
+            <div class="service-header">
+              <h3 class="service-title"><%= service.name %></h3>
+              <div class="service-meta">
+                <span class="service-price">
+                  <i class="fas fa-tag icon-price"></i>
+                  <% if service.price == 0 %>
+                    Free
+                  <% else %>
+                    <% if service.currency.present? && current_currency.present? %>
+                      <% converted = service.converted_rate(current_currency) %>
+                      <%= humanized_money_with_symbol(converted) if converted %>
+                    <% end %>
+                  <% end %>
+                </span>
+                <span class="service-duration">
+                  <i class="fas fa-clock icon-duration"></i>
+                  <%= service.duration_minutes %> min
+                </span>
+              </div>
+            </div>
+            
+            <div class="service-delivery">
+              <% if service.delivery_method.downcase.include?("online") %>
+                <span class="delivery-badge online">
+                  <i class="fas fa-laptop"></i>
+                  Online
+                </span>
+              <% else %>
+                <span class="delivery-badge in-person">
+                  <i class="fas fa-user"></i>
+                  In-Person
+                </span>
+              <% end %>
+            </div>
+            
+            <p class="service-description"><%= simple_format(service.description) %></p>
+            
+            <div class="service-actions">
+              <%= link_to "Book This Service", new_service_booking_path(service), class: "button is-primary-blue is-fullwidth" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="empty-text">No services available at this time.</p>
+    <% end %>
+  </div>
+</div>
+
 
     <!-- Contact Section -->
     <div class="profile-section">
@@ -370,339 +411,347 @@
           </div>
         </div>
       </div>
+
+
     </div>
   </div>
+
+
 </div>
 
 
 <style>
-:root {
-  --primary-blue: #007bff;
-  --text-primary: #2c3e50;
-  --text-secondary: #6c757d;
-  --border-light: #e9ecef;
-  --bg-light: #f8f9fa;
-  --white: #ffffff;
-  --shadow-subtle: 0 2px 4px rgba(0,0,0,0.05);
-  --shadow-card: 0 4px 12px rgba(0,0,0,0.08);
-  
-  --color-education: #374151;
-  --color-time: grey;
-  --color-location: #374151;
-  --color-doctor: #059669;
-  --color-certified: #f59e0b;
-  --color-timezone: #06b6d4;
-  --color-about: #8b5cf6;
-  --color-experience: #374151;
-  --color-specialization: #f59e0b;
-  --color-clients: #06b6d4;
-  --color-issues: #ef4444;
-  --color-services: #374151;
-  --color-contact: #6366f1;
-  --color-price: #059669;
-  --color-duration: grey;
-  --color-email: #6366f1;
-  --color-telegram: #0088cc;
-  --color-whatsapp: #25d366;
-  --color-phone: #374151;
-}
+  :root {
+    --primary-blue: #007bff;
+    --text-primary: #2c3e50;
+    --text-secondary: #6c757d;
+    --border-light: #e9ecef;
+    --bg-light: #f8f9fa;
+    --white: #ffffff;
+    --shadow-subtle: 0 2px 4px rgba(0,0,0,0.05);
+    --shadow-card: 0 4px 12px rgba(0,0,0,0.08);
+    
+    --color-education: #374151;
+    --color-time: grey;
+    --color-location: #374151;
+    --color-doctor: #059669;
+    --color-certified: #f59e0b;
+    --color-timezone: #06b6d4;
+    --color-about: #8b5cf6;
+    --color-experience: #374151;
+    --color-specialization: #f59e0b;
+    --color-clients: #06b6d4;
+    --color-issues: #ef4444;
+    --color-services: #374151;
+    --color-contact: #6366f1;
+    --color-price: #059669;
+    --color-duration: grey;
+    --color-email: #6366f1;
+    --color-telegram: #0088cc;
+    --color-whatsapp: #25d366;
+    --color-phone: #374151;
+  }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: var(--bg-light);
-  color: var(--text-primary);
-  line-height: 1.6;
-}
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-light);
+    color: var(--text-primary);
+    line-height: 1.6;
+  }
 
-.profile-container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 20px;
-}
+  .profile-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+  }
 
-.profile-card {
-  background: var(--white);
-  border-radius: 12px;
-  box-shadow: var(--shadow-card);
-  border: 1px solid var(--border-light);
-  overflow: hidden;
-}
+  .profile-card {
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-light);
+    overflow: hidden;
+  }
 
-.icon-education { color: var(--color-education) !important; }
-.icon-time { color: var(--color-time) !important; }
-.icon-location { color: var(--color-location) !important; }
-.icon-doctor { color: var(--color-doctor) !important; }
-.icon-certified { color: var(--color-certified) !important; }
-.icon-timezone { color: var(--color-timezone) !important; }
-.icon-about { color: var(--color-about) !important; }
-.icon-experience { color: var(--color-experience) !important; }
-.icon-specialization { color: var(--color-specialization) !important; }
-.icon-clients { color: var(--color-clients) !important; }
-.icon-issues { color: var(--color-issues) !important; }
-.icon-services { color: var(--color-services) !important; }
-.icon-contact { color: var(--color-contact) !important; }
-.icon-price { color: var(--color-price) !important; }
-.icon-duration { color: var(--color-duration) !important; }
-.icon-email { color: var(--color-email) !important; }
-.icon-telegram { color: var(--color-telegram) !important; }
-.icon-whatsapp { color: var(--color-whatsapp) !important; }
-.icon-phone { color: var(--color-phone) !important; }
+  .icon-education { color: var(--color-education) !important; }
+  .icon-time { color: var(--color-time) !important; }
+  .icon-location { color: var(--color-location) !important; }
+  .icon-doctor { color: var(--color-doctor) !important; }
+  .icon-certified { color: var(--color-certified) !important; }
+  .icon-timezone { color: var(--color-timezone) !important; }
+  .icon-about { color: var(--color-about) !important; }
+  .icon-experience { color: var(--color-experience) !important; }
+  .icon-specialization { color: var(--color-specialization) !important; }
+  .icon-clients { color: var(--color-clients) !important; }
+  .icon-issues { color: var(--color-issues) !important; }
+  .icon-services { color: var(--color-services) !important; }
+  .icon-contact { color: var(--color-contact) !important; }
+  .icon-price { color: var(--color-price) !important; }
+  .icon-duration { color: var(--color-duration) !important; }
+  .icon-email { color: var(--color-email) !important; }
+  .icon-telegram { color: var(--color-telegram) !important; }
+  .icon-whatsapp { color: var(--color-whatsapp) !important; }
+  .icon-phone { color: var(--color-phone) !important; }
 
-.profile-header {
-  padding: 40px 30px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  border-bottom: 1px solid var(--border-light);
-  position: relative;
-}
+  .profile-header {
+    padding: 40px 30px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    border-bottom: 1px solid var(--border-light);
+    position: relative;
+  }
 
-.header-actions {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
+  .header-actions {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
 
-.profile-info {
-  display: flex;
-  align-items: flex-start;
-  gap: 25px;
-  margin-top: 20px;
-}
+  .profile-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 25px;
+    margin-top: 20px;
+  }
 
-.profile-avatar .image {
-  margin: 0;
-}
+  .profile-avatar .image {
+    margin: 0;
+  }
 
-.profile-avatar img {
-  border: 3px solid var(--white);
-  box-shadow: var(--shadow-subtle);
-}
+  .profile-avatar img {
+    border: 3px solid var(--white);
+    box-shadow: var(--shadow-subtle);
+  }
 
-.profile-details {
-  flex: 1;
-}
+  .profile-details {
+    flex: 1;
+  }
 
-.profile-name {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 12px;
-  line-height: 1.2;
-}
+  .profile-name {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
 
-.profile-credentials {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
+  .profile-credentials {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
 
-.credential-tag {
-  background: var(--bg-light);
-  border: 1px solid var(--border-light);
-  border-radius: 20px;
-  padding: 6px 12px;
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
+  .credential-tag {
+    background: var(--bg-light);
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
 
-.profile-badges {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
-}
+  .profile-badges {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
 
-.badge-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-}
+  .badge-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
 
-.profile-location {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-}
+  .profile-location {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
 
-/* Profile Sections */
-.profile-section {
-  padding: 30px;
-  border-bottom: 1px solid var(--border-light);
-}
 
-.profile-section:last-child {
-  border-bottom: none;
-}
+  .profile-section {
+    padding: 30px;
+    border-bottom: 1px solid var(--border-light);
+  }
 
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
+  .profile-section:last-child {
+    border-bottom: none;
+  }
 
-.section-title {
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
-}
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
 
-.section-title i {
-  font-size: 1.1rem;
-}
+  .section-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
 
-.section-content {
-  color: var(--text-secondary);
-  line-height: 1.7;
-}
+  .section-title i {
+    font-size: 1.1rem;
+  }
 
-.section-description {
-  margin-bottom: 20px;
-  color: var(--text-secondary);
-}
+  .section-content {
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
 
-/* Experience Item */
-.experience-item {
-  padding: 20px;
-  background: var(--bg-light);
-  border-radius: 8px;
-  border-left: 4px solid var(--color-experience);
-}
+  .section-description {
+    margin-bottom: 20px;
+    color: var(--text-secondary);
+  }
 
-.experience-header h3 {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-}
 
-.experience-type {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-}
+  .experience-item {
+    padding: 20px;
+    background: var(--bg-light);
+    border-radius: 8px;
+    border-left: 4px solid var(--color-experience);
+  }
 
-/* Tags */
-.tags-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
+  .experience-header h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
 
-.tag-item {
-  background: var(--bg-light);
-  border: 1px solid var(--border-light);
-  border-radius: 16px;
-  padding: 8px 16px;
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  transition: all 0.2s ease;
-}
+  .experience-type {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
 
-.tag-item:hover {
-  background: var(--primary-blue);
-  color: var(--white);
-  border-color: var(--primary-blue);
-}
 
-.tag-item.featured {
-  background: rgba(245, 158, 11, 0.1);
-  border-color: var(--color-specialization);
-  color: var(--color-specialization);
-}
+  .tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
 
-/* Services Grid */
-.services-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-}
+  .tag-item {
+    background: var(--bg-light);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    padding: 8px 16px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+  }
 
-.service-card {
-  background: var(--white);
-  border: 1px solid var(--border-light);
-  border-radius: 8px;
-  padding: 20px;
-  transition: all 0.2s ease;
-}
+  .tag-item:hover {
+    background: var(--primary-blue);
+    color: var(--white);
+    border-color: var(--primary-blue);
+  }
 
-.service-card:hover {
-  box-shadow: var(--shadow-card);
-  border-color: var(--primary-blue);
-}
+  .tag-item.featured {
+    background: rgba(245, 158, 11, 0.1);
+    border-color: var(--color-specialization);
+    color: var(--color-specialization);
+  }
 
-.service-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 12px;
-}
 
-.service-meta {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 12px;
-}
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+  }
 
-.service-price,
-.service-duration {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-}
+  .service-card {
+    background: var(--white);
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    padding: 20px;
+    transition: all 0.2s ease;
+  }
 
-.service-delivery {
-  margin-bottom: 16px;
-}
+  .service-card:hover {
+    box-shadow: var(--shadow-card);
+    border-color: var(--primary-blue);
+  }
 
-.delivery-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: 500;
-}
+  .service-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+  }
 
-.delivery-badge.online {
-  background: rgba(6, 182, 212, 0.1);
-  color: var(--color-clients);
-}
+  .service-meta {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
 
-.delivery-badge.in-person {
-  background: rgba(5, 150, 105, 0.1);
-  color: var(--color-doctor);
-}
+  .service-price,
+  .service-duration {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
 
-.service-description {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  margin-bottom: 20px;
-}
+  .service-delivery {
+    margin-bottom: 16px;
+  }
 
-/* Contact Section */
+  .delivery-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
+  }
+
+  .delivery-badge.online {
+    background: rgba(6, 182, 212, 0.1);
+    color: var(--color-clients);
+  }
+
+  .delivery-badge.in-person {
+    background: rgba(5, 150, 105, 0.1);
+    color: var(--color-doctor);
+  }
+
+  .service-description {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+  }
+
 .primary-contact {
   margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .contact-cta {
-  display: inline-flex;
+  display: flex;           
+  width: 100%;             
+  justify-content: center;
   align-items: center;
   gap: 12px;
   background: var(--primary-blue);
@@ -714,11 +763,13 @@ body {
   transition: all 0.2s ease;
 }
 
-.contact-cta:hover {
-  background: #0056b3;
-  color: var(--white);
-  transform: translateY(-1px);
-}
+
+
+  .contact-cta:hover {
+    background: #0056b3;
+    color: var(--white);
+    transform: translateY(-1px);
+  }
 
 .toggle-contacts {
   background: none;
@@ -731,198 +782,305 @@ body {
   gap: 8px;
   padding: 8px 0;
   margin-bottom: 16px;
+  width: 100%;          
+  min-width: 0;          
+  justify-content: center;
 }
 
-.toggle-contacts:hover {
-  text-decoration: underline;
+  .toggle-contacts:hover {
+    text-decoration: underline;
+  }
+
+  .contact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .contact-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: var(--bg-light);
+    border-radius: 8px;
+    border: 1px solid var(--border-light);
+  }
+
+  .contact-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .contact-info i {
+    width: 16px;
+  }
+
+  .contact-label {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    min-width: 80px;
+  }
+
+  .contact-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .contact-input {
+    background: var(--white);
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    width: 200px;
+  }
+
+  .copy-button,
+  .contact-link {
+    background: var(--white);
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    padding: 6px 8px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .copy-button:hover,
+  .contact-link:hover {
+    background: var(--primary-blue);
+    color: var(--white);
+    border-color: var(--primary-blue);
+  }
+
+  .empty-text {
+    color: var(--text-secondary);
+    font-style: italic;
+    font-size: 0.9rem;
+  }
+
+  .button.is-primary-blue {
+    background-color: var(--white);
+    border: 1px solid var(--primary-blue);
+    color: var(--primary-blue);
+    box-shadow: none;
+    font-weight: 500;
+    border-radius: 6px;
+  }
+
+  .button.is-primary-blue:hover,
+  .button.is-primary-blue.is-hovered {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+    color: var(--white);
+  }
+
+  .button.is-primary-blue:focus,
+  .button.is-primary-blue.is-focused {
+    background-color: var(--primary-blue);
+    border-color: var(--primary-blue);
+    color: var(--white);
+    box-shadow: 0 0 0 0.125em rgba(0, 123, 255, 0.25);
+  }
+
+
+  @media screen and (max-width: 768px) {
+    .profile-container {
+      padding: 10px;
+    }
+    
+    .profile-header {
+      padding: 20px;
+    }
+    
+    .header-actions {
+      position: static;
+      margin-bottom: 20px;
+      justify-content: flex-start;
+    }
+    
+    .profile-info {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 20px;
+    }
+    
+    .profile-name {
+      font-size: 1.5rem;
+    }
+    
+    .profile-section {
+      padding: 20px;
+    }
+    
+    .section-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    
+    .services-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .service-meta {
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .contact-item {
+      flex-direction: column;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    
+    .contact-input {
+      width: 100%;
+    }
+    
+    .contact-actions {
+      width: 100%;
+      justify-content: space-between;
+    }
+    
+    .profile-badges {
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .credential-tag {
+      font-size: 0.8rem;
+    }
+
+    
+  }
+    .video-wrapper {
+    margin-top: 1rem;
+    position: relative;
+    padding-bottom: 56.25%; 
+    height: 0;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .video-wrapper iframe {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+  }
+
+.availability-banner {
+  background: linear-gradient(135deg, var(--bg-light) 0%, var(--white) 100%);
+  border: 2px solid var(--border-light);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-subtle);
+  transition: all 0.3s ease;
 }
 
-.contact-list {
+.availability-banner:hover {
+  box-shadow: var(--shadow-card);
+  border-color: var(--primary-blue);
+}
+
+.availability-content {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.contact-item {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 12px;
-  background: var(--bg-light);
-  border-radius: 8px;
-  border: 1px solid var(--border-light);
+  gap: 16px;
 }
 
-.contact-info {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.contact-info i {
-  width: 16px;
-}
-
-.contact-label {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  min-width: 80px;
-}
-
-.contact-actions {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.contact-input {
-  background: var(--white);
-  border: 1px solid var(--border-light);
-  border-radius: 4px;
-  padding: 6px 8px;
-  font-size: 0.85rem;
-  color: var(--text-primary);
-  width: 200px;
-}
-
-.copy-button,
-.contact-link {
-  background: var(--white);
-  border: 1px solid var(--border-light);
-  border-radius: 4px;
-  padding: 6px 8px;
-  color: var(--text-secondary);
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.copy-button:hover,
-.contact-link:hover {
+.availability-icon {
   background: var(--primary-blue);
   color: var(--white);
-  border-color: var(--primary-blue);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  box-shadow: var(--shadow-subtle);
 }
 
-/* Empty States */
-.empty-text {
-  color: var(--text-secondary);
-  font-style: italic;
+.availability-info {
+  flex: 1;
+}
+
+.availability-status.available .availability-icon {
+  background: var(--color-doctor);
+}
+
+.availability-status.unavailable .availability-icon {
+  background: var(--text-secondary);
+}
+
+.availability-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 0.9rem;
-}
-
-/* Button Styles */
-.button.is-primary-blue {
-  background-color: var(--white);
-  border: 1px solid var(--primary-blue);
-  color: var(--primary-blue);
-  box-shadow: none;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
   font-weight: 500;
-  border-radius: 6px;
 }
 
-.button.is-primary-blue:hover,
-.button.is-primary-blue.is-hovered {
-  background-color: var(--primary-blue);
-  border-color: var(--primary-blue);
-  color: var(--white);
+.availability-details {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
-.button.is-primary-blue:focus,
-.button.is-primary-blue.is-focused {
-  background-color: var(--primary-blue);
-  border-color: var(--primary-blue);
-  color: var(--white);
-  box-shadow: 0 0 0 0.125em rgba(0, 123, 255, 0.25);
+.availability-time {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
 }
 
+.availability-timezone {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  background: var(--bg-light);
+  padding: 4px 8px;
+  border-radius: 12px;
+  border: 1px solid var(--border-light);
+}
+
+.availability-message {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  font-style: italic;
+}
 
 @media screen and (max-width: 768px) {
-  .profile-container {
-    padding: 10px;
-  }
-  
-  .profile-header {
-    padding: 20px;
-  }
-  
-  .header-actions {
-    position: static;
-    margin-bottom: 20px;
-    justify-content: flex-start;
-  }
-  
-  .profile-info {
+  .availability-content {
     flex-direction: column;
-    align-items: center;
     text-align: center;
-    gap: 20px;
-  }
-  
-  .profile-name {
-    font-size: 1.5rem;
-  }
-  
-  .profile-section {
-    padding: 20px;
-  }
-  
-  .section-header {
-    flex-direction: column;
-    align-items: flex-start;
     gap: 12px;
   }
   
-  .services-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .service-meta {
+  .availability-details {
     flex-direction: column;
     gap: 8px;
   }
   
-  .contact-item {
-    flex-direction: column;
-    gap: 12px;
-    align-items: flex-start;
+  .availability-banner {
+    padding: 16px;
   }
-  
-  .contact-input {
-    width: 100%;
-  }
-  
-  .contact-actions {
-    width: 100%;
-    justify-content: space-between;
-  }
-  
-  .profile-badges {
-    flex-direction: column;
-    gap: 8px;
-  }
-  
-  .credential-tag {
-    font-size: 0.8rem;
-  }
-
-  
-}
-  .video-wrapper {
-  margin-top: 1rem;
-  position: relative;
-  padding-bottom: 56.25%; 
-  height: 0;
-  overflow: hidden;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.video-wrapper iframe {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-}
+} 
 </style>
 
 <script>

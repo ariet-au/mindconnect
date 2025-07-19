@@ -182,6 +182,21 @@ pg_search_scope :search_full_text,
 
     Money.new((rate * 100).round, target_currency)
   end
+  # app/models/psychologist_profile.rb
+def next_available_slot
+  # Get the first service (or use your own availability logic)
+  service = services.first # simplest version
+  
+  return nil unless service.present?
+
+  slot_finder = TimezoneAwareSlotFinder.new(
+    id,
+    service.duration_minutes,
+    timezone.presence || 'UTC'
+  )
+  
+  slot_finder.next_available_slot(Time.current)
+end
 
 
   

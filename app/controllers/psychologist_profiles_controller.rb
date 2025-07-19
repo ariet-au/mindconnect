@@ -137,6 +137,17 @@ end
 
   # GET /psychologist_profiles/1 or /psychologist_profiles/1.json
   def show
+    @psychologist_profile = PsychologistProfile.find(params[:id])
+  
+    # Determine display timezone (similar to your booking controller)
+    @display_timezone = params[:browser_timezone] || session[:browser_timezone] || cookies[:browser_timezone] || @psychologist_profile.timezone.presence || 'UTC'
+    
+    # Get next available slot
+    next_slot_utc = @psychologist_profile.next_available_slot
+    @next_available_slot = next_slot_utc&.in_time_zone(@display_timezone)
+    
+    # For timezone conversion in JavaScript
+    @display_timezone_offset_seconds = ActiveSupport::TimeZone.new(@display_timezone).utc_offset if @display_timezone
   end
 
   # GET /psychologist_profiles/new
@@ -241,6 +252,8 @@ end
     session[:currency] = params[:currency]
     redirect_back fallback_location: root_path, allow_other_host: false, params: { country: params[:country] }
   end
+
+  
 
 
   private
