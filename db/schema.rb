@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_18_115854) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_18_220150) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -91,6 +91,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_18_115854) do
     t.index ["client_type_id", "issue_id"], name: "index_client_types_issues_on_client_type_id_and_issue_id", unique: true
     t.index ["client_type_id"], name: "index_client_types_issues_on_client_type_id"
     t.index ["issue_id"], name: "index_client_types_issues_on_issue_id"
+  end
+
+  create_table "educations", force: :cascade do |t|
+    t.bigint "psychologist_profile_id", null: false
+    t.string "degree", null: false
+    t.string "institution"
+    t.string "field_of_study", null: false
+    t.string "graduation_year"
+    t.string "certificate_url"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["psychologist_profile_id"], name: "index_educations_on_psychologist_profile_id"
   end
 
   create_table "internal_client_profiles", force: :cascade do |t|
@@ -235,6 +247,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_18_115854) do
     t.string "timezone"
     t.string "status", default: "pending_review", null: false
     t.string "youtube_video_url"
+    t.string "profile_url"
+    t.index ["profile_url"], name: "index_psychologist_profiles_on_profile_url", unique: true
     t.index ["user_id"], name: "index_psychologist_profiles_on_user_id"
   end
 
@@ -330,6 +344,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_18_115854) do
   add_foreign_key "client_profiles", "users"
   add_foreign_key "client_types_issues", "client_types"
   add_foreign_key "client_types_issues", "issues"
+  add_foreign_key "educations", "psychologist_profiles"
   add_foreign_key "internal_client_profiles", "client_profiles"
   add_foreign_key "internal_client_profiles", "psychologist_profiles"
   add_foreign_key "progress_notes", "bookings"

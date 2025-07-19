@@ -1,6 +1,6 @@
+<!-- app/views/psychologist_profiles/show.html.erb -->
 <div class="profile-container">
   <div class="profile-card">
-    
     <!-- Psychologist Navigation Bar - Only visible for profile owner -->
     <% if @psychologist_profile.user == current_user %>
       <div class="psychologist-nav">
@@ -10,12 +10,12 @@
             Dashboard
           </h3>
           <div class="nav-actions">
-            <%= link_to psychologist_profile_psychologist_availabilities_path(@psychologist_profile), class: "button is-primary-blue is-small" do %>
+            <%= link_to psychologist_profile_psychologist_availabilities_path(@psychologist_profile.id), class: "button is-primary-blue is-small" do %>
               <span class="icon"><i class="fas fa-calendar-alt"></i></span>
               <span>Manage Availability</span>
             <% end %>
 
-            <%= link_to psychologist_profile_calendar_path(@psychologist_profile), class: "button is-primary-blue is-small" do %>
+            <%= link_to psychologist_profile_calendar_path(@psychologist_profile.id), class: "button is-primary-blue is-small" do %>
               <span class="icon"><i class="fas fa-ban"></i></span>
               <span>Block Unavailability</span>
             <% end %>
@@ -37,9 +37,9 @@
     <!-- Header Section -->
     <div class="profile-header">
       <!-- Edit Profile Button - Only visible for profile owner -->
-      <% if psychologist_profile.user == current_user %>
+      <% if @psychologist_profile.user == current_user %>
         <div class="header-actions">
-          <%= link_to edit_psychologist_profile_path, class: "button is-primary-blue is-small" do %>
+          <%= link_to edit_psychologist_profile_path(@psychologist_profile.id), class: "button is-primary-blue is-small" do %>
             <span class="icon"><i class="fas fa-edit"></i></span>
             <span>Edit Profile</span>
           <% end %>
@@ -49,9 +49,9 @@
       <!-- Profile Info -->
       <div class="profile-info">
         <div class="profile-avatar">
-          <% if psychologist_profile.profile_img.attached? %>
+          <% if @psychologist_profile.profile_img.attached? %>
             <figure class="image is-128x128">
-              <%= image_tag url_for(psychologist_profile.profile_img.variant(resize_to_limit: [128, 128])), class: "is-rounded" %>
+              <%= image_tag url_for(@psychologist_profile.profile_img.variant(resize_to_limit: [128, 128])), class: "is-rounded" %>
             </figure>
           <% else %>
             <figure class="image is-128x128">
@@ -82,14 +82,14 @@
           </div>
 
           <div class="profile-badges">
-            <% if psychologist_profile.is_doctor %>
+            <% if @psychologist_profile.is_doctor %>
               <span class="badge-item" title="Doctor">
                 <i class="fas fa-user-md icon-doctor"></i>
                 <span>Doctor</span>
               </span>
             <% end %>
             
-            <% if psychologist_profile.is_degree_boolean %>
+            <% if @psychologist_profile.is_degree_boolean %>
               <span class="badge-item" title="Certified">
                 <i class="fas fa-certificate icon-certified"></i>
                 <span>Certified</span>
@@ -98,71 +98,88 @@
             
             <span class="badge-item">
               <i class="fas fa-clock icon-time"></i>
-              <span><%= psychologist_profile.years_of_experience %> years experience</span>
+              <span><%= @psychologist_profile.years_of_experience %> years experience</span>
             </span>
           </div>
 
           <div class="profile-location">
             <i class="fas fa-map-marker-alt icon-location"></i>
-            <span><%= psychologist_profile.city %>, <%= psychologist_profile.country %></span>
-            <% if psychologist_profile.address.present? %>
-              <span>• <%= psychologist_profile.address %></span>
+            <span><%= @psychologist_profile.city %>, <%= @psychologist_profile.country %></span>
+            <% if @psychologist_profile.address.present? %>
+              <span>• <%= @psychologist_profile.address %></span>
             <% end %>
           </div>
         </div>
       </div>
     </div>
 
-      <!-- About Section -->
-      <div class="profile-section">
-        <h2 class="section-title">
-          <i class="fas fa-user-circle icon-about"></i>
-          About Me
-        </h2>
-        <div class="section-content">
-          <p><%= simple_format(psychologist_profile.about_me) %></p>
-
-          <% if psychologist_profile.youtube_video_url.present? %>
-            <% video_id = youtube_embed_url(psychologist_profile.youtube_video_url) %>
-            <% if video_id %>
-              <div class="video-wrapper">
-                <iframe width="560" height="315"
-                        src="https://www.youtube.com/embed/<%= video_id %>"
-                        frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen>
-                </iframe>
-              </div>
-            <% else %>
-              <p class="has-text-danger">Invalid YouTube link format.</p>
-            <% end %>
-          <% end %>
-        </div>
-      </div>
-
-
-
-    
-
-    <!-- Experience Section -->
+    <!-- About Section -->
     <div class="profile-section">
       <h2 class="section-title">
-        <i class="fas fa-briefcase icon-experience"></i>
-        Professional Background
+        <i class="fas fa-user-circle icon-about"></i>
+        About Me
       </h2>
       <div class="section-content">
-        <% if @psychologist_profile.education.present? %>
-          <div class="experience-item">
-            <div class="experience-header">
-              <h3><%= @psychologist_profile.education %></h3>
-              <span class="experience-type">Professional Qualification</span>
+        <p><%= simple_format(@psychologist_profile.about_me) %></p>
+
+        <% if @psychologist_profile.youtube_video_url.present? %>
+          <% video_id = youtube_embed_url(@psychologist_profile.youtube_video_url) %>
+          <% if video_id %>
+            <div class="video-wrapper">
+              <iframe width="560" height="315"
+                      src="https://www.youtube.com/embed/<%= video_id %>"
+                      frameborder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowfullscreen>
+              </iframe>
             </div>
-          </div>
-        <% else %>
-          <p class="empty-text">No education details provided.</p>
+          <% else %>
+            <p class="has-text-danger">Invalid YouTube link format.</p>
+          <% end %>
         <% end %>
       </div>
     </div>
+
+    <!-- Professional Background Section -->
+    <% if @psychologist_profile.educations.any? %>
+      <div class="profile-section">
+        <h2 class="section-title">
+          <i class="fas fa-briefcase icon-experience"></i>
+          Professional Background
+        </h2>
+        <div class="section-content">
+          <% @psychologist_profile.educations.each do |education| %>
+            <div class="experience-item">
+              <div class="experience-header">
+                <h3>
+                  <%= education.degree %> in <%= education.field_of_study %>
+                  <% if education.institution.present? %>
+                    at <%= education.institution %>
+                  <% end %>
+                </h3>
+                <span class="experience-type">
+                  <% if education.graduation_year.present? %>
+                    Graduation: <%= education.graduation_year %>
+                  <% else %>
+                    Professional Qualification
+                  <% end %>
+                </span>
+              </div>
+              <% if education.certificate_url.present? %>
+                <div class="certificate-link">
+                  <%= link_to "View Certificate", education.certificate_url, target: "_blank", rel: "noopener noreferrer", class: "button is-small is-info is-outlined" do %>
+                    <span class="icon"><i class="fas fa-external-link-alt"></i></span>
+                    <span>View Certificate</span>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% else %>
+      <p class="empty-text">No education details provided.</p>
+    <% end %>
 
     <!-- Specializations Section -->
     <div class="profile-section">
@@ -171,8 +188,8 @@
         Specializations
       </h2>
       <div class="section-content">
-        <% if psychologist_profile.about_specialties.present? %>
-          <p class="section-description"><%= simple_format(psychologist_profile.about_specialties) %></p>
+        <% if @psychologist_profile.about_specialties.present? %>
+          <p class="section-description"><%= simple_format(@psychologist_profile.about_specialties) %></p>
         <% end %>
         <div class="tags-container">
           <% if @psychologist_profile.specialties.any? %>
@@ -193,8 +210,8 @@
         Client Types
       </h2>
       <div class="section-content">
-        <% if psychologist_profile.about_clients.present? %>
-          <p class="section-description"><%= simple_format(psychologist_profile.about_clients) %></p>
+        <% if @psychologist_profile.about_clients.present? %>
+          <p class="section-description"><%= simple_format(@psychologist_profile.about_clients) %></p>
         <% end %>
         <div class="tags-container">
           <% if @psychologist_profile.client_types.any? %>
@@ -209,34 +226,34 @@
     </div>
 
     <!-- Issues Section -->
-<div class="profile-section">
-  <h2 class="section-title">
-    <i class="fas fa-heart icon-issues"></i>
-    Areas of Focus
-  </h2>
-  <div class="section-content">
-    <% if psychologist_profile.about_issues.present? %>
-      <p class="section-description"><%= simple_format(psychologist_profile.about_issues) %></p>
-    <% end %>
+    <div class="profile-section">
+      <h2 class="section-title">
+        <i class="fas fa-heart icon-issues"></i>
+        Areas of Focus
+      </h2>
+      <div class="section-content">
+        <% if @psychologist_profile.about_issues.present? %>
+          <p class="section-description"><%= simple_format(@psychologist_profile.about_issues) %></p>
+        <% end %>
 
-    <% grouped_issues = @psychologist_profile.issues.group_by(&:category) %>
+        <% grouped_issues = @psychologist_profile.issues.group_by(&:category) %>
 
-    <% if grouped_issues.any? %>
-      <% grouped_issues.each do |category, issues| %>
-        <div class="issue-category-group">
-          <h4 class="issue-category-title"><%= category %></h4>
-          <div class="tags-container">
-            <% issues.each do |issue| %>
-              <span class="tag-item"><%= issue.name %></span>
-            <% end %>
-          </div>
-        </div>
-      <% end %>
-    <% else %>
-      <span class="empty-text">No issues specified.</span>
-    <% end %>
-  </div>
-</div>
+        <% if grouped_issues.any? %>
+          <% grouped_issues.each do |category, issues| %>
+            <div class="issue-category-group">
+              <h4 class="issue-category-title"><%= category %></h4>
+              <div class="tags-container">
+                <% issues.each do |issue| %>
+                  <span class="tag-item"><%= issue.name %></span>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <span class="empty-text">No issues specified.</span>
+        <% end %>
+      </div>
+    </div>
 
     <!-- Services Section -->
     <div class="profile-section">
@@ -245,15 +262,15 @@
           <i class="fas fa-briefcase icon-services"></i>
           Services Offered
         </h2>
-        <% if psychologist_profile.user == current_user %>
+        <% if @psychologist_profile.user == current_user %>
           <%= link_to "Add New Service", new_service_path, class: "button is-primary-blue is-small" %>
         <% end %>
       </div>
       
       <div class="section-content">
-        <% if psychologist_profile.user.services.any? %>
+        <% if @psychologist_profile.user.services.any? %>
           <div class="services-grid">
-            <% psychologist_profile.user.services.each do |service| %>
+            <% @psychologist_profile.user.services.each do |service| %>
               <div class="service-card">
                 <div class="service-header">
                   <h3 class="service-title"><%= service.name %></h3>
@@ -313,12 +330,12 @@
       
       <div class="section-content">
         <% contact_methods = {
-          "Email" => [psychologist_profile.user.email, 'fas fa-envelope icon-email', "mailto:#{psychologist_profile.user.email}"],
-          "Telegram" => [psychologist_profile.telegram, 'fab fa-telegram icon-telegram', "https://t.me/#{psychologist_profile.telegram}"],
-          "WhatsApp" => [psychologist_profile.whatsapp, 'fab fa-whatsapp icon-whatsapp', "https://wa.me/#{psychologist_profile.whatsapp}"],
-          "Primary Phone" => [psychologist_profile.contact_phone, 'fas fa-phone icon-phone', "tel:#{psychologist_profile.contact_phone}"],
-          "Secondary Phone" => [psychologist_profile.contact_phone2, 'fas fa-phone icon-phone', "tel:#{psychologist_profile.contact_phone2}"],
-          "Additional Phone" => [psychologist_profile.contact_phone3, 'fas fa-phone icon-phone', "tel:#{psychologist_profile.contact_phone3}"]
+          "Email" => [@psychologist_profile.user.email, 'fas fa-envelope icon-email', "mailto:#{@psychologist_profile.user.email}"],
+          "Telegram" => [@psychologist_profile.telegram, 'fab fa-telegram icon-telegram', "https://t.me/#{@psychologist_profile.telegram}"],
+          "WhatsApp" => [@psychologist_profile.whatsapp, 'fab fa-whatsapp icon-whatsapp', "https://wa.me/#{@psychologist_profile.whatsapp}"],
+          "Primary Phone" => [@psychologist_profile.contact_phone, 'fas fa-phone icon-phone', "tel:#{@psychologist_profile.contact_phone}"],
+          "Secondary Phone" => [@psychologist_profile.contact_phone2, 'fas fa-phone icon-phone', "tel:#{@psychologist_profile.contact_phone2}"],
+          "Additional Phone" => [@psychologist_profile.contact_phone3, 'fas fa-phone icon-phone', "tel:#{@psychologist_profile.contact_phone3}"]
         } %>
 
         <% primary_method = contact_methods.find { |label, (value, _icon, _link)| value.present? && @psychologist_profile.primary_contact_method == label.downcase.gsub(' ', '_') } %>
@@ -362,7 +379,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </div>
 
@@ -420,7 +436,6 @@ body {
   overflow: hidden;
 }
 
-/* Icon Color Classes */
 .icon-education { color: var(--color-education) !important; }
 .icon-time { color: var(--color-time) !important; }
 .icon-location { color: var(--color-location) !important; }
@@ -441,7 +456,6 @@ body {
 .icon-whatsapp { color: var(--color-whatsapp) !important; }
 .icon-phone { color: var(--color-phone) !important; }
 
-/* Header Section */
 .profile-header {
   padding: 40px 30px;
   background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
@@ -830,7 +844,7 @@ body {
   box-shadow: 0 0 0 0.125em rgba(0, 123, 255, 0.25);
 }
 
-/* Mobile Responsive */
+
 @media screen and (max-width: 768px) {
   .profile-container {
     padding: 10px;
@@ -905,7 +919,7 @@ body {
   .video-wrapper {
   margin-top: 1rem;
   position: relative;
-  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  padding-bottom: 56.25%; 
   height: 0;
   overflow: hidden;
   border-radius: 8px;
@@ -921,7 +935,6 @@ body {
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-  // Toggle contacts functionality
   const toggleButton = document.querySelector('.toggle-contacts');
   if (toggleButton) {
     toggleButton.addEventListener('click', function() {
@@ -936,7 +949,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Copy functionality
   document.querySelectorAll('.copy-button').forEach(button => {
     button.addEventListener('click', async (event) => {
       const valueToCopy = event.currentTarget.dataset.value;

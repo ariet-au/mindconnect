@@ -30,6 +30,10 @@ class PsychologistProfile < ApplicationRecord
   has_many :languages, through: :psychologist_languages
 
 
+  has_many  :educations, dependent: :destroy
+  #accepts_nested_attributes_for :educations, allow_destroy: true
+  accepts_nested_attributes_for :educations, allow_destroy: true, reject_if: :all_blank
+
 
   #bookings
     # Add this line:
@@ -72,6 +76,9 @@ class PsychologistProfile < ApplicationRecord
     (&.*)?                                            # optional query params
     \z
   }x
+
+
+
   before_validation :strip_youtube_url
   validates :youtube_video_url,
     format: {
@@ -79,6 +86,12 @@ class PsychologistProfile < ApplicationRecord
       message: "must be a valid YouTube URL"
     },
     allow_blank: true
+
+
+# URL 
+  before_validation :slugify_profile_url
+  validates :profile_url, uniqueness: true, allow_blank: true,
+            format: { with: /\A[a-z0-9\-]+\z/, message: "can only contain lowercase letters, numbers, and hyphens" }
 
 pg_search_scope :search_full_text,
   against: [:first_name, :last_name, :about_me, :education, :license_number, :city, :country],
@@ -128,48 +141,59 @@ pg_search_scope :search_full_text,
   end
 
   # next avail slot
-def available_at?(datetime)
-  datetime = datetime.in_time_zone(timezone)
-  day_of_week = datetime.wday
-  time_of_day = datetime.strftime('%H:%M:%S')
+  def available_at?(datetime)
+    datetime = datetime.in_time_zone(timezone)
+    day_of_week = datetime.wday
+    time_of_day = datetime.strftime('%H:%M:%S')
 
-  # Check regular availability
-  available_today = availabilities.where(day_of_week: day_of_week)
-                                 .where("? BETWEEN start_time_of_day AND end_time_of_day", time_of_day)
-                                 .exists?
+    # Check regular availability
+    available_today = availabilities.where(day_of_week: day_of_week)
+                                  .where("? BETWEEN start_time_of_day AND end_time_of_day", time_of_day)
+                                  .exists?
 
-  # Check unavailabilities
-  unavailable = unavailabilities.where(
-    "(recurring = true AND day_of_week = ? AND (recurring_until IS NULL OR recurring_until >= ?)) OR
-    (recurring = false AND (start_time, end_time) OVERLAPS (?, ?))",
-    day_of_week,
-    datetime.to_date,
-    datetime,
-    datetime
-  ).exists?
+    # Check unavailabilities
+    unavailable = unavailabilities.where(
+      "(recurring = true AND day_of_week = ? AND (recurring_until IS NULL OR recurring_until >= ?)) OR
+      (recurring = false AND (start_time, end_time) OVERLAPS (?, ?))",
+      day_of_week,
+      datetime.to_date,
+      datetime,
+      datetime
+    ).exists?
 
-  available_today && !unavailable
-end
+    available_today && !unavailable
+  end
 
   # This method converts the standard_rate_money from its current currency to the target_currency.
   # It leverages the ExchangeRateService to perform the actual rate calculation and conversion.
-def converted_rate(target_currency)
-  target_currency = target_currency.upcase
+  def converted_rate(target_currency)
+    target_currency = target_currency.upcase
 
-  if currency == target_currency
-    return Money.new((standard_rate * 100).round, currency)
+    if currency == target_currency
+      return Money.new((standard_rate * 100).round, currency)
+    end
+
+    amount = standard_rate.to_f
+    rate = ExchangeRateService.convert(amount, from: currency, to: target_currency)
+
+    Rails.logger.debug "Converting #{amount} from #{currency} to #{target_currency} at rate #{rate.inspect}"
+
+    return Money.new((standard_rate * 100).round, currency) if rate.nil?
+
+    Money.new((rate * 100).round, target_currency)
   end
 
-  amount = standard_rate.to_f
-  rate = ExchangeRateService.convert(amount, from: currency, to: target_currency)
 
-  Rails.logger.debug "Converting #{amount} from #{currency} to #{target_currency} at rate #{rate.inspect}"
-
-  return Money.new((standard_rate * 100).round, currency) if rate.nil?
-
-  Money.new((rate * 100).round, target_currency)
-end
-
+  
+  private 
+  def slugify_profile_url
+      if profile_url.present?
+        self.profile_url = profile_url.downcase.strip
+                                      .gsub(/[^a-z0-9\s-]/, "")  
+                                      .gsub(/\s+/, "-")          
+                                      .gsub(/-+/, "-")           
+      end
+  end
 
 
 

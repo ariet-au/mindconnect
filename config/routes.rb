@@ -55,10 +55,12 @@ end
   post '/set_timezone', to: 'application#set_timezone', as: :set_timezone_path
 
   resources :psychologist_profiles do
+
+    resources :educations, only: [:new, :create, :edit, :update, :destroy]
     collection do
       post 'toggle_filter'
+      #get 'cities', to: 'psychologist_profiles#cities', as: :cities # Add this
     end
-
     resources :psychologist_availabilities, except: [:show] do
       collection do
         get 'calendar_blocks' # /psychologist_profiles/:id/psychologist_availabilities/calendar_blocks
@@ -71,6 +73,9 @@ end
     end
   end
 
+
+
+#get 'p/:profile_url', to: 'psychologist_profiles#show', as: :psychologist_profile_by_url, constraints: { profile_url: /[a-z0-9\-]+/ }
 get '/calendar', to: 'psychologist_unavailabilities#calendar'
 get 'psychologist_profiles/:psychologist_profile_id/calendar', to: 'psychologist_unavailabilities#calendar', as: :psychologist_profile_calendar
 

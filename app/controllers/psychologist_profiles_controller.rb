@@ -142,10 +142,15 @@ end
   # GET /psychologist_profiles/new
   def new
     @psychologist_profile = PsychologistProfile.new
+    @psychologist_profile.educations.build
   end
 
   # GET /psychologist_profiles/1/edit
   def edit
+    @psychologist_profile = PsychologistProfile.find(params[:id])
+    # Ensure there's at least one blank education form for adding new ones
+    # or if the profile somehow has no existing educations
+    @psychologist_profile.educations.build if @psychologist_profile.educations.empty?
   end
 
   # POST /psychologist_profiles or /psychologist_profiles.json
@@ -208,7 +213,7 @@ end
   end
 
 
-  def cities
+  def filter_cities
     country = params[:country]
     cities = PsychologistProfile.where(country: country)
                               .distinct
@@ -216,6 +221,20 @@ end
                               .compact
                               .sort
     render json: cities
+  end
+
+
+  def cities
+    # Load the master list of locations from the YAML file
+    locations = YAML.load_file(Rails.root.join('config', 'countries_cities.yml'))
+    
+    # Find the cities for the selected country, or return an empty array if the country isn't found
+    country_name = params[:country]
+    cities = locations[country_name] || []
+    
+    # The list from YAML is already an array of strings, so you can just render it.
+    # Sorting is good practice.
+    render json: cities.sort
   end
 
   def set
@@ -247,11 +266,14 @@ end
             :country, :city, :address, :telegram, :whatsapp, :contact_phone,
             :contact_phone2, :contact_phone3, :gender, :education, :is_doctor, :in_person, :online, 
             :is_degree_boolean, :profile_img,
-            :about_clients, :about_issues, :about_specialties, :primary_contact_method, :timezone, :status, :youtube_video_url,
+            :about_clients, :about_issues, :about_specialties, :primary_contact_method, :timezone,
+            :status, :youtube_video_url, :profile_url,
             issue_ids: [],         # <-- Add this
             client_type_ids: [],  # <-- And this
             specialty_ids: [] ,     # <-- And this,
-            language_ids: []
+            language_ids: [],
+            educations_attributes: [:id, :degree, :institution, :field_of_study, :graduation_year, :certificate_url, :_destroy]
+            
           )
         end
 

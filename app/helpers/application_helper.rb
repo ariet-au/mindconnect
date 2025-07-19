@@ -18,6 +18,17 @@ module ApplicationHelper
     def countries_with_cities
         YAML.load_file(Rails.root.join('config', 'countries_cities.yml'))
     end
+    # def countries_with_cities
+    #     @_countries_with_cities_data ||= begin # Memoize to load only once per request
+    #     config_file = Rails.root.join('config', 'countries_cities.yml')
+    #     if File.exist?(config_file)
+    #         YAML.load_file(config_file).map(&:with_indifferent_access)
+    #     else
+    #         Rails.logger.error "countries_cities.yml not found at #{config_file}"
+    #         []
+    #     end
+    #     end
+    # end
 
 
     def format_timezone_offset(timezone_identifier)

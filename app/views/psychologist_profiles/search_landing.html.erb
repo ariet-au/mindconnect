@@ -467,53 +467,6 @@ document.addEventListener('turbo:load', function () {
 
   // ========== Country-City Dependency ==========
 
-  const landingCountryCityData = <%= raw (defined?(countries_with_cities) && countries_with_cities ? countries_with_cities.each_with_object({}) { |country, hash| hash[country['name']] = country['cities'] } : {}).to_json %>;
-  const countryToCurrency = <%= raw (defined?(COUNTRY_CURRENCY_MAP) ? COUNTRY_CURRENCY_MAP : {}).to_json %>;
-
-  function updateLandingCitiesAndCurrency() {
-    const countrySelect = document.getElementById('landing-country');
-    const citySelect = document.getElementById('landing-city');
-    const currencySelect = document.getElementById('form-currency-select');
-    if (!countrySelect) return;
-
-    const selectedCountry = countrySelect.value;
-
-    if (citySelect) {
-      const prevCity = citySelect.value;
-      citySelect.innerHTML = '<option value="">Select City</option>';
-      citySelect.disabled = !selectedCountry;
-
-      const cities = landingCountryCityData?.[selectedCountry] || [];
-      cities.forEach(city => {
-        const opt = new Option(city, city);
-        citySelect.add(opt);
-      });
-
-      if (cities.includes(prevCity)) {
-        citySelect.value = prevCity;
-      } else {
-        const cityParam = new URLSearchParams(window.location.search).get('city');
-        if (cityParam && cities.includes(cityParam)) {
-          citySelect.value = cityParam;
-        }
-      }
-    }
-
-    if (currencySelect) {
-      const expected = countryToCurrency?.[selectedCountry];
-      if (expected && currencySelect.value !== expected) {
-        currencySelect.value = expected;
-      }
-    }
-  }
-
-  const countrySelectElement = document.getElementById('landing-country');
-  if (countrySelectElement) {
-    if (countrySelectElement.value) {
-      updateLandingCitiesAndCurrency();
-    }
-    countrySelectElement.addEventListener('change', updateLandingCitiesAndCurrency);
-  }
 
   
   const toggleBtn = document.getElementById("toggle-person-btn");

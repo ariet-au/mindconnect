@@ -1,9 +1,7 @@
-
 <%= form_with(model: psychologist_profile, local: true, html: { multipart: true, class: 'box' }) do |form| %>
   <% if psychologist_profile.errors.any? %>
     <div class="notification is-danger">
       <h2 class="subtitle"><%= pluralize(psychologist_profile.errors.count, "error") %> prohibited this psychologist_profile from being saved:</h2>
-
       <ul>
         <% psychologist_profile.errors.each do |error| %>
           <li><%= error.full_message %></li>
@@ -12,7 +10,14 @@
     </div>
   <% end %>
 
-          <!-- Image Upload -->
+  <div class="columns is-multiline">
+    <%# --- Basic Information Section --- %>
+    <div class="column is-full">
+      <h3 class="title is-4">Basic Information</h3>
+      <hr>
+    </div>
+
+    <!-- Image Upload -->
     <div class="column is-half">
       <div class="field">
         <label class="button is-link is-light">
@@ -23,30 +28,27 @@
       </div>
     </div>
 
-             <!-- Timezone -->
+    <!-- Timezone -->
     <div class="column is-half">
       <div class="field">
-        <%= form.label :timezone, "Time Zone" %><br>
+        <%= form.label :timezone, "Time Zone", class: "label" %><br>
         <%= form.select :timezone,
           TZInfo::Timezone.all_identifiers.map { |id|
-            # Ensure the time zone object is valid before trying to get its current_period
             begin
               tz = TZInfo::Timezone.get(id)
-              # Use current_period to get the offset, handling DST
               offset = tz.current_period.offset.utc_total_offset / 3600.0
-              formatted_offset = "GMT#{offset >= 0 ? '+' : ''}#{offset.to_i}" # Use .to_i for cleaner integer offset
+              formatted_offset = "GMT#{offset >= 0 ? '+' : ''}#{offset.to_i}"
               ["(#{formatted_offset}) #{id}", id]
-            rescue TZInfo::InvalidTimezoneIdentifier # Handle cases where TZInfo might not recognize an ID
-              nil # Skip this ID if it's invalid
+            rescue TZInfo::InvalidTimezoneIdentifier
+              nil
             end
-          }.compact, # Remove any nil entries from the map
-          { prompt: "Select your time zone" }, # Options for the select helper
-          { id: "timezone_select", class: "w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500" } # HTML attributes for the select tag
+          }.compact,
+          { prompt: "Select your time zone" },
+          { id: "timezone_select", class: "w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500" }
         %>
       </div>
     </div>
 
-  <div class="columns is-multiline">
     <!-- First Name -->
     <div class="column is-half">
       <div class="field">
@@ -63,45 +65,39 @@
         <%= form.label :last_name, class: "label" %>
         <div class="control">
           <%= form.text_field :last_name, class: "input" %>
+        % end %>
         </div>
       </div>
     </div>
 
-<!-- About Me -->
-<div class="column is-full">
-  <div class="field">
-    <%= form.label :about_me, class: "label" %>
-    <div class="control">
-      <%= form.text_area :about_me, class: "textarea" %>
-    </div>
-  </div>
-
-  <!-- YouTube Video URL -->
-  <div class="field">
-    <%= form.label :youtube_video_url, "YouTube Video URL", class: "label" %>
-    <div class="control">
-      <%= form.text_field :youtube_video_url, class: "input", placeholder: "https://www.youtube.com/watch?v=abc123xyz" %>
-    </div>
-
-    <% if form.object.errors[:youtube_video_url].any? %>
-      <p class="help is-danger"><%= form.object.errors[:youtube_video_url].first %></p>
-    <% end %>
-  </div>
-</div>
-
-
-
-    <!-- Education -->
-    <div class="column is-half">
+    <!-- About Me -->
+    <div class="column is-full">
       <div class="field">
-        <%= form.label :education, class: "label" %>
+        <%= form.label :about_me, class: "label" %>
         <div class="control">
-          <%= form.text_field :education, class: "input" %>
+          <%= form.text_area :about_me, class: "textarea" %>
         </div>
+      </div>
+
+      <!-- YouTube Video URL -->
+      <div class="field">
+        <%= form.label :youtube_video_url, "YouTube Video URL", class: "label" %>
+        <div class="control">
+          <%= form.text_field :youtube_video_url, class: "input", placeholder: "https://www.youtube.com/watch?v=abc123xyz" %>
+        </div>
+        <% if form.object.errors[:youtube_video_url].any? %>
+          <p class="help is-danger"><%= form.object.errors[:youtube_video_url].first %></p>
+        <% end %>
       </div>
     </div>
 
-   <!-- Years of Experience -->
+    <!--- Professional Details Section --->
+    <div class="column is-full">
+      <h3 class="title is-4">Professional Details</h3>
+      <hr>
+    </div>
+
+    <!-- Years of Experience -->
     <div class="column is-half">
       <div class="field">
         <%= form.label :years_of_experience, class: "label" %>
@@ -111,157 +107,173 @@
       </div>
     </div>
 
-
-
-
-
-<!-- Client Types -->
-<div class="column is-full">
-  <div class="field">
-    <%= form.label :client_type_ids, "Select Client Types", class: "label" %>
-    <div class="control">
-      <%= form.collection_select :client_type_ids, ClientType.all, :id, :name, 
-          { prompt: "Select client types..." }, 
-          { multiple: true, class: "tom-select-client-types", data: { tom_select: true } } %>
-    </div>
-  </div>
-</div>
-
-<div class="column is-full">
-  <div class="field">
-    <%= form.label :about_clients, "About Clients", class: "label" %>
-    <div class="control">
-      <%= form.text_area :about_clients, class: "textarea" %>
-    </div>
-  </div>
-</div>
-
-<!-- Issues -->
-<div class="column is-full">
-  <div class="field">
-    <%= form.label :issue_ids, "Select Issues", class: "label" %>
-    <div class="control">
-      <%= form.collection_select :issue_ids, Issue.all, :id, :name, 
-          { prompt: "Select issues..." }, 
-          { multiple: true, class: "tom-select-issues", data: { tom_select: true } } %>
-    </div>
-  </div>
-</div>
-
-<div class="column is-full">
-  <div class="field">
-    <%= form.label :about_issues, "About Issues", class: "label" %>
-    <div class="control">
-      <%= form.text_area :about_issues, class: "textarea" %>
-    </div>
-  </div>
-</div>
-
-
-
-
-<!-- Specialties -->
-<div class="column is-full">
-  <div class="field">
-    <%= form.label :specialty_ids, "Select Specialties", class: "label" %>
-    <div class="control">
-      <%= form.collection_select :specialty_ids, Specialty.all, :id, :name, 
-          { prompt: "Select specialties..." }, 
-          { multiple: true, class: "tom-select-specialties", data: { tom_select: true } } %>
-    </div>
-  </div>
-</div>
-<div class="column is-full">
-  <div class="field">
-    <%= form.label :about_specialties, "About Specialties", class: "label" %>
-    <div class="control">
-      <%= form.text_area :about_specialties, class: "textarea" %>
-    </div>
-  </div>
-</div>
-
-
-
-
-   <!-- Gender -->
-<div class="column is-half">
-  <div class="field">
-    <%= form.label :gender, class: "label" %>
-    <div class="control">
-      <div class="select">
-        <%= form.select :gender,
-            PsychologistProfile.genders.map { |key, value| [key.humanize, key] },
-            {}, # No explicit 'selected' option needed here
-            class: "input" %>
-      </div>
-    </div>
-  </div>
-</div>
-
     <!-- Standard Rate -->
-<div class="column is-one-quarter">
-  <div class="field">
-    <%= form.label :standard_rate, "Standard Rate", class: "label" %>
-    <div class="control">
-<%= form.number_field :standard_rate, step: 0.01, min: 0, class: "input", placeholder: "e.g. 100.00" %>
-      
-    </div>
-  </div>
-</div>
-
-<!-- Currency -->
-<div class="column is-one-quarter">
-  <div class="field">
-    <%= form.label :currency, "Currency", class: "label" %>
-    <div class="control">
-      <div class="select is-fullwidth">
-        <%= form.select :currency, options_for_select(['KGS', 'KZT', 'UZS', 'USD', 'RUB'], selected: @psychologist_profile.currency), { include_blank: 'Select Currency' } %>
+    <div class="column is-one-quarter">
+      <div class="field">
+        <%= form.label :standard_rate, "Standard Rate", class: "label" %>
+        <div class="control">
+          <%= form.number_field :standard_rate, step: 0.01, min: 0, class: "input", placeholder: "e.g. 100.00" %>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
- 
-  
+    <!-- Currency -->
+    <div class="column is-one-quarter">
+      <div class="field">
+        <%= form.label :currency, "Currency", class: "label" %>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <%= form.select :currency, options_for_select(['KGS', 'KZT', 'UZS', 'USD', 'RUB'], selected: @psychologist_profile.currency), { include_blank: 'Select Currency' } %>
+          </div>
+        </div>
+      </div>
+    </div>
+<!-- Education History (Nested Form) -->
+    <div class="column is-full">
+      <h2 class="section-title">
+        <i class="fas fa-graduation-cap icon-about"></i>
+        Education History
+      </h2>
+      <div class="section-content" id="educations-container">
+        <!-- Render existing educations -->
+        <%= form.fields_for :educations do |education_fields| %>
+          <%= render "educations/form", f: education_fields %>
+        <% end %>
+      </div>
+      <!-- Button to add new education fields -->
+      <button type="button" class="button is-info is-light mt-4" id="add-education-button">
+        <span class="icon"><i class="fas fa-plus"></i></span>
+        <span>Add Education</span>
+      </button>
+    </div>
+
+
+    <!--- Client & Issue Details Section --->
+    <div class="column is-full">
+      <h3 class="title is-4">Client & Issue Details</h3>
+      <hr>
+    </div>
+
+    <!-- Client Types -->
+    <div class="column is-full">
+      <div class="field">
+        <%= form.label :client_type_ids, "Select Client Types", class: "label" %>
+        <div class="control">
+          <%= form.collection_select :client_type_ids, ClientType.all, :id, :name,
+            { prompt: "Select client types..." },
+            { multiple: true, class: "tom-select-client-types", data: { tom_select: true } } %>
+        </div>
+      </div>
+    </div>
+
+    <div class="column is-full">
+      <div class="field">
+        <%= form.label :about_clients, "About Clients", class: "label" %>
+        <div class="control">
+          <%= form.text_area :about_clients, class: "textarea" %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Issues -->
+    <div class="column is-full">
+      <div class="field">
+        <%= form.label :issue_ids, "Select Issues", class: "label" %>
+        <div class="control">
+          <%= form.collection_select :issue_ids, Issue.all, :id, :name,
+            { prompt: "Select issues..." },
+            { multiple: true, class: "tom-select-issues", data: { tom_select: true } } %>
+        </div>
+      </div>
+    </div>
+
+    <div class="column is-full">
+      <div class="field">
+        <%= form.label :about_issues, "About Issues", class: "label" %>
+        <div class="control">
+          <%= form.text_area :about_issues, class: "textarea" %>
+        </div>
+      </div>
+    </div>
+
+    <!-- Specialties -->
+    <div class="column is-full">
+      <div class="field">
+        <%= form.label :specialty_ids, "Select Specialties", class: "label" %>
+        <div class="control">
+          <%= form.collection_select :specialty_ids, Specialty.all, :id, :name,
+            { prompt: "Select specialties..." },
+            { multiple: true, class: "tom-select-specialties", data: { tom_select: true } } %>
+        </div>
+      </div>
+    </div>
+    <div class="column is-full">
+      <div class="field">
+        <%= form.label :about_specialties, "About Specialties", class: "label" %>
+        <div class="control">
+          <%= form.text_area :about_specialties, class: "textarea" %>
+        </div>
+      </div>
+    </div>
+
+    <!--- Contact & Service Details Section --- >
+    <div class="column is-full">
+      <h3 class="title is-4">Contact & Service Details</h3>
+      <hr>
+    </div>
+
+    <!-- Gender -->
+    <div class="column is-half">
+      <div class="field">
+        <%= form.label :gender, class: "label" %>
+        <div class="control">
+          <div class="select">
+            <%= form.select :gender,
+              PsychologistProfile.genders.map { |key, value| [key.humanize, key] },
+              {},
+              class: "input" %>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Country -->
-<div class="column is-half">
-  <div class="field">
-    <%= form.label :country, class: "label" %>
-    <div class="control">
-      <div class="select is-fullwidth">
-        <%= form.select :country,
-            options_for_select(
-              countries_with_cities.map { |c| c['name'] },
-              selected: @psychologist_profile.country
-            ),
-            { include_blank: 'Select Country' },
-            { class: 'input', id: 'country-select' }
-        %>
+    <div class="column is-half">
+      <div class="field">
+        <%= form.label :country, class: "label" %>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <%= form.select :country,
+              options_for_select(
+                countries_with_cities.map { |c| c['name'] },
+                selected: @psychologist_profile.country
+              ),
+              { include_blank: 'Select Country' },
+              { class: 'input', id: 'country-select' }
+            %>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
-<!-- City -->
-<div class="column is-half">
-  <div class="field">
-    <%= form.label :city, class: "label" %>
-    <div class="control">
-      <div class="select is-fullwidth">
-        <%= form.select :city,
-            options_for_select(
-              [], # Empty by default
-              selected: @psychologist_profile.city
-            ),
-            { include_blank: 'Select City' },
-            { class: 'input', id: 'city-select', disabled: true }
-        %>
+    <!-- City -->
+    <div class="column is-half">
+      <div class="field">
+        <%= form.label :city, class: "label" %>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <%= form.select :city,
+              options_for_select(
+                [],
+                selected: @psychologist_profile.city
+              ),
+              { include_blank: 'Select City' },
+              { class: 'input', id: 'city-select', disabled: true }
+            %>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-
 
     <!-- Address -->
     <div class="column is-full">
@@ -272,7 +284,6 @@
         </div>
       </div>
     </div>
-
 
     <!-- Contact Information -->
     <div class="column is-half">
@@ -293,10 +304,8 @@
       </div>
     </div>
 
-
     <!-- Additional Phones -->
-
-            <div class="column is-one-third">
+    <div class="column is-one-third">
       <div class="field">
         <%= form.label :contact_phone, class: "label" %>
         <div class="control">
@@ -324,26 +333,22 @@
     </div>
 
     <div class="column is-full">
-  <div class="field">
-    <%= form.label :primary_contact_method, "Primary Contact Method", class: "label" %>
-    <div class="control">
-      <div class="select is-fullwidth">
-        <%= form.select :primary_contact_method,
-            options_for_select(
-              [['Telegram', 'telegram'], ['WhatsApp', 'whatsapp'], 
-               ['Phone 1', 'contact_phone'], ['Phone 2', 'contact_phone2'], 
-               ['Phone 3', 'contact_phone3']],
-              selected: @psychologist_profile.primary_contact_method
-            ),
-            { include_blank: 'Select Primary Contact' } %>
+      <div class="field">
+        <%= form.label :primary_contact_method, "Primary Contact Method", class: "label" %>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <%= form.select :primary_contact_method,
+              options_for_select(
+                [['Telegram', 'telegram'], ['WhatsApp', 'whatsapp'],
+                 ['Phone 1', 'contact_phone'], ['Phone 2', 'contact_phone2'],
+                 ['Phone 3', 'contact_phone3']],
+                selected: @psychologist_profile.primary_contact_method
+              ),
+              { include_blank: 'Select Primary Contact' } %>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-
-
-
- 
 
     <!-- Checkboxes -->
     <div class="column is-half">
@@ -364,27 +369,18 @@
       </div>
     </div>
 
-
-
-
-
-
-
-
     <div class="column is-12">
-  <div class="field">
-    <div class="control">
-      <label class="checkbox">
- <%= form.collection_select :language_ids, Language.all, :id, :name,
-            { prompt: "Select languages" },
-            { multiple: true, class: "tom-select-languages", data: { tom_select: true } } %>
-    
-
-
-      
+      <div class="field">
+        <div class="control">
+          <label class="checkbox">
+            <%= form.collection_select :language_ids, Language.all, :id, :name,
+              { prompt: "Select languages" },
+              { multiple: true, class: "tom-select-languages", data: { tom_select: true } } %>
+          </label>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
+
     <!-- Submit Button -->
     <div class="column is-full">
       <div class="field">
@@ -412,6 +408,21 @@
       </footer>
     </div>
   </div>
+
+  
+  <!-- --- Hidden template for new education fields (used by JavaScript) --- -->
+  <!-- This section is now INSIDE the form_with block, giving it access to the 'form' object -->
+  <% education_fields_template_content = capture do %>
+    <%= form.fields_for :educations, Education.new, child_index: "NEW_RECORD" do |education_fields| %>
+      <%= render "educations/form", f: education_fields %>
+    <% end %>
+  <% end %>
+
+
+  <template id="education-fields-template">
+    <%= education_fields_template_content %>
+  </template>
+
 <% end %>
 
 <script>
@@ -489,7 +500,54 @@ confirmCrop.addEventListener("click", () => {
 
 
 
+
+
   document.addEventListener('turbo:load', function() {
+
+      
+
+    // Dynamic Education Fields Logic
+    const addEducationButton = document.getElementById('add-education-button');
+    const educationsContainer = document.getElementById('educations-container');
+    const educationTemplate = document.getElementById('education-fields-template');
+
+
+    if (addEducationButton && educationsContainer && educationTemplate) {
+      addEducationButton.addEventListener('click', (event) => {
+        event.preventDefault(); // Prevent form submission
+
+
+        // Get the innerHTML from the template, which is already processed ERB
+        const content = educationTemplate.innerHTML.replace(/NEW_RECORD/g, new Date().getTime());
+        const newDiv = document.createElement('div');
+        newDiv.innerHTML = content;
+        educationsContainer.appendChild(newDiv);
+
+
+        // Reinitialize Tom Select for newly added fields if needed
+        // (Assuming Tom Select is initialized on '.tom-select-...' classes)
+        // If your education partial contains Tom Select fields, you'd need to reinitialize them here.
+        // Example: new TomSelect(newDiv.querySelector('.tom-select-education-field'));
+      });
+
+
+      // Event listener for removing education fields (delegated)
+      educationsContainer.addEventListener('click', (event) => {
+        if (event.target.matches('input[type="checkbox"][name*="_destroy"]')) {
+          const checkbox = event.target;
+          const educationBox = checkbox.closest('.box.mb-4'); // Find the parent .box for the education
+          if (educationBox) {
+            if (checkbox.checked) {
+              educationBox.style.display = 'none'; // Hide the box when marked for destruction
+            } else {
+              educationBox.style.display = 'block'; // Show if unchecked
+            }
+          }
+        }
+      });
+    }
+
+
     const countrySelect = document.getElementById('country-select');
     const citySelect = document.getElementById('city-select');
     const countryData = <%= raw countries_with_cities.to_json %>;
@@ -596,6 +654,9 @@ confirmCrop.addEventListener("click", () => {
       console.warn("Intl.DateTimeFormat API not supported. Cannot auto-detect time zone.");
     }
   }
+
+
+  
 
 
 

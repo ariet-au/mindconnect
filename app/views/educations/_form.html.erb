@@ -1,0 +1,53 @@
+
+<div class="box mb-4">
+  <div class="columns is-multiline">
+    <div class="column is-quarter">
+      <div class="field">
+        <%= f.label :degree, class: "label" %>
+        <div class="control">
+          <%= f.text_field :degree, class: "input" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="column is-quarter">
+      <div class="field">
+        <%= f.label :field_of_study, class: "label" %>
+        <div class="control">
+          <%= f.text_field :field_of_study, class: "input" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="column is-quarter">
+      <div class="field">
+        <%= f.label :institution, class: "label" %>
+        <div class="control">
+          <%= f.text_field :institution, class: "input" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="column is-quarter">
+      <div class="field">
+        <%= f.label :graduation_year, class: "label" %>
+        <div class="control">
+          <%= f.text_field :graduation_year, class: "input" %>
+        </div>
+      </div>
+    </div>
+
+
+
+    <% if f.object.persisted? %>
+      <div class="column is-full">
+        <div class="field">
+          <label class="checkbox">
+            <%= f.check_box :_destroy %>
+            Remove this education
+          </label>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
