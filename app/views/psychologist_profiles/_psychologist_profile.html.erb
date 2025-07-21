@@ -1,52 +1,43 @@
-<!-- app/views/psychologist_profiles/show.html.erb -->
 <div class="profile-container">
   <div class="profile-card">
-    <!-- Psychologist Navigation Bar - Only visible for profile owner -->
     <% if @psychologist_profile.user == current_user %>
       <div class="psychologist-nav">
         <div class="nav-content">
           <h3 class="nav-title">
             <i class="fas fa-user-cog"></i>
-            Dashboard
+            <%= t('psychologist_profiles.show.dashboard') %>
           </h3>
           <div class="nav-actions">
             <%= link_to psychologist_profile_psychologist_availabilities_path(@psychologist_profile.id), class: "button is-primary-blue is-small" do %>
               <span class="icon"><i class="fas fa-calendar-alt"></i></span>
-              <span>Manage Availability</span>
+              <span><%= t('psychologist_profiles.show.manage_availability') %></span>
             <% end %>
-
             <%= link_to psychologist_profile_calendar_path(@psychologist_profile.id), class: "button is-primary-blue is-small" do %>
               <span class="icon"><i class="fas fa-ban"></i></span>
-              <span>Block Unavailability</span>
+              <span><%= t('psychologist_profiles.show.block_unavailability') %></span>
             <% end %>
-
             <%= link_to psychologist_bookings_bookings_path, class: "button is-info is-small" do %>
               <span class="icon"><i class="fas fa-calendar-alt"></i></span>
-              <span>View My Bookings</span>
+              <span><%= t('psychologist_profiles.show.view_my_bookings') %></span>
             <% end %>
-
             <%= link_to internal_client_profiles_path, class: "button is-primary-blue is-small" do %>
               <span class="icon"><i class="fas fa-book"></i></span>
-              <span>Notes</span>
+              <span><%= t('psychologist_profiles.show.notes') %></span>
             <% end %>
           </div>
         </div>
       </div>
     <% end %>
-    
-    <!-- Header Section -->
+
     <div class="profile-header">
-      <!-- Edit Profile Button - Only visible for profile owner -->
       <% if @psychologist_profile.user == current_user %>
         <div class="header-actions">
           <%= link_to edit_psychologist_profile_path(@psychologist_profile.id), class: "button is-primary-blue is-small" do %>
             <span class="icon"><i class="fas fa-edit"></i></span>
-            <span>Edit Profile</span>
+            <span><%= t('edit_profile') %></span>
           <% end %>
         </div>
       <% end %>
-
-      <!-- Profile Info -->
       <div class="profile-info">
         <div class="profile-avatar">
           <% if @psychologist_profile.profile_img.attached? %>
@@ -59,12 +50,10 @@
             </figure>
           <% end %>
         </div>
-
         <div class="profile-details">
           <h1 class="profile-name">
             <%= "#{@psychologist_profile.first_name} #{@psychologist_profile.last_name}" %>
           </h1>
-          
           <div class="profile-credentials">
             <% if @psychologist_profile.education.present? %>
               <span class="credential-tag">
@@ -72,7 +61,6 @@
                 <%= @psychologist_profile.education %>
               </span>
             <% end %>
-            
             <% if @psychologist_profile.timezone.present? %>
               <span class="credential-tag">
                 <i class="fas fa-globe icon-timezone"></i>
@@ -80,28 +68,30 @@
               </span>
             <% end %>
           </div>
-
           <div class="profile-badges">
             <% if @psychologist_profile.is_doctor %>
-              <span class="badge-item" title="Doctor">
+              <span class="badge-item" title="<%= t('psychologist_profiles.show.doctor') %>">
                 <i class="fas fa-user-md icon-doctor"></i>
-                <span>Doctor</span>
+                <span><%= t('psychologist_profiles.show.doctor') %></span>
               </span>
             <% end %>
-            
             <% if @psychologist_profile.is_degree_boolean %>
-              <span class="badge-item" title="Certified">
+              <span class="badge-item" title="<%= t('psychologist_profiles.show.certified') %>">
                 <i class="fas fa-certificate icon-certified"></i>
-                <span>Certified</span>
+                <span><%= t('psychologist_profiles.show.certified') %></span>
               </span>
             <% end %>
-            
+            <% if @psychologist_profile.religion.present? %>
+              <span class="badge-item" title="<%= t('psychologist_profiles.show.religion', religion: @psychologist_profile.religion) %>">
+                <i class="fas fa-praying-hands icon-religion"></i>
+                <span><%= @psychologist_profile.religion %></span>
+              </span>
+            <% end %>
             <span class="badge-item">
               <i class="fas fa-clock icon-time"></i>
-              <span><%= @psychologist_profile.years_of_experience %> years experience</span>
+              <span><%= t('psychologist_profiles.show.years_experience', count: @psychologist_profile.years_of_experience) %></span>
             </span>
           </div>
-
           <div class="profile-location">
             <i class="fas fa-map-marker-alt icon-location"></i>
             <span><%= @psychologist_profile.city %>, <%= @psychologist_profile.country %></span>
@@ -109,63 +99,51 @@
               <span>• <%= @psychologist_profile.address %></span>
             <% end %>
           </div>
-
-
-
-
         </div>
       </div>
     </div>
 
-    <!-- About Section -->
     <div class="profile-section">
       <h2 class="section-title">
         <i class="fas fa-user-circle icon-about"></i>
-        About Me
+        <%= t('psychologist_profiles.show.about_me') %>
       </h2>
       <div class="section-content">
         <p><%= simple_format(@psychologist_profile.about_me) %></p>
-
         <% if @psychologist_profile.youtube_video_url.present? %>
           <% video_id = youtube_embed_url(@psychologist_profile.youtube_video_url) %>
           <% if video_id %>
             <div class="video-wrapper">
-              <iframe width="560" height="315"
-                      src="https://www.youtube.com/embed/<%= video_id %>"
-                      frameborder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowfullscreen>
-              </iframe>
+              <iframe width="560" height="315" src="https://www.youtube.com/embed/<%= video_id %>" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
           <% else %>
-            <p class="has-text-danger">Invalid YouTube link format.</p>
+            <p class="has-text-danger"><%= t('psychologist_profiles.show.invalid_youtube_link') %></p>
           <% end %>
         <% end %>
       </div>
     </div>
 
-    <!-- Education Section -->
     <% if @psychologist_profile.educations.any? %>
       <div class="profile-section">
         <h2 class="section-title">
           <i class="fas fa-briefcase icon-experience"></i>
-          Education 
+          <%= t('psychologist_profiles.show.education') %>
         </h2>
         <div class="section-content">
           <% @psychologist_profile.educations.each do |education| %>
             <div class="experience-item" style="margin-bottom: 1.5rem; background-color: #fafafa; padding: 1.25rem;">
               <div class="experience-header">
                 <h3>
-                  <%= education.degree %> of <%= education.field_of_study %>
+                  <%= t('psychologist_profiles.show.degree_of_study', degree: education.degree, field: education.field_of_study) %>
                   <% if education.institution.present? %>
-                    at <%= education.institution %>
+                    <%= t('psychologist_profiles.show.at_institution', institution: education.institution) %>
                   <% end %>
                 </h3>
                 <span class="experience-type">
                   <% if education.graduation_year.present? %>
-                    Graduated: <%= education.graduation_year %>
+                    <%= t('psychologist_profiles.show.graduated_in', year: education.graduation_year) %>
                   <% else %>
-                    Professional Qualification
+                    <%= t('psychologist_profiles.show.professional_qualification') %>
                   <% end %>
                 </span>
               </div>
@@ -174,15 +152,11 @@
         </div>
       </div>
     <% else %>
-      <p class="empty-text">No education details provided.</p>
+      <p class="empty-text"><%= t('psychologist_profiles.show.no_education_details') %></p>
     <% end %>
 
-    <!-- Specializations Section -->
     <div class="profile-section">
-      <h2 class="section-title">
-        <i class="fas fa-star icon-specialization"></i>
-        Specializations
-      </h2>
+      <h2 class="section-title"><i class="fas fa-star icon-specialization"></i><%= t('specialities') %></h2>
       <div class="section-content">
         <% if @psychologist_profile.about_specialties.present? %>
           <p class="section-description"><%= simple_format(@psychologist_profile.about_specialties) %></p>
@@ -193,18 +167,13 @@
               <span class="tag-item featured"><%= specialty.name %></span>
             <% end %>
           <% else %>
-            <span class="empty-text">No specializations specified.</span>
+            <span class="empty-text"><%= t('psychologist_profiles.show.no_specializations') %></span>
           <% end %>
         </div>
       </div>
     </div>
-
-    <!-- Client Types Section -->
     <div class="profile-section">
-      <h2 class="section-title">
-        <i class="fas fa-users icon-clients"></i>
-        Client Types
-      </h2>
+      <h2 class="section-title"><i class="fas fa-users icon-clients"></i><%= t('client_types') %></h2>
       <div class="section-content">
         <% if @psychologist_profile.about_clients.present? %>
           <p class="section-description"><%= simple_format(@psychologist_profile.about_clients) %></p>
@@ -215,25 +184,18 @@
               <span class="tag-item"><%= client_type.name %></span>
             <% end %>
           <% else %>
-            <span class="empty-text">No client types specified.</span>
+            <span class="empty-text"><%= t('psychologist_profiles.show.no_client_types') %></span>
           <% end %>
         </div>
       </div>
     </div>
-
-    <!-- Issues Section -->
     <div class="profile-section">
-      <h2 class="section-title">
-        <i class="fas fa-heart icon-issues"></i>
-        Areas of Focus
-      </h2>
+      <h2 class="section-title"><i class="fas fa-heart icon-issues"></i><%= t('psychologist_profiles.show.areas_of_focus') %></h2>
       <div class="section-content">
         <% if @psychologist_profile.about_issues.present? %>
           <p class="section-description"><%= simple_format(@psychologist_profile.about_issues) %></p>
         <% end %>
-
         <% grouped_issues = @psychologist_profile.issues.group_by(&:category) %>
-
         <% if grouped_issues.any? %>
           <% grouped_issues.each do |category, issues| %>
             <div class="issue-category-group">
@@ -246,163 +208,139 @@
             </div>
           <% end %>
         <% else %>
-          <span class="empty-text">No issues specified.</span>
+          <span class="empty-text"><%= t('psychologist_profiles.show.no_issues') %></span>
         <% end %>
       </div>
     </div>
 
-<!-- Services Section -->
-<div class="profile-section">
-  <div class="section-header">
-    <h2 class="section-title">
-      <i class="fas fa-briefcase icon-services"></i>
-      Services Offered
-    </h2>
-    <% if @psychologist_profile.user == current_user %>
-      <%= link_to "Add New Service", new_service_path, class: "button is-primary-blue is-small" %>
-    <% end %>
-  </div>
-
-  <!-- Next Available Slot Info -->
-  <div class="availability-banner">
-    <div class="availability-content">
-      <div class="availability-icon">
-        <i class="fas fa-calendar-check"></i>
+    <div class="profile-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <i class="fas fa-briefcase icon-services"></i>
+          <%= t('psychologist_profiles.show.services_offered') %>
+        </h2>
+        <% if @psychologist_profile.user == current_user %>
+          <%= link_to t('psychologist_profiles.show.add_new_service'), new_service_path, class: "button is-primary-blue is-small" %>
+        <% end %>
       </div>
-      <div class="availability-info">
-        <% if @next_available_slot %>
-          <div class="availability-status available">
-            <span class="availability-label">
-              <i class="fas fa-clock icon-time"></i>
-              Next available appointment
-            </span>
-            <div class="availability-details">
-              <strong class="availability-time">
-                <%= l(@next_available_slot, format: :long) %>
-              </strong>
-              <span class="availability-timezone">
-                <i class="fas fa-globe icon-timezone"></i>
-                <%= @display_timezone %>
-              </span>
-            </div>
+      <div class="availability-banner">
+        <div class="availability-content">
+          <div class="availability-icon"><i class="fas fa-calendar-check"></i></div>
+          <div class="availability-info">
+            <% if @next_available_slot %>
+              <div class="availability-status available">
+                <span class="availability-label"><i class="fas fa-clock icon-time"></i><%= t('psychologist_profiles.show.next_available_appointment') %></span>
+                <div class="availability-details">
+                  <strong class="availability-time"><%= l(@next_available_slot, format: :long) %></strong>
+                  <span class="availability-timezone"><i class="fas fa-globe icon-timezone"></i><%= @display_timezone %></span>
+                </div>
+              </div>
+            <% else %>
+              <div class="availability-status unavailable">
+                <span class="availability-label"><i class="fas fa-calendar-times"></i><%= t('psychologist_profiles.show.no_availability') %></span>
+                <p class="availability-message"><%= t('psychologist_profiles.show.check_back_later') %></p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <div class="section-content">
+        <% if @psychologist_profile.user.services.any? %>
+          <div class="services-grid">
+            <% @psychologist_profile.user.services.each do |service| %>
+              <div class="service-card">
+                <div class="service-header">
+                  <h3 class="service-title"><%= service.name %></h3>
+                  <div class="service-meta">
+                    <span class="service-price">
+                      <i class="fas fa-tag icon-price"></i>
+                      <% if service.price == 0 %>
+                        <%= t('psychologist_profiles.show.free') %>
+                      <% else %>
+                        <% if service.currency.present? && current_currency.present? %>
+                          <% converted = service.converted_rate(current_currency) %>
+                          <%= humanized_money_with_symbol(converted) if converted %>
+                        <% end %>
+                      <% end %>
+                    </span>
+                    <span class="service-duration">
+                      <i class="fas fa-clock icon-duration"></i>
+                      <%= t('psychologist_profiles.show.duration_minutes', count: service.duration_minutes) %>
+                    </span>
+                  </div>
+                </div>
+                <div class="service-delivery">
+                  <% if service.delivery_method.downcase.include?("online") %>
+                    <span class="delivery-badge online"><i class="fas fa-laptop"></i><%= t('online') %></span>
+                  <% else %>
+                    <span class="delivery-badge in-person"><i class="fas fa-user"></i><%= t('in_person') %></span>
+                  <% end %>
+                </div>
+                <p class="service-description"><%= simple_format(service.description) %></p>
+                <div class="service-actions">
+                  <%= link_to t('psychologist_profiles.show.book_this_service'), new_service_booking_path(service), class: "button is-primary-blue is-fullwidth" %>
+                </div>
+              </div>
+            <% end %>
           </div>
         <% else %>
-          <div class="availability-status unavailable">
-            <span class="availability-label">
-              <i class="fas fa-calendar-times"></i>
-              Currently no availability
-            </span>
-            <p class="availability-message">Please check back later or contact directly</p>
-          </div>
+          <p class="empty-text"><%= t('psychologist_profiles.show.no_services_available') %></p>
         <% end %>
       </div>
     </div>
-  </div>
-  
-  <div class="section-content">
-    <% if @psychologist_profile.user.services.any? %>
-      <div class="services-grid">
-        <% @psychologist_profile.user.services.each do |service| %>
-          <div class="service-card">
-            <div class="service-header">
-              <h3 class="service-title"><%= service.name %></h3>
-              <div class="service-meta">
-                <span class="service-price">
-                  <i class="fas fa-tag icon-price"></i>
-                  <% if service.price == 0 %>
-                    Free
-                  <% else %>
-                    <% if service.currency.present? && current_currency.present? %>
-                      <% converted = service.converted_rate(current_currency) %>
-                      <%= humanized_money_with_symbol(converted) if converted %>
-                    <% end %>
-                  <% end %>
-                </span>
-                <span class="service-duration">
-                  <i class="fas fa-clock icon-duration"></i>
-                  <%= service.duration_minutes %> min
-                </span>
-              </div>
-            </div>
-            
-            <div class="service-delivery">
-              <% if service.delivery_method.downcase.include?("online") %>
-                <span class="delivery-badge online">
-                  <i class="fas fa-laptop"></i>
-                  Online
-                </span>
-              <% else %>
-                <span class="delivery-badge in-person">
-                  <i class="fas fa-user"></i>
-                  In-Person
-                </span>
-              <% end %>
-            </div>
-            
-            <p class="service-description"><%= simple_format(service.description) %></p>
-            
-            <div class="service-actions">
-              <%= link_to "Book This Service", new_service_booking_path(service), class: "button is-primary-blue is-fullwidth" %>
-            </div>
-          </div>
-        <% end %>
-      </div>
-    <% else %>
-      <p class="empty-text">No services available at this time.</p>
-    <% end %>
-  </div>
-</div>
 
-
-    <!-- Contact Section -->
     <div class="profile-section">
       <h2 class="section-title">
         <i class="fas fa-envelope icon-contact"></i>
-        Contact Information
+        <%= t('psychologist_profiles.show.contact_information') %>
       </h2>
-      
       <div class="section-content">
-        <% contact_methods = {
-          "Email" => [@psychologist_profile.user.email, 'fas fa-envelope icon-email', "mailto:#{@psychologist_profile.user.email}"],
-          "Telegram" => [@psychologist_profile.telegram, 'fab fa-telegram icon-telegram', "https://t.me/#{@psychologist_profile.telegram}"],
-          "WhatsApp" => [@psychologist_profile.whatsapp, 'fab fa-whatsapp icon-whatsapp', "https://wa.me/#{@psychologist_profile.whatsapp}"],
-          "Primary Phone" => [@psychologist_profile.contact_phone, 'fas fa-phone icon-phone', "tel:#{@psychologist_profile.contact_phone}"],
-          "Secondary Phone" => [@psychologist_profile.contact_phone2, 'fas fa-phone icon-phone', "tel:#{@psychologist_profile.contact_phone2}"],
-          "Additional Phone" => [@psychologist_profile.contact_phone3, 'fas fa-phone icon-phone', "tel:#{@psychologist_profile.contact_phone3}"]
-        } %>
+        <% contact_keys = {
+            email: 'fas fa-envelope',
+            telegram: 'fab fa-telegram',
+            whatsapp: 'fab fa-whatsapp',
+            primary_phone: 'fas fa-phone',
+            secondary_phone: 'fas fa-phone',
+            additional_phone: 'fas fa-phone'
+          }
+        %>
+        <% contact_methods = contact_keys.map do |key, icon|
+            value = @psychologist_profile.send(key.to_s.gsub('primary_', 'contact_').gsub('secondary_', 'contact_2').gsub('additional_', 'contact_3')) rescue @psychologist_profile.user.email
+            link = case key; when :email; "mailto:#{value}"; when :telegram; "https://t.me/#{value}"; when :whatsapp; "https://wa.me/#{value}"; else "tel:#{value}"; end
+            { key: key, label: t("psychologist_profiles.show.contact_methods.#{key}"), value: value, icon: icon, link: link } if value.present?
+          end.compact
+        %>
 
-        <% primary_method = contact_methods.find { |label, (value, _icon, _link)| value.present? && @psychologist_profile.primary_contact_method == label.downcase.gsub(' ', '_') } %>
+        <% primary_method = contact_methods.find { |m| m[:key].to_s == @psychologist_profile.primary_contact_method } %>
         
         <% if primary_method %>
-          <% label, (value, icon, link) = primary_method %>
           <div class="primary-contact">
-            <a href="<%= link %>" class="contact-cta">
-              <i class="<%= icon %>"></i>
-              <span>Contact me via <%= label %></span>
+            <a href="<%= primary_method[:link] %>" class="contact-cta">
+              <i class="<%= primary_method[:icon] %>"></i>
+              <span><%= t('psychologist_profiles.show.contact_me_via', label: primary_method[:label]) %></span>
             </a>
           </div>
         <% end %>
 
         <div class="other-contacts">
-          <button class="toggle-contacts" aria-expanded="false">
-            <span class="toggle-text">Show all contact methods</span>
+          <button class="toggle-contacts" aria-expanded="false" data-show-text="<%= t('psychologist_profiles.show.show_all_contacts') %>" data-hide-text="<%= t('psychologist_profiles.show.hide_all_contacts') %>">
+            <span class="toggle-text"><%= t('psychologist_profiles.show.show_all_contacts') %></span>
             <i class="fas fa-chevron-down"></i>
           </button>
           <div class="contact-list" style="display: none;">
-            <% contact_methods.each do |label, (value, icon, link)| %>
-              <% next unless value.present? %>
-              <% next if label.downcase.gsub(' ', '_') == @psychologist_profile.primary_contact_method %>
+            <% other_methods = contact_methods.reject { |m| m == primary_method } %>
+            <% other_methods.each do |method| %>
               <div class="contact-item">
                 <div class="contact-info">
-                  <i class="<%= icon %>"></i>
-                  <span class="contact-label"><%= label %></span>
+                  <i class="<%= method[:icon] %>"></i>
+                  <span class="contact-label"><%= method[:label] %></span>
                 </div>
                 <div class="contact-actions">
-                  <input class="contact-input" readonly value="<%= value %>">
-                  <button class="copy-button" data-value="<%= value %>" title="Copy">
+                  <input class="contact-input" readonly value="<%= method[:value] %>">
+                  <button class="copy-button" data-value="<%= method[:value] %>" title="<%= t('psychologist_profiles.show.copy') %>">
                     <i class="fas fa-copy"></i>
                   </button>
-                  <a href="<%= link %>" class="contact-link" target="_blank">
+                  <a href="<%= method[:link] %>" class="contact-link" target="_blank" title="<%= t('psychologist_profiles.show.open_link') %>">
                     <i class="fas fa-external-link-alt"></i>
                   </a>
                 </div>
@@ -411,14 +349,9 @@
           </div>
         </div>
       </div>
-
-
     </div>
   </div>
-
-
 </div>
-
 
 <style>
   :root {

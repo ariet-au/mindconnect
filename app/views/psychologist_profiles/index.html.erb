@@ -6,7 +6,7 @@
       <div class="control is-expanded has-icons-left">
         <%= text_field_tag :search, params[:search], 
               class: "input is-medium", 
-              placeholder: "Search by name, specialty, or keyword..." %>
+              placeholder: t('psychologist_search.placeholder') %>
         <span class="icon is-left">
           <i class="fas fa-search"></i>
         </span>
@@ -16,8 +16,8 @@
           <span class="icon is-hidden-mobile">
             <i class="fas fa-search"></i>
           </span>
-          <span class="is-hidden-tablet">Search</span>
-          <span class="is-hidden-mobile">Search</span>
+          <span class="is-hidden-tablet"><%= t('psychologist_search.search_button') %></span>
+          <span class="is-hidden-mobile"><%= t('psychologist_search.search_button') %></span>
         </button>
       </div>
       <% if any_filters_active?(params) %>
@@ -26,13 +26,11 @@
             <span class="icon">
               <i class="fas fa-times"></i>
             </span>
-            <span class="is-hidden-mobile">Clear All</span>
+            <span class="is-hidden-mobile"><%= t('psychologist_search.clear_all') %></span>
           <% end %>
         </div>
       <% end %>
     </div>
-
-  
 
     <!-- Collapsible Filters Section - Hidden only on mobile -->
     <div class="block" x-data="{ showFilters: window.innerWidth > 768 }">
@@ -45,7 +43,7 @@
           <span class="icon">
             <i class="fas fa-filter"></i>
           </span>
-          <span>Filters</span>
+          <span><%= t('psychologist_search.filters') %></span>
         </span>
         <span class="icon">
           <i class="fas fa-chevron-down"></i>
@@ -60,7 +58,7 @@
           <!-- Specialties -->
           <div class="column is-6-tablet is-12-mobile">
             <div class="field">
-              <label class="label">Specialties</label>
+              <label class="label"><%= t('psychologist_search.specialties_label') %></label>
               <div class="control">
                 <%= select_tag :specialty_ids,
                       options_for_select(
@@ -77,7 +75,7 @@
           <!-- Issues -->
           <div class="column is-6-tablet is-12-mobile">
             <div class="field">
-              <label class="label">Issues</label>
+              <label class="label"><%= t('psychologist_search.issues_label') %></label>
               <div class="control">
                 <%= select_tag :issue_ids,
                       options_for_select(
@@ -94,18 +92,17 @@
           <!-- Client Types -->
           <div class="column is-6-tablet is-12-mobile">
             <div class="field">
-              <label class="label">Client Types</label>
+              <label class="label"><%= t('psychologist_search.client_types_label') %></label>
               <div class="control">
                 <div class="select is-fullwidth">
                   <%= select_tag :client_type_id, 
-                                 options_for_select(
-                                   [['All Client Types', '']] +
-                                   ClientType.all.map { |i| [i.name, i.id] },
-                                   params[:client_type_id]
-                                 ),
-                                 class: "select filter-select"
-                                  #,onchange: "this.form.submit()" 
-                                 %>
+                                  options_for_select(
+                                    [[t('psychologist_search.all_client_types'), '']] +
+                                    ClientType.all.map { |i| [i.name, i.id] },
+                                    params[:client_type_id]
+                                  ),
+                                  class: "select filter-select"
+                                  %>
                 </div>
               </div>
             </div>
@@ -114,14 +111,14 @@
           <!-- Languages -->
           <div class="column is-6-tablet is-12-mobile">
             <div class="field">
-              <label class="label">Languages</label>
+              <label class="label"><%= t('psychologist_search.languages_label') %></label>
               <div class="control">
                 <%= select_tag "language_ids",
                       options_from_collection_for_select(Language.all, :id, :name, selected: params[:language_ids]),
                       multiple: true,
                       class: "tom-select filter-select",
                       id: "languages-select",
-                      data: { placeholder: "Select languages" } %>
+                      data: { placeholder: t('psychologist_search.select_languages_placeholder') } %>
               </div>
             </div>
           </div>
@@ -130,7 +127,7 @@
 <!-- Delivery Method - CSS Only Version -->
 <div class="delivery-method-container">
   <div class="field">
-    <label class="label">Delivery Method</label>
+    <label class="label"><%= t('psychologist_search.delivery_method_label') %></label>
     <div class="field is-grouped is-grouped-multiline">
       <div class="control">
         <!-- Wrap the checkbox inside the label -->
@@ -139,7 +136,7 @@
           <span class="icon">
             <i class="fas fa-user"></i>
           </span>
-          <span>In Person</span>
+          <span><%= t('psychologist_search.in_person') %></span>
         </label>
       </div>
       <div class="control">
@@ -148,29 +145,50 @@
           <span class="icon">
             <i class="fas fa-laptop"></i>
           </span>
-          <span>Online</span>
+          <span><%= t('psychologist_search.online') %></span>
         </label>
       </div>
     </div>
   </div>
 </div>
 
+<!-- Religion -->
+<% safe_religions = @religions || [] %>
+
+<div class="column is-6-tablet is-12-mobile">
+  <div class="field">
+    <label class="label"><%= t('psychologist_search.religion_label') %></label>
+    <div class="control">
+      <div class="select is-fullwidth">
+        <%= select_tag :religion, 
+          options_for_select(
+            [[t('psychologist_search.any_religion'), '']] + 
+            safe_religions.map { |r| [r.humanize.titleize, r] },
+            params[:religion]
+          ),
+          class: "select" %>
+      </div>
+    </div>
+  </div>
+</div>
+
+
         <!-- Location Filters -->
         <div class="columns is-multiline">
           <div class="column is-6-tablet is-12-mobile">
             <div class="field">
-              <label class="label">Country</label>
+              <label class="label"><%= t('psychologist_search.country_label') %></label>
               <div class="control">
                 <div class="select is-fullwidth">
                     <%= select_tag :country,
-                                  options_for_select(
-                                    [['All Countries', '']] +
-                                    countries_with_cities.map { |c| [c['name'], c['name']] },
-                                    params[:country]
-                                  ),
-                                  class: "select filter-select",
-                                  id: "search-country",
-                                  onchange: "updateCityFilter()" %>
+                                   options_for_select(
+                                     [[t('psychologist_search.all_countries'), '']] +
+                                     countries_with_cities.map { |c| [c['name'], c['name']] },
+                                     params[:country]
+                                   ),
+                                   class: "select filter-select",
+                                   id: "search-country",
+                                   onchange: "updateCityFilter()" %>
                 </div>
               </div>
             </div>
@@ -178,18 +196,17 @@
 
           <div class="column is-6-tablet is-12-mobile">
             <div class="field">
-              <label class="label">City</label>
+              <label class="label"><%= t('psychologist_search.city_label') %></label>
               <div class="control">
                 <div class="select is-fullwidth">
-  <%= select_tag :city,
-  options_for_select(
-    [['All Cities', '']],  # Static default option
-    params[:city]          # Preserves selected city after submission
-  ),
-  class: "select filter-select",
-  id: "search-city",
-  #onchange: "this.form.submit()",  # Auto-submit on change
-  disabled: params[:country].blank? %>
+<%= select_tag :city,
+options_for_select(
+  [[t('psychologist_search.all_cities'), '']], 
+  params[:city] 
+),
+class: "select filter-select",
+id: "search-city",
+disabled: params[:country].blank? %>
                 </div>
               </div>
             </div>
@@ -200,12 +217,12 @@
   <!-- Gender -->
   <div class="column is-6-tablet is-12-mobile">
     <div class="field">
-      <label class="label">Gender</label>
+      <label class="label"><%= t('psychologist_search.gender_label') %></label>
       <div class="control">
         <div class="select is-fullwidth">
           <%= select_tag :gender, 
             options_for_select(
-              [['Any Gender', '']] + 
+              [[t('psychologist_search.any_gender'), '']] + 
               @genders.map { |g| [g.humanize.titleize, g] },
               params[:gender]
             ),
@@ -218,24 +235,24 @@
   <!-- Price Range: Min / Max / Currency -->
   <div class="column is-6-tablet is-12-mobile">
     <div class="field">
-      <label class="label">Price Range</label>
+      <label class="label"><%= t('psychologist_search.price_range_label') %></label>
       <div class="field has-addons">
         <!-- Min -->
         <div class="control is-expanded">
           <%= number_field_tag :min_rate, params[:min_rate], 
-                step: 1, 
-                class: "input", 
-                min: 0,
-                placeholder: "Min" %>
+              step: 1, 
+              class: "input", 
+              min: 0,
+              placeholder: t('psychologist_search.min_rate_placeholder') %>
         </div>
 
         <!-- Max -->
         <div class="control is-expanded">
           <%= number_field_tag :max_rate, params[:max_rate], 
-                step: 1, 
-                class: "input", 
-                min: 0,
-                placeholder: "Max" %>
+              step: 1, 
+              class: "input", 
+              min: 0,
+              placeholder: t('psychologist_search.max_rate_placeholder') %>
         </div>
 
         <!-- Currency Display Only -->
@@ -255,7 +272,7 @@
               <span class="icon">
                 <i class="fas fa-check"></i>
               </span>
-              <span>Apply Filters</span>
+              <span><%= t('psychologist_search.apply_filters_button') %></span>
             </button>
           </div>
         </div>
@@ -387,7 +404,7 @@
         <div class="column is-2-desktop is-3-tablet is-4-mobile profile-img-container has-text-centered">
           <figure class="image is-96x96 mx-auto">
             <% if profile.profile_img.attached? %>
-              <%= image_tag profile.profile_img.variant(resize_to_limit: [96, 96]), class: "is-rounded"%>              
+              <%= image_tag profile.profile_img.variant(resize_to_limit: [96, 96]), class: "is-rounded"%>          
             <% else %>
               <img src="/assets/default-profile.png" alt="Default Profile" class="is-rounded profile-image">
             <% end %>
@@ -400,7 +417,7 @@
             <div class="column">
               <!-- Name and Badges -->
               <h3 class="title is-5 mb-1">
-                <% if profile.is_doctor %>Dr. <% end %><%= profile.first_name %> <%= profile.last_name %> 
+                <% if profile.is_doctor %><%= t('psychologist_search.phd_badge') %> <% end %><%= profile.first_name %> <%= profile.last_name %> 
               </h3>
               
               <!-- Qualifications and Rate -->
@@ -411,25 +428,20 @@
                     </i> <% converted = profile.converted_rate(current_currency) %>
 <%= humanized_money_with_symbol(converted) %>
 
-
                   </span>
                 <% end %>
                 <% if profile.is_doctor %>
                   <span class="tag is-primary is-light ml-1">
-                    <i class="fas fa-user-md mr-1"></i> PhD
+                    <i class="fas fa-user-md mr-1"></i> <%= t('psychologist_search.phd_badge') %>
                   </span>
                 <% end %>
                 <% if profile.is_degree_boolean %>
                   <span class="tag is-info is-light ml-1">
-                    <i class="fas fa-certificate mr-1"></i> Certified
+                    <i class="fas fa-certificate mr-1"></i> <%= t('psychologist_search.certified_badge') %>
                   </span>
                 <% end %>
               </div>
               
-
-
-            
-
               <!-- Location and Experience -->
               <% if profile.city.present? || profile.country.present? || profile.years_of_experience.present? %>
                 <p class="location-text mb-2">
@@ -438,7 +450,7 @@
                     <%= [profile.city, profile.country].compact.join(", ") %>
                   <% end %>
                   <% if profile.years_of_experience.present? %>
-                    <span class="ml-2"><i class="fas fa-clock"></i> <%= profile.years_of_experience %> years exp.</span>
+                    <span class="ml-2"><i class="fas fa-clock"></i> <%= t('psychologist_profiles.show.years_experience_short', count: profile.years_of_experience) %></span>
                   <% end %>
                 </p>
               <% end %>
@@ -471,26 +483,26 @@
               <% end %>
             </div>
 
-                    <!-- Specialties and Issues Tags -->
-              <% if profile.languages.any? %>
-                <div class="tags are-small mt-2">
-                  <% profile.languages.each do |language| %>
-                    <span class="tag is-info is-light"><%= language.name %></span>
-                  <% end %>
-                </div>
-              <% end %>
+            <!-- Languages Tags (moved to match common structure) -->
+            <% if profile.languages.any? %>
+              <div class="tags are-small mt-2">
+                <% profile.languages.each do |language| %>
+                  <span class="tag is-info is-light"><%= language.name %></span>
+                <% end %>
+              </div>
+            <% end %>
             
             <!-- Contact Information (right side) -->
             <div class="column is-narrow">
               <div class="buttons are-small is-flex is-flex-direction-column">
                 <%= link_to psychologist_profile_path(profile), class: "button is-primary is-outlined mb-2" do %>
                   <span class="icon is-small"><i class="fas fa-user"></i></span>
-                  <span>View Profile</span>
+                  <span><%= t('psychologist_search.view_profile_button') %></span>
                 <% end %>
                 
                 <button class="button is-text contact-button" data-target="contact-<%= profile.id %>">
                   <span class="icon is-small"><i class="fas fa-envelope"></i></span>
-                  <span>Contact</span>
+                  <span><%= t('psychologist_search.contact_button') %></span>
                 </button>
               </div>
               
@@ -558,8 +570,6 @@
     </div>
   <% end %>
 </div>
-
-
 
 
 

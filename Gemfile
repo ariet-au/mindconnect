@@ -68,5 +68,5 @@ gem 'countries'
 gem 'money-rails'
 gem 'redis'
 gem 'pg_search'
-
+gem 'i18n', '~> 1.14'
 

@@ -16,6 +16,7 @@ class PsychologistProfilesController < ApplicationController
     @countries= PsychologistProfile.where.not(country: [nil, ""]).distinct.order(:country).pluck(:country)
     @cities = PsychologistProfile.where.not(city: [nil, ""]).distinct.order(:city).pluck(:city)
     @genders = PsychologistProfile.where.not(gender: [nil, ""]).distinct.order(:gender).pluck(:gender)
+    @religions = PsychologistProfile.where.not(religion: [nil, ""]).distinct.order(:religion).pluck(:religion)
     @languages = Language.all
 
     client_type_ids = params[:client_type_ids]&.reject(&:blank?) || []
@@ -43,7 +44,12 @@ def index
  
 
 
-  @genders = PsychologistProfile.where.not(gender: [nil, ""]).distinct.order(:gender).pluck(:gender)
+ @genders = PsychologistProfile.where.not(gender: [nil, ""]).distinct.order(:gender).pluck(:gender)
+ @religions = PsychologistProfile.where.not(religion: [nil, ""]).distinct.order(:religion).pluck(:religion)
+  if params[:religion].present?
+    @psychologist_profiles = @psychologist_profiles.where(religion: params[:religion])
+  end
+
 
   if params[:gender].present?
     @psychologist_profiles = @psychologist_profiles.where(gender: params[:gender])
@@ -278,7 +284,7 @@ end
             :first_name, :last_name, :about_me, :standard_rate, :currency, :years_of_experience, :license_number,
             :country, :city, :address, :telegram, :whatsapp, :contact_phone,
             :contact_phone2, :contact_phone3, :gender, :education, :is_doctor, :in_person, :online, 
-            :is_degree_boolean, :profile_img,
+            :is_degree_boolean, :profile_img, :religion,
             :about_clients, :about_issues, :about_specialties, :primary_contact_method, :timezone,
             :status, :youtube_video_url, :profile_url,
             issue_ids: [],         # <-- Add this

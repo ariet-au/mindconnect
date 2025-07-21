@@ -221,9 +221,28 @@
       <h3 class="title is-4">Contact & Service Details</h3>
       <hr>
     </div>
+<!-- Religion -->
+<div class="column is-quarter">
+  <div class="field">
+    <%= form.label :religion, class: "label" %>
+    <div class="control">
+      <div class="select is-fullwidth">
+        <%= form.select :religion,
+          options_for_select([
+            ['Non-religious', 'Non-religious'],
+            ['Muslim', 'Muslim'],
+            ['Christian', 'Christian'],
+            ['Other religions', 'Other religions']
+          ], selected: form.object.religion),
+          {},
+          class: "input" %>
+      </div>
+    </div>
+  </div>
+</div>
 
     <!-- Gender -->
-    <div class="column is-half">
+    <div class="column is-quarter">
       <div class="field">
         <%= form.label :gender, class: "label" %>
         <div class="control">

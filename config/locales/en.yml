@@ -1,31 +1,145 @@
-# Files in the config/locales directory are used for internationalization and
-# are automatically loaded by Rails. If you want to use locales other than
-# English, add the necessary files in this directory.
-#
-# To use the locales, use `I18n.t`:
-#
-#     I18n.t "hello"
-#
-# In views, this is aliased to just `t`:
-#
-#     <%= t("hello") %>
-#
-# To use a different locale, set it with `I18n.locale`:
-#
-#     I18n.locale = :es
-#
-# This would use the information in config/locales/es.yml.
-#
-# To learn more about the API, please read the Rails Internationalization guide
-# at https://guides.rubyonrails.org/i18n.html.
-#
-# Be aware that YAML interprets the following case-insensitive strings as
-# booleans: `true`, `false`, `on`, `off`, `yes`, `no`. Therefore, these strings
-# must be quoted to be interpreted as strings. For example:
-#
-#     en:
-#       "yes": yup
-#       enabled: "ON"
-
 en:
-  hello: "Hello world"
+  hello: "Hello"
+  search: "Search"
+  specialities: "Specialities"
+  clear_all: "Clear All"
+  issues: "Issues"
+  issue: "Issue"
+  "client types": "Client Types"
+  "client type": "Client Type"
+  Languages: "Languages"
+  "Delivery Method": "Delivery Method"
+  "In person": "In person"
+  "Online": "Online"
+  religion: "Religion"
+  country: "Country"
+  "City": "City"
+  "Gender": "Gender"
+  "Price Range": "Price Range"
+  "Min Rate": "Min Rate"
+  "Max Rate": "Max Rate"
+  "Apply Filters": "Apply Filters"
+  name: "Name"
+  email: "Email"
+  phone: "Phone"
+  "view profile": "View Profile"
+  contact: "Contact"
+  "my profile": "My Profile"
+  "edit profile": "Edit Profile"
+  profile: "Profile"
+  filters:
+    clear: "Clear All"
+  Languages:
+    english: "English"
+    russian: "Russian"
+    kyrgyz: "Kyrgyz"
+    uzbek: "Uzbek"
+    kazakh: "Kazakh"
+  countries:
+    kyrgyzstan: "Kyrgyzstan"
+    kazakhstan: "Kazakhstan"
+    uzbekistan: "Uzbekistan"
+  Cities:
+    bishkek: "Bishkek"
+    osh: "Osh"
+    naryn: "Naryn"
+    jalalabad: "Jalal-Abad"
+    batken: "Batken"
+    talas: "Talas"
+    almaty: "Almaty"
+    astana: "Astana"
+    shymkent: "Shymkent"
+    "Taraz": "Taraz"
+    aktobe: "Aktobe"
+    aktau: "Aktau"
+    uralsk: "Uralsk"
+    samarkand: "Samarkand"
+    tashkent: "Tashkent"
+    andijan: "Andijan"
+    namangan: "Namangan"
+    ferghana: "Ferghana"
+  time:
+    formats:
+      default: "%d.%m.%Y %H:%M:%S"
+      short: "%d %b %H:%M"
+      long: "%d %B %Y %H:%M"
+  psychologist_profiles:
+    show:
+      dashboard: "Dashboard"
+      manage_availability: "Manage Availability"
+      block_unavailability: "Block Unavailability"
+      view_my_bookings: "View My Bookings"
+      notes: "Notes"
+      doctor: "Doctor"
+      certified: "Certified"
+      religion: "Religion: %{religion}"
+      years_experience:
+        one: "1 year experience"
+        other: "%{count} years experience"
+      years_experience_short: "%{count} years exp." # New key for the short version
+      about_me: "About Me"
+      invalid_youtube_link: "Invalid YouTube link format."
+      education: "Education"
+      degree_of_study: "%{degree} of %{field}"
+      at_institution: "at %{institution}"
+      graduated_in: "Graduated: %{year}"
+      professional_qualification: "Professional Qualification"
+      no_education_details: "No education details provided."
+      no_specializations: "No specializations specified."
+      no_client_types: "No client types specified."
+      areas_of_focus: "Areas of Focus"
+      no_issues: "No issues specified."
+      services_offered: "Services Offered"
+      add_new_service: "Add New Service"
+      next_available_appointment: "Next available appointment"
+      no_availability: "Currently no availability"
+      check_back_later: "Please check back later or contact directly"
+      free: "Free"
+      duration_minutes:
+        one: "1 min"
+        other: "%{count} min"
+      book_this_service: "Book This Service"
+      no_services_available: "No services available at this time."
+      contact_information: "Contact Information"
+      contact_me_via: "Contact me via %{label}"
+      show_all_contacts: "Show all contact methods"
+      hide_all_contacts: "Hide all contact methods"
+      copy: "Copy"
+      open_link: "Open link"
+      contact_methods:
+        email: "Email"
+        telegram: "Telegram"
+        whatsapp: "WhatsApp"
+        primary_phone: "Primary Phone"
+        secondary_phone: "Secondary Phone"
+        additional_phone: "Additional Phone"
+  psychologist_search:
+    placeholder: "Search by name, specialty, or keyword..."
+    search_button: "Search"
+    clear_all: "Clear All"
+    filters: "Filters"
+    specialties_label: "Specialties"
+    issues_label: "Issues"
+    client_types_label: "Client Types"
+    all_client_types: "All Client Types"
+    languages_label: "Languages"
+    select_languages_placeholder: "Select languages"
+    delivery_method_label: "Delivery Method"
+    in_person: "In Person"
+    online: "Online"
+    religion_label: "Religion"
+    any_religion: "Any Religion"
+    country_label: "Country"
+    all_countries: "All Countries"
+    city_label: "City"
+    all_cities: "All Cities"
+    gender_label: "Gender"
+    any_gender: "Any Gender"
+    price_range_label: "Price Range"
+    min_rate_placeholder: "Min"
+    max_rate_placeholder: "Max"
+    apply_filters_button: "Apply Filters"
+    phd_badge: "PhD"
+    certified_badge: "Certified"
+    view_profile_button: "View Profile"
+    contact_button: "Contact"

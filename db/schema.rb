@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_18_220150) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_21_093611) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -248,6 +248,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_18_220150) do
     t.string "status", default: "pending_review", null: false
     t.string "youtube_video_url"
     t.string "profile_url"
+    t.string "religion"
     t.index ["profile_url"], name: "index_psychologist_profiles_on_profile_url", unique: true
     t.index ["user_id"], name: "index_psychologist_profiles_on_user_id"
   end

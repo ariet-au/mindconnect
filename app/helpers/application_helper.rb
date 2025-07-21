@@ -10,6 +10,7 @@ module ApplicationHelper
         params[:country].present? ||
         params[:city].present? ||
         params[:gender].present? ||
+        params[:religion].present? ||
         params[:min_rate].present? ||
         params[:max_rate].present?
     end

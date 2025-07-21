@@ -5,6 +5,20 @@ class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
 
   helper_method :current_currency
+  before_action :set_locale
+
+  def set_locale
+    I18n.locale = params[:locale] ||
+                  session[:locale] ||
+                  extract_locale_from_accept_language_header ||
+                  I18n.default_locale
+  end
+
+  def default_url_options
+    { locale: I18n.locale }
+  end
+
+
 
   def set_currency
     session[:currency] = params[:currency]
@@ -40,6 +54,10 @@ class ApplicationController < ActionController::Base
 
       private
 
+
+  def extract_locale_from_accept_language_header
+    request.env['HTTP_ACCEPT_LANGUAGE']&.scan(/^[a-z]{2}/)&.first&.to_sym
+  end
     # Ensure timezone is permitted in params
     def set_timezone_params
       params.require(:timezone)

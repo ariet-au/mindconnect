@@ -419,6 +419,7 @@ DEPENDENCIES
   countries
   debug
   devise
+  i18n (~> 1.14)
   image_processing (~> 1.2)
   importmap-rails
   jbuilder

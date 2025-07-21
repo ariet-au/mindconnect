@@ -1,107 +1,78 @@
 Rails.application.routes.draw do
-  resources :internal_client_profiles
-  resources :client_profiles
-  resources :issues do
-    collection do
-      get :filtered
-    end
-  end
-
-  resources :psychological_issues
-  resources :client_types
-  resources :specialties
-  
-
-  get 'find-a-psychologist', to: 'psychologist_profiles#search_landing', as: :search_landing
-  get 'for-psychologists', to: 'psychologist_profiles#landing_psych', as: :landing_psych
-  get 'contact-us', to: 'psychologist_profiles#contact_us', as: :contact_us
-
-
-  post '/set_currency', to: 'application#set_currency', as: :set_currency
-
-  devise_for :users, controllers: {
-    registrations: 'users/registrations',
-    confirmations: 'users/confirmations' # Custom controller
-
-  }
-
-
-   direct :rails_blob do |blob|
+  # ✅ These MUST be outside of locale scope
+  direct :rails_blob do |blob|
     route_for(:rails_service_blob, blob.signed_id, blob.filename)
   end
+
   direct :rails_blob_variant do |variant|
     route_for(:rails_blob_representation, variant.blob.signed_id, variant.variation.key, variant.blob.filename)
   end
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  # resources :psychologist_profiles do
-  
-  #     collection do
-  #     post 'toggle_filter'
-  #   end
-  # end
-  #bookings
-# config/routes.rb
-resources :services do
-  resources :bookings, only: [:new]  # /services/:service_id/bookings/new
-end
-
-resources :bookings, only: [:create, :show, :index, :update, :edit, :destroy] do
-  collection do
-    get 'calendar_bookings'  # /bookings/calendar_bookings,
-    get :psychologist_bookings
-  end
-end
-  post '/set_timezone', to: 'application#set_timezone', as: :set_timezone_path
-
-  resources :psychologist_profiles do
-
-    resources :educations, only: [:new, :create, :edit, :update, :destroy]
-    collection do
-      post 'toggle_filter'
-      #get 'cities', to: 'psychologist_profiles#cities', as: :cities # Add this
+  # ✅ Locale-scoped routes
+  scope "(:locale)", locale: /en|ru|kg/ do
+    resources :internal_client_profiles
+    resources :client_profiles
+    resources :issues do
+      collection { get :filtered }
     end
-    resources :psychologist_availabilities, except: [:show] do
+
+    resources :psychological_issues
+    resources :client_types
+    resources :specialties
+
+    get 'find-a-psychologist', to: 'psychologist_profiles#search_landing', as: :search_landing
+    get 'for-psychologists', to: 'psychologist_profiles#landing_psych', as: :landing_psych
+    get 'contact-us', to: 'psychologist_profiles#contact_us', as: :contact_us
+
+    post '/set_currency', to: 'application#set_currency', as: :set_currency
+
+    devise_for :users, controllers: {
+      registrations: 'users/registrations',
+      confirmations: 'users/confirmations'
+    }
+
+    resources :services do
+      resources :bookings, only: [:new]
+    end
+
+    resources :bookings, only: [:create, :show, :index, :update, :edit, :destroy] do
       collection do
-        get 'calendar_blocks' # /psychologist_profiles/:id/psychologist_availabilities/calendar_blocks
+        get 'calendar_bookings'
+        get :psychologist_bookings
       end
     end
-    resources :unavailabilities, controller: 'psychologist_unavailabilities', only: [:index, :create, :destroy] do
+
+    post '/set_timezone', to: 'application#set_timezone', as: :set_timezone_path
+
+    resources :psychologist_profiles do
+      resources :educations, only: [:new, :create, :edit, :update, :destroy]
+
       collection do
-        get :calendar
+        post 'toggle_filter'
+      end
+
+      resources :psychologist_availabilities, except: [:show] do
+        collection { get 'calendar_blocks' }
+      end
+
+      resources :unavailabilities, controller: 'psychologist_unavailabilities', only: [:index, :create, :destroy] do
+        collection { get :calendar }
+      end
+    end
+
+    get '/calendar', to: 'psychologist_unavailabilities#calendar'
+    get 'psychologist_profiles/:psychologist_profile_id/calendar', to: 'psychologist_unavailabilities#calendar', as: :psychologist_profile_calendar
+    resources :psychologist_unavailabilities, only: [:index, :create, :destroy]
+
+    resources :internal_client_profiles do
+      resources :therapy_plans do
+        resources :progress_notes
       end
     end
   end
 
-
-
-#get 'p/:profile_url', to: 'psychologist_profiles#show', as: :psychologist_profile_by_url, constraints: { profile_url: /[a-z0-9\-]+/ }
-get '/calendar', to: 'psychologist_unavailabilities#calendar'
-get 'psychologist_profiles/:psychologist_profile_id/calendar', to: 'psychologist_unavailabilities#calendar', as: :psychologist_profile_calendar
-
-resources :psychologist_unavailabilities, only: [:index, :create, :destroy]
-
-
-
-
-
-resources :internal_client_profiles do
-  resources :therapy_plans do
-    resources :progress_notes
-  end
-end
-
-
-
-
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
+  # Global routes (not locale-scoped)
   get "up" => "rails/health#show", as: :rails_health_check
 
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
-
-  # Defines the root path route ("/")
   root "psychologist_profiles#index"
 end
