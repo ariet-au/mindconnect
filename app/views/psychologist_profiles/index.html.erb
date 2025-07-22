@@ -107,21 +107,24 @@
     </div>
   </div>
 </div>
-          <!-- Languages -->
-          <div class="column is-6-tablet is-12-mobile">
-            <div class="field">
-              <label class="label"><%= t('psychologist_search.languages_label') %></label>
-              <div class="control">
-                <%= select_tag "language_ids",
-                      options_from_collection_for_select(Language.all, :id, :name, selected: params[:language_ids]),
-                      multiple: true,
-                      class: "tom-select filter-select",
-                      id: "languages-select",
-                      data: { placeholder: t('psychologist_search.select_languages_placeholder') } %>
-              </div>
-            </div>
-          </div>
-        </div>
+  <!-- Languages Filter -->
+<div class="column is-6-tablet is-12-mobile">
+  <div class="field">
+    <label class="label"><%= t('psychologist_search.languages_label') %></label>
+    <div class="control">
+      <%= select_tag "language_ids",
+            options_for_select(
+              # Map Language objects to an array of [translated_name, id] pairs
+              Language.all.map { |lang| [t("spoken_languages.#{lang.name}"), lang.id] }, # <--- MODIFIED LINE
+              selected: params[:language_ids]
+            ),
+            multiple: true,
+            class: "tom-select filter-select",
+            id: "languages-select",
+            data: { placeholder: t('psychologist_search.select_languages_placeholder') } %>
+    </div>
+  </div>
+</div>
 
 <!-- Delivery Method - CSS Only Version -->
 <div class="delivery-method-container">
@@ -381,13 +384,14 @@
             </div>
 
             <!-- Languages Tags (moved to match common structure) -->
-            <% if profile.languages.any? %>
-              <div class="tags are-small mt-2">
-                <% profile.languages.each do |language| %>
-                  <span class="tag is-info is-light"><%= language.name %></span>
-                <% end %>
-              </div>
-            <% end %>
+       <% if profile.languages.any? %>
+        <div class="tags are-small mt-2">
+          <% profile.languages.each do |language| %>
+            <%# Translate the language name using the 'spoken_languages' key %>
+            <span class="tag is-info is-light"><%= t("spoken_languages.#{language.name}") %></span> <%# <--- MODIFIED LINE %>
+          <% end %>
+        </div>
+      <% end %>
             
             <!-- Contact Information (right side) -->
             <div class="column is-narrow">

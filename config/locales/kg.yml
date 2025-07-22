@@ -154,12 +154,20 @@ kg:
       christian: "Христиан"
       other_religion: "Башка дин"
   spoken_languages: # This block is for languages spoken by psychologists in profiles/search filters
-    kyrgyz: "Кыргызча"
-    russian: "Орусча"
-    kazakh: "Казакча"
-    english: "Англисче"
-    uzbek: "Өзбекче"
-    tatar: "Татарча"
+    Kyrgyz: "Кыргызча"
+    Russian: "Орусча"
+    Kazakh: "Казакча"
+    English: "Англисче"
+    Uzbek: "Өзбекче"
+    Tatar: "Татарча"
+    Tajik: "Тажикче"
+    Turkish: "Түркчө"
+    Ukrainian: "Украинча"
+    Karakalpak: "Каракалпакча"
+    Uyghur: "Уйгурча"
+    Dungan: "Дунганча"
+    
+
   client_types: 
     single_adult: "Чон киши"
     single_child: "Бала"

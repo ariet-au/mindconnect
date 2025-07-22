@@ -1,573 +1,397 @@
-<div class="box">
-  <%= form_tag psychologist_profiles_path, method: :get, class: "search-form" do %>
+<div class="profile-container">
+  <div class="profile-card">
+    <% if @psychologist_profile.user == current_user %>
+      <div class="psychologist-nav">
+        <div class="nav-content">
+          <h3 class="nav-title">
+            <i class="fas fa-user-cog"></i>
+            <%= t('psychologist_profiles.show.dashboard') %>
+          </h3>
+          <div class="nav-actions">
+            <%= link_to psychologist_profile_psychologist_availabilities_path(@psychologist_profile.id), class: "button is-primary-blue is-small" do %>
+              <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+              <span><%= t('psychologist_profiles.show.manage_availability') %></span>
+            <% end %>
+            <%= link_to psychologist_profile_calendar_path(@psychologist_profile.id), class: "button is-primary-blue is-small" do %>
+              <span class="icon"><i class="fas fa-ban"></i></span>
+              <span><%= t('psychologist_profiles.show.block_unavailability') %></span>
+            <% end %>
+            <%= link_to psychologist_bookings_bookings_path, class: "button is-info is-small" do %>
+              <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+              <span><%= t('psychologist_profiles.show.view_my_bookings') %></span>
+            <% end %>
+            <%= link_to internal_client_profiles_path, class: "button is-primary-blue is-small" do %>
+              <span class="icon"><i class="fas fa-book"></i></span>
+              <span><%= t('psychologist_profiles.show.notes') %></span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
 
-    <!-- Main Search Bar -->
-    <div class="field has-addons mb-4">
-      <div class="control is-expanded has-icons-left">
-        <%= text_field_tag :search, params[:search],
-              class: "input is-medium",
-              placeholder: t('psychologist_search.placeholder') %>
-        <span class="icon is-left">
-          <i class="fas fa-search"></i>
-        </span>
-      </div>
-      <div class="control">
-        <button class="button is-primary-blue is-medium" type="submit">
-          <span class="icon is-hidden-mobile">
-            <i class="fas fa-search"></i>
-          </span>
-          <span class="is-hidden-tablet"><%= t('psychologist_search.search_button') %></span>
-          <span class="is-hidden-mobile"><%= t('psychologist_search.search_button') %></span>
-        </button>
-      </div>
-      <% if any_filters_active?(params) %>
-        <div class="control">
-          <%= link_to psychologist_profiles_path, class: "button is-primary-blue is-medium" do %>
-            <span class="icon">
-              <i class="fas fa-times"></i>
-            </span>
-            <span class="is-hidden-mobile"><%= t('psychologist_search.clear_all') %></span>
+    <div class="profile-header">
+      <% if @psychologist_profile.user == current_user %>
+        <div class="header-actions">
+          <%= link_to edit_psychologist_profile_path(@psychologist_profile.id), class: "button is-primary-blue is-small" do %>
+            <span class="icon"><i class="fas fa-edit"></i></span>
+            <span><%= t('edit_profile') %></span>
           <% end %>
         </div>
       <% end %>
-    </div>
-
-    <!-- Collapsible Filters Section - Hidden only on mobile -->
-    <div class="block" x-data="{ showFilters: window.innerWidth > 768 }">
-      <!-- Toggle button - hidden on tablet/desktop -->
-      <button type="button"
-              class="button is-light is-fullwidth is-justify-content-space-between is-hidden-tablet"
-              @click="showFilters = !showFilters"
-              x-show="!showFilters">
-        <span>
-          <span class="icon">
-            <i class="fas fa-filter"></i>
-          </span>
-          <span><%= t('psychologist_search.filters') %></span>
-        </span>
-        <span class="icon">
-          <i class="fas fa-chevron-down"></i>
-        </span>
-      </button>
-
-      <!-- Filters content - always visible on desktop, toggleable on mobile -->
-      <div x-show="showFilters" x-transition class="box mt-3">
-
-        <!-- Primary Filters -->
-        <div class="columns is-multiline">
-          <!-- Specialties -->
-          <div class="column is-6-tablet is-12-mobile">
-            <div class="field">
-              <label class="label"><%= t('psychologist_search.specialties_label') %></label>
-              <div class="control">
-                <%= select_tag :specialty_ids,
-                      options_for_select(
-                        Specialty.all.map { |s| [s.name, s.id] }, # Assuming Specialty.name is already translated or base
-                        params[:specialty_ids]
-                      ),
-                      multiple: true,
-                      class: "filter-select tom-select",
-                      id: "specialties-select" %>
-              </div>
-            </div>
-          </div>
-
-          <!-- Issues -->
-          <div class="column is-6-tablet is-12-mobile">
-            <div class="field">
-              <label class="label"><%= t('psychologist_search.issues_label') %></label>
-              <div class="control">
-                <%= select_tag :issue_ids,
-                      options_for_select(
-                        Issue.all.map { |i| [i.name, i.id] }, # Assuming Issue.name is already translated or base
-                        params[:issue_ids]
-                      ),
-                      multiple: true,
-                      class: "filter-select tom-select",
-                      id: "issues-select" %>
-              </div>
-            </div>
-          </div>
-
-          <!-- Client Types -->
-          <div class="column is-6-tablet is-12-mobile">
-            <div class="field">
-              <label class="label"><%= t('psychologist_search.client_types_label') %></label>
-              <div class="control">
-                <div class="select is-fullwidth">
-                  <%= select_tag :client_type_id,
-                                 options_for_select(
-                                   [[t('psychologist_search.all_client_types'), '']] +
-                                   ClientType.all.map { |i| [i.name, i.id] }, # Assuming ClientType.name is already translated or base
-                                   params[:client_type_id]
-                                 ),
-                                 class: "select filter-select"
-                                 %>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Languages -->
-          <div class="column is-6-tablet is-12-mobile">
-            <div class="field">
-              <label class="label"><%= t('psychologist_search.languages_label') %></label>
-              <div class="control">
-                <%= select_tag "language_ids",
-                      options_from_collection_for_select(
-                        Language.all.map { |l| [t("languages.#{l.name.downcase.gsub(' ', '_')}"), l.id] }, # Translate language names
-                        :second, :first, selected: params[:language_ids]
-                      ),
-                      multiple: true,
-                      class: "tom-select filter-select",
-                      id: "languages-select",
-                      data: { placeholder: t('psychologist_search.select_languages_placeholder') } %>
-              </div>
-            </div>
-          </div>
+      <div class="profile-info">
+        <div class="profile-avatar">
+          <% if @psychologist_profile.profile_img.attached? %>
+            <figure class="image is-128x128">
+              <%= image_tag url_for(@psychologist_profile.profile_img.variant(resize_to_limit: [128, 128])), class: "is-rounded" %>
+            </figure>
+          <% else %>
+            <figure class="image is-128x128">
+              <img src="https://bulma.io/images/placeholders/128x128.png" class="is-rounded" alt="Profile placeholder">
+            </figure>
+          <% end %>
         </div>
-
-<!-- Delivery Method - CSS Only Version -->
-<div class="delivery-method-container">
-  <div class="field">
-    <label class="label"><%= t('psychologist_search.delivery_method_label') %></label>
-    <div class="field is-grouped is-grouped-multiline">
-      <div class="control">
-        <!-- Wrap the checkbox inside the label -->
-        <label class="button delivery-method">
-          <%= check_box_tag "in_person", "1", params[:in_person] == "1", class: "delivery-method-input" %>
-          <span class="icon">
-            <i class="fas fa-user"></i>
-          </span>
-          <span><%= t('psychologist_search.in_person') %></span>
-        </label>
-      </div>
-      <div class="control">
-        <label class="button delivery-method">
-          <%= check_box_tag "online", "1", params[:online] == "1", class: "delivery-method-input" %>
-          <span class="icon">
-            <i class="fas fa-laptop"></i>
-          </span>
-          <span><%= t('psychologist_search.online') %></span>
-        </label>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Religion -->
-<% safe_religions = @religions || [] %>
-
-<div class="column is-6-tablet is-12-mobile">
-  <div class="field">
-    <label class="label"><%= t('psychologist_search.religion_label') %></label>
-    <div class="control">
-      <div class="select is-fullwidth">
-        <%= select_tag :religion,
-          options_for_select(
-            [[t('psychologist_search.any_religion'), '']] +
-            safe_religions.map { |r| [t("enums.religion.#{r.underscore}"), r] }, # Translate religion enum values
-            params[:religion]
-          ),
-          class: "select" %>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-        <!-- Location Filters -->
-        <div class="columns is-multiline">
-          <div class="column is-6-tablet is-12-mobile">
-            <div class="field">
-              <label class="label"><%= t('psychologist_search.country_label') %></label>
-              <div class="control">
-                <div class="select is-fullwidth">
-                    <%= select_tag :country,
-                                   options_for_select(
-                                     [[t('psychologist_search.all_countries'), '']] +
-                                     countries_with_cities.map { |c| [t("countries.#{c['name'].downcase.gsub(' ', '_')}"), c['name']] }, # Translate country names
-                                     params[:country]
-                                   ),
-                                   class: "select filter-select",
-                                   id: "search-country",
-                                   onchange: "updateCityFilter()" %>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="column is-6-tablet is-12-mobile">
-            <div class="field">
-              <label class="label"><%= t('psychologist_search.city_label') %></label>
-              <div class="control">
-                <div class="select is-fullwidth">
-                  <%= select_tag :city,
-                    options_for_select(
-                      [[t('psychologist_search.all_cities'), '']],
-                      params[:city]
-                    ),
-                    class: "select filter-select",
-                    id: "search-city",
-                    disabled: params[:country].blank? %>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-       <div class="columns is-multiline">
-  <!-- Gender -->
-  <div class="column is-6-tablet is-12-mobile">
-    <div class="field">
-      <label class="label"><%= t('psychologist_search.gender_label') %></label>
-      <div class="control">
-        <div class="select is-fullwidth">
-          <%= select_tag :gender,
-            options_for_select(
-              [[t('psychologist_search.any_gender'), '']] +
-              @genders.map { |g| [t("enums.gender.#{g}"), g] }, # Translate gender enum values
-              params[:gender]
-            ),
-            class: "select" %>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Price Range: Min / Max / Currency -->
-  <div class="column is-6-tablet is-12-mobile">
-    <div class="field">
-      <label class="label"><%= t('psychologist_search.price_range_label') %></label>
-      <div class="field has-addons">
-        <!-- Min -->
-        <div class="control is-expanded">
-          <%= number_field_tag :min_rate, params[:min_rate],
-              step: 1,
-              class: "input",
-              min: 0,
-              placeholder: t('psychologist_search.min_rate_placeholder') %>
-        </div>
-
-        <!-- Max -->
-        <div class="control is-expanded">
-          <%= number_field_tag :max_rate, params[:max_rate],
-              step: 1,
-              class: "input",
-              min: 0,
-              placeholder: t('psychologist_search.max_rate_placeholder') %>
-        </div>
-
-        <!-- Currency Display Only -->
-        <div class="control">
-          <input class="input is-static has-text-weight-semibold" type="text" readonly value="  <%= current_currency %>">
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-        <!-- Apply Filters Button -->
-        <div class="field">
-          <div class="control">
-            <button type="submit" class="button is-primary-blue is-fullwidth">
-              <span class="icon">
-                <i class="fas fa-check"></i>
+        <div class="profile-details">
+          <h1 class="profile-name">
+            <%= "#{@psychologist_profile.first_name} #{@psychologist_profile.last_name}" %>
+          </h1>
+          <div class="profile-credentials">
+            <% if @psychologist_profile.education.present? %>
+              <span class="credential-tag">
+                <i class="fas fa-graduation-cap icon-education"></i>
+                <%= @psychologist_profile.education %>
               </span>
-              <span><%= t('psychologist_search.apply_filters_button') %></span>
-            </button>
+            <% end %>
+            <% if @psychologist_profile.timezone.present? %>
+              <span class="credential-tag">
+                <i class="fas fa-globe icon-timezone"></i>
+                <%= format_timezone_offset(@psychologist_profile.timezone) %>
+              </span>
+            <% end %>
+          </div>
+          <div class="profile-badges">
+            <% if @psychologist_profile.is_doctor %>
+              <span class="badge-item" title="<%= t('psychologist_profiles.show.doctor') %>">
+                <i class="fas fa-user-md icon-doctor"></i>
+                <span><%= t('psychologist_profiles.show.doctor') %></span>
+              </span>
+            <% end %>
+            <% if @psychologist_profile.is_degree_boolean %>
+              <span class="badge-item" title="<%= t('psychologist_profiles.show.certified') %>">
+                <i class="fas fa-certificate icon-certified"></i>
+                <span><%= t('psychologist_profiles.show.certified') %></span>
+              </span>
+            <% end %>
+            <% if @psychologist_profile.religion.present? %>
+              <span class="badge-item" title="<%= t('psychologist_profiles.show.religion', religion: t("enums.religion.#{@psychologist_profile.religion.downcase}", default: @psychologist_profile.religion)) %>">
+                <i class="fas fa-praying-hands icon-religion"></i>
+                <span><%= t("enums.religion.#{@psychologist_profile.religion.downcase}", default: @psychologist_profile.religion) %></span>
+              </span>
+            <% end %>
+            <span class="badge-item">
+              <i class="fas fa-clock icon-time"></i>
+              <span><%= t('psychologist_profiles.show.years_experience', count: @psychologist_profile.years_of_experience) %></span>
+            </span>
+          </div>
+          <div class="profile-location">
+            <i class="fas fa-map-marker-alt icon-location"></i>
+            <span>
+              <%= t("cities.#{@psychologist_profile.city.downcase.gsub(' ', '_').gsub('-', '_')}", default: @psychologist_profile.city) %>, 
+              <%= t("countries.#{@psychologist_profile.country.downcase.gsub(' ', '_').gsub('-', '_')}", default: @psychologist_profile.country) %>
+            </span>
+            <% if @psychologist_profile.address.present? %>
+              <span>• <%= @psychologist_profile.address %></span>
+            <% end %>
           </div>
         </div>
-
       </div>
     </div>
-  <% end %>
-</div>
 
-<style>
-  @media screen and (min-width: 769px) {
-    [x-cloak] {
-      display: block !important;
-    }
+    <div class="profile-section">
+      <h2 class="section-title">
+        <i class="fas fa-user-circle icon-about"></i>
+        <%= t('psychologist_profiles.show.about_me') %>
+      </h2>
+      <div class="section-content">
+        <p><%= simple_format(@psychologist_profile.about_me) %></p>
+        <% if @psychologist_profile.youtube_video_url.present? %>
+          <% video_id = youtube_embed_url(@psychologist_profile.youtube_video_url) %>
+          <% if video_id %>
+            <div class="video-wrapper">
+              <iframe width="560" height="315" src="https://www.youtube.com/embed/<%= video_id %>" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+          <% else %>
+            <p class="has-text-danger"><%= t('psychologist_profiles.show.invalid_youtube_link') %></p>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
 
-    .filter-section {
-      display: block !important;
-    }
-  }
-
-  @media screen and (max-width: 768px) {
-    .box {
-      margin: 0.5rem;
-      padding: 1rem;
-    }
-
-    .field.has-addons .control:not(:last-child) .button,
-    .field.has-addons .control:not(:last-child) .input {
-      border-radius: 4px 0 0 4px;
-    }
-
-    .field.has-addons .control:last-child .button,
-    .field.has-addons .control:last-child .input {
-      border-radius: 0 4px 4px 0;
-    }
-
-    .tags .tag {
-      margin-bottom: 0.25rem;
-    }
-
-    .button.is-fullwidth {
-      justify-content: space-between;
-    }
-  }
-
-  .field:not(:last-child) {
-    margin-bottom: 1rem;
-  }
-</style>
-
-
-
-<!-- Psychologist Profiles -->
-<div class="profiles-container">
-  <% @psychologist_profiles.each do |profile| %>
-    <div class="profile-card box mb-4">
-      <div class="columns is-mobile">
-        <!-- Profile Image -->
-        <div class="column is-2-desktop is-3-tablet is-4-mobile profile-img-container has-text-centered">
-          <figure class="image is-96x96 mx-auto">
-            <% if profile.profile_img.attached? %>
-              <%= image_tag profile.profile_img.variant(resize_to_limit: [96, 96]), class: "is-rounded"%>
-            <% else %>
-              <img src="/assets/default-profile.png" alt="Default Profile" class="is-rounded profile-image">
-            <% end %>
-          </figure>
+    <% if @psychologist_profile.educations.any? %>
+      <div class="profile-section">
+        <h2 class="section-title">
+          <i class="fas fa-briefcase icon-experience"></i>
+          <%= t('psychologist_profiles.show.education') %>
+        </h2>
+        <div class="section-content">
+          <% @psychologist_profile.educations.each do |education| %>
+            <div class="experience-item" style="margin-bottom: 1.5rem; background-color: #fafafa; padding: 1.25rem;">
+              <div class="experience-header">
+                <h3>
+                  <%= t('psychologist_profiles.show.degree_of_study', 
+                        degree: t("education_degrees.#{education.degree}", default: education.degree), 
+                        field: t("education_fields.#{education.field_of_study}", default: education.field_of_study)) %>
+                  <% if education.institution.present? %>
+                    <%= t('psychologist_profiles.show.at_institution', institution: education.institution) %>
+                  <% end %>
+                </h3>
+                <span class="experience-type">
+                  <% if education.graduation_year.present? %>
+                    <%= t('psychologist_profiles.show.graduated_in', year: education.graduation_year) %>
+                  <% else %>
+                    <%= t('psychologist_profiles.show.professional_qualification') %>
+                  <% end %>
+                </span>
+              </div>
+            </div>
+          <% end %>
         </div>
+      </div>
+    <% else %>
+      <p class="empty-text"><%= t('psychologist_profiles.show.no_education_details') %></p>
+    <% end %>
 
-        <!-- Profile Info -->
-        <div class="column profile-info">
-          <div class="columns is-mobile">
-            <div class="column">
-              <!-- Name and Badges -->
-              <h3 class="title is-5 mb-1">
-                <% if profile.is_doctor %><%= t('psychologist_search.phd_badge') %> <% end %><%= profile.first_name %> <%= profile.last_name %>
-              </h3>
+    <div class="profile-section">
+      <h2 class="section-title"><i class="fas fa-star icon-specialization"></i><%= t('psychologist_search.specialties_label') %></h2>
+      <div class="section-content">
+        <% if @psychologist_profile.about_specialties.present? %>
+          <p class="section-description"><%= simple_format(@psychologist_profile.about_specialties) %></p>
+        <% end %>
+        <div class="tags-container">
+          <% if @psychologist_profile.specialties.any? %>
+            <% @psychologist_profile.specialties.each do |specialty| %>
+              <span class="tag-item featured"><%= t("specialties.#{specialty.name}", default: specialty.name) %></span>
+            <% end %>
+          <% else %>
+            <span class="empty-text"><%= t('psychologist_profiles.show.no_specializations') %></span>
+          <% end %>
+        </div>
+      </div>
+    </div>
 
-              <!-- Qualifications and Rate -->
-              <div class="mb-2">
-                <% if profile.standard_rate.present? %>
-                  <span class="tag is-light">
-                    <i class="fas fa-money-bill-wave mr-1">
-                    </i> <% converted = profile.converted_rate(current_currency) %>
-<%= humanized_money_with_symbol(converted) %>
+    <div class="profile-section">
+      <h2 class="section-title"><i class="fas fa-users icon-clients"></i><%= t('psychologist_search.client_types_label') %></h2>
+      <div class="section-content">
+        <% if @psychologist_profile.about_clients.present? %>
+          <p class="section-description"><%= simple_format(@psychologist_profile.about_clients) %></p>
+        <% end %>
+        <div class="tags-container">
+          <% if @psychologist_profile.client_types.any? %>
+            <% @psychologist_profile.client_types.each do |client_type| %>
+              <span class="tag-item"><%= t("client_types.#{client_type.name.downcase.gsub(' ', '_')}", default: client_type.name) %></span>
+            <% end %>
+          <% else %>
+            <span class="empty-text"><%= t('psychologist_profiles.show.no_client_types') %></span>
+          <% end %>
+        </div>
+      </div>
+    </div>
 
-                  </span>
-                <% end %>
-                <% if profile.is_doctor %>
-                  <span class="tag is-primary is-light ml-1">
-                    <i class="fas fa-user-md mr-1"></i> <%= t('psychologist_search.phd_badge') %>
-                  </span>
-                <% end %>
-                <% if profile.is_degree_boolean %>
-                  <span class="tag is-info is-light ml-1">
-                    <i class="fas fa-certificate mr-1"></i> <%= t('psychologist_search.certified_badge') %>
-                  </span>
+    <div class="profile-section">
+      <h2 class="section-title"><i class="fas fa-heart icon-issues"></i><%= t('psychologist_profiles.show.areas_of_focus') %></h2>
+      <div class="section-content">
+        <% if @psychologist_profile.about_issues.present? %>
+          <p class="section-description"><%= simple_format(@psychologist_profile.about_issues) %></p>
+        <% end %>
+        <% grouped_issues = @psychologist_profile.issues.group_by(&:category) %>
+        <% if grouped_issues.any? %>
+          <% grouped_issues.each do |category, issues| %>
+            <div class="issue-category-group">
+              <h4 class="issue-category-title"><%= t("issue_categories.#{category}", default: category) %></h4>
+              <div class="tags-container">
+                <% issues.each do |issue| %>
+                  <span class="tag-item"><%= t("issues.#{issue.name}", default: issue.name) %></span>
                 <% end %>
               </div>
+            </div>
+          <% end %>
+        <% else %>
+          <span class="empty-text"><%= t('psychologist_profiles.show.no_issues') %></span>
+        <% end %>
+      </div>
+    </div>
 
-              <!-- Location and Experience -->
-              <% if profile.city.present? || profile.country.present? || profile.years_of_experience.present? %>
-                <p class="location-text mb-2">
-                  <% if profile.city.present? || profile.country.present? %>
-                    <span class="icon is-small"><i class="fas fa-map-marker-alt"></i></span>
-                    <%= [profile.city.present? ? t("cities.#{profile.city.downcase.gsub('-', '_')}") : nil, # Translate city
-                         profile.country.present? ? t("countries.#{profile.country.downcase.gsub(' ', '_')}") : nil # Translate country
-                        ].compact.join(", ") %>
-                  <% end %>
-                  <% if profile.years_of_experience.present? %>
-                    <span class="ml-2"><i class="fas fa-clock"></i> <%= t('psychologist_profiles.show.years_experience_short', count: profile.years_of_experience) %></span>
-                  <% end %>
-                </p>
-              <% end %>
-
-              <!-- Short Bio -->
-              <% if profile.about_me.present? %>
-                <p class="has-text-grey is-size-7 mb-2">
-                  <%= truncate(profile.about_me, length: 150) %>
-                </p>
-              <% end %>
-
-              <!-- Specialties and Issues Tags -->
-              <% if profile.specialties.any? || profile.issues.any? %>
-                <div class="tags are-small mt-2">
-                  <% profile.specialties.each do |specialty| %>
-                    <span class="tag is-info is-light"><%= specialty.name %></span>
-                  <% end %>
-                  <% profile.issues.each do |issue| %>
-                    <span class="tag is-warning is-light"><%= issue.name %></span>
+    <div class="profile-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <i class="fas fa-briefcase icon-services"></i>
+          <%= t('psychologist_profiles.show.services_offered') %>
+        </h2>
+        <% if @psychologist_profile.user == current_user %>
+          <%= link_to t('psychologist_profiles.show.add_new_service'), new_service_path, class: "button is-primary-blue is-small" %>
+        <% end %>
+      </div>
+      <div class="availability-banner">
+        <div class="availability-content">
+          <div class="availability-icon"><i class="fas fa-calendar-check"></i></div>
+          <div class="availability-info">
+            <% if @next_available_slot %>
+              <div class="availability-status available">
+                <span class="availability-label"><i class="fas fa-clock icon-time"></i><%= t('psychologist_profiles.show.next_available_appointment') %></span>
+                <div class="availability-details">
+                  <strong class="availability-time"><%= l(@next_available_slot, format: :long) %></strong>
+                  <span class="availability-timezone"><i class="fas fa-globe icon-timezone"></i><%= @display_timezone %></span>
+                </div>
+              </div>
+            <% else %>
+              <div class="availability-status unavailable">
+                <span class="availability-label"><i class="fas fa-calendar-times"></i><%= t('psychologist_profiles.show.no_availability') %></span>
+                <p class="availability-message"><%= t('psychologist_profiles.show.check_back_later') %></p>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <div class="section-content">
+        <% if @psychologist_profile.user.services.any? %>
+          <div class="services-grid">
+            <% @psychologist_profile.user.services.each do |service| %>
+              <div class="service-card">
+                <div class="service-header">
+                  <h3 class="service-title"><%= t("services.#{service.name}", default: service.name) %></h3>
+                  <div class="service-meta">
+                    <span class="service-price">
+                      <i class="fas fa-tag icon-price"></i>
+                      <% if service.price == 0 %>
+                        <%= t('psychologist_profiles.show.free') %>
+                      <% else %>
+                        <% if service.currency.present? && current_currency.present? %>
+                          <% converted = service.converted_rate(current_currency) %>
+                          <%= humanized_money_with_symbol(converted) if converted %>
+                        <% end %>
+                      <% end %>
+                    </span>
+                    <span class="service-duration">
+                      <i class="fas fa-clock icon-duration"></i>
+                      <%= t('psychologist_profiles.show.duration_minutes', count: service.duration_minutes) %>
+                    </span>
+                  </div>
+                </div>
+                <div class="service-delivery">
+                  <% if service.delivery_method.downcase.include?("online") %>
+                    <span class="delivery-badge online"><i class="fas fa-laptop"></i><%= t('psychologist_search.online') %></span>
+                  <% else %>
+                    <span class="delivery-badge in-person"><i class="fas fa-user"></i><%= t('psychologist_search.in_person') %></span>
                   <% end %>
                 </div>
-              <% end %>
-
-              <!-- Client Types -->
-              <% if profile.client_types.any? %>
-                <p class="is-size-7 has-text-grey mt-2">
-                  <span class="icon is-small"><i class="fas fa-users"></i></span>
-                  <%= profile.client_types.map(&:name).join(" • ") %>
-                </p>
-              <% end %>
-            </div>
-
-            <!-- Languages Tags (moved to match common structure) -->
-            <% if profile.languages.any? %>
-              <div class="tags are-small mt-2">
-                <% profile.languages.each do |language| %>
-                  <span class="tag is-info is-light"><%= t("languages.#{language.name.downcase.gsub(' ', '_')}") %></span>
-                <% end %>
+                <p class="service-description"><%= simple_format(service.description) %></p>
+                <div class="service-actions">
+                  <%= link_to t('psychologist_profiles.show.book_this_service'), new_service_booking_path(service), class: "button is-primary-blue is-fullwidth" %>
+                </div>
               </div>
             <% end %>
+          </div>
+        <% else %>
+          <p class="empty-text"><%= t('psychologist_profiles.show.no_services_available') %></p>
+        <% end %>
+      </div>
+    </div>
 
-            <!-- Contact Information (right side) -->
-            <div class="column is-narrow">
-              <div class="buttons are-small is-flex is-flex-direction-column">
-                <%= link_to psychologist_profile_path(profile), class: "button is-primary is-outlined mb-2" do %>
-                  <span class="icon is-small"><i class="fas fa-user"></i></span>
-                  <span><%= t('psychologist_search.view_profile_button') %></span>
-                <% end %>
+    <div class="profile-section">
+      <h2 class="section-title">
+        <i class="fas fa-envelope icon-contact"></i>
+        <%= t('psychologist_profiles.show.contact_information') %>
+      </h2>
+      <div class="section-content">
+        <% contact_keys = {
+            email: 'fas fa-envelope',
+            telegram: 'fab fa-telegram',
+            whatsapp: 'fab fa-whatsapp',
+            primary_phone: 'fas fa-phone',
+            secondary_phone: 'fas fa-phone',
+            additional_phone: 'fas fa-phone'
+          }
+        %>
+        <% contact_methods = contact_keys.map do |key, icon|
+            value = case key
+                    when :email
+                      @psychologist_profile.user.email
+                    when :telegram
+                      @psychologist_profile.telegram
+                    when :whatsapp
+                      @psychologist_profile.whatsapp
+                    when :primary_phone
+                      @psychologist_profile.contact_phone
+                    when :secondary_phone
+                      @psychologist_profile.contact_phone2
+                    when :additional_phone
+                      @psychologist_profile.contact_phone3
+                    end
+            if value.present?
+              link = case key
+                     when :email
+                       "mailto:#{value}"
+                     when :telegram
+                       "https://t.me/#{value}"
+                     when :whatsapp
+                       "https://wa.me/#{value}"
+                     else
+                       "tel:#{value}"
+                     end
+              { key: key, label: t("psychologist_profiles.show.contact_methods.#{key}"), value: value, icon: icon, link: link }
+            end
+          end.compact
+        %>
 
-                <button class="button is-text contact-button" data-target="contact-<%= profile.id %>">
-                  <span class="icon is-small"><i class="fas fa-envelope"></i></span>
-                  <span><%= t('psychologist_search.contact_button') %></span>
-                </button>
+        <% primary_method = contact_methods.find { |m| m[:key].to_s == @psychologist_profile.primary_contact_method } %>
+        
+        <% if primary_method %>
+          <div class="primary-contact">
+            <a href="<%= primary_method[:link] %>" class="contact-cta">
+              <i class="<%= primary_method[:icon] %>"></i>
+              <span><%= t('psychologist_profiles.show.contact_me_via', label: primary_method[:label]) %></span>
+            </a>
+          </div>
+        <% end %>
+
+        <div class="other-contacts">
+          <button class="toggle-contacts" aria-expanded="false" data-show-text="<%= t('psychologist_profiles.show.show_all_contacts') %>" data-hide-text="<%= t('psychologist_profiles.show.hide_all_contacts') %>">
+            <span class="toggle-text"><%= t('psychologist_profiles.show.show_all_contacts') %></span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="contact-list" style="display: none;">
+            <% other_methods = contact_methods.reject { |m| m == primary_method } %>
+            <% other_methods.each do |method| %>
+              <div class="contact-item">
+                <div class="contact-info">
+                  <i class="<%= method[:icon] %>"></i>
+                  <span class="contact-label"><%= method[:label] %></span>
+                </div>
+                <div class="contact-actions">
+                  <input class="contact-input" readonly value="<%= method[:value] %>">
+                  <button class="copy-button" data-value="<%= method[:value] %>" title="<%= t('psychologist_profiles.show.copy') %>">
+                    <i class="fas fa-copy"></i>
+                  </button>
+                  <a href="<%= method[:link] %>" class="contact-link" target="_blank" title="<%= t('psychologist_profiles.show.open_link') %>">
+                    <i class="fas fa-external-link-alt"></i>
+                  </a>
+                </div>
               </div>
-
-              <!-- Contact Icons -->
-              <div class="contact-icons mt-2">
-                <% if profile.contact_phone.present? %>
-                  <a href="tel:<%= profile.contact_phone %>" class="is-primary-blue mr-1" title="Phone">
-                    <span class="icon"><i class="fas fa-phone"></i></span>
-                  </a>
-                <% end %>
-
-                <% if profile.user.email.present? %>
-                  <a href="mailto:<%= profile.user.email %>" class="is-primary-blue mr-1" title="Email">
-                    <span class="icon"><i class="fas fa-envelope"></i></span>
-                  </a>
-                <% end %>
-
-                <% if profile.telegram.present? %>
-                  <a href="https://t.me/<%= profile.telegram %>" target="_blank" class="is-primary-blue mr-1" title="Telegram">
-                    <span class="icon"><i class="fab fa-telegram"></i></span>
-                  </a>
-                <% end %>
-
-                <% if profile.whatsapp.present? %>
-                  <a href="https://wa.me/<%= profile.whatsapp %>" target="_blank" class="is-primary-blue" title="WhatsApp">
-                    <span class="icon"><i class="fab fa-whatsapp"></i></span>
-                  </a>
-                <% end %>
-              </div>
-
-              <!-- Hidden Contact Info -->
-              <div id="contact-<%= profile.id %>" class="contact-info mt-2" style="display: none;">
-                <% if profile.contact_phone.present? %>
-                  <p class="is-size-7">
-                    <span class="icon is-small"><i class="fas fa-phone"></i></span>
-                    <a href="tel:<%= profile.contact_phone %>"><%= profile.contact_phone %></a>
-                  </p>
-                <% end %>
-
-                <% if profile.user.email.present? %>
-                  <p class="is-size-7">
-                    <span class="icon is-small"><i class="fas fa-envelope"></i></span>
-                    <a href="mailto:<%= profile.user.email %>"><%= profile.user.email %></a>
-                  </p>
-                <% end %>
-
-                <% if profile.telegram.present? %>
-                  <p class="is-size-7">
-                    <span class="icon is-small"><i class="fab fa-telegram"></i></span>
-                    <a href="https://t.me/<%= profile.telegram %>" target="_blank">@<%= profile.telegram %></a>
-                  </p>
-                <% end %>
-
-                <% if profile.whatsapp.present? %>
-                  <p class="is-size-7">
-                    <span class="icon is-small"><i class="fab fa-whatsapp"></i></span>
-                    <a href="https://wa.me/<%= profile.whatsapp %>" target="_blank"><%= profile.whatsapp %></a>
-                  </p>
-                <% end %>
-              </div>
-            </div>
+            <% end %>
           </div>
         </div>
       </div>
     </div>
-  <% end %>
+  </div>
 </div>
-<style>
-  .delivery-method .delivery-method-input {
-    position: absolute;
-    opacity: 0;
-  }
 
-  .delivery-method {
-    background-color: white;
-    border: 1px solid #dbdbdb;
-    color: #363636;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    border-radius: 4px;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.2s ease;
-  }
 
-  .delivery-method:has(.delivery-method-input:checked) {
-    background-color: #485fc7; /* Bulma's primary color */
-    border-color: #485fc7;
-    color: white;
-  }
 
-  /* More specific targeting for checked state - only delivery method */
-  .delivery-method .delivery-method-input:checked ~ .icon,
-  .delivery-method .delivery-method-input:checked ~ span {
-    color: white;
-  }
 
-  /* Hover effect - only delivery method */
-  .delivery-method:hover {
-    border-color: #b5b5b5;
-  }
 
-  /* Focus effect - only delivery method */
-  .delivery-method:focus-within {
-    box-shadow: 0 0 0 0.125em rgba(72, 95, 199, 0.25);
-  }
 
-  /* Basic field styling - scoped to delivery method container only */
-  .delivery-method-container .field {
-    margin-bottom: 1rem;
-  }
 
-  .delivery-method-container .label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: #363636;
-  }
 
-  .delivery-method-container .is-grouped {
-    display: flex;
-    gap: 0.5rem;
-  }
 
-  .delivery-method-container .control {
-    display: flex;
-    align-items: center;
-  }
-</style>
 
 
 <style>
@@ -1232,6 +1056,9 @@
   }
 } 
 </style>
+
+
+
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
