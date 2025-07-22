@@ -83,15 +83,15 @@
       <div class="navbar-end">
         <!-- Navigation Links -->
         <div class="navbar-item">
-          <%= link_to 'Подобрать Психолога', search_landing_path, class: "nav-link" %>
+          <%= link_to t('find_a_psychologist'), search_landing_path, class: "nav-link" %>
         </div>
 
         <div class="navbar-item">
-          <%= link_to 'Для Психологов', landing_psych_path, class: "nav-link" %>
+          <%= link_to t('for_psychologists'), landing_psych_path, class: "nav-link" %>
         </div>
         
         <div class="navbar-item">
-          <%= link_to 'Контакты', contact_us_path, class: "nav-link" %>
+          <%= link_to t('contact'), contact_us_path, class: "nav-link" %>
         </div>
         
         <!-- User Menu -->
@@ -119,7 +119,7 @@
                       <span class="icon">
                         <i class="fas fa-user-edit"></i>
                       </span>
-                      <span>Мой Профиль</span>
+                      <span><% t('my_profile') %></span>
                     <% end %>
                   <% end %>
                   <% if current_user.client? && current_user.client_profile.present? %>
@@ -128,7 +128,7 @@
                       <span class="icon">
                         <i class="fas fa-user-edit"></i>
                       </span>
-                      <span>Мой Профиль</span>
+                      <span><% t('my_profile') %></span>
                     <% end %>
                   <% end %>
                   <hr class="dropdown-divider">
@@ -138,15 +138,15 @@
                     <span class="icon">
                       <i class="fas fa-sign-out-alt"></i>
                     </span>
-                    <span>Выйти</span>
+                    <span><% t('logout') %></span>
                   <% end %>
                 </div>
               </div>
             </div>
           <% else %>
             <div class="auth-buttons">
-              <%= link_to 'Войти', new_user_session_path, class: "auth-btn auth-btn-login" %>
-              <%= link_to 'Регистрация', new_user_registration_path, class: "auth-btn auth-btn-signup" %>
+              <%= link_to t('login'), new_user_session_path, class: "auth-btn auth-btn-login" %>
+              <%= link_to t('registration'), new_user_registration_path, class: "auth-btn auth-btn-signup" %>
             </div>
           <% end %>
         </div>

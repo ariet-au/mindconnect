@@ -1,68 +1,67 @@
+# config/locales/en.yml
 en:
   hello: "Hello"
-  search: "Search"
-  specialities: "Specialities"
-  clear_all: "Clear All"
-  issues: "Issues"
-  issue: "Issue"
-  "client types": "Client Types"
-  "client type": "Client Type"
-  Languages: "Languages"
-  "Delivery Method": "Delivery Method"
-  "In person": "In person"
-  "Online": "Online"
-  religion: "Religion"
-  country: "Country"
-  "City": "City"
-  "Gender": "Gender"
-  "Price Range": "Price Range"
-  "Min Rate": "Min Rate"
-  "Max Rate": "Max Rate"
-  "Apply Filters": "Apply Filters"
-  name: "Name"
-  email: "Email"
-  phone: "Phone"
-  "view profile": "View Profile"
   contact: "Contact"
-  "my profile": "My Profile"
-  "edit profile": "Edit Profile"
-  profile: "Profile"
+  my_profile: "My Profile"
+  edit_profile: "Edit Profile"
+  for_psychologists: "For Psychologists"
+  find_a_psychologist: "Find a Psychologist"
+  logout: "Logout"
+  login: "Login"
+  registration: "Registration"
   filters:
     clear: "Clear All"
-  Languages:
-    english: "English"
-    russian: "Russian"
-    kyrgyz: "Kyrgyz"
-    uzbek: "Uzbek"
-    kazakh: "Kazakh"
+  languages: # This block is for the navbar locale selector (e.g., "English", "Русский", "Кыргызча")
+    en: "English"
+    ru: "Русский"
+    kg: "Кыргызча"
   countries:
     kyrgyzstan: "Kyrgyzstan"
     kazakhstan: "Kazakhstan"
     uzbekistan: "Uzbekistan"
-  Cities:
+  cities:
     bishkek: "Bishkek"
     osh: "Osh"
     naryn: "Naryn"
-    jalalabad: "Jalal-Abad"
+    jalal_abad: "Jalal-Abad"
     batken: "Batken"
     talas: "Talas"
     almaty: "Almaty"
     astana: "Astana"
     shymkent: "Shymkent"
-    "Taraz": "Taraz"
+    taraz: "Taraz"
     aktobe: "Aktobe"
-    aktau: "Aktau"
-    uralsk: "Uralsk"
-    samarkand: "Samarkand"
-    tashkent: "Tashkent"
-    andijan: "Andijan"
+    atyrau: "Atyrau"
+    karaganda: "Karaganda"
+    oskemen: "Oskemen"
+    pavlodar: "Pavlodar"
+    djalal_abad: "Djalal-Abad"
+    karakol: "Karakol"
+    toshkent: "Toshkent"
     namangan: "Namangan"
+    samarkand: "Samarkand"
+    andijan: "Andijan"
+    nukus: "Nukus"
+    tashkent: "Tashkent"
     ferghana: "Ferghana"
   time:
     formats:
       default: "%d.%m.%Y %H:%M:%S"
       short: "%d %b %H:%M"
       long: "%d %B %Y %H:%M"
+    date:
+      formats:
+        default: "%Y-%m-%d"
+        short: "%b %d"
+        long: "%B %d, %Y"
+      day_names: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+      abbr_day_names: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+      month_names: [~, "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+      abbr_month_names: [~, "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+      order:
+        - :year
+        - :month
+        - :day
   psychologist_profiles:
     show:
       dashboard: "Dashboard"
@@ -76,7 +75,7 @@ en:
       years_experience:
         one: "1 year experience"
         other: "%{count} years experience"
-      years_experience_short: "%{count} years exp." # New key for the short version
+      years_experience_short: "%{count} years exp."
       about_me: "About Me"
       invalid_youtube_link: "Invalid YouTube link format."
       education: "Education"
@@ -143,3 +142,20 @@ en:
     certified_badge: "Certified"
     view_profile_button: "View Profile"
     contact_button: "Contact"
+  enums:
+    gender:
+      unspecified: "Unspecified"
+      male: "Male"
+      female: "Female"
+      other: "Other"
+    religion:
+      muslim: "Muslim"
+      christian: "Christian"
+      other_religion: "Other Religion"
+  spoken_languages: # This block is for languages spoken by psychologists in profiles/search filters
+    kyrgyz: "Kyrgyz"
+    russian: "Russian"
+    kazakh: "Kazakh"
+    english: "English"
+    uzbek: "Uzbek"
+    tatar: "Tatar"

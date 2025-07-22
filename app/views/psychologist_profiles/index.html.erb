@@ -163,7 +163,7 @@
         <%= select_tag :religion, 
           options_for_select(
             [[t('psychologist_search.any_religion'), '']] + 
-            safe_religions.map { |r| [r.humanize.titleize, r] },
+            safe_religions.map { |r| [t("enums.religion.#{r}"), r] }, # Changed this line
             params[:religion]
           ),
           class: "select" %>
@@ -223,7 +223,7 @@ disabled: params[:country].blank? %>
           <%= select_tag :gender, 
             options_for_select(
               [[t('psychologist_search.any_gender'), '']] + 
-              @genders.map { |g| [g.humanize.titleize, g] },
+              @genders.map { |g| [t("enums.gender.#{g}"), g] }, # Changed this line
               params[:gender]
             ),
             class: "select" %>
@@ -282,115 +282,6 @@ disabled: params[:country].blank? %>
   <% end %>
 </div>
 
-<style>
-  @media screen and (min-width: 769px) {
-    [x-cloak] { 
-      display: block !important; 
-    }
-    
-    .filter-section {
-      display: block !important;
-    }
-  }
-
-  @media screen and (max-width: 768px) {
-    .box {
-      margin: 0.5rem;
-      padding: 1rem;
-    }
-    
-    .field.has-addons .control:not(:last-child) .button,
-    .field.has-addons .control:not(:last-child) .input {
-      border-radius: 4px 0 0 4px;
-    }
-    
-    .field.has-addons .control:last-child .button,
-    .field.has-addons .control:last-child .input {
-      border-radius: 0 4px 4px 0;
-    }
-    
-    .tags .tag {
-      margin-bottom: 0.25rem;
-    }
-    
-    .button.is-fullwidth {
-      justify-content: space-between;
-    }
-  }
-
-  .field:not(:last-child) {
-    margin-bottom: 1rem;
-  }
-</style>
-
-<style>
-  /* Hide the actual checkbox - only for delivery method */
-  .delivery-method .delivery-method-input {
-    position: absolute;
-    opacity: 0;
-  }
-  
-  /* Style for unselected button - only delivery method buttons */
-  .delivery-method {
-    background-color: white;
-    border: 1px solid #dbdbdb;
-    color: #363636;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    border-radius: 4px;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.2s ease;
-  }
-  
-  /* Style for selected button - only delivery method */
-  .delivery-method:has(.delivery-method-input:checked) {
-    background-color: #485fc7; /* Bulma's primary color */
-    border-color: #485fc7;
-    color: white;
-  }
-  
-  /* More specific targeting for checked state - only delivery method */
-  .delivery-method .delivery-method-input:checked ~ .icon,
-  .delivery-method .delivery-method-input:checked ~ span {
-    color: white;
-  }
-  
-  /* Hover effect - only delivery method */
-  .delivery-method:hover {
-    border-color: #b5b5b5;
-  }
-  
-  /* Focus effect - only delivery method */
-  .delivery-method:focus-within {
-    box-shadow: 0 0 0 0.125em rgba(72, 95, 199, 0.25);
-  }
-
-  /* Basic field styling - scoped to delivery method container only */
-  .delivery-method-container .field {
-    margin-bottom: 1rem;
-  }
-  
-  .delivery-method-container .label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: #363636;
-  }
-  
-  .delivery-method-container .is-grouped {
-    display: flex;
-    gap: 0.5rem;
-  }
-  
-  .delivery-method-container .control {
-    display: flex;
-    align-items: center;
-  }
-</style>
-
-
 
 
 
@@ -404,7 +295,7 @@ disabled: params[:country].blank? %>
         <div class="column is-2-desktop is-3-tablet is-4-mobile profile-img-container has-text-centered">
           <figure class="image is-96x96 mx-auto">
             <% if profile.profile_img.attached? %>
-              <%= image_tag profile.profile_img.variant(resize_to_limit: [96, 96]), class: "is-rounded"%>          
+              <%= image_tag profile.profile_img.variant(resize_to_limit: [96, 96]), class: "is-rounded"%>           
             <% else %>
               <img src="/assets/default-profile.png" alt="Default Profile" class="is-rounded profile-image">
             <% end %>
@@ -571,6 +462,105 @@ disabled: params[:country].blank? %>
   <% end %>
 </div>
 
+
+<style>
+  @media screen and (min-width: 769px) {
+    [x-cloak] { 
+      display: block !important; 
+    }
+    
+    .filter-section {
+      display: block !important;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .box {
+      margin: 0.5rem;
+      padding: 1rem;
+    }
+    
+    .field.has-addons .control:not(:last-child) .button,
+    .field.has-addons .control:not(:last-child) .input {
+      border-radius: 4px 0 0 4px;
+    }
+    
+    .field.has-addons .control:last-child .button,
+    .field.has-addons .control:last-child .input {
+      border-radius: 0 4px 4px 0;
+    }
+    
+    .tags .tag {
+      margin-bottom: 0.25rem;
+    }
+    
+    .button.is-fullwidth {
+      justify-content: space-between;
+    }
+  }
+
+  .field:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+
+  .delivery-method .delivery-method-input {
+    position: absolute;
+    opacity: 0;
+  }
+  
+  .delivery-method {
+    background-color: white;
+    border: 1px solid #dbdbdb;
+    color: #363636;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+  }
+  
+  .delivery-method:has(.delivery-method-input:checked) {
+    background-color: #485fc7; /* Bulma's primary color */
+    border-color: #485fc7;
+    color: white;
+  }
+  
+  .delivery-method .delivery-method-input:checked ~ .icon,
+  .delivery-method .delivery-method-input:checked ~ span {
+    color: white;
+  }
+  
+  .delivery-method:hover {
+    border-color: #b5b5b5;
+  }
+  
+  .delivery-method:focus-within {
+    box-shadow: 0 0 0 0.125em rgba(72, 95, 199, 0.25);
+  }
+
+  .delivery-method-container .field {
+    margin-bottom: 1rem;
+  }
+  
+  .delivery-method-container .label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #363636;
+  }
+  
+  .delivery-method-container .is-grouped {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .delivery-method-container .control {
+    display: flex;
+    align-items: center;
+  }
+</style>
 
 
 
