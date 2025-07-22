@@ -30,114 +30,228 @@ class PsychologistProfilesController < ApplicationController
     
   end
 
-def index
-   @psychologist_profiles = PsychologistProfile.verified.order(created_at: :desc)
+# def index
+#    @psychologist_profiles = PsychologistProfile.verified.order(created_at: :desc)
 
-  if params[:search].present?
-    @psychologist_profiles = PsychologistProfile
-      .joins(:services) # only if services are part of search
-      .merge(PsychologistProfile.search_full_text(params[:search]))
-  end
+#   if params[:search].present?
+#     @psychologist_profiles = PsychologistProfile
+#       .joins(:services) # only if services are part of search
+#       .merge(PsychologistProfile.search_full_text(params[:search]))
+#   end
 
-    session[:currency] = params[:currency] if params[:currency].present?
+#     session[:currency] = params[:currency] if params[:currency].present?
 
  
 
 
- @genders = PsychologistProfile.where.not(gender: [nil, ""]).distinct.order(:gender).pluck(:gender)
- @religions = PsychologistProfile.where.not(religion: [nil, ""]).distinct.order(:religion).pluck(:religion)
-  if params[:religion].present?
-    @psychologist_profiles = @psychologist_profiles.where(religion: params[:religion])
-  end
+#  @genders = PsychologistProfile.where.not(gender: [nil, ""]).distinct.order(:gender).pluck(:gender)
+#  @religions = PsychologistProfile.where.not(religion: [nil, ""]).distinct.order(:religion).pluck(:religion)
+#   if params[:religion].present?
+#     @psychologist_profiles = @psychologist_profiles.where(religion: params[:religion])
+#   end
 
 
-  if params[:gender].present?
-    @psychologist_profiles = @psychologist_profiles.where(gender: params[:gender])
-  end
+#   if params[:gender].present?
+#     @psychologist_profiles = @psychologist_profiles.where(gender: params[:gender])
+#   end
 
-  # In-person/online filtering
-  if params[:in_person] == "1" && params[:online] == "1"
-    @psychologist_profiles = @psychologist_profiles.where(in_person: true).or(PsychologistProfile.where(online: true))
-  elsif params[:in_person] == "1"
-    @psychologist_profiles = @psychologist_profiles.where(in_person: true)
-  elsif params[:online] == "1"
-    @psychologist_profiles = @psychologist_profiles.where(online: true)
-  end
+#   # In-person/online filtering
+#   if params[:in_person] == "1" && params[:online] == "1"
+#     @psychologist_profiles = @psychologist_profiles.where(in_person: true).or(PsychologistProfile.where(online: true))
+#   elsif params[:in_person] == "1"
+#     @psychologist_profiles = @psychologist_profiles.where(in_person: true)
+#   elsif params[:online] == "1"
+#     @psychologist_profiles = @psychologist_profiles.where(online: true)
+#   end
 
-  # Sanitize multi-selects
-  specialty_ids    = Array(params[:specialty_ids]).reject(&:blank?)
-  issue_ids        = Array(params[:issue_ids]).reject(&:blank?)
-  #client_type_ids  = Array(params[:client_type_ids]).reject(&:blank?)
-  client_type_ids = if params[:client_type_ids].present?
-  Array(params[:client_type_ids]).reject(&:blank?)
-  elsif params[:client_type_id].present?
-    [params[:client_type_id]]
-  else
-    []
-  end
-    language_ids     = Array(params[:language_ids]).reject(&:blank?)
+#   # Sanitize multi-selects
+#   specialty_ids    = Array(params[:specialty_ids]).reject(&:blank?)
+#   issue_ids        = Array(params[:issue_ids]).reject(&:blank?)
+#   #client_type_ids  = Array(params[:client_type_ids]).reject(&:blank?)
+#   client_type_ids = if params[:client_type_ids].present?
+#   Array(params[:client_type_ids]).reject(&:blank?)
+#   elsif params[:client_type_id].present?
+#     [params[:client_type_id]]
+#   else
+#     []
+#   end
+#     language_ids     = Array(params[:language_ids]).reject(&:blank?)
 
-  if language_ids.any?
-    @psychologist_profiles = @psychologist_profiles.joins(:languages).where(languages: { id: language_ids }).distinct
-  end
+#   if language_ids.any?
+#     @psychologist_profiles = @psychologist_profiles.joins(:languages).where(languages: { id: language_ids }).distinct
+#   end
 
-  if specialty_ids.any?
-    @psychologist_profiles = @psychologist_profiles.joins(:specialties).where(specialties: { id: specialty_ids }).distinct
-  end
+#   if specialty_ids.any?
+#     @psychologist_profiles = @psychologist_profiles.joins(:specialties).where(specialties: { id: specialty_ids }).distinct
+#   end
 
-  if issue_ids.any?
-    @psychologist_profiles = @psychologist_profiles.joins(:issues).where(issues: { id: issue_ids }).distinct
-  end
+#   if issue_ids.any?
+#     @psychologist_profiles = @psychologist_profiles.joins(:issues).where(issues: { id: issue_ids }).distinct
+#   end
 
-  if client_type_ids.any?
-    @psychologist_profiles = @psychologist_profiles.joins(:client_types).where(client_types: { id: client_type_ids }).distinct
-  end
+#   if client_type_ids.any?
+#     @psychologist_profiles = @psychologist_profiles.joins(:client_types).where(client_types: { id: client_type_ids }).distinct
+#   end
 
-  if params[:country].present?
-    @psychologist_profiles = @psychologist_profiles.where(country: params[:country])
-  end
+#   if params[:country].present?
+#     @psychologist_profiles = @psychologist_profiles.where(country: params[:country])
+#   end
 
-  if params[:city].present?
-    @psychologist_profiles = @psychologist_profiles.where("city ILIKE ?", "%#{params[:city]}%")
-  end
+#   if params[:city].present?
+#     @psychologist_profiles = @psychologist_profiles.where("city ILIKE ?", "%#{params[:city]}%")
+#   end
 
 
-  # Filter by currency - do this AFTER all ActiveRecord filtering
-  target_currency = current_currency.upcase
-  min_rate = params[:min_rate].present? ? params[:min_rate].to_f : nil
-  max_rate = params[:max_rate].present? ? params[:max_rate].to_f : nil
+#   # Filter by currency - do this AFTER all ActiveRecord filtering
+#   target_currency = current_currency.upcase
+#   min_rate = params[:min_rate].present? ? params[:min_rate].to_f : nil
+#   max_rate = params[:max_rate].present? ? params[:max_rate].to_f : nil
 
-  # Apply currency filtering only if rate filters are present
-  if min_rate.present? || max_rate.present?
-    filtered_profiles_array = @psychologist_profiles.filter_map do |profile|
-      begin
-        # Skip profiles with blank/nil currency or rate
-        next if profile.currency.blank? || profile.standard_rate.blank? || profile.standard_rate.to_f <= 0
+#   # Apply currency filtering only if rate filters are present
+#   if min_rate.present? || max_rate.present?
+#     filtered_profiles_array = @psychologist_profiles.filter_map do |profile|
+#       begin
+#         # Skip profiles with blank/nil currency or rate
+#         next if profile.currency.blank? || profile.standard_rate.blank? || profile.standard_rate.to_f <= 0
         
-        converted_rate = profile.converted_rate(target_currency)
-        next unless converted_rate&.positive? # Skip nil/zero rates
+#         converted_rate = profile.converted_rate(target_currency)
+#         next unless converted_rate&.positive? # Skip nil/zero rates
         
-        rate_value = converted_rate.to_f
+#         rate_value = converted_rate.to_f
         
-        # Check rate bounds
-        next unless (min_rate.nil? || rate_value >= min_rate) &&
-                    (max_rate.nil? || rate_value <= max_rate)
+#         # Check rate bounds
+#         next unless (min_rate.nil? || rate_value >= min_rate) &&
+#                     (max_rate.nil? || rate_value <= max_rate)
         
-        profile # Return the profile if it passes all criteria
+#         profile # Return the profile if it passes all criteria
         
-      rescue StandardError => e
-        Rails.logger.error "Currency conversion failed for profile #{profile.id}: #{e.message}"
-        next # Skip this profile and continue
-      end
-    end
+#       rescue StandardError => e
+#         Rails.logger.error "Currency conversion failed for profile #{profile.id}: #{e.message}"
+#         next # Skip this profile and continue
+#       end
+#     end
     
-    # Convert filtered array to paginated collection
-    @psychologist_profiles = Kaminari.paginate_array(filtered_profiles_array).page(params[:page])
-  else
-    # No currency filtering needed, paginate the ActiveRecord relation directly
-    @psychologist_profiles = @psychologist_profiles.page(params[:page])
+#     # Convert filtered array to paginated collection
+#     @psychologist_profiles = Kaminari.paginate_array(filtered_profiles_array).page(params[:page])
+#   else
+#     # No currency filtering needed, paginate the ActiveRecord relation directly
+#     @psychologist_profiles = @psychologist_profiles.page(params[:page])
+#   end
+# end
+
+  def index
+    # --- Setup for Country/City Filtering ---
+    @countries_with_cities = get_countries_with_cities_data
+    @cities_for_select = []
+    if params[:country].present?
+      selected_country_data = @countries_with_cities.find { |c| c['name'] == params[:country] }
+      @cities_for_select = selected_country_data['cities'] if selected_country_data
+    end
+    # --- End of Setup ---
+
+    @psychologist_profiles = PsychologistProfile.verified.order(created_at: :desc)
+
+    if params[:search].present?
+      @psychologist_profiles = PsychologistProfile
+        .joins(:services) # only if services are part of search
+        .merge(PsychologistProfile.search_full_text(params[:search]))
+    end
+
+    session[:currency] = params[:currency] if params[:currency].present?
+
+    @genders = PsychologistProfile.where.not(gender: [nil, ""]).distinct.order(:gender).pluck(:gender)
+    @religions = PsychologistProfile.where.not(religion: [nil, ""]).distinct.order(:religion).pluck(:religion)
+
+    if params[:religion].present?
+      @psychologist_profiles = @psychologist_profiles.where(religion: params[:religion])
+    end
+
+    if params[:gender].present?
+      @psychologist_profiles = @psychologist_profiles.where(gender: params[:gender])
+    end
+
+    # In-person/online filtering
+    if params[:in_person] == "1" && params[:online] == "1"
+      @psychologist_profiles = @psychologist_profiles.where(in_person: true).or(PsychologistProfile.where(online: true))
+    elsif params[:in_person] == "1"
+      @psychologist_profiles = @psychologist_profiles.where(in_person: true)
+    elsif params[:online] == "1"
+      @psychologist_profiles = @psychologist_profiles.where(online: true)
+    end
+
+    # Sanitize multi-selects
+    specialty_ids = Array(params[:specialty_ids]).reject(&:blank?)
+    issue_ids = Array(params[:issue_ids]).reject(&:blank?)
+    client_type_ids = if params[:client_type_ids].present?
+      Array(params[:client_type_ids]).reject(&:blank?)
+    elsif params[:client_type_id].present?
+      [params[:client_type_id]]
+    else
+      []
+    end
+    language_ids = Array(params[:language_ids]).reject(&:blank?)
+
+    if language_ids.any?
+      @psychologist_profiles = @psychologist_profiles.joins(:languages).where(languages: { id: language_ids }).distinct
+    end
+
+    if specialty_ids.any?
+      @psychologist_profiles = @psychologist_profiles.joins(:specialties).where(specialties: { id: specialty_ids }).distinct
+    end
+
+    if issue_ids.any?
+      @psychologist_profiles = @psychologist_profiles.joins(:issues).where(issues: { id: issue_ids }).distinct
+    end
+
+    if client_type_ids.any?
+      @psychologist_profiles = @psychologist_profiles.joins(:client_types).where(client_types: { id: client_type_ids }).distinct
+    end
+
+    if params[:country].present?
+      @psychologist_profiles = @psychologist_profiles.where(country: params[:country])
+    end
+
+    if params[:city].present?
+      @psychologist_profiles = @psychologist_profiles.where("city ILIKE ?", "%#{params[:city]}%")
+    end
+
+    # Filter by currency - do this AFTER all ActiveRecord filtering
+    target_currency = current_currency.upcase
+    min_rate = params[:min_rate].present? ? params[:min_rate].to_f : nil
+    max_rate = params[:max_rate].present? ? params[:max_rate].to_f : nil
+
+    # Apply currency filtering only if rate filters are present
+    if min_rate.present? || max_rate.present?
+      filtered_profiles_array = @psychologist_profiles.filter_map do |profile|
+        begin
+          # Skip profiles with blank/nil currency or rate
+          next if profile.currency.blank? || profile.standard_rate.blank? || profile.standard_rate.to_f <= 0
+          
+          converted_rate = profile.converted_rate(target_currency)
+          next unless converted_rate&.positive? # Skip nil/zero rates
+          
+          rate_value = converted_rate.to_f
+          
+          # Check rate bounds
+          next unless (min_rate.nil? || rate_value >= min_rate) &&
+                      (max_rate.nil? || rate_value <= max_rate)
+          
+          profile # Return the profile if it passes all criteria
+          
+        rescue StandardError => e
+          Rails.logger.error "Currency conversion failed for profile #{profile.id}: #{e.message}"
+          next # Skip this profile and continue
+        end
+      end
+      
+      # Convert filtered array to paginated collection
+      @psychologist_profiles = Kaminari.paginate_array(filtered_profiles_array).page(params[:page])
+    else
+      # No currency filtering needed, paginate the ActiveRecord relation directly
+      @psychologist_profiles = @psychologist_profiles.page(params[:page])
+    end
   end
-end
+
 
 
 
@@ -267,6 +381,11 @@ end
     def set_psychologist_profile
       @psychologist_profile = PsychologistProfile.find(params.expect(:id))
     end
+
+  def get_countries_with_cities_data
+    # Access the pre-loaded data from application config
+    Rails.application.config.countries_and_cities
+  end
 
     def check_user_confirmation
       if user_signed_in? && !current_user.confirmed?

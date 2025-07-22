@@ -159,3 +159,10 @@ en:
     english: "English"
     uzbek: "Uzbek"
     tatar: "Tatar"
+  client_types: 
+    single_adult: "Adult"
+    single_child: "Child"
+    single_teenager: "Teenager"
+    romantic_couple: "Romantic Couple"
+    parent_child: "Parent-Child"
+    other_couple: "Other Couple"

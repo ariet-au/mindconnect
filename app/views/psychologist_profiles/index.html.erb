@@ -90,24 +90,23 @@
           </div>
 
           <!-- Client Types -->
-          <div class="column is-6-tablet is-12-mobile">
-            <div class="field">
-              <label class="label"><%= t('psychologist_search.client_types_label') %></label>
-              <div class="control">
-                <div class="select is-fullwidth">
-                  <%= select_tag :client_type_id, 
-                                  options_for_select(
-                                    [[t('psychologist_search.all_client_types'), '']] +
-                                    ClientType.all.map { |i| [i.name, i.id] },
-                                    params[:client_type_id]
-                                  ),
-                                  class: "select filter-select"
-                                  %>
-                </div>
-              </div>
-            </div>
-          </div>
-
+<div class="column is-6-tablet is-12-mobile">
+  <div class="field">
+    <label class="label"><%= t('psychologist_search.client_types_label') %></label>
+    <div class="control">
+      <div class="select is-fullwidth">
+        <%= select_tag :client_type_id,
+                       options_for_select(
+                         [[t('psychologist_search.all_client_types'), '']] +
+                         ClientType.all.map { |i| [t("client_types.#{i.name}"), i.id] }, # <--- CHANGE HERE
+                         params[:client_type_id]
+                       ),
+                       class: "select filter-select"
+                       %>
+      </div>
+    </div>
+  </div>
+</div>
           <!-- Languages -->
           <div class="column is-6-tablet is-12-mobile">
             <div class="field">
@@ -154,7 +153,6 @@
 
 <!-- Religion -->
 <% safe_religions = @religions || [] %>
-
 <div class="column is-6-tablet is-12-mobile">
   <div class="field">
     <label class="label"><%= t('psychologist_search.religion_label') %></label>
@@ -174,46 +172,54 @@
 
 
         <!-- Location Filters -->
-        <div class="columns is-multiline">
-          <div class="column is-6-tablet is-12-mobile">
-            <div class="field">
-              <label class="label"><%= t('psychologist_search.country_label') %></label>
-              <div class="control">
-                <div class="select is-fullwidth">
-                    <%= select_tag :country,
-                                   options_for_select(
-                                     [[t('psychologist_search.all_countries'), '']] +
-                                     countries_with_cities.map { |c| [c['name'], c['name']] },
-                                     params[:country]
-                                   ),
-                                   class: "select filter-select",
-                                   id: "search-country",
-                                   onchange: "updateCityFilter()" %>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="column is-6-tablet is-12-mobile">
-            <div class="field">
-              <label class="label"><%= t('psychologist_search.city_label') %></label>
-              <div class="control">
-                <div class="select is-fullwidth">
-<%= select_tag :city,
-options_for_select(
-  [[t('psychologist_search.all_cities'), '']], 
-  params[:city] 
-),
-class: "select filter-select",
-id: "search-city",
-disabled: params[:country].blank? %>
-                </div>
+     <%= turbo_frame_tag "location_filters" do %>
+      <div class="columns is-multiline">
+        <div class="column is-6-tablet is-12-mobile">
+          <div class="field">
+            <label class="label"><%= t('psychologist_search.country_label') %></label>
+            <div class="control">
+              <div class="select is-fullwidth">
+<%= select_tag :country,
+                 options_for_select(
+                   [[t('psychologist_search.all_countries'), '']] +
+                   @countries_with_cities.map { |c| [t("countries.#{c['name']}"), c['name']] }, # <--- CHANGE HERE
+                   params[:country]
+                 ),
+                 class: "select filter-select",
+                 id: "search-country",
+                 onchange: "this.form.requestSubmit()" %>
               </div>
             </div>
           </div>
         </div>
 
-       <div class="columns is-multiline">
+        <div class="column is-6-tablet is-12-mobile">
+          <div class="field">
+            <label class="label"><%= t('psychologist_search.city_label') %></label>
+            <div class="control">
+              <div class="select is-fullwidth">
+<%= select_tag :city,
+                 options_for_select(
+                   [[t('psychologist_search.all_cities'), '']] +
+                   @cities_for_select.map { |city_name| [t("cities.#{city_name}"), city_name] }, # <--- CHANGE HERE
+                   params[:city]
+                 ),
+                 class: "select filter-select",
+                 id: "search-city",
+                 disabled: @cities_for_select.empty? %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+
+
+
+
+
+
   <!-- Gender -->
   <div class="column is-6-tablet is-12-mobile">
     <div class="field">
@@ -569,35 +575,9 @@ disabled: params[:country].blank? %>
 
 
 
-<script>
-  // Country-city JSON data - must come first
-  const countryCityData = <%= raw countries_with_cities.each_with_object({}) { |country, hash| hash[country['name']] = country['cities'] }.to_json %>;
-</script>
 
-<script>
-  // Make updateCityFilter globally available
-  function updateCityFilter() {
-    const countrySelect = document.getElementById('search-country');
-    const citySelect = document.getElementById('search-city');
-    const selectedCountry = countrySelect?.value;
-    const cities = countryCityData[selectedCountry] || [];
 
-    if (!citySelect) return;
-    citySelect.innerHTML = '<option value="">All Cities</option>';
-    citySelect.disabled = cities.length === 0;
 
-    cities.forEach(city => {
-      const option = new Option(city, city);
-      citySelect.add(option);
-    });
-
-    const urlParams = new URLSearchParams(window.location.search);
-    const selectedCity = urlParams.get('city');
-    if (selectedCity && cities.includes(selectedCity)) {
-      citySelect.value = selectedCity;
-    }
-  }
-</script>
 
 <script>
   document.addEventListener('turbo:load', function () {
@@ -622,7 +602,6 @@ disabled: params[:country].blank? %>
       window.location.href = url.pathname;
     });
 
-    // Initialize TomSelect for all select elements EXCEPT country/city selects
     document.querySelectorAll(".tom-select").forEach((el) => {
       // Skip initialization for country and city selects
       if (el.id === 'search-country' || el.id === 'search-city') return;
@@ -661,20 +640,7 @@ disabled: params[:country].blank? %>
       });
     }
 
-    // Country-city select logic
-    const countrySelect = document.getElementById('search-country');
-    if (countrySelect && countrySelect.value) {
-      updateCityFilter();
-    }
+    
 
-    countrySelect?.addEventListener('change', updateCityFilter);
-
-    // Responsive filter toggle (Alpine support)
-    window.addEventListener('resize', function () {
-      const filterSection = document.querySelector('[x-data]');
-      if (filterSection && filterSection.__x) {
-        filterSection.__x.$data.showFilters = window.innerWidth > 768;
-      }
-    });
   });
 </script>

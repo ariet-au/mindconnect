@@ -152,10 +152,18 @@ ru:
       muslim: "Мусульманство"
       christian: "Христианство"
       other_religion: "Другая религия"
-  spoken_languages: # This block is for languages spoken by psychologists in profiles/search filters
+    
+  spoken_languages: 
     kyrgyz: "Кыргызский"
     russian: "Русский"
     kazakh: "Казахский"
     english: "Английский"
     uzbek: "Узбекский"
     tatar: "Татарский"
+  client_types: 
+    single_adult: "Взрослый"
+    single_child: "Ребенок"
+    single_teenager: "Подросток"
+    romantic_couple: "Романтическая пара"
+    parent_child: "Родитель-ребенок"
+    other_couple: "Другая пара"

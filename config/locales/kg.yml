@@ -15,6 +15,7 @@ kg:
     en: "Англисче"
     ru: "Орусча"
     kg: "Кыргызча"
+  
   countries:
     kyrgyzstan: "Кыргызстан"
     kazakhstan: "Казакстан"
@@ -159,3 +160,10 @@ kg:
     english: "Англисче"
     uzbek: "Өзбекче"
     tatar: "Татарча"
+  client_types: 
+    single_adult: "Чон киши"
+    single_child: "Бала"
+    single_teenager: "Өспүрүм"
+    romantic_couple: "Романтик жуп"
+    parent_child: "Ата-эне - бала"
+    other_couple: "Башка жуп"

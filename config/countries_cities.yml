@@ -1,26 +1,26 @@
 # config/countries_cities.yml
-- name: Kazakhstan
+- name: kazakhstan
   cities:
-    - Astana
-    - Almaty
-    - Aktobe  
-    - Atyrau
-    - Karaganda
-    - Oskemen
-    - Pavlodar
-    - Shymkent
-    - Taraz
-- name: Kyrgyzstan
+    - astana
+    - almaty
+    - aktobe
+    - atyrau
+    - karaganda
+    - oskemen
+    - pavlodar
+    - shymkent
+    - taraz
+- name: kyrgyzstan
   cities:
-    - Bishkek
-    - Djalal-Abad
-    - Karakol
-    - Osh
-    - Talas
-- name: Uzbekistan
+    - bishkek
+    - djalal-abad
+    - karakol
+    - osh
+    - talas
+- name: uzbekistan
   cities:
-    - Toshkent
-    - Namangan
-    - Samarkand
-    - Andijan
-    - Nukus
+    - toshkent
+    - namangan
+    - samarkand
+    - andijan
+    - nukus
