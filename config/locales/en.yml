@@ -65,19 +65,19 @@ en:
       default: "%d.%m.%Y %H:%M:%S"
       short: "%d %b %H:%M"
       long: "%d %B %Y %H:%M"
-    date:
-      formats:
-        default: "%Y-%m-%d"
-        short: "%b %d"
-        long: "%B %d, %Y"
-      day_names: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-      abbr_day_names: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-      month_names: [~, "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-      abbr_month_names: [~, "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-      order:
-        - :year
-        - :month
-        - :day
+  date:
+    formats:
+      default: "%Y-%m-%d"
+      short: "%b %d"
+      long: "%B %d, %Y"
+    day_names: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    abbr_day_names: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    month_names: [~, "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    abbr_month_names: [~, "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    order:
+      - :year
+      - :month
+      - :day
         
   psychologist_profiles:
     show:
@@ -206,61 +206,77 @@ en:
     family: "Family"
     group: "Group"
 
-  # IMPORTANT: REPLACE THESE PLACEHOLDERS WITH THE EXACT STRINGS FROM YOUR DATABASE.
-  # The keys here MUST match the values stored in your database for specialty.name.
-  specialties:
-    acceptance_and_commitment_therapy: "Acceptance and Commitment Therapy"
-    family_therapy: "Family Therapy"
-    relief_therapy: "Relief Therapy"
-    emdr: "Eye Movement Desensitization and Reprocessing"
-    client_centered_therapy: "Client-Centered Therapy"
-    emotionally_focused_therapy: "Emotionally Focused Therapy"
-    exposure_therapy: "Exposure Therapy"
-    applied_behavior_analysis: "Applied Behavior Analysis"
-    ifs: "Internal Family Systems"
-    art_therapy: "Art Therapy"
-    psychoanalysis: "Psychoanalysis"
-    rebt: "Rational Emotive Behavioral Therapy"
-    # Add all other specialty names from your database here.
-
-  # IMPORTANT: REPLACE THESE PLACEHOLDERS WITH THE EXACT STRINGS FROM YOUR DATABASE.
-  # The keys here MUST match the values stored in your database for issue.name.
-  issues:
-    "Stress": "Stress"
-    "Grief and Loss": "Grief and Loss"
-    "Self-Esteem": "Self-Esteem"
-    "Family Conflicts": "Family Conflicts"
-    "Eating Disorders": "Eating Disorders"
-    "Anxiety": "Anxiety"
-    "Depression": "Depression"
-    "Relationship Problems": "Relationship Problems"
-    "Work Stress": "Work Stress"
-    "Sleep Issues": "Sleep Issues"
-    "Panic Attacks": "Panic Attacks"
-    "Social Anxiety": "Social Anxiety"
-    "Communication Issues": "Communication Issues"
-    "Trust Issues": "Trust Issues"
-    "Anger Issues": "Anger Issues"
-    "Life Transitions": "Life Transitions"
-    "Identity Issues": "Identity Issues"
-    "Parenting Challenges": "Parenting Challenges"
-    "Academic Stress": "Academic Stress"
-    "Financial Stress": "Financial Stress"
-
-  issue_categories:
-    "Mental Health": "Mental Health"
-    "Relationship Issues": "Relationship Issues"
-    "Personal Growth": "Personal Growth"
-    "Life Transitions": "Life Transitions"
-    "Addiction": "Addiction"
-    "Trauma & PTSD": "Trauma & PTSD"
-    "Work & Career": "Work & Career"
-    "Family Issues": "Family Issues"
-    "Behavioral Issues": "Behavioral Issues"
-    "Emotional Regulation": "Emotional Regulation"
-    "Communication": "Communication"
-    "Self-Esteem & Identity": "Self-Esteem & Identity"
-    "Stress & Anxiety": "Stress & Anxiety"
-    "Grief & Loss": "Grief & Loss"
-    "Parenting": "Parenting"
-    # Add all other issue categories from your database here.
+  psychologist_profile:
+    errors:
+      header: "%{count} error prohibited this psychologist profile from being saved:"
+    sections:
+      basic_information: "Basic Information"
+      professional_details: "Professional Details"
+      education_history: "Education History"
+      client_issue_details: "Client & Issue Details"
+      contact_service_details: "Contact & Service Details"
+    labels:
+      upload_profile_image: "Upload Profile Image"
+      timezone: "Time Zone"
+      first_name: "First Name"
+      last_name: "Last Name"
+      about_me: "About Me"
+      youtube_video_url: "YouTube Video URL"
+      years_of_experience: "Years of Experience"
+      standard_rate: "Standard Rate"
+      currency: "Currency"
+      select_client_types: "Select Client Types"
+      about_clients: "About Clients"
+      select_issues: "Select Issues"
+      about_issues: "About Issues"
+      select_specialties: "Select Specialties"
+      about_specialties: "About Specialties"
+      religion: "Religion"
+      gender: "Gender"
+      country: "Country"
+      city: "City"
+      address: "Address"
+      telegram: "Telegram"
+      whatsapp: "WhatsApp"
+      contact_phone1: "Contact Phone 1"
+      contact_phone2: "Contact Phone 2"
+      contact_phone3: "Contact Phone 3"
+      primary_contact_method: "Primary Contact Method"
+      in_person_services: "In person services"
+      online_services: "Online Services?"
+      select_languages: "Select languages"
+    prompts:
+      select_timezone: "Select your time zone"
+      select_currency: "Select Currency"
+      select_client_types: "Select client types..."
+      select_issues: "Select issues..."
+      select_specialties: "Select specialties..."
+      select_country: "Select Country"
+      select_city: "Select City"
+      select_primary_contact: "Select Primary Contact"
+      select_languages: "Select languages"
+    placeholders:
+      standard_rate: "e.g. 100.00"
+    buttons:
+      add_education: "Add Education"
+      submit: "Save Profile"
+    religion_options:
+      non_religious: "Non-religious"
+      muslim: "Muslim"
+      christian: "Christian"
+      other_religions: "Other religions"
+    gender_options:
+      male: "Male"
+      female: "Female"
+      other: "Other" # Assuming these are the keys from PsychologistProfile.genders
+    contact_methods:
+      telegram: "Telegram"
+      whatsapp: "WhatsApp"
+      phone1: "Phone 1"
+      phone2: "Phone 2"
+      phone3: "Phone 3"
+    modal:
+      crop_image_title: "Crop Your Image"
+      close_button_aria: "Close"
+      confirm_button: "Confirm"
+      cancel_button: "Cancel"

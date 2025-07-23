@@ -1,7 +1,7 @@
 <%= form_with(model: psychologist_profile, local: true, html: { multipart: true, class: 'box' }) do |form| %>
   <% if psychologist_profile.errors.any? %>
     <div class="notification is-danger">
-      <h2 class="subtitle"><%= pluralize(psychologist_profile.errors.count, "error") %> prohibited this psychologist_profile from being saved:</h2>
+      <h2 class="subtitle"><%= t('psychologist_profile.errors.header', count: psychologist_profile.errors.count) %></h2>
       <ul>
         <% psychologist_profile.errors.each do |error| %>
           <li><%= error.full_message %></li>
@@ -13,25 +13,23 @@
   <div class="columns is-multiline">
     <%# --- Basic Information Section --- %>
     <div class="column is-full">
-      <h3 class="title is-4">Basic Information</h3>
+      <h3 class="title is-4"><%= t('psychologist_profile.sections.basic_information') %></h3>
       <hr>
     </div>
 
-    <!-- Image Upload -->
     <div class="column is-half">
       <div class="field">
         <label class="button is-link is-light">
-          Upload Profile Image
+          <%= t('psychologist_profile.labels.upload_profile_image') %>
           <input type="file" id="imageInput" accept="image/*" hidden>
         </label>
         <input type="file" id="croppedImageInput" name="psychologist_profile[profile_img]" hidden>
       </div>
     </div>
 
-    <!-- Timezone -->
     <div class="column is-half">
       <div class="field">
-        <%= form.label :timezone, "Time Zone", class: "label" %><br>
+        <%= form.label :timezone, t('psychologist_profile.labels.timezone'), class: "label" %><br>
         <%= form.select :timezone,
           TZInfo::Timezone.all_identifiers.map { |id|
             begin
@@ -43,45 +41,40 @@
               nil
             end
           }.compact,
-          { prompt: "Select your time zone" },
+          { prompt: t('psychologist_profile.prompts.select_timezone') },
           { id: "timezone_select", class: "w-full rounded-lg border-gray-300 focus:ring-blue-500 focus:border-blue-500" }
         %>
       </div>
     </div>
 
-    <!-- First Name -->
     <div class="column is-half">
       <div class="field">
-        <%= form.label :first_name, class: "label" %>
+        <%= form.label :first_name, t('psychologist_profile.labels.first_name'), class: "label" %>
         <div class="control">
           <%= form.text_field :first_name, class: "input" %>
         </div>
       </div>
     </div>
 
-    <!-- Last Name -->
     <div class="column is-half">
       <div class="field">
-        <%= form.label :last_name, class: "label" %>
+        <%= form.label :last_name, t('psychologist_profile.labels.last_name'), class: "label" %>
         <div class="control">
           <%= form.text_field :last_name, class: "input" %>
-        % end %>
         </div>
       </div>
     </div>
 
-    <!-- About Me -->
     <div class="column is-full">
       <div class="field">
-        <%= form.label :about_me, class: "label" %>
+        <%= form.label :about_me, t('psychologist_profile.labels.about_me'), class: "label" %>
         <div class="control">
           <%= form.text_area :about_me, class: "textarea" %>
         </div>
       </div>
 
-      <!-- YouTube Video URL -->
       <div class="field">
-        <%= form.label :youtube_video_url, "YouTube Video URL", class: "label" %>
+        <%= form.label :youtube_video_url, t('psychologist_profile.labels.youtube_video_url'), class: "label" %>
         <div class="control">
           <%= form.text_field :youtube_video_url, class: "input", placeholder: "https://www.youtube.com/watch?v=abc123xyz" %>
         </div>
@@ -91,76 +84,67 @@
       </div>
     </div>
 
-    <!--- Professional Details Section --->
     <div class="column is-full">
-      <h3 class="title is-4">Professional Details</h3>
+      <h3 class="title is-4"><%= t('psychologist_profile.sections.professional_details') %></h3>
       <hr>
     </div>
 
-    <!-- Years of Experience -->
     <div class="column is-half">
       <div class="field">
-        <%= form.label :years_of_experience, class: "label" %>
+        <%= form.label :years_of_experience, t('psychologist_profile.labels.years_of_experience'), class: "label" %>
         <div class="control">
           <%= form.number_field :years_of_experience, class: "input" %>
         </div>
       </div>
     </div>
 
-    <!-- Standard Rate -->
     <div class="column is-one-quarter">
       <div class="field">
-        <%= form.label :standard_rate, "Standard Rate", class: "label" %>
+        <%= form.label :standard_rate, t('psychologist_profile.labels.standard_rate'), class: "label" %>
         <div class="control">
-          <%= form.number_field :standard_rate, step: 0.01, min: 0, class: "input", placeholder: "e.g. 100.00" %>
+          <%= form.number_field :standard_rate, step: 0.01, min: 0, class: "input", placeholder: t('psychologist_profile.placeholders.standard_rate') %>
         </div>
       </div>
     </div>
 
-    <!-- Currency -->
     <div class="column is-one-quarter">
       <div class="field">
-        <%= form.label :currency, "Currency", class: "label" %>
+        <%= form.label :currency, t('psychologist_profile.labels.currency'), class: "label" %>
         <div class="control">
           <div class="select is-fullwidth">
-            <%= form.select :currency, options_for_select(['KGS', 'KZT', 'UZS', 'USD', 'RUB'], selected: @psychologist_profile.currency), { include_blank: 'Select Currency' } %>
+            <%= form.select :currency, options_for_select(['KGS', 'KZT', 'UZS', 'USD', 'RUB'], selected: @psychologist_profile.currency), { include_blank: t('psychologist_profile.prompts.select_currency') } %>
           </div>
         </div>
       </div>
     </div>
-<!-- Education History (Nested Form) -->
-    <div class="column is-full">
+<div class="column is-full">
       <h2 class="section-title">
         <i class="fas fa-graduation-cap icon-about"></i>
-        Education History
+        <%= t('psychologist_profile.sections.education_history') %>
       </h2>
       <div class="section-content" id="educations-container">
-        <!-- Render existing educations -->
         <%= form.fields_for :educations do |education_fields| %>
           <%= render "educations/form", f: education_fields %>
         <% end %>
       </div>
-      <!-- Button to add new education fields -->
       <button type="button" class="button is-info is-light mt-4" id="add-education-button">
         <span class="icon"><i class="fas fa-plus"></i></span>
-        <span>Add Education</span>
+        <span><%= t('psychologist_profile.buttons.add_education') %></span>
       </button>
     </div>
 
 
-    <!--- Client & Issue Details Section --->
     <div class="column is-full">
-      <h3 class="title is-4">Client & Issue Details</h3>
+      <h3 class="title is-4"><%= t('psychologist_profile.sections.client_issue_details') %></h3>
       <hr>
     </div>
 
-    <!-- Client Types -->
     <div class="column is-full">
       <div class="field">
-        <%= form.label :client_type_ids, "Select Client Types", class: "label" %>
+        <%= form.label :client_type_ids, t('psychologist_profile.labels.select_client_types'), class: "label" %>
         <div class="control">
           <%= form.collection_select :client_type_ids, ClientType.all, :id, :name,
-            { prompt: "Select client types..." },
+            { prompt: t('psychologist_profile.prompts.select_client_types') },
             { multiple: true, class: "tom-select-client-types", data: { tom_select: true } } %>
         </div>
       </div>
@@ -168,20 +152,19 @@
 
     <div class="column is-full">
       <div class="field">
-        <%= form.label :about_clients, "About Clients", class: "label" %>
+        <%= form.label :about_clients, t('psychologist_profile.labels.about_clients'), class: "label" %>
         <div class="control">
           <%= form.text_area :about_clients, class: "textarea" %>
         </div>
       </div>
     </div>
 
-    <!-- Issues -->
     <div class="column is-full">
       <div class="field">
-        <%= form.label :issue_ids, "Select Issues", class: "label" %>
+        <%= form.label :issue_ids, t('psychologist_profile.labels.select_issues'), class: "label" %>
         <div class="control">
           <%= form.collection_select :issue_ids, Issue.all, :id, :name,
-            { prompt: "Select issues..." },
+            { prompt: t('psychologist_profile.prompts.select_issues') },
             { multiple: true, class: "tom-select-issues", data: { tom_select: true } } %>
         </div>
       </div>
@@ -189,50 +172,47 @@
 
     <div class="column is-full">
       <div class="field">
-        <%= form.label :about_issues, "About Issues", class: "label" %>
+        <%= form.label :about_issues, t('psychologist_profile.labels.about_issues'), class: "label" %>
         <div class="control">
           <%= form.text_area :about_issues, class: "textarea" %>
         </div>
       </div>
     </div>
 
-    <!-- Specialties -->
     <div class="column is-full">
       <div class="field">
-        <%= form.label :specialty_ids, "Select Specialties", class: "label" %>
+        <%= form.label :specialty_ids, t('psychologist_profile.labels.select_specialties'), class: "label" %>
         <div class="control">
           <%= form.collection_select :specialty_ids, Specialty.all, :id, :name,
-            { prompt: "Select specialties..." },
+            { prompt: t('psychologist_profile.prompts.select_specialties') },
             { multiple: true, class: "tom-select-specialties", data: { tom_select: true } } %>
         </div>
       </div>
     </div>
     <div class="column is-full">
       <div class="field">
-        <%= form.label :about_specialties, "About Specialties", class: "label" %>
+        <%= form.label :about_specialties, t('psychologist_profile.labels.about_specialties'), class: "label" %>
         <div class="control">
           <%= form.text_area :about_specialties, class: "textarea" %>
         </div>
       </div>
     </div>
 
-    <!--- Contact & Service Details Section --- >
     <div class="column is-full">
-      <h3 class="title is-4">Contact & Service Details</h3>
+      <h3 class="title is-4"><%= t('psychologist_profile.sections.contact_service_details') %></h3>
       <hr>
     </div>
-<!-- Religion -->
 <div class="column is-quarter">
   <div class="field">
-    <%= form.label :religion, class: "label" %>
+    <%= form.label :religion, t('psychologist_profile.labels.religion'), class: "label" %>
     <div class="control">
       <div class="select is-fullwidth">
         <%= form.select :religion,
           options_for_select([
-            ['Non-religious', 'Non-religious'],
-            ['Muslim', 'Muslim'],
-            ['Christian', 'Christian'],
-            ['Other religions', 'Other religions']
+            [t('psychologist_profile.religion_options.non_religious'), 'Non-religious'],
+            [t('psychologist_profile.religion_options.muslim'), 'Muslim'],
+            [t('psychologist_profile.religion_options.christian'), 'Christian'],
+            [t('psychologist_profile.religion_options.other_religions'), 'Other religions']
           ], selected: form.object.religion),
           {},
           class: "input" %>
@@ -241,14 +221,13 @@
   </div>
 </div>
 
-    <!-- Gender -->
     <div class="column is-quarter">
       <div class="field">
-        <%= form.label :gender, class: "label" %>
+        <%= form.label :gender, t('psychologist_profile.labels.gender'), class: "label" %>
         <div class="control">
           <div class="select">
             <%= form.select :gender,
-              PsychologistProfile.genders.map { |key, value| [key.humanize, key] },
+              PsychologistProfile.genders.map { |key, value| [t("psychologist_profile.gender_options.#{key}"), key] },
               {},
               class: "input" %>
           </div>
@@ -256,10 +235,9 @@
       </div>
     </div>
 
-    <!-- Country -->
     <div class="column is-half">
       <div class="field">
-        <%= form.label :country, class: "label" %>
+        <%= form.label :country, t('psychologist_profile.labels.country'), class: "label" %>
         <div class="control">
           <div class="select is-fullwidth">
             <%= form.select :country,
@@ -267,7 +245,7 @@
                 countries_with_cities.map { |c| c['name'] },
                 selected: @psychologist_profile.country
               ),
-              { include_blank: 'Select Country' },
+              { include_blank: t('psychologist_profile.prompts.select_country') },
               { class: 'input', id: 'country-select' }
             %>
           </div>
@@ -275,10 +253,9 @@
       </div>
     </div>
 
-    <!-- City -->
     <div class="column is-half">
       <div class="field">
-        <%= form.label :city, class: "label" %>
+        <%= form.label :city, t('psychologist_profile.labels.city'), class: "label" %>
         <div class="control">
           <div class="select is-fullwidth">
             <%= form.select :city,
@@ -286,7 +263,7 @@
                 [],
                 selected: @psychologist_profile.city
               ),
-              { include_blank: 'Select City' },
+              { include_blank: t('psychologist_profile.prompts.select_city') },
               { class: 'input', id: 'city-select', disabled: true }
             %>
           </div>
@@ -294,20 +271,18 @@
       </div>
     </div>
 
-    <!-- Address -->
     <div class="column is-full">
       <div class="field">
-        <%= form.label :address, class: "label" %>
+        <%= form.label :address, t('psychologist_profile.labels.address'), class: "label" %>
         <div class="control">
           <%= form.text_field :address, class: "input" %>
         </div>
       </div>
     </div>
 
-    <!-- Contact Information -->
     <div class="column is-half">
       <div class="field">
-        <%= form.label :telegram, class: "label" %>
+        <%= form.label :telegram, t('psychologist_profile.labels.telegram'), class: "label" %>
         <div class="control">
           <%= form.text_field :telegram, class: "input" %>
         </div>
@@ -316,17 +291,16 @@
 
     <div class="column is-half">
       <div class="field">
-        <%= form.label :whatsapp, class: "label" %>
+        <%= form.label :whatsapp, t('psychologist_profile.labels.whatsapp'), class: "label" %>
         <div class="control">
           <%= form.text_field :whatsapp, class: "input" %>
         </div>
       </div>
     </div>
 
-    <!-- Additional Phones -->
     <div class="column is-one-third">
       <div class="field">
-        <%= form.label :contact_phone, class: "label" %>
+        <%= form.label :contact_phone, t('psychologist_profile.labels.contact_phone1'), class: "label" %>
         <div class="control">
           <%= form.text_field :contact_phone, class: "input" %>
         </div>
@@ -335,7 +309,7 @@
 
     <div class="column is-one-third">
       <div class="field">
-        <%= form.label :contact_phone2, class: "label" %>
+        <%= form.label :contact_phone2, t('psychologist_profile.labels.contact_phone2'), class: "label" %>
         <div class="control">
           <%= form.text_field :contact_phone2, class: "input" %>
         </div>
@@ -344,7 +318,7 @@
 
     <div class="column is-one-third">
       <div class="field">
-        <%= form.label :contact_phone3, class: "label" %>
+        <%= form.label :contact_phone3, t('psychologist_profile.labels.contact_phone3'), class: "label" %>
         <div class="control">
           <%= form.text_field :contact_phone3, class: "input" %>
         </div>
@@ -353,28 +327,31 @@
 
     <div class="column is-full">
       <div class="field">
-        <%= form.label :primary_contact_method, "Primary Contact Method", class: "label" %>
+        <%= form.label :primary_contact_method, t('psychologist_profile.labels.primary_contact_method'), class: "label" %>
         <div class="control">
           <div class="select is-fullwidth">
             <%= form.select :primary_contact_method,
               options_for_select(
-                [['Telegram', 'telegram'], ['WhatsApp', 'whatsapp'],
-                 ['Phone 1', 'contact_phone'], ['Phone 2', 'contact_phone2'],
-                 ['Phone 3', 'contact_phone3']],
+                [
+                  [t('psychologist_profile.contact_methods.telegram'), 'telegram'],
+                  [t('psychologist_profile.contact_methods.whatsapp'), 'whatsapp'],
+                  [t('psychologist_profile.contact_methods.phone1'), 'contact_phone'],
+                  [t('psychologist_profile.contact_methods.phone2'), 'contact_phone2'],
+                  [t('psychologist_profile.contact_methods.phone3'), 'contact_phone3']
+                ],
                 selected: @psychologist_profile.primary_contact_method
               ),
-              { include_blank: 'Select Primary Contact' } %>
+              { include_blank: t('psychologist_profile.prompts.select_primary_contact') } %>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Checkboxes -->
     <div class="column is-half">
       <div class="field">
         <label class="checkbox">
           <%= form.check_box :in_person, class: "checkbox" %>
-          <%= form.label :in_person, "In person services", class: "checkbox" %>
+          <%= form.label :in_person, t('psychologist_profile.labels.in_person_services'), class: "checkbox" %>
         </label>
       </div>
     </div>
@@ -383,7 +360,7 @@
       <div class="field">
         <label class="checkbox">
           <%= form.check_box :online, class: "checkbox" %>
-          <%= form.label :online, "Online Services?", class: "checkbox" %>
+          <%= form.label :online, t('psychologist_profile.labels.online_services'), class: "checkbox" %>
         </label>
       </div>
     </div>
@@ -393,44 +370,40 @@
         <div class="control">
           <label class="checkbox">
             <%= form.collection_select :language_ids, Language.all, :id, :name,
-              { prompt: "Select languages" },
+              { prompt: t('psychologist_profile.prompts.select_languages') },
               { multiple: true, class: "tom-select-languages", data: { tom_select: true } } %>
           </label>
         </div>
       </div>
     </div>
 
-    <!-- Submit Button -->
     <div class="column is-full">
       <div class="field">
         <div class="control">
-          <%= form.submit class: "button is-primary is-fullwidth" %>
+          <%= form.submit t('psychologist_profile.buttons.submit'), class: "button is-primary is-fullwidth" %>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal for cropping -->
   <div class="modal" id="cropModal">
     <div class="modal-background"></div>
     <div class="modal-card">
       <header class="modal-card-head">
-        <p class="modal-card-title">Crop Your Image</p>
-        <button class="delete" id="closeModal" aria-label="close"></button>
+        <p class="modal-card-title"><%= t('psychologist_profile.modal.crop_image_title') %></p>
+        <button class="delete" id="closeModal" aria-label="<%= t('psychologist_profile.modal.close_button_aria') %>"></button>
       </header>
       <section class="modal-card-body">
         <img id="imagePreview" style="max-width: 100%;">
       </section>
       <footer class="modal-card-foot">
-        <button type="button" class="button is-primary" id="confirmCrop">Confirm</button>
-        <button type="button" class="button" id="cancelCrop">Cancel</button>
+        <button type="button" class="button is-primary" id="confirmCrop"><%= t('psychologist_profile.modal.confirm_button') %></button>
+        <button type="button" class="button" id="cancelCrop"><%= t('psychologist_profile.modal.cancel_button') %></button>
       </footer>
     </div>
   </div>
 
   
-  <!-- --- Hidden template for new education fields (used by JavaScript) --- -->
-  <!-- This section is now INSIDE the form_with block, giving it access to the 'form' object -->
   <% education_fields_template_content = capture do %>
     <%= form.fields_for :educations, Education.new, child_index: "NEW_RECORD" do |education_fields| %>
       <%= render "educations/form", f: education_fields %>
@@ -443,6 +416,9 @@
   </template>
 
 <% end %>
+
+
+</script>
 
 <script>
 document.addEventListener("turbo:load", function () {

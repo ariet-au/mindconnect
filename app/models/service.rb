@@ -1,8 +1,7 @@
 class Service < ApplicationRecord
   belongs_to :user
   
-
-
+  
  # monetize :price, as: :price_money,  with_model_currency: :currency ,allow_nil: true, as_subunit: false
 
 monetize :price, as: :price_money, 

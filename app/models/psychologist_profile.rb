@@ -8,6 +8,10 @@ class PsychologistProfile < ApplicationRecord
 
 
   belongs_to :user
+  belongs_to :user_for_search, class_name: 'User', foreign_key: 'user_id'
+
+  has_many :services, through: :user
+
   has_one_attached :profile_img
   has_many :internal_client_profiles, dependent: :destroy # Add this line
 
@@ -24,7 +28,7 @@ class PsychologistProfile < ApplicationRecord
   has_many :psychologist_issues, dependent: :destroy
   has_many :issues, through: :psychologist_issues
 
-  has_many :services, through: :user
+  
 
   has_many :psychologist_languages
   has_many :languages, through: :psychologist_languages
@@ -43,10 +47,10 @@ class PsychologistProfile < ApplicationRecord
   # You probably also want:
   has_many :psychologist_unavailabilities, dependent: :destroy
 
-    has_many :bookings
+  has_many :bookings
 
 
-  scope :verified, -> { joins(:user).where.not(users: { confirmed_at: nil }) }
+  scope :verified, -> { joins(:user_for_search).where("users.verified = ?", true) }
   #monetize :standard_rate, as: :standard_rate_money, with_model_currency: :currency ,allow_nil: true , as_subunit: false
   monetize :standard_rate, as: :standard_rate_money, 
          with_model_currency: :currency, 
@@ -94,8 +98,9 @@ class PsychologistProfile < ApplicationRecord
             format: { with: /\A[a-z0-9\-]+\z/, message: "can only contain lowercase letters, numbers, and hyphens" }
 
 pg_search_scope :search_full_text,
-  against: [:first_name, :last_name, :about_me, :education, :license_number, :city, :country],
+  against: [:first_name, :last_name, :about_me],
   associated_against: {
+    user_for_search: [:email], # <-- Use the new association name here
     services: [:name, :description]
   },
   using: {

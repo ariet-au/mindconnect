@@ -1,4 +1,3 @@
-# config/locales/ru.yml
 ru:
   hello: "Привет"
   contact: "Контакт"
@@ -9,16 +8,28 @@ ru:
   logout: "Выйти"
   login: "Войти"
   registration: "Регистрация"
+  online: "Онлайн"
+  in_person: "Лично"
+  
   filters:
     clear: "Очистить все"
+    
   languages: # This block is for the navbar locale selector (e.g., "English", "Русский", "Кыргызча")
     en: "Английский"
     ru: "Русский"
     kg: "Кыргызский"
+    
   countries:
     kyrgyzstan: "Кыргызстан"
     kazakhstan: "Казахстан"
     uzbekistan: "Узбекистан"
+    united_states: "Соединенные Штаты"
+    canada: "Канада"
+    russia: "Россия"
+    # IMPORTANT: Add all other country names from your database here.
+    # The keys here should be the exact (often snake_cased or original) strings
+    # stored in your database for country names (e.g., from your countries_cities.yml `name` field).
+    
   cities:
     bishkek: "Бишкек"
     osh: "Ош"
@@ -35,7 +46,7 @@ ru:
     karaganda: "Караганда"
     oskemen: "Усть-Каменогорск"
     pavlodar: "Павлодар"
-    djalal_abad: "Джалал-Абад"
+    djalal_abad: "Джалал-Абад" # Ensure consistency with jalal_abad if used
     karakol: "Каракол"
     toshkent: "Ташкент"
     namangan: "Наманган"
@@ -44,24 +55,29 @@ ru:
     nukus: "Нукус"
     tashkent: "Ташкент"
     ferghana: "Фергана"
+    new_york: "Нью-Йорк"
+    toronto: "Торонто"
+    # IMPORTANT: Add all other city names from your database here.
+    
   time:
     formats:
       default: "%d.%m.%Y %H:%M:%S"
       short: "%d %b %H:%M"
       long: "%d %B %Y %H:%M"
-    date:
-      formats:
-        default: "%Y-%m-%d"
-        short: "%b %d"
-        long: "%B %d, %Y"
-      day_names: ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"]
-      abbr_day_names: ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"]
-      month_names: [~, "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"]
-      abbr_month_names: [~, "Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"]
-      order:
-        - :year
-        - :month
-        - :day
+  date:
+    formats:
+      default: "%Y-%m-%d"
+      short: "%b %d"
+      long: "%B %d, %Y"
+    day_names: ["Воскресенье", "Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"]
+    abbr_day_names: ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"]
+    month_names: ["", "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"]
+    abbr_month_names: ["", "Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"]
+    order:
+      - :year
+      - :month
+      - :day
+        
   psychologist_profiles:
     show:
       dashboard: "Панель управления"
@@ -112,6 +128,7 @@ ru:
         primary_phone: "Основной телефон"
         secondary_phone: "Дополнительный телефон"
         additional_phone: "Дополнительный телефон"
+        
   psychologist_search:
     placeholder: "Поиск по имени, специальности или ключевому слову..."
     search_button: "Поиск"
@@ -142,6 +159,7 @@ ru:
     certified_badge: "Сертифицирован"
     view_profile_button: "Посмотреть профиль"
     contact_button: "Контакт"
+    
   enums:
     gender:
       unspecified: "Не указан"
@@ -152,24 +170,112 @@ ru:
       muslim: "Мусульманство"
       christian: "Христианство"
       other_religion: "Другая религия"
-    
-  spoken_languages: 
+      buddhist: "Буддизм"
+      hindu: "Индуизм"
+      jewish: "Иудаизм"
+      atheist: "Атеист"
+      agnostic: "Агностик"
+      spiritual: "Духовный"
+      
+  spoken_languages: # This block is for languages spoken by psychologists in profiles/search filters
     Kyrgyz: "Кыргызский"
     Russian: "Русский"
     Kazakh: "Казахский"
     English: "Английский"
     Uzbek: "Узбекский"
     Tatar: "Татарский"
+    Uyghur: "Уйгурский"
+    Dungan: "Дунганский"
+    Karakalpak: "Каракалпакский"
     Tajik: "Таджикский"
     Turkish: "Турецкий"
     Ukrainian: "Украинский"
-    Karakalpak: "Каракалпакский"
-    Uyghur: "Уйгурский"
-    Dungan: "Дунганский"
-  client_types: 
+
+  client_types:
     single_adult: "Взрослый"
+    adult: "Взрослый"
     single_child: "Ребенок"
+    child: "Ребенок"
     single_teenager: "Подросток"
+    teenager: "Подросток"
     romantic_couple: "Романтическая пара"
+    couple: "Пара"
     parent_child: "Родитель-ребенок"
     other_couple: "Другая пара"
+    family: "Семья"
+    group: "Группа"
+
+  psychologist_profile:
+    errors:
+      header: "%{count} ошибка не позволила сохранить этот профиль психолога:"
+    sections:
+      basic_information: "Основная информация"
+      professional_details: "Профессиональные данные"
+      education_history: "История образования"
+      client_issue_details: "Детали клиента и проблемы"
+      contact_service_details: "Контактные данные и услуги"
+    labels:
+      upload_profile_image: "Загрузить изображение профиля"
+      timezone: "Часовой пояс"
+      first_name: "Имя"
+      last_name: "Фамилия"
+      about_me: "Обо мне"
+      youtube_video_url: "URL видео на YouTube"
+      years_of_experience: "Опыт работы (лет)"
+      standard_rate: "Стандартная ставка"
+      currency: "Валюта"
+      select_client_types: "Выбрать типы клиентов"
+      about_clients: "О клиентах"
+      select_issues: "Выбрать проблемы"
+      about_issues: "О проблемах"
+      select_specialties: "Выбрать специализации"
+      about_specialties: "О специализациях"
+      religion: "Религия"
+      gender: "Пол"
+      country: "Страна"
+      city: "Город"
+      address: "Адрес"
+      telegram: "Telegram"
+      whatsapp: "WhatsApp"
+      contact_phone1: "Контактный телефон 1"
+      contact_phone2: "Контактный телефон 2"
+      contact_phone3: "Контактный телефон 3"
+      primary_contact_method: "Основной способ связи"
+      in_person_services: "Очные услуги"
+      online_services: "Онлайн-услуги?"
+      select_languages: "Выбрать языки"
+    prompts:
+      select_timezone: "Выберите свой часовой пояс"
+      select_currency: "Выберите валюту"
+      select_client_types: "Выберите типы клиентов..."
+      select_issues: "Выберите проблемы..."
+      select_specialties: "Выберите специализации..."
+      select_country: "Выберите страну"
+      select_city: "Выберите город"
+      select_primary_contact: "Выберите основной контакт"
+      select_languages: "Выберите языки"
+    placeholders:
+      standard_rate: "напр. 100.00"
+    buttons:
+      add_education: "Добавить образование"
+      submit: "Сохранить профиль"
+    religion_options:
+      non_religious: "Неверующий"
+      muslim: "Мусульманин"
+      christian: "Христианин"
+      other_religions: "Другие религии"
+    gender_options:
+      male: "Мужской"
+      female: "Женский"
+      other: "Другой" # Assuming these are the keys from PsychologistProfile.genders
+    contact_methods:
+      telegram: "Telegram"
+      whatsapp: "WhatsApp"
+      phone1: "Телефон 1"
+      phone2: "Телефон 2"
+      phone3: "Телефон 3"
+    modal:
+      crop_image_title: "Обрезать изображение"
+      close_button_aria: "Закрыть"
+      confirm_button: "Подтвердить"
+      cancel_button: "Отмена"

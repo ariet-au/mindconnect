@@ -50,19 +50,19 @@ kg:
       default: "%d.%m.%Y %H:%M:%S"
       short: "%d %b %H:%M"
       long: "%d %B %Y %H:%M"
-    date:
-      formats:
-        default: "%Y-%m-%d"
-        short: "%b %d"
-        long: "%B %d, %Y"
-      day_names: ["Жекшемби", "Дүйшөмбү", "Шейшемби", "Шаршемби", "Бейшемби", "Жума", "Ишемби"]
-      abbr_day_names: ["Жек", "Дүй", "Шей", "Шар", "Бей", "Жум", "Иш"]
-      month_names: [~, "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"]
-      abbr_month_names: [~, "Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"]
-      order:
-        - :year
-        - :month
-        - :day
+  date:
+    formats:
+      default: "%Y-%m-%d"
+      short: "%b %d"
+      long: "%B %d, %Y"
+    day_names: ["Жекшемби", "Дүйшөмбү", "Шейшемби", "Шаршемби", "Бейшемби", "Жума", "Ишемби"]
+    abbr_day_names: ["Жек", "Дүй", "Шей", "Шар", "Бей", "Жум", "Иш"]
+    month_names: [~, "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"]
+    abbr_month_names: [~, "Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"]
+    order:
+      - :year
+      - :month
+      - :day      
   psychologist_profiles:
     show:
       dashboard: "Башкаруу панели"
@@ -175,3 +175,77 @@ kg:
     romantic_couple: "Романтик жуп"
     parent_child: "Ата-эне - бала"
     other_couple: "Башка жуп"
+  psychologist_profile:
+    errors:
+      header: "Бул психолог профилин сактоого %{count} ката тоскоол болду:"
+    sections:
+      basic_information: "Негизги маалымат"
+      professional_details: "Кесиптик маалыматтар"
+      education_history: "Билим тарыхы"
+      client_issue_details: "Кардар жана маселенин чоо-жайы"
+      contact_service_details: "Байланыш жана кызмат көрсөтүү маалыматтары"
+    labels:
+      upload_profile_image: "Профиль сүрөтүн жүктөө"
+      timezone: "Убакыт алкагы"
+      first_name: "Аты"
+      last_name: "Фамилиясы"
+      about_me: "Мен жөнүндө"
+      youtube_video_url: "YouTube видеосунун URL дареги"
+      years_of_experience: "Иш тажрыйбасы (жыл)"
+      standard_rate: "Стандарттык тариф"
+      currency: "Валюта"
+      select_client_types: "Кардар түрлөрүн тандоо"
+      about_clients: "Кардарлар жөнүндө"
+      select_issues: "Маселелерди тандоо"
+      about_issues: "Маселелер жөнүндө"
+      select_specialties: "Адистиктерди тандоо"
+      about_specialties: "Адистиктер жөнүндө"
+      religion: "Дин"
+      gender: "Жынысы"
+      country: "Өлкө"
+      city: "Шаар"
+      address: "Дарек"
+      telegram: "Telegram"
+      whatsapp: "WhatsApp"
+      contact_phone1: "Байланыш телефону 1"
+      contact_phone2: "Байланыш телефону 2"
+      contact_phone3: "Байланыш телефону 3"
+      primary_contact_method: "Негизги байланыш ыкмасы"
+      in_person_services: "Жеке кызматтар"
+      online_services: "Онлайн кызматтар?"
+      select_languages: "Тилдерди тандоо"
+    prompts:
+      select_timezone: "Убакыт алкагыңызды тандаңыз"
+      select_currency: "Валютаны тандаңыз"
+      select_client_types: "Кардар түрлөрүн тандаңыз..."
+      select_issues: "Маселелерди тандаңыз..."
+      select_specialties: "Адистиктерди тандаңыз..."
+      select_country: "Өлкөнү тандаңыз"
+      select_city: "Шаарды тандаңыз"
+      select_primary_contact: "Негизги байланышты тандаңыз"
+      select_languages: "Тилдерди тандаңыз"
+    placeholders:
+      standard_rate: "мис. 100.00"
+    buttons:
+      add_education: "Билим кошуу"
+      submit: "Профилди сактоо"
+    religion_options:
+      non_religious: "Динсиз"
+      muslim: "Мусулман"
+      christian: "Христиан"
+      other_religions: "Башка диндер"
+    gender_options:
+      male: "Эркек"
+      female: "Аял"
+      other: "Башка"
+    contact_methods:
+      telegram: "Telegram"
+      whatsapp: "WhatsApp"
+      phone1: "Телефон 1"
+      phone2: "Телефон 2"
+      phone3: "Телефон 3"
+    modal:
+      crop_image_title: "Сүрөтүңүздү кесиңиз"
+      close_button_aria: "Жабуу"
+      confirm_button: "Ырастоо"
+      cancel_button: "Жокко чыгаруу"

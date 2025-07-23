@@ -149,12 +149,11 @@ class PsychologistProfilesController < ApplicationController
     end
     # --- End of Setup ---
 
-    @psychologist_profiles = PsychologistProfile.verified.order(created_at: :desc)
+    @psychologist_profiles = PsychologistProfile.order(updated_at: :desc)
 
     if params[:search].present?
-      @psychologist_profiles = PsychologistProfile
-        .joins(:services) # only if services are part of search
-        .merge(PsychologistProfile.search_full_text(params[:search]))
+      @psychologist_profiles = @psychologist_profiles
+      .merge(PsychologistProfile.search_full_text(params[:search]))
     end
 
     session[:currency] = params[:currency] if params[:currency].present?
@@ -172,12 +171,13 @@ class PsychologistProfilesController < ApplicationController
 
     # In-person/online filtering
     if params[:in_person] == "1" && params[:online] == "1"
-      @psychologist_profiles = @psychologist_profiles.where(in_person: true).or(PsychologistProfile.where(online: true))
+      @psychologist_profiles = @psychologist_profiles.where("in_person = ? OR online = ?", true, true)
     elsif params[:in_person] == "1"
       @psychologist_profiles = @psychologist_profiles.where(in_person: true)
     elsif params[:online] == "1"
       @psychologist_profiles = @psychologist_profiles.where(online: true)
     end
+
 
     # Sanitize multi-selects
     specialty_ids = Array(params[:specialty_ids]).reject(&:blank?)
@@ -244,6 +244,8 @@ class PsychologistProfilesController < ApplicationController
         end
       end
       
+      @psychologist_profiles = @psychologist_profiles.distinct
+
       # Convert filtered array to paginated collection
       @psychologist_profiles = Kaminari.paginate_array(filtered_profiles_array).page(params[:page])
     else
