@@ -19,7 +19,7 @@
 <div class="field">
   <%= f.label :note_date, class: "label" %>
   <div class="control">
-    <%= f.date_field :note_date, class: "input" %>
+    <%= f.date_field :note_date, class: "input", value: Time.current.strftime("%Y-%m-%d") %>
   </div>
 </div>
 
@@ -66,3 +66,15 @@
     <%= link_to "Cancel", [@internal_client_profile, @therapy_plan, f.object], class: "button is-light" %>
   </div>
 </div>
+
+
+<script>
+  // Turbo-aware event listener
+  document.addEventListener("turbo:load", function() {
+    const dateField = document.querySelector("#<%= f.object_name %>_note_date");
+    if (dateField && !dateField.value) {
+      const today = new Date().toISOString().split('T')[0];
+      dateField.value = today;
+    }
+  });
+</script>

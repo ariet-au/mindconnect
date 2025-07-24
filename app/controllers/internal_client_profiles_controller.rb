@@ -22,7 +22,16 @@ class InternalClientProfilesController < ApplicationController
 
   # GET /internal_client_profiles/1 or /internal_client_profiles/1.json
   def show
+    @internal_client_profile = InternalClientProfile.find(params[:id])
+    @therapy_plans = @internal_client_profile.therapy_plans.order(created_at: :desc)
+    # Get latest progress notes across all therapy plans
+  #   @latest_progress_notes = ProgressNote.joins(:therapy_plan)
+  #                                       .where(therapy_plans: { internal_client_profile: @internal_client_profile })
+  #                                       .order(note_date: :desc, created_at: :desc)
+  #                                       .limit(5)
   end
+
+  
 
   # GET /internal_client_profiles/new
   def new

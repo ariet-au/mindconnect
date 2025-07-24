@@ -12,4 +12,8 @@ class InternalClientProfile < ApplicationRecord
   def label
     "#{first_name} #{last_name}" # or however you want it displayed
   end
+
+  def full_name
+    "#{first_name} #{last_name}" # or however you want it displayed
+  end
 end
