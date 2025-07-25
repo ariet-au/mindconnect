@@ -76,23 +76,21 @@ class PsychologistAvailabilitiesController < ApplicationController
     end
   end
 
-
-
-
   private
 
   def set_psychologist_profile
-    @psychologist_profile = PsychologistProfile.find(params[:psychologist_profile_id])
-  rescue ActiveRecord::RecordNotFound
-    redirect_to root_path, alert: "Psychologist profile not found."
-  end
-
-   def set_psychologist_profile
     @psychologist_profile = PsychologistProfile.find_by(id: params[:psychologist_profile_id])
     unless @psychologist_profile
       redirect_to root_path, alert: "Psychologist profile not found."
       return # Explicitly halt the filter chain if profile is not found
     end
+  end
+
+  def set_psychologist_availability
+    @psychologist_availability = @psychologist_profile.psychologist_availabilities.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    redirect_to psychologist_profile_psychologist_availabilities_path(@psychologist_profile), 
+                alert: "Availability record not found."
   end
 
   def check_psychologist_timezone
@@ -115,8 +113,6 @@ class PsychologistAvailabilitiesController < ApplicationController
       end
     end
   end
-
-
 
   # Simplified: Only permit the raw hour and minute parameters.
   # The model will handle combining them into Time objects.
