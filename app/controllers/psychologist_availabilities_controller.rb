@@ -1,9 +1,12 @@
 # app/controllers/psychologist_availabilities_controller.rb
 class PsychologistAvailabilitiesController < ApplicationController
+  #before_action :authenticate_psychologist!
   before_action :set_psychologist_profile
+  before_action :check_psychologist_timezone, only: [:index, :new, :create, :edit, :update, :calendar_blocks]
   before_action :ensure_all_days_available, only: [:index]
   before_action :set_psychologist_availability, only: [:edit, :update, :destroy]
 
+  
   def index
     @availabilities = @psychologist_profile.psychologist_availabilities.order(:day_of_week)
     @new_availability = @psychologist_profile.psychologist_availabilities.build(timezone: @psychologist_profile.timezone)
@@ -84,10 +87,20 @@ class PsychologistAvailabilitiesController < ApplicationController
     redirect_to root_path, alert: "Psychologist profile not found."
   end
 
-  def set_psychologist_availability
-    @psychologist_availability = @psychologist_profile.psychologist_availabilities.find(params[:id])
-  rescue ActiveRecord::RecordNotFound
-    redirect_to psychologist_profile_psychologist_availabilities_path(@psychologist_profile), alert: "Availability not found."
+   def set_psychologist_profile
+    @psychologist_profile = PsychologistProfile.find_by(id: params[:psychologist_profile_id])
+    unless @psychologist_profile
+      redirect_to root_path, alert: "Psychologist profile not found."
+      return # Explicitly halt the filter chain if profile is not found
+    end
+  end
+
+  def check_psychologist_timezone
+    unless @psychologist_profile.timezone.present?
+      redirect_to edit_psychologist_profile_path(@psychologist_profile),
+                  alert: "Please set your timezone in your profile before managing availabilities."
+      return # Halts the request
+    end
   end
 
   def ensure_all_days_available
@@ -97,7 +110,7 @@ class PsychologistAvailabilitiesController < ApplicationController
           day_of_week: day_of_week,
           start_time_of_day: nil,
           end_time_of_day: nil,
-          timezone: @psychologist_profile.timezone
+          timezone: @psychologist_profile.timezone.presence || Time.zone.name
         )
       end
     end

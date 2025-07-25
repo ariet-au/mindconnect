@@ -27,6 +27,9 @@ class PsychologistAvailability < ApplicationRecord
     Date::DAYNAMES[day_of_week]
   end
 
+
+  
+
   private
 
   # CONVERT FROM UTC (DATABASE) TO PSYCHOLOGIST'S LOCAL TIME (FORM)
