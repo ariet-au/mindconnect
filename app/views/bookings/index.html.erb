@@ -1,48 +1,69 @@
 <div class="flash-messages-container">
   <% flash.each do |type, msg| %>
-    <% css_class = case type.to_sym
-                   when :notice then "alert-success"
-                   when :alert  then "alert-danger"
-                   else "alert-info"
-                   end %>
-    <div class="alert <%= css_class %>" role="alert">
+    <% bulma_class = case type.to_sym
+                     when :notice then "is-success"
+                     when :alert  then "is-danger"
+                     when :warning then "is-warning" # Added for consistency, though not in original
+                     else "is-info"
+                     end %>
+    <div class="notification <%= bulma_class %>">
+      <%# The 'delete' class provides the visual 'x' for closing. %>
+      <%# The 'data-action' attribute assumes your existing JS handles closing this notification. %>
+      <button class="delete" aria-label="delete" data-action="click->flash-messages#close"></button>
       <%= msg %>
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
     </div>
   <% end %>
 </div>
 
-<h1>All Bookings</h1>
-<table>
-  <thead>
-    <tr>
-      <th>Service</th>
-      <th>Psychologist</th>
-      <th>Client</th>
-      <th>Start Time</th>
-      <th>End Time</th>
-      <th>Status</th>
-          <th>Duration</th>
-          <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @bookings.each do |booking| %>
+<h1 class="title is-2">All Bookings</h1>
+
+<div class="table-container">
+  <table class="table is-striped is-hoverable is-fullwidth">
+    <thead>
       <tr>
-        <td><%= booking.service.name %></td>
-        <td><%= booking.psychologist_profile&.first_name || 'N/A' %></td>
-        <td><%= booking.client_profile&.first_name || 'N/A' %></td>
-        <td><%= booking.start_time %> </td>
-        <td><%= booking.end_time %> </td>
-        <td><%= booking.status %></td>
-           <td><%= booking.service.duration_minutes %> minutes </td>
-        <td>
-          <%= link_to 'Edit', edit_booking_path(booking) %> |
-          <%= link_to 'Delete', booking_path(booking), data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' } %>
-        </td>
+        <th>Service</th>
+        <th>Psychologist</th>
+        <th>Client</th>
+        <th>Start Time</th>
+        <th>Status</th>
+        <th>Duration</th>
+        <th>Actions</th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <% @bookings.each do |booking| %>
+        <tr>
+          <td><%= booking.service.name %></td>
+          <td><%= booking.psychologist_profile&.first_name || 'N/A' %></td>
+          <td><%= booking.client_profile&.first_name || 'N/A' %></td>
+          <td>
+            <%# This span is processed by your existing JavaScript timezone handler %>
+            <span
+              class="utc-date-time-range"
+              data-start-utc="<%= booking.start_time.utc.iso8601 %>"
+              data-end-utc="<%= booking.end_time&.utc&.iso8601 %>">
+              Loading time...
+            </span>
+          </td>
+          <td>
+            <% case booking.status&.to_sym
+               when :confirmed %>
+                 <span class="tag is-success">Confirmed</span>
+               <% when :pending %>
+                 <span class="tag is-warning">Pending</span>
+               <% when :cancelled %>
+                 <span class="tag is-danger">Cancelled</span>
+               <% else %>
+                 <span class="tag is-info"><%= booking.status.present? ? booking.status.humanize : 'Unknown' %></span>
+               <% end %>
+          </td>
+          <td><%= booking.service.duration_minutes %> minutes</td>
+          <td>
+            <%= link_to 'Edit', edit_booking_path(booking), class: 'button is-small is-info is-light mr-2' %>
+            <%= link_to 'Delete', booking_path(booking), data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' }, class: 'button is-small is-danger is-light' %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

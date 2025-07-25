@@ -94,6 +94,8 @@
   </div>
   <div class="control">
     <%# The cancel link should point back to the therapy plan's show page %>
-    <%= link_to "Cancel", [@internal_client_profile, f.object], class: "button is-light" %>
+<%= link_to "Cancel", request.referer || internal_client_profile_path(@internal_client_profile), 
+          class: "button is-light", 
+          data: { turbo: false } %>
   </div>
 </div>

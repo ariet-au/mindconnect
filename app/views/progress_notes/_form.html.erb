@@ -63,8 +63,9 @@
   </div>
   <div class="control">
     <%# The cancel link should point back to the progress note's show page %>
-    <%= link_to "Cancel", [@internal_client_profile, @therapy_plan, f.object], class: "button is-light" %>
-  </div>
+<%= link_to "Cancel", request.referer || internal_client_profile_path(@internal_client_profile), 
+          class: "button is-light", 
+          data: { turbo: false } %>  </div>
 </div>
 
 

@@ -123,18 +123,25 @@
                                     <p><%= simple_format(truncate(internal_client_profile.treatment_plan_summary, length: 250, separator: ' ')) || 'N/A' %></p>
                                 </div>
 
-                                <div class="box has-background-info-light mb-5" style="border: 1px solid #209CEE;"> <%# Highlighted box for next booking %>
-                                    <p class="title is-6 has-text-info-dark mb-2">Next Booking</p>
-                                    <% next_booking = internal_client_profile.bookings.where('start_time > ?', Time.current).order(:start_time).first %>
-                                    <% if next_booking %>
-                                        <p class="subtitle is-5 has-text-info-dark">
-                                            <i class="far fa-calendar-alt mr-2"></i><%= next_booking.start_time.strftime('%B %d, %Y') %><br>
-                                            <i class="far fa-clock mr-2"></i><%= next_booking.start_time.strftime('%I:%M %p') %>
-                                        </p>
-                                    <% else %>
-                                        <p class="has-text-grey">No upcoming bookings.</p>
-                                    <% end %>
-                                </div>
+                 <div class="box has-background-info-light mb-5" style="border: 1px solid #209CEE;">
+                        <%# Highlighted box for next booking %>
+                        <p class="title is-6 has-text-info-dark mb-2">Next Booking</p>
+                        <% next_booking = internal_client_profile.bookings.where('start_time > ?', Time.current).order(:start_time).first %>
+                        <% if next_booking %>
+                            <p class="subtitle is-5 has-text-info-dark">
+                            <i class="far fa-calendar-alt mr-2"></i>
+                            <span class="utc-date-time-range"
+                                    data-start-utc="<%= next_booking.start_time.utc.iso8601 %>"
+                                    data-end-utc="<%= next_booking.end_time&.utc&.iso8601 %>">
+                                Loading time...
+                            </span>
+                            </p>
+                        <% else %>
+                            <p class="has-text-grey">No upcoming bookings.</p>
+                        <% end %>
+                        </div>
+
+
 
                                 <hr class="my-4"> <%# Separator for Therapy Plans %>
 
