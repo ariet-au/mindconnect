@@ -49,6 +49,17 @@ class PsychologistAvailability < ApplicationRecord
     end
   end
 
+  def handle_nil_times
+    if start_time_of_day_hour.blank? || start_time_of_day_minute.blank? ||
+       end_time_of_day_hour.blank?   || end_time_of_day_minute.blank?
+      self.start_time_of_day = nil
+      self.end_time_of_day = nil
+    else
+      self.start_time_of_day = Time.zone.parse("#{start_time_of_day_hour}:#{start_time_of_day_minute}")
+      self.end_time_of_day   = Time.zone.parse("#{end_time_of_day_hour}:#{end_time_of_day_minute}")
+    end
+  end
+
   # CONVERT FROM PSYCHOLOGIST'S LOCAL TIME (FORM) TO UTC (DATABASE)
   def set_utc_times_from_form_parts
     # Use the psychologist's specific timezone to correctly interpret the time parts

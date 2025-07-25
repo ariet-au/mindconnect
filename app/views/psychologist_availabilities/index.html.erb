@@ -379,25 +379,31 @@ document.addEventListener('turbo:load', function () {
 </p>
 
 
- <% @availabilities.each do |availability| %>
+<% @availabilities.each do |availability| %>
 <div class="has-text-grey is-size-7 mb-4">
   <p><strong><%= availability.day_name %> Availability Times:</strong></p>
 
   <ul>
     <li>
       🕒 <strong>Start:</strong>
-      <%= availability.start_time_of_day.utc.strftime('%Y-%m-%d %H:%M:%S') %> UTC |
-      <%= availability.start_time_of_day.in_time_zone(@psychologist_profile.timezone).strftime('%Y-%m-%d %H:%M:%S %Z') %> |
-
-      <span class="browser-time" data-time="<%= availability.start_time_of_day.iso8601 %>">Browser time loading…</span>
+      <% if availability.start_time_of_day.present? %>
+        <%= availability.start_time_of_day.utc.strftime('%Y-%m-%d %H:%M:%S') %> UTC |
+        <%= availability.start_time_of_day.in_time_zone(@psychologist_profile.timezone).strftime('%Y-%m-%d %H:%M:%S %Z') %> |
+        <span class="browser-time" data-time="<%= availability.start_time_of_day.iso8601 %>">Browser time loading…</span>
+      <% else %>
+        Not Set
+      <% end %>
     </li>
     <li>
       🕓 <strong>End:</strong>
-      <%= availability.end_time_of_day.utc.strftime('%Y-%m-%d %H:%M:%S') %> UTC |
-      <%= availability.end_time_of_day.in_time_zone(@psychologist_profile.timezone).strftime('%Y-%m-%d %H:%M:%S %Z') %> |
-      <span class="browser-time" data-time="<%= availability.end_time_of_day.iso8601 %>">Browser time loading…</span>
+      <% if availability.end_time_of_day.present? %>
+        <%= availability.end_time_of_day.utc.strftime('%Y-%m-%d %H:%M:%S') %> UTC |
+        <%= availability.end_time_of_day.in_time_zone(@psychologist_profile.timezone).strftime('%Y-%m-%d %H:%M:%S %Z') %> |
+        <span class="browser-time" data-time="<%= availability.end_time_of_day.iso8601 %>">Browser time loading…</span>
+      <% else %>
+        Not Set
+      <% end %>
     </li>
-    
   </ul>
 </div>
 <% end %>
@@ -412,7 +418,7 @@ document.addEventListener('turbo:load', function () {
       const formatted = localDate.toLocaleString(undefined, {
         year: 'numeric',
         month: '2-digit',
-        day: '2-digit',
+        _day: '2-digit',
         hour: '2-digit',
         minute: '2-digit',
         second: '2-digit',
@@ -422,4 +428,4 @@ document.addEventListener('turbo:load', function () {
       span.textContent = `${formatted} (your local time)`;
     });
   });
-</script>
+</scri
