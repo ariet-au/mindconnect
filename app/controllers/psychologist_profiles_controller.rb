@@ -40,11 +40,17 @@ class PsychologistProfilesController < ApplicationController
     end
     # --- End of Setup ---
 
-    @psychologist_profiles = PsychologistProfile.order(updated_at: :desc)
+    #@psychologist_profiles = PsychologistProfile.order(updated_at: :desc)
+    @psychologist_profiles = PsychologistProfile.confirmed.filled.active.order(updated_at: :desc)
+    # if params[:search].present?
+    #   @psychologist_profiles = @psychologist_profiles
+    #   .merge(PsychologistProfile.search_full_text(params[:search]))
+    # end
 
     if params[:search].present?
+      search_term = params[:search].strip.downcase
       @psychologist_profiles = @psychologist_profiles
-      .merge(PsychologistProfile.search_full_text(params[:search]))
+        .merge(PsychologistProfile.search_full_text(search_term))
     end
 
     session[:currency] = params[:currency] if params[:currency].present?
@@ -135,7 +141,7 @@ class PsychologistProfilesController < ApplicationController
         end
       end
       
-      @psychologist_profiles = @psychologist_profiles.distinct
+      @psychologist_profiles = @psychologist_profiles.verified.distinct
 
       # Convert filtered array to paginated collection
       @psychologist_profiles = Kaminari.paginate_array(filtered_profiles_array).page(params[:page])

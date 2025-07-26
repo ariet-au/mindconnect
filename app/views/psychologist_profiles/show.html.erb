@@ -1,7 +1,34 @@
 <p style="color: green"><%= notice %></p>
 
 
-
+ <% if @psychologist_profile.user == current_user %>
+      <div class="psychologist-nav">
+        <div class="nav-content">
+          <h3 class="nav-title">
+            <i class="fas fa-user-cog"></i>
+            <%= t('psychologist_profiles.show.dashboard') %>
+          </h3>
+          <div class="nav-actions">
+            <%= link_to psychologist_profile_psychologist_availabilities_path(@psychologist_profile.id), class: "button is-primary-blue is-small" do %>
+              <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+              <span><%= t('psychologist_profiles.show.manage_availability') %></span>
+            <% end %>
+            <%= link_to psychologist_profile_calendar_path(@psychologist_profile.id), class: "button is-primary-blue is-small" do %>
+              <span class="icon"><i class="fas fa-ban"></i></span>
+              <span><%= t('psychologist_profiles.show.block_unavailability') %></span>
+            <% end %>
+            <%= link_to psychologist_bookings_bookings_path, class: "button is-info is-small" do %>
+              <span class="icon"><i class="fas fa-calendar-alt"></i></span>
+              <span><%= t('psychologist_profiles.show.view_my_bookings') %></span>
+            <% end %>
+            <%= link_to internal_client_profiles_path, class: "button is-primary-blue is-small" do %>
+              <span class="icon"><i class="fas fa-book"></i></span>
+              <span><%= t('psychologist_profiles.show.notes') %></span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
 
  
  

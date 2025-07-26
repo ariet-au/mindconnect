@@ -8,7 +8,7 @@ class PsychologistProfile < ApplicationRecord
 
 
   belongs_to :user
-  belongs_to :user_for_search, class_name: 'User', foreign_key: 'user_id'
+ # belongs_to :user_for_search, class_name: 'User', foreign_key: 'user_id'
 
   has_many :services, through: :user
   belongs_to :featured_service, class_name: 'Service', optional: true
@@ -28,7 +28,7 @@ class PsychologistProfile < ApplicationRecord
   
   #issues
   has_many :psychologist_issues, dependent: :destroy
-  has_many :issues, through: :psychologist_issues
+  has_many :issues, through: :psychologist_issues 
 
   
 
@@ -52,8 +52,11 @@ class PsychologistProfile < ApplicationRecord
   has_many :bookings
 
 
-  scope :verified, -> { joins(:user_for_search).where("users.verified = ?", true) }
-  #monetize :standard_rate, as: :standard_rate_money, with_model_currency: :currency ,allow_nil: true , as_subunit: false
+  # Scopes for filtering profiles
+  scope :confirmed, -> { where(user_id: User.where.not(confirmed_at: nil).select(:id)) }  
+  scope :active, -> { where(user_id: User.where('updated_at >= ?', 2.months.ago).select(:id)) }
+  scope :filled, -> { where.not(first_name: [nil, ''], last_name: [nil, ''], about_me: [nil, ''], standard_rate: [nil, 0]) }
+  
   monetize :standard_rate, as: :standard_rate_money, 
          with_model_currency: :currency, 
          allow_nil: true, 
@@ -100,10 +103,11 @@ class PsychologistProfile < ApplicationRecord
             format: { with: /\A[a-z0-9\-]+\z/, message: "can only contain lowercase letters, numbers, and hyphens" }
 
 pg_search_scope :search_full_text,
-  against: [:first_name, :last_name, :about_me],
-  associated_against: {
-    user_for_search: [:email], # <-- Use the new association name here
-    services: [:name, :description]
+  against: [:first_name, :last_name, :about_me, :religion, :about_clients, :about_issues, :about_specialties],
+  associated_against: { # <-- Use the new association name here
+    services: [:name, :description],
+    issues: [:name],
+    specialties: [:name]
   },
   using: {
     tsearch: { prefix: true }

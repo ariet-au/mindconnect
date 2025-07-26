@@ -1,0 +1,14 @@
+     <% profile.issues.each do |issue| %>
+                    <span class="tag is-warning is-light"><%= issue.name %></span>
+                  <% end %>
+
+
+                         <% if profile.languages.any? %>
+        <div class="tags are-small mt-2">
+          <% profile.languages.each do |language| %>
+            <%# Translate the language name using the 'spoken_languages' key %>
+            <span class="tag is-info is-light"><%= t("spoken_languages.#{language.name}") %></span> <%# <--- MODIFIED LINE %>
+          <% end %>
+        </div>
+      <% end %>
+            

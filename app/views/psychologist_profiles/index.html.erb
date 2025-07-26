@@ -154,24 +154,7 @@
   </div>
 </div>
 
-<!-- Religion -->
-<% safe_religions = @religions || [] %>
-<div class="column is-6-tablet is-12-mobile">
-  <div class="field">
-    <label class="label"><%= t('psychologist_search.religion_label') %></label>
-    <div class="control">
-      <div class="select is-fullwidth">
-        <%= select_tag :religion, 
-          options_for_select(
-            [[t('psychologist_search.any_religion'), '']] + 
-            safe_religions.map { |r| [t("enums.religion.#{r}"), r] }, # Changed this line
-            params[:religion]
-          ),
-          class: "select" %>
-      </div>
-    </div>
-  </div>
-</div>
+
 
 
         <!-- Location Filters -->
@@ -358,7 +341,7 @@
               <!-- Short Bio -->
               <% if profile.about_me.present? %>
                 <p class="has-text-grey is-size-7 mb-2">
-                  <%= truncate(profile.about_me, length: 150) %>
+                  <%= truncate(profile.about_me, length: 600) %>
                 </p>
               <% end %>
               
@@ -368,9 +351,7 @@
                   <% profile.specialties.each do |specialty| %>
                     <span class="tag is-info is-light"><%= specialty.name %></span>
                   <% end %>
-                  <% profile.issues.each do |issue| %>
-                    <span class="tag is-warning is-light"><%= issue.name %></span>
-                  <% end %>
+             
                 </div>
               <% end %>
               
@@ -384,15 +365,7 @@
             </div>
 
             <!-- Languages Tags (moved to match common structure) -->
-       <% if profile.languages.any? %>
-        <div class="tags are-small mt-2">
-          <% profile.languages.each do |language| %>
-            <%# Translate the language name using the 'spoken_languages' key %>
-            <span class="tag is-info is-light"><%= t("spoken_languages.#{language.name}") %></span> <%# <--- MODIFIED LINE %>
-          <% end %>
-        </div>
-      <% end %>
-            
+
             <!-- Contact Information (right side) -->
             <div class="column is-narrow">
               <div class="buttons are-small is-flex is-flex-direction-column">
