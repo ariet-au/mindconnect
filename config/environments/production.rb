@@ -65,12 +65,12 @@ Rails.application.configure do
       port: 3000,            # Add this if you're running on port 3000
       protocol: 'http'       # Keep as http
     }
-    config.action_mailer.delivery_method = :mailgun
-    config.action_mailer.mailgun_settings = {
-      api_key: Rails.application.credentials.mailgun.api_key,
-      domain: Rails.application.credentials.mailgun.domain, # Your custom verified Mailgun domain
-      api_host: "api.mailgun.net" # or "api.eu.mailgun.net" if using EU region
-    }
+    # config.action_mailer.delivery_method = :mailgun
+    # config.action_mailer.mailgun_settings = {
+    #   api_key: Rails.application.credentials.mailgun.api_key,
+    #   domain: Rails.application.credentials.mailgun.domain, # Your custom verified Mailgun domain
+    #   api_host: "api.mailgun.net" # or "api.eu.mailgun.net" if using EU region
+    # }
 
     # config.action_mailer.perform_deliveries = true
     # config.action_mailer.delivery_method = :smtp
