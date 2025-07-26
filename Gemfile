@@ -70,3 +70,4 @@ gem 'redis'
 gem 'pg_search'
 gem 'i18n', '~> 1.14'
 
+gem 'mailgun-ruby'
