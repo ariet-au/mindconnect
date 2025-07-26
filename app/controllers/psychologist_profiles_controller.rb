@@ -298,7 +298,7 @@ class PsychologistProfilesController < ApplicationController
             :contact_phone2, :contact_phone3, :gender, :education, :is_doctor, :in_person, :online, 
             :is_degree_boolean, :profile_img, :religion,
             :about_clients, :about_issues, :about_specialties, :primary_contact_method, :timezone,
-            :status, :youtube_video_url, :profile_url,
+            :status, :youtube_video_url, :profile_url, :featured_service_id, 
             issue_ids: [],         # <-- Add this
             client_type_ids: [],  # <-- And this
             specialty_ids: [] ,     # <-- And this,

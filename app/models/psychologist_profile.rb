@@ -11,6 +11,8 @@ class PsychologistProfile < ApplicationRecord
   belongs_to :user_for_search, class_name: 'User', foreign_key: 'user_id'
 
   has_many :services, through: :user
+  belongs_to :featured_service, class_name: 'Service', optional: true
+
 
   has_one_attached :profile_img
   has_many :internal_client_profiles, dependent: :destroy # Add this line

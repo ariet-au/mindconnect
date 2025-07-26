@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_21_093611) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_26_055833) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -249,6 +249,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_21_093611) do
     t.string "youtube_video_url"
     t.string "profile_url"
     t.string "religion"
+    t.bigint "featured_service_id"
+    t.index ["featured_service_id"], name: "index_psychologist_profiles_on_featured_service_id"
     t.index ["profile_url"], name: "index_psychologist_profiles_on_profile_url", unique: true
     t.index ["user_id"], name: "index_psychologist_profiles_on_user_id"
   end
@@ -357,6 +359,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_21_093611) do
   add_foreign_key "psychologist_issues", "psychologist_profiles"
   add_foreign_key "psychologist_languages", "languages"
   add_foreign_key "psychologist_languages", "psychologist_profiles"
+  add_foreign_key "psychologist_profiles", "services", column: "featured_service_id"
   add_foreign_key "psychologist_profiles", "users"
   add_foreign_key "psychologist_specialties", "psychologist_profiles"
   add_foreign_key "psychologist_specialties", "specialties"

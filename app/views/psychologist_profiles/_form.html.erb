@@ -377,6 +377,13 @@
       </div>
     </div>
 
+
+<div class="field">
+  <%= form.label :featured_service_id, "Featured Service" %>
+  <%= form.collection_select :featured_service_id, @psychologist_profile.user.services, :id, :name, { prompt: "Select a featured service" }, { class: "form-control" } %>
+</div>
+
+
     <div class="column is-full">
       <div class="field">
         <div class="control">
@@ -385,6 +392,12 @@
       </div>
     </div>
   </div>
+
+
+
+
+
+
 
   <div class="modal" id="cropModal">
     <div class="modal-background"></div>
@@ -418,7 +431,7 @@
 <% end %>
 
 
-</script>
+
 
 <script>
 document.addEventListener("turbo:load", function () {
