@@ -46,7 +46,7 @@ Rails.application.configure do
   config.action_mailer.mailgun_settings = {
     api_key: Rails.application.credentials.mailgun.api_key,
     domain: Rails.application.credentials.mailgun.domain, # Your Mailgun sandbox domain
-    api_host: "api.mailgun.net" # or "api.eu.mailgun.net" if using EU region
+    api_host: "api.eu.mailgun.net" # or "api.eu.mailgun.net" if using EU region
   }
 
   # config.action_mailer.delivery_method = :smtp
