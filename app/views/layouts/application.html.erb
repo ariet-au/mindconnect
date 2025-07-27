@@ -1,221 +1,111 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title><%= content_for(:title) || "AkSanaa" %></title>
-        <%= favicon_link_tag 'favicon.ico', type: 'image/x-icon' %>
+<head>
+  <title><%= content_for(:title) || "AkSanaa" %></title>
+  <%= favicon_link_tag 'favicon.ico', type: 'image/x-icon' %>
 
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= javascript_include_tag "utc_time_converter", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= javascript_include_tag "utc_time_converter", "data-turbo-track": "reload" %>
 
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="turbo-cache-control" content="no-cache">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
 
+  <%= yield :head %>
 
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="turbo-cache-control" content="no-cache">
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.18/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.18/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.18/index.global.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.18/index.global.min.js"></script>
 
-    <%= yield :head %>
+  <link rel="icon" href="/icon.png" type="image/png">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icon.png">
+  <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+  <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
+  <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+  <!-- Cropper.js CSS -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+  <!-- Cropper.js JS -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
+  <%= javascript_importmap_tags %>
 
-
-  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/6.1.18/index.global.min.js"></script>
-  <script  defer src="https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.18/index.global.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/@fullcalendar/daygrid@6.1.18/index.global.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/@fullcalendar/timegrid@6.1.18/index.global.min.js"></script>
-
-
-
-
-
-
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
-    <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
-
-    <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet"  href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
-
-
-<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
-
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
-    <!-- Cropper.js CSS -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
-
-    <!-- Cropper.js JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-
-
-
- 
-    <%= javascript_importmap_tags %>
-
-
-
-  </head>
-
-<body>
-
-<nav class="navbar is-white is-fixed-top has-shadow" role="navigation" aria-label="main navigation">
-  <div class="container">
-    <div class="navbar-brand">
-      <a class="navbar-item" href="/">
-        <%= image_tag("ak_logo.png", alt: "Logo") %>
-        <strong class="has-text-weight-semibold">AkSanaa</strong>
-      </a>
-      
-      <!-- Mobile hamburger menu -->
-      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar-menu">
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-      </a>
-    </div>
-
-    <div id="navbar-menu" class="navbar-menu">
-      <div class="navbar-end">
-        <!-- Navigation Links -->
-        <div class="navbar-item">
-          <%= link_to t('find_a_psychologist'), search_landing_path, class: "nav-link" %>
-        </div>
-
-        <div class="navbar-item">
-          <%= link_to t('for_psychologists'), landing_psych_path, class: "nav-link" %>
-        </div>
-        
-        <div class="navbar-item">
-          <%= link_to t('contact'), contact_us_path, class: "nav-link" %>
-        </div>
-        
-        <!-- User Menu -->
-        <div class="navbar-item">
-          <% if user_signed_in? %>
-            <div class="dropdown is-right is-hoverable">
-              <div class="dropdown-trigger">
-                <button class="user-dropdown-btn" aria-haspopup="true" aria-controls="user-menu">
-                  <span class="icon-text">
-                    <span class="icon">
-                      <i class="fas fa-user-circle"></i>
-                    </span>
-                    <span class="user-email"><%= current_user.email %></span>
-                    <span class="icon">
-                      <i class="fas fa-chevron-down"></i>
-                    </span>
-                  </span>
-                </button>
-              </div>
-              <div class="dropdown-menu" id="user-menu" role="menu">
-                <div class="dropdown-content">
-                  <% if current_user.psychologist? && current_user.psychologist_profile.present? %>
-                    <%= link_to psychologist_profile_path(current_user.psychologist_profile), 
-                        class: "dropdown-item" do %>
-                      <span class="icon">
-                        <i class="fas fa-user-edit"></i>
-                      </span>
-                      <span><%= t('my_profile') %></span>
-                    <% end %>
-                  <% end %>
-                  <% if current_user.client? && current_user.client_profile.present? %>
-                    <%= link_to client_profile_path(current_user.client_profile), 
-                        class: "dropdown-item" do %>
-                      <span class="icon">
-                        <i class="fas fa-user-edit"></i>
-                      </span>
-                      <span><%= t('my_profile') %></span>
-                    <% end %>
-                  <% end %>
-                  <hr class="dropdown-divider">
-                  <%= link_to destroy_user_session_path,
-                      data: { turbo_method: :delete }, 
-                      class: "dropdown-item" do %>
-                    <span class="icon">
-                      <i class="fas fa-sign-out-alt"></i>
-                    </span>
-                    <span><%= t('logout') %></span>
-                  <% end %>
-                </div>
-              </div>
-            </div>
-          <% else %>
-            <div class="auth-buttons">
-              <%= link_to t('login'), new_user_session_path, class: "auth-btn auth-btn-login" %>
-              <%= link_to t('registration'), new_user_registration_path, class: "auth-btn auth-btn-signup" %>
-            </div>
-          <% end %>
-        </div>
-        
-        <div class="navbar-item">
-          <%= render 'layouts/currency_selector' %>   
-        </div>
-
-        <div class="navbar-item">
-          <%= render 'layouts/locale_selector' %>
-        </div>
-      </div>
-    </div>
-  </div>
-</nav>
-
-
-
-
-<main class="main-content" style="margin-top: 4rem;">
-    <div class="container">
-      <%= yield %>
-    </div>
-  </main>
-
-  <!-- <script src="https://kit.fontawesome.com/your-code.js" crossorigin="anonymous"></script> -->
-  
-</body>
-<style>
+ <style>
+/* Main content padding to clear fixed navbar */
 .main-content {
-  display: flow-root; 
-  padding-top: 6rem; /* Adjust this value as needed to clear the navbar */
-  margin-top: 0 !important; /* Reset this if you're using padding-top */
+  display: flow-root;
+  padding-top: 6rem;
+  margin-top: 0 !important;
 }
 
+/* Navbar */
 .navbar {
-  background: #ffffff;
+  background: #2C3E50;
   border-bottom: 1px solid #e8e8e8;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-                    
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 30;
+}
+
+/* Navbar brand */
+.navbar-brand {
+  display: flex;
+  align-items: center;
 }
 
 .navbar-brand .navbar-item {
   font-size: 1.25rem;
-  color: #2c3e50;
+  color: #FFFFFF;
   padding: 0.75rem 1rem;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
 }
 
 .navbar-brand .navbar-item:hover {
   background-color: transparent;
-  color: #007bff; /* Original Blue */
+  color: #E0F4F6;
 }
 
+/* Navbar menu */
+.navbar-menu {
+  display: flex;
+  justify-content: flex-end;
+}
 
+/* Navbar end */
+.navbar-end {
+  display: flex;
+  align-items: center;
+}
+
+/* Nav links */
 .nav-link {
-  color: #6c757d;
+  color: #FFFFFF;
   text-decoration: none;
   font-weight: 500;
-  padding: 0.5rem 0;
+  padding: 0.5rem 1rem;
   position: relative;
-  transition: color 0.2s ease;
+  transition: background-color 0.2s ease;
+  display: block;
 }
 
 .nav-link:hover {
-  color: #007bff; /* Original Blue */
-  text-decoration: none;
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  border-radius: 4px;
 }
 
 .nav-link::before {
@@ -225,7 +115,7 @@
   left: 0;
   width: 0;
   height: 2px;
-  background-color: #007bff; /* Original Blue */
+  background-color: #FFFFFF;
   transition: width 0.3s ease;
 }
 
@@ -233,66 +123,245 @@
   width: 100%;
 }
 
-/* User dropdown button within navbar */
+/* User dropdown button */
 .user-dropdown-btn {
   background: transparent;
   border: none;
-  color: #6c757d;
-  padding: 0.5rem;
+  color: #FFFFFF;
+  padding: 0.5rem 1rem;
   border-radius: 4px;
   transition: all 0.2s ease;
   cursor: pointer;
-  display: flex; /* Ensures icon and text are inline */
+  display: flex;
   align-items: center;
-  gap: 0.5rem; /* Space between icon, email, and arrow */
+  gap: 0.5rem;
 }
 
 .user-dropdown-btn:hover {
-  background: #f8f9fa;
-  color: #007bff; /* Original Blue */
+  background: rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
 }
 
 .user-email {
-  max-width: 150px; /* Limit width of email to prevent overflow */
+  color: #FFFFFF;
+  max-width: 150px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Dropdown menu and items */
-.dropdown-menu {
+/* User menu */
+.user-menu {
+  position: relative;
+}
+
+.user-menu:hover .menu {
+  display: block;
+}
+
+.menu {
+  display: none;
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   border: 1px solid #e8e8e8;
-  margin-top: 0; /* Fix for dropdown disappearing issue */
+  margin-top: 0;
+  background: #2C3E50;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 200px;
+  z-index: 1000;
 }
 
-.dropdown-content {
+.menu-content {
   border-radius: 8px;
   padding: 0.5rem 0;
-  background: white;
+  background: #2C3E50;
 }
 
-.dropdown-item {
-  padding: 0.75rem 1.25rem;
-  color: #6c757d;
-  transition: all 0.2s ease;
-  text-decoration: none; /* Ensure links are not underlined */
-  display: flex; /* For icon and text alignment */
+.menu-item {
+  padding: 0.5rem 1rem;
+  color: #FFFFFF;
+  text-decoration: none;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  position: relative;
+  background: #2C3E50;
+  transition: background-color 0.2s ease;
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+}
+
+.menu-item::before {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #FFFFFF;
+  transition: width 0.3s ease;
+}
+
+.menu-item:hover::before {
+  width: 100%;
+}
+
+.menu-item .icon {
+  margin-right: 0.5rem;
+  color: #FFFFFF;
+}
+
+.menu-divider {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  height: 1px;
+  margin: 0.5rem 0;
+}
+
+/* Currency selector */
+.currency-selector {
+  display: flex;
   align-items: center;
 }
 
-.dropdown-item:hover {
-  background: #f8f9fa;
-  color: #007bff; /* Original Blue */
+.currency-control {
+  display: flex;
+}
+
+.currency-select {
+  display: flex;
+}
+
+.currency-select-input {
+  background: #2C3E50;
+  color: #FFFFFF;
+  border: 1px solid #FFFFFF;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 5'><path fill='#FFFFFF' d='M0 0l5 5 5-5H0z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 0.7rem center;
+  background-size: 10px 5px;
+  padding-right: 2rem;
+}
+
+.currency-select-input:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.currency-select-input:focus {
+  outline: none;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Style the options within the select */
+.currency-select-input option {
+  background: #2C3E50 !important;
+  color: #FFFFFF !important;
+}
+/* Locale menu */
+.locale-menu {
+  position: relative;
+}
+
+.locale-menu:hover .locale-menu-content {
+  display: block;
+}
+
+.locale-trigger {
+  color: #FFFFFF;
   text-decoration: none;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  position: relative;
+  transition: background-color 0.2s ease;
+  display: block;
 }
 
-.dropdown-item .icon {
-  margin-right: 0.5rem;
+.locale-trigger:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  border-radius: 4px;
 }
 
-/* Auth buttons (Login/Registration) */
+.locale-trigger::before {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #FFFFFF;
+  transition: width 0.3s ease;
+}
+
+.locale-trigger:hover::before {
+  width: 100%;
+}
+
+.locale-menu-content {
+  display: none;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e8e8e8;
+  margin-top: 0;
+  background: #2C3E50;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 150px;
+  z-index: 1000;
+}
+
+.locale-menu-item {
+  padding: 0.5rem 1rem;
+  color: #FFFFFF;
+  text-decoration: none;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  position: relative;
+  background: #2C3E50;
+  transition: background-color 0.2s ease;
+}
+
+.locale-menu-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+}
+
+.locale-menu-item::before {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #FFFFFF;
+  transition: width 0.3s ease;
+}
+
+.locale-menu-item:hover::before {
+  width: 100%;
+}
+
+.locale-menu-item.is-active {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* Auth buttons */
 .auth-buttons {
   display: flex;
   gap: 1rem;
@@ -308,69 +377,76 @@
 }
 
 .auth-btn-login {
-  color: #007bff; /* Original Blue text */
-  border-color: #007bff; /* Original Blue border */
+  color: #FFFFFF;
+  border-color: #FFFFFF;
 }
 
 .auth-btn-login:hover {
-  background: #007bff; /* Fill with Original Blue on hover */
-  color: white;
-  text-decoration: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
 }
 
 .auth-btn-signup {
-  background: #007bff; /* Original Blue background */
-  color: white;
+  background: #FFFFFF;
+  color: #2C3E50;
 }
 
 .auth-btn-signup:hover {
-  background: #0056b3; /* Slightly darker blue on hover */
-  text-decoration: none;
+  background: #E0F4F6;
+  color: #2C3E50;
 }
 
 /* Mobile hamburger */
 .navbar-burger {
   height: 3.25rem;
   width: 3.25rem;
-  color: #6c757d;
+  color: #FFFFFF;
+  background: transparent;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar-burger span {
+  background: #FFFFFF;
+  display: block;
+  height: 2px;
+  width: 1.5rem;
+  margin: 4px 0;
 }
 
 .navbar-burger:hover {
-  background-color: #f8f9fa;
-  color: #007bff; /* Original Blue */
+  background: rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
 }
 
 .navbar-burger.is-active {
-  color: #007bff; /* Original Blue */
+  color: #FFFFFF;
 }
 
-/* --- Responsive Layout (Mobile & Desktop) --- */
-
-/* On desktop, hide the burger and show the full menu */
+/* Responsive Layout */
 @media screen and (min-width: 1024px) {
   .navbar-burger {
-    display: none; /* Hide hamburger on desktop */
+    display: none;
   }
   .navbar-menu {
-    display: flex !important; /* Ensure menu is always visible and horizontal on desktop */
+    display: flex !important;
   }
 }
 
-/* On mobile, hide the menu by default and show the burger */
 @media screen and (max-width: 1023px) {
   .navbar-menu {
-    display: none; /* Hides the menu by default on mobile */
-    background: white;
+    display: none;
+    background: #2C3E50;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     padding: 1rem;
   }
 
-  /* When the burger is clicked (and .navbar-menu gets .is-active) */
   .navbar-menu.is-active {
-    display: block !important; /* Shows the menu when active (stacked vertically) */
+    display: block !important;
   }
 
-  /* Mobile specific adjustments for navbar content */
   .navbar-end {
     flex-direction: column;
     align-items: stretch;
@@ -387,11 +463,11 @@
   }
 
   .nav-link:hover {
-    background: #f8f9fa;
+    background: rgba(255, 255, 255, 0.2);
   }
 
   .nav-link::before {
-    display: none; /* Hide underline animation on mobile nav links */
+    display: none;
   }
 
   .auth-buttons {
@@ -406,16 +482,29 @@
     padding: 0.75rem;
   }
 
-  /* Dropdown behavior for mobile menu - make it static for full expansion */
-  .dropdown {
-    position: static !important; /* Allow dropdown to expand within the mobile menu */
+  .user-menu {
+    position: static !important;
   }
 
-  .dropdown-menu {
-    position: static !important; /* Allow dropdown menu to expand within the mobile menu */
-    box-shadow: none; /* Remove shadows for cleaner look within mobile menu */
-    border: none; /* Remove border for cleaner look within mobile menu */
-    margin-top: 0.5rem; /* Add some spacing back for mobile dropdown */
+  .menu {
+    position: static !important;
+    box-shadow: none;
+    border: none;
+    margin-top: 0.5rem;
+    background: #2C3E50;
+  }
+
+  .menu-content {
+    background: #2C3E50;
+  }
+
+  .menu-item {
+    background: #2C3E50;
+    padding: 0.75rem;
+  }
+
+  .menu-item::before {
+    display: none;
   }
 
   .user-dropdown-btn {
@@ -424,9 +513,49 @@
     padding: 0.75rem;
     border-radius: 4px;
   }
+
+  .currency-select-input {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 4px;
+    background: #2C3E50;
+  }
+
+  .currency-select-input:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .locale-menu {
+    position: static !important;
+  }
+
+  .locale-menu-content {
+    position: static !important;
+    box-shadow: none;
+    border: none;
+    margin-top: 0.5rem;
+    background: #2C3E50;
+  }
+
+  .locale-menu-item {
+    background: #2C3E50;
+    padding: 0.75rem;
+  }
+
+  .locale-menu-item::before {
+    display: none;
+  }
+
+  .locale-trigger {
+    padding: 0.75rem;
+    border-radius: 4px;
+  }
+
+  .locale-trigger::before {
+    display: none;
+  }
 }
 
-/* Smaller mobile screens (e.g., very narrow phones) */
 @media screen and (max-width: 768px) {
   .navbar-brand .navbar-item {
     font-size: 1.1rem;
@@ -441,100 +570,240 @@
     max-width: 120px;
   }
 }
-</style>
-<style>
-/* White Background, Blue Outline/Text Button */
+
+/* Profile page buttons */
 .button.is-primary-blue {
-  background-color: #fff; /* White background */
-  border: 1px solid #007bff; /* Original Blue outline */
-  color: #007bff; /* Original Blue text */
-  /* Remove Bulma's default box-shadow if present or add your own subtle one */
+  background-color: #fff;
+  border: 1px solid #2C3E50;
+  color: #2C3E50;
   box-shadow: none;
-  /* Optional: Adjust padding/font-size for desired minimalistic feel */
-  /* padding: 0.75em 1.5em; */
-  /* font-size: 1em; */
 }
 
 .button.is-primary-blue:hover,
 .button.is-primary-blue.is-hovered {
-  background-color: #007bff; /* Fill with original blue on hover */
-  border-color: #007bff; /* Keep border blue */
-  color: #fff; /* White text on hover */
+  background-color: #2C3E50;
+  border-color: #2C3E50;
+  color: #fff;
   cursor: pointer;
 }
 
 .button.is-primary-blue:focus,
 .button.is-primary-blue.is-focused {
-  background-color: #007bff; /* Fill with original blue on focus */
-  border-color: #007bff; /* Keep border blue */
-  color: #fff; /* White text on focus */
-  outline: none; /* Remove default browser outline */
-  /* Subtle shadow for focus ring (original blue, semi-transparent) */
-  box-shadow: 0 0 0 0.125em rgba(0, 123, 255, 0.25);
+  background-color: #2C3E50;
+  border-color: #2C3E50;
+  color: #fff;
+  outline: none;
+  box-shadow: 0 0 0 0.125em rgba(44, 62, 80, 0.25);
 }
 
 .button.is-primary-blue:active,
 .button.is-primary-blue.is-active {
-  background-color: #0056b3; /* Slightly darker blue on active/click */
-  border-color: #0056b3;
+  background-color: #1A252F;
+  border-color: #1A252F;
   color: #fff;
 }
 
 .button.is-primary-blue[disabled],
 fieldset[disabled] .button.is-primary-blue {
-  background-color: #fff; /* Still white background */
-  border
-</style>
+  background-color: #fff;
+  border-color: #2C3E50;
+  color: #2C3E50;
+}
+ </style>
+
+</head>
+
+<body>
+
+<nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
+  <div class="container">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="/">
+        <%= image_tag("logo-white.png", alt: "Logo") %>
+        <strong class="has-text-weight-semibold"></strong>
+      </a>
+      
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbar-menu">
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
+    </div>
+
+    <div id="navbar-menu" class="navbar-menu">
+      <div class="navbar-end">
+        <div class="navbar-item">
+          <%= link_to t('find_a_psychologist'), search_landing_path, class: "nav-link" %>
+        </div>
+
+        <div class="navbar-item">
+          <%= link_to t('for_psychologists'), landing_psych_path, class: "nav-link" %>
+        </div>
+        
+        <div class="navbar-item">
+          <%= link_to t('contact'), contact_us_path, class: "nav-link" %>
+        </div>
+        
+      <div class="navbar-item">
+  <% if user_signed_in? %>
+    <div class="user-menu">
+      <div class="menu-trigger">
+        <button class="user-dropdown-btn" aria-haspopup="true" aria-controls="user-menu">
+          <span class="icon-text">
+            <span class="icon">
+              <i class="fas fa-user-circle"></i>
+            </span>
+            <span class="user-email"><%= current_user.email %></span>
+            <span class="icon">
+              <i class="fas fa-chevron-down"></i>
+            </span>
+          </span>
+        </button>
+      </div>
+      <div class="menu" id="user-menu" role="menu">
+        <div class="menu-content">
+          <% if current_user.psychologist? && current_user.psychologist_profile.present? %>
+            <%= link_to psychologist_profile_path(current_user.psychologist_profile), 
+                class: "menu-item" do %>
+              <span class="icon">
+                <i class="fas fa-user-edit"></i>
+              </span>
+              <span><%= t('my_profile') %></span>
+            <% end %>
+          <% end %>
+          <% if current_user.client? && current_user.client_profile.present? %>
+            <%= link_to client_profile_path(current_user.client_profile), 
+                class: "menu-item" do %>
+              <span class="icon">
+                <i class="fas fa-user-edit"></i>
+              </span>
+              <span><%= t('my_profile') %></span>
+            <% end %>
+          <% end %>
+          <hr class="menu-divider">
+          <%= link_to destroy_user_session_path,
+              data: { turbo_method: :delete }, 
+              class: "menu-item" do %>
+            <span class="icon">
+              <i class="fas fa-sign-out-alt"></i>
+            </span>
+            <span><%= t('logout') %></span>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% else %>
+    <div class="auth-buttons">
+      <%= link_to t('login'), new_user_session_path, class: "auth-btn auth-btn-login" %>
+      <%= link_to t('registration'), new_user_registration_path, class: "auth-btn auth-btn-signup" %>
+    </div>
+  <% end %>
+</div>
+        
+  <div class="navbar-item">
+  <div class="currency-selector">
+    <div class="currency-control">
+      <div class="currency-select">
+        <%= form_with url: set_currency_path, method: :post, local: true do %>
+          <%= select_tag :currency, 
+              options_for_select(['KGS', 'KZT', 'UZS', 'RUB'], current_currency),
+              onchange: 'this.form.submit();',
+              class: 'currency-select-input' %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="navbar-item">
+  <div class="locale-menu">
+    <a class="locale-trigger">
+      🌐 <%= I18n.t("languages.#{I18n.locale}") %>
+    </a>
+    <div class="locale-menu-content">
+      <%= link_to url_for(locale: :en), class: "locale-menu-item #{'is-active' if I18n.locale == :en}" do %>
+        🇬🇧 English
+      <% end %>
+      <%= link_to url_for(locale: :ru), class: "locale-menu-item #{'is-active' if I18n.locale == :ru}" do %>
+        🇷🇺 Русский
+      <% end %>
+      <%= link_to url_for(locale: :kg), class: "locale-menu-item #{'is-active' if I18n.locale == :kg}" do %>
+        🇰🇬 Кыргызча
+      <% end %>
+    </div>
+  </div>
+</div>
+
+     
+
+
+
+
+      </div>
+    </div>
+  </div>
+</nav>
+
+<main class="main-content" style="margin-top: 4rem;">
+    <div class="container">
+      <%= yield %>
+    </div>
+</main>
 
 <script>
-// Mobile navbar toggle functionality
-document.addEventListener('DOMContentLoaded', () => {
-  // Get all navbar burger elements
-  const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+// navbar.js - Complete solution for hamburger menu functionality
+
+document.addEventListener('DOMContentLoaded', initNavbar);
+document.addEventListener('turbo:load', initNavbar); 
+document.addEventListener('turbolinks:load', initNavbar); // For Turbolinks
+
+function initNavbar() {
+  // Initialize navbar burger toggle
+  const navbarBurgers = document.querySelectorAll('.navbar-burger');
   
-  // Add click event to each burger
-  if ($navbarBurgers.length > 0) {
-    $navbarBurgers.forEach(el => {
-      el.addEventListener('click', () => {
-        // Get the target from the data-target attribute
-        const target = el.dataset.target;
-        const $target = document.getElementById(target);
-        
-        // Toggle the "is-active" class on both the burger and the menu
-        el.classList.toggle('is-active');
-        $target.classList.toggle('is-active');
-      });
+  if (navbarBurgers.length > 0) {
+    navbarBurgers.forEach(burger => {
+      burger.addEventListener('click', handleBurgerClick);
     });
   }
-  
-  // Close mobile menu when clicking outside
-  document.addEventListener('click', (e) => {
-    const navbarMenu = document.getElementById('navbar-menu');
-    const navbarBurger = document.querySelector('.navbar-burger');
-    
-    if (navbarMenu && navbarBurger && 
-        !navbarMenu.contains(e.target) && 
-        !navbarBurger.contains(e.target) && 
-        navbarMenu.classList.contains('is-active')) {
-      
-      navbarMenu.classList.remove('is-active');
-      navbarBurger.classList.remove('is-active');
-    }
-  });
-  
-  // Close mobile menu when clicking on nav links
-  const navLinks = document.querySelectorAll('.nav-link');
+
+  // Close menu when clicking on nav links (for mobile)
+  const navLinks = document.querySelectorAll('.navbar-menu .nav-link');
   navLinks.forEach(link => {
-    link.addEventListener('click', () => {
-      const navbarMenu = document.getElementById('navbar-menu');
-      const navbarBurger = document.querySelector('.navbar-burger');
-      
-      if (navbarMenu && navbarBurger) {
-        navbarMenu.classList.remove('is-active');
-        navbarBurger.classList.remove('is-active');
-      }
-    });
+    link.addEventListener('click', closeMobileMenu);
   });
-});
+
+  // Close menu when clicking outside
+  document.addEventListener('click', handleDocumentClick);
+}
+
+function handleBurgerClick(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  
+  const burger = e.currentTarget;
+  const targetId = burger.dataset.target;
+  const targetMenu = document.getElementById(targetId);
+
+  burger.classList.toggle('is-active');
+  targetMenu.classList.toggle('is-active');
+}
+
+function closeMobileMenu() {
+  const activeBurgers = document.querySelectorAll('.navbar-burger.is-active');
+  const activeMenus = document.querySelectorAll('.navbar-menu.is-active');
+
+  activeBurgers.forEach(burger => burger.classList.remove('is-active'));
+  activeMenus.forEach(menu => menu.classList.remove('is-active'));
+}
+
+function handleDocumentClick(e) {
+  const navbar = document.querySelector('.navbar');
+  // If click is outside navbar, close menus
+  if (navbar && !navbar.contains(e.target)) {
+    closeMobileMenu();
+  }
+}
 </script>
+</body>
 </html>
