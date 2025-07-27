@@ -39,7 +39,7 @@
 
   <%= javascript_importmap_tags %>
 
- <style>
+  <style>
 /* Main content padding to clear fixed navbar */
 .main-content {
   display: flow-root;
@@ -403,7 +403,7 @@
   color: #FFFFFF;
   background: transparent;
   cursor: pointer;
-  display: none;
+  /* display: none; - REMOVED, will be set in media query */
   align-items: center;
   justify-content: center;
 }
@@ -428,14 +428,17 @@
 /* Responsive Layout */
 @media screen and (min-width: 1024px) {
   .navbar-burger {
-    display: none;
+    display: none; /* Hide on desktop */
   }
   .navbar-menu {
-    display: flex !important;
+    display: flex !important; /* Ensure menu is visible on desktop */
   }
 }
 
 @media screen and (max-width: 1023px) {
+  .navbar-burger {
+    display: flex; /* FIX: Make it visible on mobile */
+  }
   .navbar-menu {
     display: none;
     background: #2C3E50;
@@ -609,7 +612,7 @@ fieldset[disabled] .button.is-primary-blue {
   border-color: #2C3E50;
   color: #2C3E50;
 }
- </style>
+  </style>
 
 </head>
 
@@ -664,7 +667,7 @@ fieldset[disabled] .button.is-primary-blue {
         <div class="menu-content">
           <% if current_user.psychologist? && current_user.psychologist_profile.present? %>
             <%= link_to psychologist_profile_path(current_user.psychologist_profile), 
-                class: "menu-item" do %>
+              class: "menu-item" do %>
               <span class="icon">
                 <i class="fas fa-user-edit"></i>
               </span>
@@ -673,7 +676,7 @@ fieldset[disabled] .button.is-primary-blue {
           <% end %>
           <% if current_user.client? && current_user.client_profile.present? %>
             <%= link_to client_profile_path(current_user.client_profile), 
-                class: "menu-item" do %>
+              class: "menu-item" do %>
               <span class="icon">
                 <i class="fas fa-user-edit"></i>
               </span>
@@ -682,8 +685,8 @@ fieldset[disabled] .button.is-primary-blue {
           <% end %>
           <hr class="menu-divider">
           <%= link_to destroy_user_session_path,
-              data: { turbo_method: :delete }, 
-              class: "menu-item" do %>
+            data: { turbo_method: :delete }, 
+            class: "menu-item" do %>
             <span class="icon">
               <i class="fas fa-sign-out-alt"></i>
             </span>
@@ -734,11 +737,6 @@ fieldset[disabled] .button.is-primary-blue {
   </div>
 </div>
 
-     
-
-
-
-
       </div>
     </div>
   </div>
@@ -753,11 +751,11 @@ fieldset[disabled] .button.is-primary-blue {
 <script>
 // navbar.js - Complete solution for hamburger menu functionality
 
-document.addEventListener('DOMContentLoaded', initNavbar);
-document.addEventListener('turbo:load', initNavbar); 
-document.addEventListener('turbolinks:load', initNavbar); // For Turbolinks
+document.addEventListener('turbo:load', initNavbar);
 
 function initNavbar() {
+  console.log('Navbar JS initialized on turbo:load'); // Added for debugging
+
   // Initialize navbar burger toggle
   const navbarBurgers = document.querySelectorAll('.navbar-burger');
   
