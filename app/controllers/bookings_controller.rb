@@ -1,5 +1,5 @@
 class BookingsController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: [:confirm_form, :confirm]
   before_action :set_booking, only: [:show, :edit, :update, :destroy]
 
   def index
@@ -53,8 +53,6 @@ class BookingsController < ApplicationController
     @booking = Booking.new(
       service: @service,
       psychologist_profile: @psychologist_profile,
-      status: current_user.psychologist? ? 'confirmed' : 'pending',
-      # The start_time for the booking record should be in UTC
       start_time: @booking_start_time_for_form.utc
     )
     
@@ -63,8 +61,6 @@ class BookingsController < ApplicationController
     if current_user.client? && current_user.client_profile.present?
       @booking.client_profile_id = current_user.client_profile.id
     end
-    # --- END NEW LOGIC ---
-
     # Calculate end_time for display purposes
     @booking.end_time = @booking.start_time + @service.duration_minutes.minutes if @booking.start_time
     
@@ -77,8 +73,36 @@ class BookingsController < ApplicationController
     @internal_clients = InternalClientProfile.all # Adjust scope as needed
   end
 
+  # def create
+  #   @booking = Booking.new(booking_params)
+
+  #   if current_user.psychologist?
+  #     @booking.psychologist_profile_id ||= current_user.psychologist_profile.id
+  #   else
+  #     @booking.client_profile_id = current_user.client_profile.id
+  #   end
+
+  #   if @booking.save
+  #     Rails.logger.info("Booking created successfully, redirecting...")
+  #     redirect_to @booking, notice: "Booking created successfully."
+  #   else
+  #     @service = @booking.service || Service.find(params[:booking][:service_id])
+  #     @psychologist_profile = @booking.psychologist_profile || @service.user.psychologist_profile
+
+  #     psych_timezone = @psychologist_profile.timezone.presence || 'UTC'
+  #     @display_timezone = params[:browser_timezone] || session[:browser_timezone] || cookies[:browser_timezone] || psych_timezone
+  #     user_tz_obj = ActiveSupport::TimeZone[@display_timezone] || ActiveSupport::TimeZone['UTC']
+      
+  #     @next_available_time = @booking.start_time || Time.current.in_time_zone(user_tz_obj)
+  #     # Corrected line for calculating display_timezone_offset_seconds on re-render
+  #     @display_timezone_offset_seconds = @next_available_time.period.utc_total_offset
+
+  #     render :new, status: :unprocessable_entity
+  #   end
+  # end
   def create
     @booking = Booking.new(booking_params)
+    @booking.created_by = current_user.psychologist? ? 'psychologist' : 'client'
 
     if current_user.psychologist?
       @booking.psychologist_profile_id ||= current_user.psychologist_profile.id
@@ -88,19 +112,19 @@ class BookingsController < ApplicationController
 
     if @booking.save
       Rails.logger.info("Booking created successfully, redirecting...")
-      redirect_to @booking, notice: "Booking created successfully."
+      if @booking.created_by == 'psychologist'
+        redirect_to @booking, notice: "Booking created successfully. Share the confirmation link with the client."
+      else
+        redirect_to @booking, notice: "Booking created successfully. Awaiting psychologist confirmation."
+      end
     else
       @service = @booking.service || Service.find(params[:booking][:service_id])
       @psychologist_profile = @booking.psychologist_profile || @service.user.psychologist_profile
-
       psych_timezone = @psychologist_profile.timezone.presence || 'UTC'
       @display_timezone = params[:browser_timezone] || session[:browser_timezone] || cookies[:browser_timezone] || psych_timezone
       user_tz_obj = ActiveSupport::TimeZone[@display_timezone] || ActiveSupport::TimeZone['UTC']
-      
       @next_available_time = @booking.start_time || Time.current.in_time_zone(user_tz_obj)
-      # Corrected line for calculating display_timezone_offset_seconds on re-render
-      @display_timezone_offset_seconds = @next_available_time.period.utc_total_offset
-
+      @display_timezone_offset_seconds = @next_available_time.utc_total_offset
       render :new, status: :unprocessable_entity
     end
   end
@@ -129,6 +153,48 @@ class BookingsController < ApplicationController
                       .includes(:service, :client_profile)
 
     render json: bookings.map { |booking| booking_to_event(booking) }
+  end
+
+
+  def confirm_form
+    @booking = Booking.find(params[:id])
+    if @booking.confirmation_token == params[:token] && @booking.pending?
+      # Render confirmation form (details below)
+    else
+      redirect_to root_path, alert: 'Invalid or expired token'
+    end
+  end
+
+  def confirm
+    @booking = Booking.find(params[:id])
+    if (params[:token].present? && @booking.confirmation_token == params[:token]) ||
+       (current_user&.psychologist? && @booking.psychologist_profile.user == current_user)
+      if @booking.pending?
+        @booking.update(status: 'confirmed', confirmation_token: nil) if params[:token].present?
+        @booking.update(status: 'confirmed') unless params[:token].present?
+        redirect_to @booking, notice: 'Booking confirmed successfully.'
+      else
+        redirect_to @booking, alert: 'Booking cannot be confirmed.'
+      end
+    else
+      redirect_to root_path, alert: 'Unauthorized to confirm this booking.'
+    end
+  end
+
+  def decline
+    @booking = Booking.find(params[:id])
+    if (params[:token].present? && @booking.confirmation_token == params[:token]) ||
+       (current_user&.psychologist? && @booking.psychologist_profile.user == current_user)
+      if @booking.pending?
+        @booking.update(status: 'declined', confirmation_token: nil) if params[:token].present?
+        @booking.update(status: 'declined') unless params[:token].present?
+        redirect_to @booking, notice: 'Booking declined successfully.'
+      else
+        redirect_to @booking, alert: 'Booking cannot be declined.'
+      end
+    else
+      redirect_to root_path, alert: 'Unauthorized to decline this booking.'
+    end
   end
 
   def psychologist_bookings

@@ -38,7 +38,12 @@ Rails.application.routes.draw do
     resources :bookings, only: [:create, :show, :index, :update, :edit, :destroy] do
       collection do
         get 'calendar_bookings'
-        get :psychologist_bookings
+        get 'psychologist_bookings'
+      end
+      member do
+        get 'confirm', to: 'bookings#confirm_form'
+        post 'confirm'
+        post 'decline'
       end
     end
 

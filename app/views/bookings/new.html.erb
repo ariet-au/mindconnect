@@ -19,7 +19,6 @@
   <%= form_with model: @booking, url: bookings_path, class: "box" do |f| %>
     <%= f.hidden_field :service_id, value: @service&.id %>
     <%= f.hidden_field :psychologist_profile_id, value: @psychologist_profile&.id %>
-    <%= f.hidden_field :status, value: current_user.psychologist? ? 'confirmed' : 'pending' %>
     
     <%= f.hidden_field :start_time, id: 'booking_start_time_utc' %>
 

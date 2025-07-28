@@ -1,19 +1,13 @@
 <h1>Booking Details</h1>
+<p>Service: <%= @booking.service&.name %></p>
+<p>Start Time: <%= @booking.start_time %></p>
+<p>End Time: <%= @booking.end_time %></p>
+<p>Status: <%= @booking.status %></p>
 
-<p><strong>Service:</strong> <%= @booking.service&.name || "N/A" %></p>
-<p><strong>Start Time:</strong> <%= @booking.start_time %></p>
-<p><strong>End Time:</strong> <%= @booking.end_time %></p>
-<p><strong>Status:</strong> <%= @booking.status %></p>
-<p><strong>Notes:</strong> <%= @booking.notes.presence || "None" %></p>
-
-<p><strong>Client:</strong>
-  <% if @booking.client_profile %>
-    <%= @booking.client_profile.full_name %>
-  <% elsif @booking.internal_client_profile %>
-    <%= @booking.internal_client_profile.label %>
-  <% else %>
-    Unspecified
-  <% end %>
-</p>
-
-<%= link_to "Back to Services", services_path, class: "btn btn-secondary" %>
+<% if @booking.pending? && @booking.created_by == 'psychologist' %>
+  <p>Share this link with the client to confirm the booking: 
+    <a href="<%= confirm_booking_url(@booking, token: @booking.confirmation_token) %>">
+      <%= confirm_booking_url(@booking, token: @booking.confirmation_token) %>
+    </a>
+  </p>
+<% end %>

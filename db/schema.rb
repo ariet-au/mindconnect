@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_26_055833) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_28_194744) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -53,7 +53,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_26_055833) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "created_by"
+    t.string "confirmation_token"
     t.index ["client_profile_id"], name: "index_bookings_on_client_profile_id"
+    t.index ["confirmation_token"], name: "index_bookings_on_confirmation_token", unique: true
     t.index ["internal_client_profile_id"], name: "index_bookings_on_internal_client_profile_id"
     t.index ["psychologist_profile_id"], name: "index_bookings_on_psychologist_profile_id"
     t.index ["service_id"], name: "index_bookings_on_service_id"

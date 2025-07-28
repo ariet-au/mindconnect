@@ -1,0 +1,27 @@
+<h1>Confirm Booking</h1>
+<p><strong>Service:</strong> <%= @booking.service&.name || 'N/A' %></p>
+<p><strong>Psychologist:</strong> <%= @booking.psychologist_profile&.full_name || 'N/A' %></p>
+<p><strong>Client:</strong> <%= @booking.client_profile&.full_name || @booking.internal_client_profile&.full_name || 'N/A' %></p>
+<p><strong>Start Time:</strong> 
+  <span class="utc-date-time-range" 
+        data-start-utc="<%= @booking.start_time.utc.iso8601 %>" 
+        data-end-utc="<%= @booking.start_time.utc.iso8601 %>">
+    Loading time...
+  </span>
+</p>
+<p><strong>End Time:</strong> 
+  <span class="utc-date-time-range" 
+        data-start-utc="<%= @booking.end_time&.utc&.iso8601 %>" 
+        data-end-utc="<%= @booking.end_time&.utc&.iso8601 %>">
+    Loading time...
+  </span>
+</p>
+<p><strong>Duration:</strong> <%= @booking.service&.duration_minutes ? "#{@booking.service.duration_minutes} minutes" : number_with_precision((@booking.end_time - @booking.start_time) / 60, precision: 0) + ' minutes' %></p>
+<%= form_with url: confirm_booking_path(@booking), method: :post do |f| %>
+  <%= hidden_field_tag :token, params[:token] %>
+  <%= f.submit 'Confirm Booking', class: 'btn btn-primary' %>
+<% end %>
+<%= form_with url: decline_booking_path(@booking), method: :post do |f| %>
+  <%= hidden_field_tag :token, params[:token] %>
+  <%= f.submit 'Decline Booking', class: 'btn btn-danger' %>
+<% end %>

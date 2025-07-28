@@ -27,7 +27,8 @@
         <th>Start Time</th>
         <th>Status</th>
         <th>Duration</th>
-        <th>Actions</th>
+        <th>Booking Actions</th>
+        <th>Edit Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -58,6 +59,12 @@
                <% end %>
           </td>
           <td><%= booking.service.duration_minutes %> minutes</td>
+          <td>
+          <% if current_user.psychologist? && booking.created_by == 'client' && booking.pending? %>
+            <%= button_to 'Confirm', confirm_booking_path(booking), method: :post %>
+            <%= button_to 'Decline', decline_booking_path(booking), method: :post, class: 'btn btn-danger' %>
+          <% end %>
+          </td>
           <td>
             <%= link_to 'Edit', edit_booking_path(booking), class: 'button is-small is-info is-light mr-2' %>
             <%= link_to 'Delete', booking_path(booking), data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' }, class: 'button is-small is-danger is-light' %>
