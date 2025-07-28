@@ -1,16 +1,86 @@
-<h2>Resend confirmation instructions</h2>
+<style>
+  :root {
+    --primary-main: #2C3E50;
+    --primary-light: #34495e;
+    --primary-dark: #1A2B3C;
+    --text-color-on-primary: #FFFFFF;
+  }
 
-<%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+  .button.is-primary {
+    background-color: var(--primary-main);
+    color: var(--text-color-on-primary);
+    border-color: transparent;
+  }
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email", value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email) %>
+  .button.is-primary:hover {
+    background-color: var(--primary-light);
+    border-color: transparent;
+  }
+
+  .button.is-primary:active {
+    background-color: var(--primary-dark);
+    border-color: transparent;
+  }
+
+  .has-text-primary-main {
+    color: var(--primary-main) !important;
+  }
+
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: whitesmoke;
+    font-family: 'Inter', sans-serif;
+    /* Removed padding from body, as content itself will provide spacing */
+  }
+
+  /* The content itself will now act as the main block, with its own internal spacing */
+  .confirmation-content {
+    max-width: 400px; /* Keep a max-width for readability */
+    width: 100%;
+    padding: 2.5rem; /* Apply padding directly to the content block */
+    /* Removed border-radius, box-shadow, and background-color to achieve the desired look */
+  }
+
+  .devise-links {
+    margin-top: 1rem;
+  }
+  .devise-links a {
+    color: var(--primary-light);
+    text-decoration: none;
+  }
+  .devise-links a:hover {
+    color: var(--primary-main);
+    text-decoration: underline;
+  }
+</style>
+
+<div class="confirmation-content">
+  <h2 class="title is-4 has-text-primary-main">Resend confirmation instructions</h2>
+
+  <%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
+    <%= render "devise/shared/error_messages", resource: resource %>
+
+    <div class="field">
+      <%= f.label :email, class: "label" %><br />
+      <div class="control">
+        <%= f.email_field :email, autofocus: true, autocomplete: "email", value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email), class: "input" %>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="control">
+        <%= f.submit "Resend confirmation instructions", class: "button is-primary is-fullwidth" %>
+      </div>
+    </div>
+  <% end %>
+
+  <hr>
+
+  <div class="devise-links">
+    <%= render "devise/shared/links" %>
   </div>
-
-  <div class="actions">
-    <%= f.submit "Resend confirmation instructions" %>
-  </div>
-<% end %>
-
-<%= render "devise/shared/links" %>
+</div>

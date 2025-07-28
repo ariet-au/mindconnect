@@ -1,26 +1,115 @@
-<h2>Log in</h2>
+<style>
+  :root {
+    --primary-main: #2C3E50;
+    --primary-light: #34495e;
+    --primary-dark: #1A2B3C;
+    --text-color-on-primary: #FFFFFF;
+  }
 
-<%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+  .button.is-primary {
+    background-color: var(--primary-main);
+    color: var(--text-color-on-primary);
+    border-color: transparent;
+  }
+
+  .button.is-primary:hover {
+    background-color: var(--primary-light);
+    border-color: transparent;
+  }
+
+  .button.is-primary:active {
+    background-color: var(--primary-dark);
+    border-color: transparent;
+  }
+
+  .has-text-primary-main {
+    color: var(--primary-main) !important;
+  }
+
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: whitesmoke;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .login-box {
+    max-width: 750px; /* Increased max-width for more space */
+    width: 90%;
+    padding: 3.5rem; /* Increased padding for more internal space */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .devise-links {
+    margin-top: 1rem;
+  }
+  .devise-links a {
+    color: var(--primary-light);
+    text-decoration: none;
+  }
+  .devise-links a:hover {
+    color: var(--primary-main);
+    text-decoration: underline;
+  }
+
+  .logo-container {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .logo-container img {
+    max-width: 150px;
+    height: auto;
+    border-radius: 8px;
+  }
+</style>
+
+<div class="box login-box">
+  <div class="logo-container">
+    <%= image_tag("logo-dark.png", alt: "Logo") %>
   </div>
+  <h2 class="title is-4 has-text-centered has-text-primary-main">Log in</h2>
 
-  <div class="field">
-    <%= f.label :password %><br />
-    <%= f.password_field :password, autocomplete: "current-password" %>
-  </div>
-
-  <% if devise_mapping.rememberable? %>
+  <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
     <div class="field">
-      <%= f.check_box :remember_me %>
-      <%= f.label :remember_me %>
+      <%= f.label :email, class: "label" %>
+      <div class="control">
+        <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "input" %>
+      </div>
+    </div>
+
+    <div class="field">
+      <%= f.label :password, class: "label" %>
+      <div class="control">
+        <%= f.password_field :password, autocomplete: "current-password", class: "input" %>
+      </div>
+    </div>
+
+    <% if devise_mapping.rememberable? %>
+      <div class="field">
+        <div class="control">
+          <label class="checkbox">
+            <%= f.check_box :remember_me %>
+            <%= f.label :remember_me, "Remember me" %>
+          </label>
+        </div>
+      </div>
+    <% end %>
+
+    <div class="field">
+      <div class="control">
+        <%= f.submit "Log in", class: "button is-primary is-fullwidth" %>
+      </div>
     </div>
   <% end %>
 
-  <div class="actions">
-    <%= f.submit "Log in" %>
-  </div>
-<% end %>
+  <hr>
 
-<%= render "devise/shared/links" %>
+  <div class="has-text-centered devise-links">
+    <%= render "devise/shared/links" %>
+  </div>
+</div>

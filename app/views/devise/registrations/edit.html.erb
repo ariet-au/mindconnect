@@ -1,52 +1,156 @@
-<h2>Edit <%= resource_name.to_s.humanize %></h2>
+<style>
+  :root {
+    --primary-main: #2C3E50;
+    --primary-light: #34495e;
+    --primary-dark: #1A2B3C;
+    --text-color-on-primary: #FFFFFF;
+  }
 
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+  .button.is-primary {
+    background-color: var(--primary-main);
+    color: var(--text-color-on-primary);
+    border-color: transparent;
+  }
+
+  .button.is-primary:hover {
+    background-color: var(--primary-light);
+    border-color: transparent;
+  }
+
+  .button.is-primary:active {
+    background-color: var(--primary-dark);
+    border-color: transparent;
+  }
+
+  .button.is-danger {
+    background-color: #e74c3c; /* Bulma's danger red */
+    color: var(--text-color-on-primary);
+    border-color: transparent;
+  }
+
+  .button.is-danger:hover {
+    background-color: #c0392b; /* Darker red for hover */
+  }
+
+  .has-text-primary-main {
+    color: var(--primary-main) !important;
+  }
+
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: whitesmoke;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .edit-box {
+    max-width: 400px;
+    width: 90%;
+    padding: 2.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .devise-links {
+    margin-top: 1rem;
+  }
+  .devise-links a {
+    color: var(--primary-light);
+    text-decoration: none;
+  }
+  .devise-links a:hover {
+    color: var(--primary-main);
+    text-decoration: underline;
+  }
 
 
-  <div class="field mb-3">
-<%= f.select :role,
-    options_for_select([['Client', 'client'], ['Psychologist', 'psychologist']], selected: resource.role),
-    {},
-    { class: "form-select" } %>
+</style>
 
-  </div>
+<div class="box edit-box">
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
-  </div>
+  <h2 class="title is-4 has-text-centered has-text-primary-main">Edit <%= resource_name.to_s.humanize %></h2>
 
-  <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
-    <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
+  <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
+    <%= render "devise/shared/error_messages", resource: resource %>
+
+    <div class="field mb-3">
+      <label class="label">Я</label>
+      <div class="control">
+        <div class="select is-fullwidth">
+          <%= f.select :role,
+                       options_for_select([['Client', 'client'], ['Psychologist', 'psychologist']], selected: resource.role),
+                       {},
+                       { class: "form-select" } %>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <%= f.label :email, class: "label" %><br />
+      <div class="control">
+        <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "input" %>
+      </div>
+    </div>
+
+    <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+      <div class="notification is-info is-light">
+        Currently waiting confirmation for: <%= resource.unconfirmed_email %>
+      </div>
+    <% end %>
+
+    <div class="field">
+      <%= f.label :password, class: "label" %>
+      <div class="control">
+        <p class="help">
+          <i>(leave blank if you don't want to change it)</i>
+        </p>
+        <% if @minimum_password_length %>
+          <p class="help">
+            <em><%= @minimum_password_length %> characters minimum</em>
+          </p>
+        <% end %>
+        <%= f.password_field :password, autocomplete: "new-password", class: "input" %>
+      </div>
+    </div>
+
+    <div class="field">
+      <%= f.label :password_confirmation, class: "label" %><br />
+      <div class="control">
+        <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "input" %>
+      </div>
+    </div>
+
+    <div class="field">
+      <%= f.label :current_password, class: "label" %>
+      <div class="control">
+        <p class="help">
+          <i>(we need your current password to confirm your changes)</i>
+        </p>
+        <%= f.password_field :current_password, autocomplete: "current-password", class: "input" %>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="control">
+        <%= f.submit "Update", class: "button is-primary is-fullwidth is-large" %>
+      </div>
+    </div>
   <% end %>
 
-  <div class="field">
-    <%= f.label :password %> <i>(leave blank if you don't want to change it)</i><br />
-    <%= f.password_field :password, autocomplete: "new-password" %>
-    <% if @minimum_password_length %>
-      <br />
-      <em><%= @minimum_password_length %> characters minimum</em>
-    <% end %>
-  </div>
+  <hr>
+
+  <h3 class="title is-5 has-text-centered">Cancel my account</h3>
 
   <div class="field">
-    <%= f.label :password_confirmation %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+    <div class="control">
+      <%= button_to "Cancel my account", registration_path(resource_name), method: :delete, class: "button is-danger is-fullwidth" %>
+    </div>
   </div>
 
-  <div class="field">
-    <%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i><br />
-    <%= f.password_field :current_password, autocomplete: "current-password" %>
+  <div class="has-text-centered mt-4">
+    <%= link_to "Back", :back, class: "button is-link is-light" %>
   </div>
-
-  <div class="actions">
-    <%= f.submit "Update" %>
-  </div>
-<% end %>
-
-<h3>Cancel my account</h3>
-
-<div>Unhappy? <%= button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?", turbo_confirm: "Are you sure?" }, method: :delete %></div>
-
-<%= link_to "Back", :back %>
+</div>

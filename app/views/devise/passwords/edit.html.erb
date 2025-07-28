@@ -1,25 +1,97 @@
-<h2>Change your password</h2>
+<style>
+  :root {
+    --primary-main: #2C3E50;
+    --primary-light: #34495e;
+    --primary-dark: #1A2B3C;
+    --text-color-on-primary: #FFFFFF;
+  }
 
-<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
-  <%= f.hidden_field :reset_password_token %>
+  .button.is-primary {
+    background-color: var(--primary-main);
+    color: var(--text-color-on-primary);
+    border-color: transparent;
+  }
 
-  <div class="field">
-    <%= f.label :password, "New password" %><br />
-    <% if @minimum_password_length %>
-      <em>(<%= @minimum_password_length %> characters minimum)</em><br />
-    <% end %>
-    <%= f.password_field :password, autofocus: true, autocomplete: "new-password" %>
+  .button.is-primary:hover {
+    background-color: var(--primary-light);
+    border-color: transparent;
+  }
+
+  .button.is-primary:active {
+    background-color: var(--primary-dark);
+    border-color: transparent;
+  }
+
+  .has-text-primary-main {
+    color: var(--primary-main) !important;
+  }
+
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: whitesmoke;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* The content itself will now act as the main block, with its own internal spacing */
+  .change-password-content {
+    max-width: 400px; /* Keep a max-width for readability */
+    width: 100%;
+    padding: 2.5rem; /* Apply padding directly to the content block */
+  }
+
+  .devise-links {
+    margin-top: 1rem;
+  }
+  .devise-links a {
+    color: var(--primary-light);
+    text-decoration: none;
+  }
+  .devise-links a:hover {
+    color: var(--primary-main);
+    text-decoration: underline;
+  }
+</style>
+
+<div class="change-password-content">
+  <h2 class="title is-4 has-text-primary-main">Change your password</h2>
+
+  <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
+    <%= render "devise/shared/error_messages", resource: resource %>
+    <%= f.hidden_field :reset_password_token %>
+
+    <div class="field">
+      <%= f.label :password, "New password", class: "label" %><br />
+      <div class="control">
+        <% if @minimum_password_length %>
+          <p class="help">
+            <em>(<%= @minimum_password_length %> characters minimum)</em>
+          </p>
+        <% end %>
+        <%= f.password_field :password, autofocus: true, autocomplete: "new-password", class: "input" %>
+      </div>
+    </div>
+
+    <div class="field">
+      <%= f.label :password_confirmation, "Confirm new password", class: "label" %><br />
+      <div class="control">
+        <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "input" %>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="control">
+        <%= f.submit "Change my password", class: "button is-primary is-fullwidth" %>
+      </div>
+    </div>
+  <% end %>
+
+  <hr>
+
+  <div class="devise-links">
+    <%= render "devise/shared/links" %>
   </div>
-
-  <div class="field">
-    <%= f.label :password_confirmation, "Confirm new password" %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-  </div>
-
-  <div class="actions">
-    <%= f.submit "Change my password" %>
-  </div>
-<% end %>
-
-<%= render "devise/shared/links" %>
+</div>

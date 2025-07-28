@@ -1,50 +1,143 @@
+<style>
+  :root {
+    --primary-main: #2C3E50;
+    --primary-light: #34495e;
+    --primary-dark: #1A2B3C;
+    --text-color-on-primary: #FFFFFF;
+  }
 
+  .button.is-primary {
+    background-color: var(--primary-main);
+    color: var(--text-color-on-primary);
+    border-color: transparent;
+  }
 
+  .button.is-primary:hover {
+    background-color: var(--primary-light);
+    border-color: transparent;
+  }
 
-<h2><b>Sign up</b></h2>
-<br>
-<p>
-Пожалуйстя проверьте спам папку. Gmail хорошо работает. 
+  .button.is-primary:active {
+    background-color: var(--primary-dark);
+    border-color: transparent;
+  }
 
-Есть проблемы с Мейл ру. Если что можете использовать temp-mail.org, для временного имейла. 
+  .has-text-primary-main {
+    color: var(--primary-main) !important;
+  }
 
-если у вас будут проблемы в контактах есть наш телеграм и имейл. 
-</p>
-<br>
-<br>
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: whitesmoke;
+    font-family: 'Inter', sans-serif;
+  }
 
+  .signup-box {
+    max-width: 500px; /* Increased max-width for more space */
+    width: 90%;
+    padding: 3rem; /* Increased padding for more internal space */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
 
-<div class="field mb-3">
-   <span>Я </span>  <%= f.select :role,
-        options_for_select([ ['Психолог/Терапевт', 'psychologist'],['Клиент', 'client']], selected: resource.role),
-        {},
-        { class: "form-select" } %> 
+  .devise-links {
+    margin-top: 1.5rem; /* Increased margin for more separation from the form */
+    margin-bottom: 0.5rem; /* Added a small bottom margin */
+  }
+  .devise-links a {
+    color: var(--primary-light);
+    text-decoration: none;
+  }
+  .devise-links a:hover {
+    color: var(--primary-main);
+    text-decoration: underline;
+  }
 
+  .logo-container {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .logo-container img {
+    max-width: 150px;
+    height: auto;
+    border-radius: 8px;
+  }
+
+  /* Adjust spacing for paragraphs within the box */
+  .signup-box p {
+    line-height: 1.6; /* Improve readability of text blocks */
+  }
+</style>
+
+<div class="box signup-box">
+  <h2 class="title is-4 has-text-centered has-text-primary-main">Sign up</h2>
+
+  <p class="has-text-grey-dark mb-3">
+    Пожалуйста, проверьте папку со спамом. Gmail хорошо работает.
+  </p>
+  <p class="has-text-grey-dark mb-3">
+    Есть проблемы с Mail.ru. Если что, можете использовать temp-mail.org для временного email.
+  </p>
+  <p class="has-text-grey-dark mb-5">
+    Если у вас будут проблемы, в контактах есть наш Telegram и email.
+  </p>
+
+  <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+    <%= render "devise/shared/error_messages", resource: resource %>
+
+    <div class="field mb-3">
+      <label class="label">Я</label>
+      <div class="control">
+        <div class="select is-fullwidth">
+          <%= f.select :role,
+                       options_for_select([ ['Психолог/Терапевт', 'psychologist'],['Клиент', 'client']], selected: resource.role),
+                       {},
+                       { class: "form-select" } %>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <%= f.label :email, class: "label" %>
+      <div class="control">
+        <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "input" %>
+      </div>
+    </div>
+
+    <div class="field">
+      <%= f.label :password, class: "label" %>
+      <div class="control">
+        <% if @minimum_password_length %>
+        <p class="help">
+          <em>(<%= @minimum_password_length %> characters minimum)</em>
+        </p>
+        <% end %>
+        <%= f.password_field :password, autocomplete: "new-password", class: "input" %>
+      </div>
+    </div>
+
+    <div class="field">
+      <%= f.label :password_confirmation, class: "label" %><br />
+      <div class="control">
+        <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "input" %>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="control">
+        <%= f.submit "Sign up", class: "button is-primary is-fullwidth is-large" %>
+      </div>
+    </div>
+  <% end %>
+
+  <hr>
+
+  <div class="has-text-centered devise-links">
+    <%= render "devise/shared/links" %>
   </div>
-
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
-  </div>
-
-  <div class="field">
-    <%= f.label :password %>
-    <% if @minimum_password_length %>
-    <em>(<%= @minimum_password_length %> characters minimum)</em>
-    <% end %><br />
-    <%= f.password_field :password, autocomplete: "new-password" %>
-  </div>
-
-  <div class="field">
-    <%= f.label :password_confirmation %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
-  </div>
-
-  <div class="actions">
-    <%= f.submit "Sign up" %>
-  </div>
-<% end %>
-
-<%= render "devise/shared/links" %>
+</div>
