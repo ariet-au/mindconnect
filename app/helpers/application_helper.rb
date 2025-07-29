@@ -3,7 +3,7 @@ module ApplicationHelper
         params[:search].present? ||
         params[:specialty_ids].present? ||
         params[:issue_ids].present? ||
-        params[:client_type_ids].present? ||
+        params[:client_type_id].present? ||
         params[:language_ids].present? ||
         params[:in_person] == "1" ||
         params[:online] == "1" ||

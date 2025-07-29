@@ -261,6 +261,7 @@
 <div class="box">
   <%= form_tag psychologist_profiles_path, method: :get, class: "search-form" do %>
 
+    <!-- Search Bar at Top -->
     <div class="field has-addons mb-4">
       <div class="control is-expanded has-icons-left">
         <%= text_field_tag :search, params[:search],
@@ -309,8 +310,63 @@
 
       <div x-show="showFilters" x-transition class="box mt-3">
 
-        <div class="columns is-multiline">
-          <div class="column is-6-tablet is-12-mobile">
+        <!-- First Row: Client Types, Delivery Method, Price Range -->
+        <div class="columns is-multiline mb-4">
+          <!-- Client Types - Compact -->
+          <div class="column is-4-tablet is-12-mobile"> 
+            <div class="field">
+              <label class="label is-small has-text-grey-dark mb-2">
+                <span class="icon-text">
+                  <span class="label"><%= t('psychologist_search.client_types_label') %></span>
+                </span>
+              </label>
+
+              <div class="buttons mb-3" style="gap: 0.25rem;">
+                <!-- Solo Icon Trigger -->
+                <div class="dropdown is-hoverable" id="solo-dropdown-wrapper">
+                  <div class="dropdown-trigger">
+                    <button type="button" id="solo-trigger" class="button is-light is-expanded" aria-haspopup="true" aria-controls="solo-menu">
+                      <span class="icon"><i class="fas fa-user" id="solo-icon"></i></span>
+                      <span>Solo</span>
+                    </button>
+                  </div>
+                  <div class="dropdown-menu" id="solo-menu" role="menu">
+                    <div class="dropdown-content">
+                      <button type="button" class="dropdown-item client-option" data-value="single_adult">Adult</button>
+                      <button type="button" class="dropdown-item client-option" data-value="single_child">Child</button>
+                      <button type="button" class="dropdown-item client-option" data-value="single_teen">Teen</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Pair Icon Trigger -->
+                <div class="dropdown is-hoverable" id="pair-dropdown-wrapper">
+                  <div class="dropdown-trigger">
+                    <button type="button" id="pair-trigger" class="button is-light is-expanded" aria-haspopup="true" aria-controls="pair-menu">
+                      <span class="icon"><i class="fas fa-users" id="pair-icon"></i></span>
+                      <span>Pair</span>
+                    </button>
+                  </div> 
+                  <div class="dropdown-menu" id="pair-menu" role="menu">
+                    <div class="dropdown-content">
+                      <button type="button" class="dropdown-item client-option" data-value="romantic_couple">Romantic Pair</button>
+                      <button type="button" class="dropdown-item client-option" data-value="parent_child">Parent Child</button>
+                      <button type="button" class="dropdown-item client-option" data-value="other_couple">Other Pair</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Hidden input for form -->
+              <%= hidden_field_tag :client_type_id, nil, id: "client-type-input" %>
+
+              <!-- Feedback -->
+              <p id="selection-display" class="help has-text-grey">No client type selected</p>
+            </div>
+          </div>
+
+          <!-- Delivery Method -->
+          <div class="column is-4-tablet is-12-mobile">
             <div class="delivery-method-container">
               <div class="field">
                 <label class="label"><%= t('psychologist_search.delivery_method_label') %></label>
@@ -338,7 +394,8 @@
             </div>
           </div>
 
-          <div class="column is-6-tablet is-12-mobile">
+          <!-- Price Range -->
+          <div class="column is-4-tablet is-12-mobile">
             <div class="field">
               <label class="label"><%= t('psychologist_search.price_range_label') %></label>
               <div class="field has-addons">
@@ -366,6 +423,7 @@
           </div>
         </div>
 
+        <!-- Location Filters -->
         <%= turbo_frame_tag "location_filters" do %>
           <div class="columns is-multiline">
             <div class="column is-6-tablet is-12-mobile">
@@ -408,6 +466,7 @@
           </div>
         <% end %>
 
+        <!-- Advanced Filters Section -->
         <div x-show="showAdvanced"
              x-transition:enter="transition ease-out duration-200"
              x-transition:enter-start="opacity-0 transform scale-95"
@@ -419,31 +478,6 @@
 
           <div class="box is-accented">
             <div class="columns is-multiline">
-              <div class="column is-6-tablet is-12-mobile">
-                <div class="field field-client-type">
-                  <label class="label">
-                    <span class="icon-text">
-                      <span class="icon">
-                        <i class="fas fa-users"></i>
-                      </span>
-                      <span><%= t('psychologist_search.client_types_label') %></span>
-                    </span>
-                  </label>
-                  <div class="control">
-                    <div class="select is-fullwidth">
-                      <%= select_tag :client_type_id,
-                          options_for_select(
-                            [[t('psychologist_search.all_client_types'), '']] +
-                            ClientType.all.map { |i| [t("client_types.#{i.name}"), i.id] },
-                            params[:client_type_id]
-                          ),
-                          class: "select filter-select"
-                          %>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
               <div class="column is-6-tablet is-12-mobile">
                 <div class="field field-specialty">
                   <label class="label">
@@ -541,6 +575,7 @@
           </div>
         </div>
 
+        <!-- Advanced Filters Toggle -->
         <div class="advanced-filters-wrapper">
           <span class="advanced-filters-toggle-text"
                 role="button"
@@ -557,6 +592,7 @@
 
         <hr class="filter-separator">
 
+        <!-- Apply Filters Button -->
         <div class="field mt-4">
           <div class="control">
             <button type="submit" class="button  is-fullwidth">
@@ -572,6 +608,9 @@
     </div>
   <% end %>
 </div>
+
+
+
 
 
 <div class="profiles-container">
@@ -799,4 +838,124 @@
     
 
   });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+ document.addEventListener('turbo:load', function () {
+  const clientTypeMap = <%= raw(ClientType.pluck(:name, :id).to_h.to_json) %>;
+  
+  // Get client_type from URL params instead of just the Rails params
+  const urlParams = new URLSearchParams(window.location.search);
+  const selectedClientTypeId = urlParams.get('client_type_id') ? parseInt(urlParams.get('client_type_id')) : null;
+
+  function getClientTypeNameById(id) {
+    return Object.entries(clientTypeMap).find(([_, val]) => val === id)?.[0];
+  }
+
+  // Add a small delay to ensure DOM is fully ready
+  setTimeout(() => {
+    const input = document.getElementById('client-type-input');
+    const display = document.getElementById('selection-display');
+    const soloIcon = document.getElementById('solo-icon');
+    const pairIcon = document.getElementById('pair-icon');
+    const soloTrigger = document.getElementById('solo-trigger');
+    const pairTrigger = document.getElementById('pair-trigger');
+
+    console.log('Client type elements found:', {
+      input: !!input,
+      display: !!display,
+      soloIcon: !!soloIcon,
+      pairIcon: !!pairIcon,
+      soloTrigger: !!soloTrigger,
+      pairTrigger: !!pairTrigger,
+      selectedClientTypeId: selectedClientTypeId
+    });
+
+    if (input && display && soloIcon && pairIcon && soloTrigger && pairTrigger) {
+      function resetIcons() {
+        soloTrigger.classList.remove('is-info');
+        soloIcon.classList.remove('has-text-white');
+        pairTrigger.classList.remove('is-success');
+        pairIcon.classList.remove('has-text-white');
+      }
+
+      function updateSelection(value, text) {
+        const mappedId = clientTypeMap[value];
+        if (mappedId === undefined) {
+          console.warn('Could not find mapping for value:', value);
+          return;
+        }
+
+        console.log('Updating selection:', value, text, 'mapped to ID:', mappedId);
+        input.value = mappedId;
+
+        if (value.startsWith("single_")) {
+          resetIcons();
+          soloTrigger.classList.add('is-info');
+          soloIcon.classList.add('has-text-white');
+          display.className = "help has-text-info";
+          console.log('Applied solo styling');
+        } else {
+          resetIcons();
+          pairTrigger.classList.add('is-success');
+          pairIcon.classList.add('has-text-white');
+          display.className = "help has-text-success";
+          console.log('Applied pair styling');
+        }
+
+        display.textContent = `Selected: ${text}`;
+      }
+
+      // Set up click handlers
+      document.querySelectorAll('.client-option').forEach(btn => {
+        btn.addEventListener('click', function () {
+          const value = this.dataset.value;
+          const label = this.textContent.trim();
+          updateSelection(value, label);
+        });
+      });
+
+      // ✅ Restore selection from URL parameters
+      if (selectedClientTypeId !== null) {
+        console.log('Attempting to restore selection for ID:', selectedClientTypeId);
+        const selectedTypeName = getClientTypeNameById(selectedClientTypeId);
+        console.log('Found type name:', selectedTypeName);
+        
+        if (selectedTypeName) {
+          const selectedButton = document.querySelector(`[data-value="${selectedTypeName}"]`);
+          console.log('Found button:', selectedButton);
+          
+          if (selectedButton) {
+            const label = selectedButton.textContent.trim();
+            console.log('Restoring selection:', selectedTypeName, label);
+            updateSelection(selectedTypeName, label);
+          }
+        }
+      }
+    }
+  }, 100); // Small delay to ensure DOM is ready
+});
+
+// Also listen for turbo:render to handle cases where only part of the page updates
+document.addEventListener('turbo:render', function() {
+  // Re-run the initialization logic
+  const event = new Event('turbo:load');
+  document.dispatchEvent(event);
+});
 </script>
