@@ -1,18 +1,220 @@
+<style>
+  :root {
+    --primary-main: #2C3E50; /* The core dark blue/grey */
+    --primary-light: #34495e; /* Slightly lighter shade of primary for accents */
+    --primary-dark: #1A2B3C; /* Darker shade for hover states */
+    
+    /* New color palette */
+    --accent-blue: #1098F7;
+    --accent-cyan: #16BAC5;
+    --accent-green: #3F784C;
+    --accent-rose: #C98686;
+    --accent-pale-yellow: #F4F1BB;
+    --accent-teal: #1B998B;
+  }
+
+  @media screen and (min-width: 769px) {
+    [x-cloak] {
+      display: block !important;
+    }
+
+    .filter-section {
+      display: block !important;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .box {
+      margin: 0.5rem;
+      padding: 1rem;
+    }
+
+    .field.has-addons .control:not(:last-child) .button,
+    .field.has-addons .control:not(:last-child) .input {
+      border-radius: 4px 0 0 4px;
+    }
+
+    .field.has-addons .control:last-child .button,
+    .field.has-addons .control:last-child .input {
+      border-radius: 0 4px 4px 0;
+    }
+
+    .tags .tag {
+      margin-bottom: 0.25rem;
+    }
+
+    .button.is-fullwidth {
+      justify-content: space-between;
+    }
+  }
+
+  .field:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+
+  .delivery-method .delivery-method-input {
+    position: absolute;
+    opacity: 0;
+  }
+
+  .delivery-method {
+    background-color: white;
+    border: 1px solid #dbdbdb;
+    color: #363636;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+  }
+
+  .delivery-method:has(.delivery-method-input:checked) {
+    background-color: var(--primary-main);
+    border-color: var(--primary-main);
+    color: white;
+  }
+
+  .delivery-method .delivery-method-input:checked ~ .icon,
+  .delivery-method .delivery-method-input:checked ~ span {
+    color: white;
+  }
+
+  .delivery-method:hover {
+    border-color: var(--primary-light); /* Slightly lighter on hover */
+  }
+
+  .delivery-method:focus-within {
+    box-shadow: 0 0 0 0.125em rgba(44, 62, 80, 0.25); /* Using primary-main RGB for shadow */
+  }
+
+  .delivery-method-container .field {
+    margin-bottom: 1rem;
+  }
+
+  .delivery-method-container .label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #363636;
+  }
+
+  .delivery-method-container .is-grouped {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .delivery-method-container .control {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Advanced Filters Styles */
+  .advanced-filters-section {
+    margin-top: 0;
+  }
+
+  /* NEW: Updated box style for advanced filters */
+  .advanced-filters-section .box.is-accented {
+    border: 1px solid #e8e8e8;
+    border-left: 5px solid var(--accent-cyan);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    margin-top: 1.5rem;
+    background-color: #fdfdfd;
+  }
+
+  .advanced-filters-section .label .icon-text {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  /* NEW: Color-coded icons for advanced filters */
+  .field-client-type .label .icon { color: var(--accent-blue); }
+  .field-specialty .label .icon { color: var(--accent-teal); }
+  .field-issue .label .icon { color: var(--accent-rose); }
+  .field-language .label .icon { color: var(--accent-green); }
+  .field-gender .label .icon { color: var(--primary-dark); }
+
+  .advanced-filters-section .field {
+    margin-bottom: 1.25rem;
+  }
+
+  /* New style for the advanced filter text toggle */
+  .advanced-filters-toggle-text {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    color: var(--primary-main); /* Changed to primary-main for a more distinct look */
+    font-weight: 600;
+    transition: color 0.2s ease;
+  }
+
+  .advanced-filters-toggle-text:hover {
+    color: var(--primary-dark); /* Darker on hover */
+  }
+
+  .advanced-filters-toggle-text .icon {
+    transition: transform 0.2s ease;
+  }
+
+  /* Container for centering the text toggle */
+  .advanced-filters-wrapper {
+    text-align: center;
+    margin-top: 1.5rem; /* Add some space above */
+    margin-bottom: 2rem; /* Add some space below */
+  }
+
+  /* Custom styling for the horizontal rule separator */
+  .filter-separator {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0));
+    margin: 2rem 0; /* Adjust vertical spacing as needed */
+  }
+
+  /* Custom class for primary blue button, using new variables */
+  .button.is-primary-blue {
+    background-color: var(--primary-light); /* Changed to lighter color */
+    border-color: transparent;
+    color: white;
+  }
+
+  .button.is-primary-blue:hover {
+    background-color: var(--primary-main); /* Darker on hover */
+    border-color: transparent;
+  }
+
+  .button.is-primary-blue:focus {
+    box-shadow: 0 0 0 0.125em rgba(44, 62, 80, 0.25);
+  }
+
+  /* NEW: Custom tag style for specialties */
+  .tag.is-specialty-tag {
+    background-color: var(--accent-teal);
+    color: white;
+    font-weight: 500;
+  }
+</style>
+
 <div class="box">
   <%= form_tag psychologist_profiles_path, method: :get, class: "search-form" do %>
-    
-    <!-- Main Search Bar -->
+
     <div class="field has-addons mb-4">
       <div class="control is-expanded has-icons-left">
-        <%= text_field_tag :search, params[:search], 
-              class: "input is-medium", 
-              placeholder: t('psychologist_search.placeholder') %>
+        <%= text_field_tag :search, params[:search],
+            class: "input is-medium",
+            placeholder: t('psychologist_search.placeholder') %>
         <span class="icon is-left">
           <i class="fas fa-search"></i>
         </span>
       </div>
       <div class="control">
-        <button class="button is-primary-blue is-medium" type="submit">
+        <button class="button  is-medium" type="submit">
           <span class="icon is-hidden-mobile">
             <i class="fas fa-search"></i>
           </span>
@@ -32,11 +234,9 @@
       <% end %>
     </div>
 
-    <!-- Collapsible Filters Section - Hidden only on mobile -->
-    <div class="block" x-data="{ showFilters: window.innerWidth > 768 }">
-      <!-- Toggle button - hidden on tablet/desktop -->
-      <button type="button" 
-              class="button is-light is-fullwidth is-justify-content-space-between is-hidden-tablet" 
+    <div class="block" x-data="{ showFilters: window.innerWidth > 768, showAdvanced: false }">
+      <button type="button"
+              class="button is-light is-fullwidth is-justify-content-space-between is-hidden-tablet"
               @click="showFilters = !showFilters"
               x-show="!showFilters">
         <span>
@@ -50,217 +250,259 @@
         </span>
       </button>
 
-      <!-- Filters content - always visible on desktop, toggleable on mobile -->
       <div x-show="showFilters" x-transition class="box mt-3">
-        
-        <!-- Primary Filters -->
+
         <div class="columns is-multiline">
-          <!-- Specialties -->
+          <div class="column is-6-tablet is-12-mobile">
+            <div class="delivery-method-container">
+              <div class="field">
+                <label class="label"><%= t('psychologist_search.delivery_method_label') %></label>
+                <div class="field is-grouped is-grouped-multiline">
+                  <div class="control">
+                    <label class="button delivery-method">
+                      <%= check_box_tag "in_person", "1", params[:in_person] == "1", class: "delivery-method-input" %>
+                      <span class="icon">
+                        <i class="fas fa-user"></i>
+                      </span>
+                      <span><%= t('psychologist_search.in_person') %></span>
+                    </label>
+                  </div>
+                  <div class="control">
+                    <label class="button delivery-method">
+                      <%= check_box_tag "online", "1", params[:online] == "1", class: "delivery-method-input" %>
+                      <span class="icon">
+                        <i class="fas fa-laptop"></i>
+                      </span>
+                      <span><%= t('psychologist_search.online') %></span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="column is-6-tablet is-12-mobile">
             <div class="field">
-              <label class="label"><%= t('psychologist_search.specialties_label') %></label>
-              <div class="control">
-                <%= select_tag :specialty_ids,
-                      options_for_select(
-                        Specialty.all.map { |s| [s.name, s.id] },
-                        params[:specialty_ids]
-                      ),
-                      multiple: true,
-                      class: "filter-select tom-select",
-                      id: "specialties-select" %>
+              <label class="label"><%= t('psychologist_search.price_range_label') %></label>
+              <div class="field has-addons">
+                <div class="control is-expanded">
+                  <%= number_field_tag :min_rate, params[:min_rate],
+                      step: 1,
+                      class: "input",
+                      min: 0,
+                      placeholder: t('psychologist_search.min_rate_placeholder') %>
+                </div>
+
+                <div class="control is-expanded">
+                  <%= number_field_tag :max_rate, params[:max_rate],
+                      step: 1,
+                      class: "input",
+                      min: 0,
+                      placeholder: t('psychologist_search.max_rate_placeholder') %>
+                </div>
+
+                <div class="control">
+                  <input class="input is-static has-text-weight-semibold" type="text" readonly value=" <%= current_currency %>">
+                </div>
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- Issues -->
-          <div class="column is-6-tablet is-12-mobile">
-            <div class="field">
-              <label class="label"><%= t('psychologist_search.issues_label') %></label>
-              <div class="control">
-                <%= select_tag :issue_ids,
-                      options_for_select(
-                        Issue.all.map { |i| [i.name, i.id] },
-                        params[:issue_ids]
-                      ),
-                      multiple: true,
-                      class: "filter-select tom-select",
-                      id: "issues-select" %>
+        <%= turbo_frame_tag "location_filters" do %>
+          <div class="columns is-multiline">
+            <div class="column is-6-tablet is-12-mobile">
+              <div class="field">
+                <label class="label"><%= t('psychologist_search.country_label') %></label>
+                <div class="control">
+                  <div class="select is-fullwidth">
+                    <%= select_tag :country,
+                        options_for_select(
+                          [[t('psychologist_search.all_countries'), '']] +
+                          @countries_with_cities.map { |c| [t("countries.#{c['name']}"), c['name']] },
+                          params[:country]
+                        ),
+                        class: "select filter-select",
+                        id: "search-country",
+                        onchange: "this.form.requestSubmit()" %>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="column is-6-tablet is-12-mobile">
+              <div class="field">
+                <label class="label"><%= t('psychologist_search.city_label') %></label>
+                <div class="control">
+                  <div class="select is-fullwidth">
+                    <%= select_tag :city,
+                        options_for_select(
+                          [[t('psychologist_search.all_cities'), '']] +
+                          @cities_for_select.map { |city_name| [t("cities.#{city_name}"), city_name] },
+                          params[:city]
+                        ),
+                        class: "select filter-select",
+                        id: "search-city",
+                        disabled: @cities_for_select.empty? %>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+        <% end %>
 
-          <!-- Client Types -->
-<div class="column is-6-tablet is-12-mobile">
-  <div class="field">
-    <label class="label"><%= t('psychologist_search.client_types_label') %></label>
-    <div class="control">
-      <div class="select is-fullwidth">
-        <%= select_tag :client_type_id,
-                       options_for_select(
-                         [[t('psychologist_search.all_client_types'), '']] +
-                         ClientType.all.map { |i| [t("client_types.#{i.name}"), i.id] }, # <--- CHANGE HERE
-                         params[:client_type_id]
-                       ),
-                       class: "select filter-select"
-                       %>
-      </div>
-    </div>
-  </div>
-</div>
-  <!-- Languages Filter -->
-<div class="column is-6-tablet is-12-mobile">
-  <div class="field">
-    <label class="label"><%= t('psychologist_search.languages_label') %></label>
-    <div class="control">
-      <%= select_tag "language_ids",
-            options_for_select(
-              # Map Language objects to an array of [translated_name, id] pairs
-              Language.all.map { |lang| [t("spoken_languages.#{lang.name}"), lang.id] }, # <--- MODIFIED LINE
-              selected: params[:language_ids]
-            ),
-            multiple: true,
-            class: "tom-select filter-select",
-            id: "languages-select",
-            data: { placeholder: t('psychologist_search.select_languages_placeholder') } %>
-    </div>
-  </div>
-</div>
+        <div x-show="showAdvanced"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 transform scale-95"
+             x-transition:enter-end="opacity-100 transform scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 transform scale-100"
+             x-transition:leave-end="opacity-0 transform scale-95"
+             class="advanced-filters-section">
 
-<!-- Delivery Method - CSS Only Version -->
-<div class="delivery-method-container">
-  <div class="field">
-    <label class="label"><%= t('psychologist_search.delivery_method_label') %></label>
-    <div class="field is-grouped is-grouped-multiline">
-      <div class="control">
-        <!-- Wrap the checkbox inside the label -->
-        <label class="button delivery-method">
-          <%= check_box_tag "in_person", "1", params[:in_person] == "1", class: "delivery-method-input" %>
-          <span class="icon">
-            <i class="fas fa-user"></i>
+          <div class="box is-accented">
+            <div class="columns is-multiline">
+              <div class="column is-6-tablet is-12-mobile">
+                <div class="field field-client-type">
+                  <label class="label">
+                    <span class="icon-text">
+                      <span class="icon">
+                        <i class="fas fa-users"></i>
+                      </span>
+                      <span><%= t('psychologist_search.client_types_label') %></span>
+                    </span>
+                  </label>
+                  <div class="control">
+                    <div class="select is-fullwidth">
+                      <%= select_tag :client_type_id,
+                          options_for_select(
+                            [[t('psychologist_search.all_client_types'), '']] +
+                            ClientType.all.map { |i| [t("client_types.#{i.name}"), i.id] },
+                            params[:client_type_id]
+                          ),
+                          class: "select filter-select"
+                          %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="column is-6-tablet is-12-mobile">
+                <div class="field field-specialty">
+                  <label class="label">
+                    <span class="icon-text">
+                      <span class="icon">
+                        <i class="fas fa-brain"></i>
+                      </span>
+                      <span><%= t('psychologist_search.specialties_label') %></span>
+                    </span>
+                  </label>
+                  <div class="control">
+                    <%= select_tag :specialty_ids,
+                        options_for_select(
+                          Specialty.all.map { |s| [s.name, s.id] },
+                          params[:specialty_ids]
+                        ),
+                        multiple: true,
+                        class: "filter-select tom-select",
+                        id: "specialties-select" %>
+                  </div>
+                </div>
+              </div>
+
+              <div class="column is-6-tablet is-12-mobile">
+                <div class="field field-issue">
+                  <label class="label">
+                    <span class="icon-text">
+                      <span class="icon">
+                        <i class="fas fa-heart"></i>
+                      </span>
+                      <span><%= t('psychologist_search.issues_label') %></span>
+                    </span>
+                  </label>
+                  <div class="control">
+                    <%= select_tag :issue_ids,
+                        options_for_select(
+                          Issue.all.map { |i| [i.name, i.id] },
+                          params[:issue_ids]
+                        ),
+                        multiple: true,
+                        class: "filter-select tom-select",
+                        id: "issues-select" %>
+                  </div>
+                </div>
+              </div>
+
+              <div class="column is-6-tablet is-12-mobile">
+                <div class="field field-language">
+                  <label class="label">
+                    <span class="icon-text">
+                      <span class="icon">
+                        <i class="fas fa-language"></i>
+                      </span>
+                      <span><%= t('psychologist_search.languages_label') %></span>
+                    </span>
+                  </label>
+                  <div class="control">
+                    <%= select_tag "language_ids",
+                        options_for_select(
+                          Language.all.map { |lang| [t("spoken_languages.#{lang.name}"), lang.id] },
+                          selected: params[:language_ids]
+                        ),
+                        multiple: true,
+                        class: "tom-select filter-select",
+                        id: "languages-select",
+                        data: { placeholder: t('psychologist_search.select_languages_placeholder') } %>
+                  </div>
+                </div>
+              </div>
+
+              <div class="column is-6-tablet is-12-mobile">
+                <div class="field field-gender">
+                  <label class="label">
+                    <span class="icon-text">
+                      <span class="icon">
+                        <i class="fas fa-user-friends"></i>
+                      </span>
+                      <span><%= t('psychologist_search.gender_label') %></span>
+                    </span>
+                  </label>
+                  <div class="control">
+                    <div class="select is-fullwidth">
+                      <%= select_tag :gender,
+                          options_for_select(
+                            [[t('psychologist_search.any_gender'), '']] +
+                            @genders.map { |g| [t("enums.gender.#{g}"), g] },
+                            params[:gender]
+                          ),
+                          class: "select" %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="advanced-filters-wrapper">
+          <span class="advanced-filters-toggle-text"
+                role="button"
+                @click="showAdvanced = !showAdvanced">
+            <span class="icon">
+              <i class="fas fa-sliders-h"></i>
+            </span>
+            <span x-text="showAdvanced ? 'Hide Advanced Filters' : 'More Filter Options'"></span>
+            <span class="icon is-small">
+              <i class="fas" :class="showAdvanced ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+            </span>
           </span>
-          <span><%= t('psychologist_search.in_person') %></span>
-        </label>
-      </div>
-      <div class="control">
-        <label class="button delivery-method">
-          <%= check_box_tag "online", "1", params[:online] == "1", class: "delivery-method-input" %>
-          <span class="icon">
-            <i class="fas fa-laptop"></i>
-          </span>
-          <span><%= t('psychologist_search.online') %></span>
-        </label>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
-
-        <!-- Location Filters -->
-     <%= turbo_frame_tag "location_filters" do %>
-      <div class="columns is-multiline">
-        <div class="column is-6-tablet is-12-mobile">
-          <div class="field">
-            <label class="label"><%= t('psychologist_search.country_label') %></label>
-            <div class="control">
-              <div class="select is-fullwidth">
-<%= select_tag :country,
-                 options_for_select(
-                   [[t('psychologist_search.all_countries'), '']] +
-                   @countries_with_cities.map { |c| [t("countries.#{c['name']}"), c['name']] }, # <--- CHANGE HERE
-                   params[:country]
-                 ),
-                 class: "select filter-select",
-                 id: "search-country",
-                 onchange: "this.form.requestSubmit()" %>
-              </div>
-            </div>
-          </div>
         </div>
 
-        <div class="column is-6-tablet is-12-mobile">
-          <div class="field">
-            <label class="label"><%= t('psychologist_search.city_label') %></label>
-            <div class="control">
-              <div class="select is-fullwidth">
-<%= select_tag :city,
-                 options_for_select(
-                   [[t('psychologist_search.all_cities'), '']] +
-                   @cities_for_select.map { |city_name| [t("cities.#{city_name}"), city_name] }, # <--- CHANGE HERE
-                   params[:city]
-                 ),
-                 class: "select filter-select",
-                 id: "search-city",
-                 disabled: @cities_for_select.empty? %>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    <% end %>
+        <hr class="filter-separator">
 
-
-
-
-
-
-
-  <!-- Gender -->
-  <div class="column is-6-tablet is-12-mobile">
-    <div class="field">
-      <label class="label"><%= t('psychologist_search.gender_label') %></label>
-      <div class="control">
-        <div class="select is-fullwidth">
-          <%= select_tag :gender, 
-            options_for_select(
-              [[t('psychologist_search.any_gender'), '']] + 
-              @genders.map { |g| [t("enums.gender.#{g}"), g] }, # Changed this line
-              params[:gender]
-            ),
-            class: "select" %>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Price Range: Min / Max / Currency -->
-  <div class="column is-6-tablet is-12-mobile">
-    <div class="field">
-      <label class="label"><%= t('psychologist_search.price_range_label') %></label>
-      <div class="field has-addons">
-        <!-- Min -->
-        <div class="control is-expanded">
-          <%= number_field_tag :min_rate, params[:min_rate], 
-              step: 1, 
-              class: "input", 
-              min: 0,
-              placeholder: t('psychologist_search.min_rate_placeholder') %>
-        </div>
-
-        <!-- Max -->
-        <div class="control is-expanded">
-          <%= number_field_tag :max_rate, params[:max_rate], 
-              step: 1, 
-              class: "input", 
-              min: 0,
-              placeholder: t('psychologist_search.max_rate_placeholder') %>
-        </div>
-
-        <!-- Currency Display Only -->
-        <div class="control">
-          <input class="input is-static has-text-weight-semibold" type="text" readonly value="  <%= current_currency %>">
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-        <!-- Apply Filters Button -->
-        <div class="field">
+        <div class="field mt-4">
           <div class="control">
-            <button type="submit" class="button is-primary-blue is-fullwidth">
+            <button type="submit" class="button  is-fullwidth">
               <span class="icon">
                 <i class="fas fa-check"></i>
               </span>
@@ -275,35 +517,27 @@
 </div>
 
 
-
-
-
-<!-- Psychologist Profiles -->
 <div class="profiles-container">
   <% @psychologist_profiles.each do |profile| %>
     <div class="profile-card box mb-4">
-      <div class="columns is-mobile">
-        <!-- Profile Image -->
-        <div class="column is-2-desktop is-3-tablet is-4-mobile profile-img-container has-text-centered">
+      <div class="columns is-vcentered">
+        <div class="column is-narrow has-text-centered">
           <figure class="image is-96x96 mx-auto">
             <% if profile.profile_img.attached? %>
-              <%= image_tag profile.profile_img.variant(resize_to_limit: [96, 96]), class: "is-rounded"%>           
+              <%= image_tag profile.profile_img.variant(resize_to_limit: [96, 96]), class: "is-rounded"%>
             <% else %>
-              <img src="/assets/default-profile.png" alt="Default Profile" class="is-rounded profile-image">
+                 <%= image_tag "default-profile.png", alt: "Default Profile", class: "is-rounded profile-image" %>
             <% end %>
           </figure>
         </div>
         
-        <!-- Profile Info -->
         <div class="column profile-info">
-          <div class="columns is-mobile">
+          <div class="columns">
             <div class="column">
-              <!-- Name and Badges -->
               <h3 class="title is-5 mb-1">
                 <% if profile.is_doctor %><%= t('psychologist_search.phd_badge') %> <% end %><%= profile.first_name %> <%= profile.last_name %> 
               </h3>
               
-              <!-- Qualifications and Rate -->
               <div class="mb-2">
                 <% if profile.standard_rate.present? %>
                   <span class="tag is-light">
@@ -325,7 +559,6 @@
                 <% end %>
               </div>
               
-              <!-- Location and Experience -->
               <% if profile.city.present? || profile.country.present? || profile.years_of_experience.present? %>
                 <p class="location-text mb-2">
                   <% if profile.city.present? || profile.country.present? %>
@@ -338,24 +571,21 @@
                 </p>
               <% end %>
               
-              <!-- Short Bio -->
               <% if profile.about_me.present? %>
                 <p class="has-text-grey is-size-7 mb-2">
                   <%= truncate(profile.about_me, length: 600) %>
                 </p>
               <% end %>
               
-              <!-- Specialties and Issues Tags -->
               <% if profile.specialties.any? || profile.issues.any? %>
                 <div class="tags are-small mt-2">
                   <% profile.specialties.each do |specialty| %>
-                    <span class="tag is-info is-light"><%= specialty.name %></span>
+                    <span class="tag is-specialty-tag"><%= specialty.name %></span>
                   <% end %>
-             
+              
                 </div>
               <% end %>
               
-              <!-- Client Types -->
               <% if profile.client_types.any? %>
                 <p class="is-size-7 has-text-grey mt-2">
                   <span class="icon is-small"><i class="fas fa-users"></i></span>
@@ -364,12 +594,9 @@
               <% end %>
             </div>
 
-            <!-- Languages Tags (moved to match common structure) -->
-
-            <!-- Contact Information (right side) -->
             <div class="column is-narrow">
               <div class="buttons are-small is-flex is-flex-direction-column">
-                <%= link_to psychologist_profile_path(profile), class: "button is-primary is-outlined mb-2" do %>
+                <%= link_to psychologist_profile_path(profile), class: "button is-primary-blue mb-2" do %>
                   <span class="icon is-small"><i class="fas fa-user"></i></span>
                   <span><%= t('psychologist_search.view_profile_button') %></span>
                 <% end %>
@@ -380,7 +607,6 @@
                 </button>
               </div>
               
-              <!-- Contact Icons -->
               <div class="contact-icons mt-2">
                 <% if profile.contact_phone.present? %>
                   <a href="tel:<%= profile.contact_phone %>" class="is-primary-blue mr-1" title="Phone">
@@ -407,7 +633,6 @@
                 <% end %>
               </div>
               
-              <!-- Hidden Contact Info -->
               <div id="contact-<%= profile.id %>" class="contact-info mt-2" style="display: none;">
                 <% if profile.contact_phone.present? %>
                   <p class="is-size-7">
@@ -444,110 +669,6 @@
     </div>
   <% end %>
 </div>
-
-
-<style>
-  @media screen and (min-width: 769px) {
-    [x-cloak] { 
-      display: block !important; 
-    }
-    
-    .filter-section {
-      display: block !important;
-    }
-  }
-
-  @media screen and (max-width: 768px) {
-    .box {
-      margin: 0.5rem;
-      padding: 1rem;
-    }
-    
-    .field.has-addons .control:not(:last-child) .button,
-    .field.has-addons .control:not(:last-child) .input {
-      border-radius: 4px 0 0 4px;
-    }
-    
-    .field.has-addons .control:last-child .button,
-    .field.has-addons .control:last-child .input {
-      border-radius: 0 4px 4px 0;
-    }
-    
-    .tags .tag {
-      margin-bottom: 0.25rem;
-    }
-    
-    .button.is-fullwidth {
-      justify-content: space-between;
-    }
-  }
-
-  .field:not(:last-child) {
-    margin-bottom: 1rem;
-  }
-
-  .delivery-method .delivery-method-input {
-    position: absolute;
-    opacity: 0;
-  }
-  
-  .delivery-method {
-    background-color: white;
-    border: 1px solid #dbdbdb;
-    color: #363636;
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    border-radius: 4px;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    transition: all 0.2s ease;
-  }
-  
-  .delivery-method:has(.delivery-method-input:checked) {
-    background-color: #485fc7; /* Bulma's primary color */
-    border-color: #485fc7;
-    color: white;
-  }
-  
-  .delivery-method .delivery-method-input:checked ~ .icon,
-  .delivery-method .delivery-method-input:checked ~ span {
-    color: white;
-  }
-  
-  .delivery-method:hover {
-    border-color: #b5b5b5;
-  }
-  
-  .delivery-method:focus-within {
-    box-shadow: 0 0 0 0.125em rgba(72, 95, 199, 0.25);
-  }
-
-  .delivery-method-container .field {
-    margin-bottom: 1rem;
-  }
-  
-  .delivery-method-container .label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: #363636;
-  }
-  
-  .delivery-method-container .is-grouped {
-    display: flex;
-    gap: 0.5rem;
-  }
-  
-  .delivery-method-container .control {
-    display: flex;
-    align-items: center;
-  }
-</style>
-
-
-
-
 
 
 
