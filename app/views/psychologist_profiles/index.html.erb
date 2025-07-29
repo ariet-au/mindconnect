@@ -184,6 +184,38 @@
     color: white;
   }
 
+    .button.is-primary-green {
+    background-color: var(--accent-green); /* Changed to lighter color */
+    border-color: transparent;
+    color: white;
+  }
+
+  .button.is-primary-cyan {
+    background-color: var(--accent-cyan); /* Changed to lighter color */
+    border-color: transparent;
+    color: white;
+  }
+  
+  .button.is-primary-teal {
+    background-color: var(--accent-teal); /* Changed to lighter color */
+    border-color: transparent;
+    color: white;
+  }
+
+  .button.is-primary-pale {
+    background-color: var(--accent-pale-yellow); /* Changed to lighter color */
+    border-color: transparent;
+    color: white;
+  }
+
+  .button.is-primary-rose {
+    background-color: var(--accent-rose); /* Changed to lighter color */
+    border-color: transparent;
+    color: white;
+  }
+
+
+
   .button.is-primary-blue:hover {
     background-color: var(--primary-main); /* Darker on hover */
     border-color: transparent;
@@ -199,6 +231,31 @@
     color: white;
     font-weight: 500;
   }
+
+
+
+/* Individual icon colors */
+.contact-phone {
+  color: #3498DB; /* Sky Blue */
+}
+
+.contact-email {
+  color: #5C6BC0; /* Indigo */
+}
+
+.contact-telegram {
+  color: #0088CC; /* Telegram Blue */
+}
+
+.contact-whatsapp {
+  color: #25D366; /* WhatsApp Green */
+}
+
+/* Optional hover effects */
+.contact-icons a:hover {
+  filter: brightness(1.1);
+}
+
 </style>
 
 <div class="box">
@@ -526,7 +583,7 @@
             <% if profile.profile_img.attached? %>
               <%= image_tag profile.profile_img.variant(resize_to_limit: [96, 96]), class: "is-rounded"%>
             <% else %>
-                 <%= image_tag "default-profile.png", alt: "Default Profile", class: "is-rounded profile-image" %>
+             <%= image_tag "default-profile.png", alt: "Default Profile", class: "is-rounded profile-image" %>
             <% end %>
           </figure>
         </div>
@@ -596,7 +653,7 @@
 
             <div class="column is-narrow">
               <div class="buttons are-small is-flex is-flex-direction-column">
-                <%= link_to psychologist_profile_path(profile), class: "button is-primary-blue mb-2" do %>
+                <%= link_to psychologist_profile_path(profile), class: "button  mb-2" do %>
                   <span class="icon is-small"><i class="fas fa-user"></i></span>
                   <span><%= t('psychologist_search.view_profile_button') %></span>
                 <% end %>
@@ -607,31 +664,32 @@
                 </button>
               </div>
               
-              <div class="contact-icons mt-2">
-                <% if profile.contact_phone.present? %>
-                  <a href="tel:<%= profile.contact_phone %>" class="is-primary-blue mr-1" title="Phone">
-                    <span class="icon"><i class="fas fa-phone"></i></span>
-                  </a>
-                <% end %>
-                
-                <% if profile.user.email.present? %>
-                  <a href="mailto:<%= profile.user.email %>" class="is-primary-blue mr-1" title="Email">
-                    <span class="icon"><i class="fas fa-envelope"></i></span>
-                  </a>
-                <% end %>
-                
-                <% if profile.telegram.present? %>
-                  <a href="https://t.me/<%= profile.telegram %>" target="_blank" class="is-primary-blue mr-1" title="Telegram">
-                    <span class="icon"><i class="fab fa-telegram"></i></span>
-                  </a>
-                <% end %>
-                
-                <% if profile.whatsapp.present? %>
-                  <a href="https://wa.me/<%= profile.whatsapp %>" target="_blank" class="is-primary-blue" title="WhatsApp">
-                    <span class="icon"><i class="fab fa-whatsapp"></i></span>
-                  </a>
-                <% end %>
-              </div>
+             <div class="contact-icons mt-2">
+              <% if profile.contact_phone.present? %>
+                <a href="tel:<%= profile.contact_phone %>" class="contact-phone mr-1" title="Phone">
+                  <span class="icon"><i class="fas fa-phone"></i></span>
+                </a>
+              <% end %>
+
+              <% if profile.user.email.present? %>
+                <a href="mailto:<%= profile.user.email %>" class="contact-email mr-1" title="Email">
+                  <span class="icon"><i class="fas fa-envelope"></i></span>
+                </a>
+              <% end %>
+
+              <% if profile.telegram.present? %>
+                <a href="https://t.me/<%= profile.telegram %>" target="_blank" class="contact-telegram mr-1" title="Telegram">
+                  <span class="icon"><i class="fab fa-telegram"></i></span>
+                </a>
+              <% end %>
+
+              <% if profile.whatsapp.present? %>
+                <a href="https://wa.me/<%= profile.whatsapp %>" target="_blank" class="contact-whatsapp" title="WhatsApp">
+                  <span class="icon"><i class="fab fa-whatsapp"></i></span>
+                </a>
+              <% end %>
+            </div>
+
               
               <div id="contact-<%= profile.id %>" class="contact-info mt-2" style="display: none;">
                 <% if profile.contact_phone.present? %>
