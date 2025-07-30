@@ -1,42 +1,144 @@
-<h1>Booking Details</h1>
-<p><strong>Service:</strong> <%= @booking.service&.name || 'N/A' %></p>
-<p><strong>Psychologist:</strong> <%= @booking.psychologist_profile&.full_name || 'N/A' %></p>
-<p><strong>Client:</strong> <%= @booking.client_profile&.full_name || @booking.internal_client_profile&.full_name || 'N/A' %></p>
-<p><strong>Start Time:</strong> 
-  <span class="utc-date-time-range" 
-        data-start-utc="<%= @booking.start_time.utc.iso8601 %>" 
-        data-end-utc="<%= @booking.start_time.utc.iso8601 %>">
-    Loading time...
-  </span>
-</p>
-<p><strong>End Time:</strong> 
-  <span class="utc-date-time-range" 
-        data-start-utc="<%= @booking.end_time&.utc&.iso8601 %>" 
-        data-end-utc="<%= @booking.end_time&.utc&.iso8601 %>">
-    Loading time...
-  </span>
-</p>
-<p><strong>Duration:</strong> <%= @booking.service&.duration_minutes ? "#{@booking.service.duration_minutes} minutes" : number_with_precision((@booking.end_time - @booking.start_time) / 60, precision: 0) + ' minutes' %></p>
-<p><strong>Status:</strong> <%= @booking.status %></p>
-<p><strong>Debug:</strong> status=<%= @booking.status %>, created_by=<%= @booking.created_by %>, token=<%= @booking.confirmation_token %></p>
+<style>
+  /* Custom styles specific to the booking details view */
+  .booking-details-container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
+    max-width: 768px; /* Constrain width for better readability */
+    margin: 20px auto; /* Center the container */
+  }
+  .booking-details-item {
+    margin-bottom: 1rem;
+  }
+  .booking-details-label {
+    font-weight: 600;
+    color: #363636; /* Bulma default text color */
+  }
+  .booking-details-time-display {
+    padding: calc(0.5em - 1px) calc(0.75em - 1px);
+    border: 1px solid #dbdbdb;
+    border-radius: 4px;
+    background-color: #f0f0f0; /* Slightly different background for read-only */
+    display: inline-block; /* To make padding/border apply correctly */
+    min-width: 250px; /* Give it some space */
+    word-break: break-all; /* Ensure long links/times wrap */
+  }
+  .booking-details-actions {
+    margin-top: 2rem;
+  }
 
-<% if @booking.pending? && @booking.created_by == 'psychologist' %>
-  <p><strong>Share this link with the client to confirm the booking:</strong> 
-    <a href="<%= confirm_booking_url(@booking, token: @booking.confirmation_token) %>">
-      <%= confirm_booking_url(@booking, token: @booking.confirmation_token) %>
-    </a>
-  </p>
-  <p><strong>Share via:</strong></p>
-  <p>
-    <a href="https://t.me/share/url?url=<%= CGI.escape(confirm_booking_url(@booking, token: @booking.confirmation_token)) %>&text=Please%20confirm%20your%20booking%20for%20<%= CGI.escape(@booking.service&.name || 'N/A') %>%20with%20<%= CGI.escape(@booking.psychologist_profile&.full_name || 'N/A') %>"
-       class="btn btn-primary" target="_blank">
-      Share to Telegram
-    </a>
-  </p>
-  <p>
-    <a href="https://api.whatsapp.com/send?text=Please%20confirm%20your%20booking%20for%20<%= CGI.escape(@booking.service&.name || 'N/A') %>%20with%20<%= CGI.escape(@booking.psychologist_profile&.full_name || 'N/A') %>:%20<%= CGI.escape(confirm_booking_url(@booking, token: @booking.confirmation_token)) %>"
-       class="btn btn-success" target="_blank">
-      Share to WhatsApp
-    </a>
-  </p>
-<% end %>
+  /* Styles from application.css for custom buttons */
+  .button.is-primary-blue {
+    background-color: #fff;
+    border: 1px solid #2C3E50;
+    color: #2C3E50;
+    box-shadow: none;
+  }
+
+  .button.is-primary-blue:hover,
+  .button.is-primary-blue.is-hovered {
+    background-color: #2C3E50;
+    border-color: #2C3E50;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  .button.is-primary-blue:focus,
+  .button.is-primary-blue.is-focused {
+    background-color: #2C3E50;
+    border-color: #2C3E50;
+    color: #fff;
+    outline: none;
+    box-shadow: 0 0 0 0.125em rgba(44, 62, 80, 0.25);
+  }
+
+  .button.is-primary-blue:active,
+  .button.is-primary-blue.is-active {
+    background-color: #1A252F;
+    border-color: #1A252F;
+    color: #fff;
+  }
+
+  .button.is-primary-blue[disabled],
+  fieldset[disabled] .button.is-primary-blue {
+    background-color: #fff;
+    border-color: #2C3E50;
+    color: #2C3E50;
+  }
+</style>
+
+<div class="booking-details-container">
+  <h2 class="title is-4">Booking Details</h2>
+
+  <div class="booking-details-item">
+    <p><span class="booking-details-label">Service:</span> <%= @booking.service&.name || 'N/A' %></p>
+  </div>
+  <div class="booking-details-item">
+    <p><span class="booking-details-label">Psychologist:</span> <%= @booking.psychologist_profile&.full_name || 'N/A' %></p>
+  </div>
+  <div class="booking-details-item">
+    <p><span class="booking-details-label">Client:</span> <%= @booking.client_profile&.full_name || @booking.internal_client_profile&.full_name || 'N/A' %></p>
+  </div>
+
+  <div class="booking-details-item">
+    <p><span class="booking-details-label">Booking Time:</span>
+      <span class="utc-date-time-range booking-details-time-display"
+            data-start-utc="<%= @booking.start_time.utc.iso8601 if @booking.start_time.present? %>"
+            data-end-utc="<%= @booking.start_time.utc.iso8601 if @booking.start_time.present? %>">
+        Loading time...
+      </span>
+    </p>
+  </div>
+  
+  <div class="booking-details-item">
+    <p><span class="booking-details-label">Duration:</span> <%= @booking.service&.duration_minutes ? "#{@booking.service.duration_minutes} minutes" : number_with_precision((@booking.end_time - @booking.start_time) / 60, precision: 0) + ' minutes' %></p>
+  </div>
+  <div class="booking-details-item">
+    <p><span class="booking-details-label">Status:</span> <%= @booking.status.humanize %></p>
+  </div>
+  <div class="booking-details-item">
+    <p><span class="booking-details-label">Created By:</span> <%= @booking.created_by&.humanize || 'N/A' %></p>
+  </div>
+  <div class="booking-details-item">
+    <p><span class="booking-details-label">Notes:</span> <%= @booking.notes.presence || 'No notes' %></p>
+  </div>
+
+  <% if @booking.pending? && @booking.created_by == 'psychologist' %>
+    <div class="booking-details-item">
+      <p><span class="booking-details-label">Share this link with the client to confirm the booking:</span>
+        <span class="booking-details-time-display">
+          <a href="<%= confirm_booking_url(@booking, token: @booking.confirmation_token) %>">
+            <%= confirm_booking_url(@booking, token: @booking.confirmation_token) %>
+          </a>
+        </span>
+      </p>
+    </div>
+    <div class="booking-details-item">
+      <p><span class="booking-details-label">Share via:</span></p>
+      <div class="field is-grouped booking-details-actions">
+        <p class="control">
+          <a href="https://t.me/share/url?url=<%= CGI.escape(confirm_booking_url(@booking, token: @booking.confirmation_token)) %>&text=Please%20confirm%20your%20booking%20for%20<%= CGI.escape(@booking.service&.name || 'N/A') %>%20with%20<%= CGI.escape(@booking.psychologist_profile&.full_name || 'N/A') %>"
+            class="button is-info" target="_blank">
+            Share to Telegram
+          </a>
+        </p>
+        <p class="control">
+          <a href="https://api.whatsapp.com/send?text=Please%20confirm%20your%20booking%20for%20<%= CGI.escape(@booking.service&.name || 'N/A') %>%20with%20<%= CGI.escape(@booking.psychologist_profile&.full_name || 'N/A') %>:%20<%= CGI.escape(confirm_booking_url(@booking, token: @booking.confirmation_token)) %>"
+            class="button is-success" target="_blank">
+            Share to WhatsApp
+          </a>
+        </p>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="field is-grouped booking-details-actions">
+    <p class="control">
+      <%= link_to "Edit Booking", edit_booking_path(@booking), class: "button is-primary-blue" %>
+    </p>
+    <p class="control">
+      <%= link_to "Back to Bookings", bookings_path, class: "button is-light" %>
+    </p>
+  </div>
+</div>
