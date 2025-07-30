@@ -7,6 +7,26 @@ class BookingsController < ApplicationController
   end
 
   def show
+    @booking = Booking.find(params[:id])
+    respond_to do |format|
+      format.html # Render HTML view if requested (e.g., for /bookings/:id)
+      format.json do
+        render json: {
+          id: @booking.id,
+          status: @booking.status,
+          client: @booking.client_profile ? { full_name: @booking.client_profile.full_name } : nil,
+          internal_client: @booking.internal_client_profile ? { full_name: @booking.internal_client_profile.full_name } : nil,
+          service: @booking.service ? { name: @booking.service.name } : nil,
+          start_time: @booking.start_time.iso8601,
+          end_time: @booking.end_time.iso8601
+        }
+      end
+    end
+    rescue ActiveRecord::RecordNotFound
+      respond_to do |format|
+        format.html { render plain: "Booking not found", status: :not_found }
+        format.json { render json: { error: "Booking not found" }, status: :not_found }
+      end
   end
 
   def new
@@ -153,6 +173,8 @@ class BookingsController < ApplicationController
                       .includes(:service, :client_profile)
 
     render json: bookings.map { |booking| booking_to_event(booking) }
+  rescue ActiveRecord::RecordNotFound
+    render json: { error: "Psychologist profile not found" }, status: :not_found
   end
 
 
@@ -222,8 +244,8 @@ class BookingsController < ApplicationController
       textColor: 'white',
       extendedProps: {
         status: booking.status,
-        notes: booking.notes,
         client_profile_id: booking.client_profile_id,
+        internal_client_profile_id: booking.internal_client_profile_id,
         service_id: booking.service_id
       }
     }

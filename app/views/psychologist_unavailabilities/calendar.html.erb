@@ -181,19 +181,21 @@ document.addEventListener('turbo:load', function () {
         // PASTE THIS ENTIRE UPDATED FUNCTION INTO YOUR SCRIPT
 
 eventClick: function(info) {
-    const isUnavailability = info.event.source && info.event.source.url === `/psychologist_unavailabilities.json?psychologist_profile_id=${psychologistProfileId}`;
+    // Check which event source the clicked event belongs to
+    const isUnavailability = info.event.source && info.event.source.url.startsWith('/psychologist_unavailabilities.json');
+    const isBooking = info.event.source && info.event.source.url.startsWith('/bookings/calendar_bookings');
 
-    if (isUnavailability && info.event.id) {
+    if (isBooking && info.event.id) {
+        // --- THIS IS THE NEW LOGIC FOR BOOKINGS ---
+        // Call the new function to show booking details
+        showBookingInfoModal(info.event);
+
+    } else if (isUnavailability && info.event.id) {
+        // --- THIS IS YOUR EXISTING LOGIC FOR UNAVAILABILITIES ---
         const isRecurringInstance = info.event.extendedProps && info.event.extendedProps.recurring;
-
-        // CHANGED: Use calendar.formatDate for cleaner, consistent formatting
         const formatOptions = {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-            hour: 'numeric',
-            minute: '2-digit',
-            meridiem: 'short',
+            month: 'short', day: 'numeric', year: 'numeric',
+            hour: 'numeric', minute: '2-digit', meridiem: 'short',
             timeZoneName: 'short'
         };
         const startTime = calendar.formatDate(info.event.start, formatOptions);
@@ -201,42 +203,43 @@ eventClick: function(info) {
 
         let confirmationMessage = '';
         if (isRecurringInstance) {
-            confirmationMessage = `This is a recurring unavailability instance. Do you want to delete the ENTIRE recurring rule (all future occurrences) for "${info.event.title}"?`;
+            confirmationMessage = `This is a recurring unavailability instance. Do you want to delete the ENTIRE recurring rule for "${info.event.title}"?`;
         } else {
             confirmationMessage = `Are you sure you want to delete this one-off unavailability from ${startTime} to ${endTime}?`;
         }
-
-        // Using custom confirmation modal
+        
         showCustomConfirm(confirmationMessage, function(confirmed) {
             if (confirmed) {
                 fetch(`/psychologist_unavailabilities/${info.event.id}.json`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-Token': document.querySelector("[name='csrf-token']").content
-                        }
-                    })
-                    .then(response => {
-                        if (response.ok) {
-                            calendar.refetchEvents();
-                            showCustomAlert("Unavailability deleted successfully.");
-                        } else {
-                            response.json().then(errors => {
-                                console.error("Server-side deletion errors:", errors);
-                                showCustomAlert("Error deleting unavailability: " + JSON.stringify(errors));
-                            }).catch(() => {
-                                showCustomAlert(`Error deleting unavailability. Status: ${response.status} ${response.statusText}. Could not parse error response.`);
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Network or Fetch error during deletion:", error);
-                        showCustomAlert("A network error occurred while deleting unavailability.");
-                    });
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': document.querySelector("[name='csrf-token']").content
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        calendar.refetchEvents();
+                        showCustomAlert("Unavailability deleted successfully.");
+                    } else {
+                        response.json().then(errors => {
+                            console.error("Server-side deletion errors:", errors);
+                            showCustomAlert("Error deleting unavailability: " + JSON.stringify(errors));
+                        }).catch(() => {
+                            showCustomAlert(`Error deleting unavailability. Status: ${response.status} ${response.statusText}.`);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error("Network or Fetch error during deletion:", error);
+                    showCustomAlert("A network error occurred while deleting unavailability.");
+                });
             }
-        }); // End of showCustomConfirm callback
+        });
+
     } else {
-        showCustomAlert("This event is not an unavailability record or cannot be deleted from here.");
+        // Fallback for other events (like background availability) that are not clickable
+        console.log("Clicked on a non-interactive event:", info.event);
     }
 },
 
@@ -291,6 +294,48 @@ eventClick: function(info) {
 
     // Custom Alert/Confirm/Prompt Modals (replacing native alert/confirm/prompt)
     // These functions create and manage simple modal dialogs.
+    function showBookingInfoModal(event) {
+    // Use FullCalendar's formatter for consistent date/time display
+    const formatOptions = {
+        month: 'short', day: 'numeric', year: 'numeric',
+        hour: 'numeric', minute: '2-digit', meridiem: 'short',
+        timeZoneName: 'short'
+    };
+    const startTime = window.myCalendar.formatDate(event.start, formatOptions);
+    const endTime = window.myCalendar.formatDate(event.end, formatOptions);
+
+    // Prepare content for the modal body.
+    // Access custom data via event.extendedProps (assuming your server sends it)
+    const clientName = event.extendedProps.client_name || 'N/A';
+    const bookingStatus = event.extendedProps.status || 'N/A';
+    
+    const contentHtml = `
+        <p><strong>Client:</strong> ${clientName}</p>
+        <p><strong>Status:</strong> ${bookingStatus}</p>
+        <p><strong>Starts:</strong> ${startTime}</p>
+        <p><strong>Ends:</strong> ${endTime}</p>
+    `;
+
+    // Create buttons for the footer, including a link to the booking's show page
+    const buttonsHtml = `
+        <button id="bookingModalCloseBtn" class="btn">Close</button>
+        <a href="/bookings/${event.id}" class="btn btn-primary" style="margin-left: 10px;">View Full Details</a>
+    `;
+
+    // Use your existing createModal helper
+    const modal = createModal(
+        'bookingInfoDialog',
+        'Booking Details',
+        contentHtml,
+        buttonsHtml
+    );
+
+    // Add functionality to the close button
+    document.getElementById('bookingModalCloseBtn').onclick = () => {
+        modal.style.display = 'none';
+    };
+}
+
     function createModal(id, title, contentHtml, buttonsHtml) {
         const existingModal = document.getElementById(id);
         if (existingModal) existingModal.remove(); // Remove existing to prevent duplicates

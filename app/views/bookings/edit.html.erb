@@ -1,127 +1,252 @@
-<h2>Edit Booking for <%= @booking.service.name %></h2>
+<style>
+  /* Custom styles specific to the booking form to ensure a clean white look and proper spacing */
+  .booking-form-container {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
+    max-width: 768px; /* Constrain width for better readability */
+    margin: 20px auto; /* Center the container */
+  }
+  .booking-form-field:not(:last-child) { /* Renamed from .field */
+    margin-bottom: 1.5rem;
+  }
+  .booking-form-control-plaintext { /* Renamed from .form-control-plaintext */
+    padding: calc(0.5em - 1px) calc(0.75em - 1px);
+    border: 1px solid #dbdbdb;
+    border-radius: 4px;
+    background-color: #f0f0f0; /* Slightly different background for read-only */
+  }
+  .booking-datetime-select-wrapper .select:not(.is-multiple)::after { /* Renamed from .datetime-select-wrapper */
+    right: 0.8em; /* Adjust arrow position for multiple selects */
+  }
+  .booking-datetime-select-wrapper .select select { /* Renamed from .datetime-select-wrapper */
+    min-width: unset; /* Allow selects to size naturally */
+  }
+  .booking-datetime-select-wrapper .select { /* Renamed from .datetime-select-wrapper */
+    margin-right: 0.5rem; /* Spacing between date/time selects */
+  }
+  .booking-form-actions { /* Renamed from .actions */
+    margin-top: 2rem;
+  }
 
-<% if @booking.errors.any? %>
-  <div class="notification is-danger">
-    <h2><%= pluralize(@booking.errors.count, "error") %> prevented this booking from saving:</h2>
-    <ul>
-      <% @booking.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-    </ul>
-  </div>
-<% end %>
+  /* Styles from application.css that might be relevant for buttons */
+  .button.is-primary-blue {
+    background-color: #fff;
+    border: 1px solid #2C3E50;
+    color: #2C3E50;
+    box-shadow: none;
+  }
 
-<%= form_with model: @booking, url: booking_path(@booking), method: :patch do |f| %>
-  <%= f.hidden_field :service_id %>
-  <%= f.hidden_field :psychologist_profile_id %>
+  .button.is-primary-blue:hover,
+  .button.is-primary-blue.is-hovered {
+    background-color: #2C3E50;
+    border-color: #2C3E50;
+    color: #fff;
+    cursor: pointer;
+  }
 
-  <% if current_user.psychologist? %>
-    <div class="field">
-      <%= f.label :client_profile_id, "Client Profile (if external)" %>
-      <%= f.collection_select :client_profile_id, ClientProfile.all, :id, :full_name, { selected: @booking.client_profile_id }, class: "form-control" %>
-    </div>
-    <div class="field">
-      <%= f.label :internal_client_profile_id, "Internal Client (for notes)" %>
-      <%= f.collection_select :internal_client_profile_id, InternalClientProfile.all, :id, :label, { selected: @booking.internal_client_profile_id }, class: "form-control" %>
+  .button.is-primary-blue:focus,
+  .button.is-primary-blue.is-focused {
+    background-color: #2C3E50;
+    border-color: #2C3E50;
+    color: #fff;
+    outline: none;
+    box-shadow: 0 0 0 0.125em rgba(44, 62, 80, 0.25);
+  }
+
+  .button.is-primary-blue:active,
+  .button.is-primary-blue.is-active {
+    background-color: #1A252F;
+    border-color: #1A252F;
+    color: #fff;
+  }
+
+  .button.is-primary-blue[disabled],
+  fieldset[disabled] .button.is-primary-blue {
+    background-color: #fff;
+    border-color: #2C3E50;
+    color: #2C3E50;
+  }
+</style>
+
+<div class="booking-form-container">
+  <h2 class="title is-4">Edit Booking for <%= @booking.service.name %></h2>
+
+  <% if @booking.errors.any? %>
+    <div class="notification is-danger">
+      <h2 class="subtitle is-5"><%= pluralize(@booking.errors.count, "error") %> prevented this booking from saving:</h2>
+      <ul>
+        <% @booking.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
     </div>
   <% end %>
 
-  <div class="field">
-    <%= f.label :start_time %>
-    <%
-      # The timezone is only for displaying the hint, Rails handles the values internally
-      timezone = @booking.psychologist_profile.timezone || 'UTC'
-    %>
+  <%= form_with model: @booking, url: booking_path(@booking), method: :patch do |f| %>
+    <%= f.hidden_field :service_id %>
+    <%= f.hidden_field :psychologist_profile_id %>
+
+    <% if current_user.psychologist? %>
+      <div class="booking-form-field">
+        <%= f.label :client_profile_id, "Client Profile (if external)", class: "label" %>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <%= f.collection_select :client_profile_id, ClientProfile.all, :id, :full_name, { selected: @booking.client_profile_id }, class: "input" %>
+          </div>
+        </div>
+      </div>
+      <div class="booking-form-field">
+        <%= f.label :internal_client_profile_id, "Internal Client (for notes)", class: "label" %>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <%= f.collection_select :internal_client_profile_id, InternalClientProfile.all, :id, :label, { selected: @booking.internal_client_profile_id }, class: "input" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+  <div class="booking-form-field">
+  <%= f.label :start_time, class: "label" %>
+
+  <!-- Hidden field to store the UTC start time -->
+  <%= f.hidden_field :start_time, id: "hidden_start_time" %>
+
+  <div class="control is-expanded booking-datetime-select-wrapper is-flex is-align-items-center">
     <%= f.datetime_select :start_time, {
           start_year: Time.current.year,
           end_year: Time.current.year + 1,
           minute_step: 15
         }, {
-          class: "form-control start-time-select",
+          class: "input",
           id: "start_time_select"
         } %>
-    <small class="text-muted">
-      Psychologist's timezone: <%= timezone %>
-    </small>
   </div>
 
-  <div class="field">
-    <%= f.label :end_time %>
-    <div id="calculated_end_time" class="form-control-plaintext">
-      <%# Display the *current* calculated end time when the page loads %>
-      <%= @booking.end_time.in_time_zone(timezone).strftime("%a %b %d at %H:%M") if @booking.end_time.present? %>
+  <div id="displayed_start_time" class="booking-form-control-plaintext"
+       data-start-utc="<%= @booking.start_time.iso8601 if @booking.start_time.present? %>">
+    <!-- Populated by JavaScript -->
+  </div>
+  <p class="help">
+    Displayed in your local timezone.
+  </p>
+</div>
+
+    <div class="booking-form-field">
+      <%= f.label :end_time, class: "label" %>
+      <div id="calculated_end_time" class="booking-form-control-plaintext"
+           data-start-utc="<%= @booking.start_time.iso8601 if @booking.start_time.present? %>"
+           data-end-utc="<%= @booking.end_time.iso8601 if @booking.end_time.present? %>">
+        <%# This content will be populated by JavaScript on load and on change %>
+      </div>
+      <p class="help">Duration: <%= @booking.service.duration_minutes %> minutes</p>
     </div>
-    <%# REMOVED: <%= f.hidden_field :end_time, value: @booking.end_time.iso8601, id: "booking_end_time" %> %>
-    <small class="form-text text-muted">Duration: <%= @booking.service.duration_minutes %> minutes</small>
-  </div>
 
-  <div class="field">
-    <%= f.label :status %>
-    <%= f.select :status, Booking::VALID_STATUSES.map { |s| [s.humanize, s] }, { selected: @booking.status }, class: "form-control" %>
-  </div>
+    <div class="booking-form-field">
+      <%= f.label :status, class: "label" %>
+      <div class="control">
+        <div class="select is-fullwidth">
+          <%= f.select :status, Booking.statuses.keys.map { |status| [status.humanize, status] }, { selected: @booking.status }, class: "input" %>
+        </div>
+      </div>
+    </div>
 
-  <div class="field">
-    <%= f.label :notes %>
-    <%= f.text_area :notes, class: "form-control" %>
-  </div>
+    <div class="booking-form-field">
+      <%= f.label :created_by, class: "label" %>
+      <div class="control">
+        <div class="booking-form-control-plaintext">
+          <%= @booking.created_by&.humanize || 'Not set' %>
+        </div>
+      </div>
+    </div>
 
-  <div class="actions">
-    <%= f.submit "Update Booking", class: "btn btn-primary" %>
-    <%= link_to "Cancel", booking_path(@booking), class: "btn btn-secondary" %>
-  </div>
-<% end %>
+    <div class="booking-form-field">
+      <%= f.label :notes, class: "label" %>
+      <div class="control">
+        <%= f.text_area :notes, class: "textarea" %>
+      </div>
+    </div>
+
+    <div class="booking-form-field is-grouped booking-form-actions">
+      <div class="control">
+        <%= f.submit "Update Booking", class: "button is-primary-blue" %>
+      </div>
+      <div class="control">
+        <%= link_to "Cancel", booking_path(@booking), class: "button is-light" %>
+      </div>
+    </div>
+  <% end %>
+</div>
 
 <script>
-// Only for display calculation now
 document.addEventListener("turbo:load", function() {
   const duration = parseInt(<%= @booking.service.duration_minutes %>);
   const endTimeDisplay = document.getElementById('calculated_end_time');
-  // const endTimeHiddenField = document.getElementById('booking_end_time'); // Removed
+  const startTimeDisplay = document.getElementById('displayed_start_time');
+  const hiddenStartTime = document.getElementById('hidden_start_time');
 
-  function updateEndTime() {
-    const year = document.querySelector('select[name="booking[start_time(1i)]"]')?.value;
-    const month = document.querySelector('select[name="booking[start_time(2i)]"]')?.value;
-    const day = document.querySelector('select[name="booking[start_time(3i)]"]')?.value;
-    const hour = document.querySelector('select[name="booking[start_time(4i)]"]')?.value;
-    const minute = document.querySelector('select[name="booking[start_time(5i)]"]')?.value;
-
-    // Get the timezone offset from the psychologist's timezone string.
-    // This is a rough way; a more robust solution might involve a JS library like moment-timezone
-    // or passing the current timezone offset from Ruby.
-    const psychologistTimezone = '<%= @booking.psychologist_profile.timezone || 'UTC' %>';
-    let browserTimezoneOffsetMs = 0; // Default to 0 for simplicity or if not adjusting in JS
-    
-    // If you need to convert the JS date to the psychologist's timezone for display,
-    // you'll need a more robust JS solution than what's practical here without a library.
-    // For now, let's assume the browser's Date object will be fine for local calculation.
-
-    if (year && month && day && hour && minute) {
-      // Create a Date object in the browser's local timezone.
-      // Date.UTC would create it in UTC, which might be better if you want to be precise,
-      // but then you'd need to convert to the psychologist's timezone for display.
-      const startTime = new Date(year, month - 1, day, hour, minute);
-      
-      const endTime = new Date(startTime.getTime() + duration * 60000);
-
-      const formatted = endTime.toLocaleString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-      }).replace(',', '');
-
-      if (endTimeDisplay) endTimeDisplay.textContent = formatted;
-      // if (endTimeHiddenField) endTimeHiddenField.value = endTime.toISOString(); // Removed
-    }
+  // Function to set select dropdowns to a given date
+  function setSelectValues(date) {
+    document.querySelector('select[name="booking[start_time(1i)]"]').value = date.getFullYear();
+    document.querySelector('select[name="booking[start_time(2i)]"]').value = date.getMonth() + 1; // Months are 1-12 in select
+    document.querySelector('select[name="booking[start_time(3i)]"]').value = date.getDate();
+    document.querySelector('select[name="booking[start_time(4i)]"]').value = String(date.getHours()).padStart(2, '0');
+    document.querySelector('select[name="booking[start_time(5i)]"]').value = String(date.getMinutes()).padStart(2, '0');
   }
 
-  document.querySelectorAll('select[name^="booking[start_time"]').forEach(select => {
-    select.addEventListener('change', updateEndTime);
-  });
+  // Function to get the selected local time from the dropdowns
+  function getSelectedLocalTime() {
+    const year = document.querySelector('select[name="booking[start_time(1i)]"]').value;
+    const month = document.querySelector('select[name="booking[start_time(2i)]"]').value - 1; // Months are 0-11 in JS
+    const day = document.querySelector('select[name="booking[start_time(3i)]"]').value;
+    const hour = document.querySelector('select[name="booking[start_time(4i)]"]').value;
+    const minute = document.querySelector('select[name="booking[start_time(5i)]"]').value;
+    return new Date(year, month, day, hour, minute);
+  }
 
-  // Call once on load to ensure end time is correct if start time is already set
-  updateEndTime();
+  // Formatting function (adapted from utc_time_converter.js)
+  function formatDateTime(date) {
+    const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const optionsDate = { year: "numeric", month: "short", day: "2-digit" };
+    const optionsTime = { hour: "2-digit", minute: "2-digit", hour12: true, timeZone: userTimeZone };
+    return `${date.toLocaleDateString(undefined, optionsDate)}, ${date.toLocaleTimeString(undefined, optionsTime)} (${userTimeZone})`;
+  }
+
+  // Function to update all displays and hidden field
+  function updateTimes() {
+    const selectedLocalTime = getSelectedLocalTime();
+    if (isNaN(selectedLocalTime.getTime())) {
+      startTimeDisplay.textContent = '';
+      endTimeDisplay.textContent = '';
+      hiddenStartTime.value = '';
+      return;
+    }
+
+    // Convert local time to UTC for submission
+    const selectedUtcTime = new Date(selectedLocalTime.toUTCString());
+    hiddenStartTime.value = selectedUtcTime.toISOString();
+
+    // Update start time display
+    startTimeDisplay.textContent = formatDateTime(selectedLocalTime);
+
+    // Calculate and update end time display
+    const endLocalTime = new Date(selectedLocalTime.getTime() + duration * 60000);
+    endTimeDisplay.textContent = `${formatDateTime(selectedLocalTime)} - ${endLocalTime.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit", hour12: true })}`;
+  }
+
+  // Initialize on page load
+  const initialStartUtc = startTimeDisplay.dataset.startUtc;
+  if (initialStartUtc) {
+    const startDateUtc = new Date(initialStartUtc);
+    const localStartDate = new Date(startDateUtc.toLocaleString("en-US", { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone }));
+    setSelectValues(localStartDate);
+    updateTimes();
+  }
+
+  // Add event listeners to all start_time select elements
+  document.querySelectorAll('select[name^="booking[start_time"]').forEach(select => {
+    select.addEventListener('change', updateTimes);
+  });
 });
 </script>

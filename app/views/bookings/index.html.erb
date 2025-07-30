@@ -22,6 +22,7 @@
     <thead>
       <tr>
         <th>Service</th>
+        <th>Created By</th>
         <th>Psychologist</th>
         <th>Client</th>
         <th>Start Time</th>
@@ -35,8 +36,9 @@
       <% @bookings.each do |booking| %>
         <tr>
           <td><%= booking.service.name %></td>
+          <td><%= booking.created_by %></td>
           <td><%= booking.psychologist_profile&.first_name || 'N/A' %></td>
-          <td><%= booking.client_profile&.first_name || 'N/A' %></td>
+          <td><%= booking.client_profile&.first_name || booking.internal_client_profile&.first_name || 'N/A' %></td>
           <td>
             <%# This span is processed by your existing JavaScript timezone handler %>
             <span
