@@ -13,11 +13,11 @@
               <span class="icon"><i class="fas fa-calendar-alt"></i></span>
               <span><%= t('psychologist_profiles.show.manage_availability') %></span>
             <% end %>
-            <%= link_to psychologist_profile_calendar_path(@psychologist_profile.id), class: "button is-primary-blue is-small" do %>
-              <span class="icon"><i class="fas fa-ban"></i></span>
-              <span><%= t('psychologist_profiles.show.block_unavailability') %></span>
+            <%= link_to psychologist_dashboard_path(@psychologist_profile.id), class: "button is-primary-blue is-small" do %>
+              <span class="icon"><i class="fas fa-calendar"></i></span>
+              <span><%= t('psychologist_profiles.show.dashboard') %></span>
             <% end %>
-            <%= link_to psychologist_bookings_bookings_path, class: "button is-info is-small" do %>
+            <%= link_to psychologist_bookings_psychologist_profile_bookings_path(@psychologist_profile.id), class: "button is-info is-small" do %>
               <span class="icon"><i class="fas fa-calendar-alt"></i></span>
               <span><%= t('psychologist_profiles.show.view_my_bookings') %></span>
             <% end %>
