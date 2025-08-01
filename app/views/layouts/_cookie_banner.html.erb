@@ -1,0 +1,63 @@
+<%# app/views/layouts/_cookie_banner.html.erb %>
+<div id="cookie-banner" class="fixed-bottom bg-light p-3" style="display:none;">
+  <div class="container">
+    <p>We use cookies to improve your experience. Please choose which types you accept:</p>
+    
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="analyticsConsent" checked>
+      <label class="form-check-label" for="analyticsConsent">
+        Analytics Cookies
+      </label>
+    </div>
+    
+    <div class="mt-2">
+      <button id="accept-selected" class="btn btn-primary btn-sm">Accept Selected</button>
+      <button id="accept-all" class="btn btn-success btn-sm">Accept All</button>
+      <button id="reject-all" class="btn btn-outline-secondary btn-sm">Reject All</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Show banner if consent not set
+  if(!localStorage.getItem('cookieConsent')) {
+    document.getElementById('cookie-banner').style.display = 'block';
+  }
+
+  // Consent handlers
+  document.getElementById('accept-all').addEventListener('click', function() {
+    gtag('consent', 'update', {
+      'ad_storage': 'granted',
+      'analytics_storage': 'granted',
+      'functionality_storage': 'granted',
+      'personalization_storage': 'granted'
+    });
+    localStorage.setItem('cookieConsent', 'all');
+    document.getElementById('cookie-banner').style.display = 'none';
+  });
+
+  document.getElementById('accept-selected').addEventListener('click', function() {
+    const analyticsChecked = document.getElementById('analyticsConsent').checked;
+    
+    gtag('consent', 'update', {
+      'analytics_storage': analyticsChecked ? 'granted' : 'denied',
+      'ad_storage': 'denied', // Always deny ad storage for healthcare app
+      'functionality_storage': 'denied',
+      'personalization_storage': 'denied'
+    });
+    
+    localStorage.setItem('cookieConsent', analyticsChecked ? 'analytics' : 'none');
+    document.getElementById('cookie-banner').style.display = 'none';
+  });
+
+  document.getElementById('reject-all').addEventListener('click', function() {
+    gtag('consent', 'update', {
+      'ad_storage': 'denied',
+      'analytics_storage': 'denied',
+      'functionality_storage': 'denied',
+      'personalization_storage': 'denied'
+    });
+    localStorage.setItem('cookieConsent', 'none');
+    document.getElementById('cookie-banner').style.display = 'none';
+  });
+</script>

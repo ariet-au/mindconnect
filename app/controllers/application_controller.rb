@@ -3,6 +3,8 @@ class ApplicationController < ActionController::Base
   allow_browser versions: :modern
 
   before_action :configure_permitted_parameters, if: :devise_controller?
+  before_action :check_analytics_consent
+
 
   helper_method :current_currency
   before_action :set_locale
@@ -52,8 +54,12 @@ class ApplicationController < ActionController::Base
     devise_parameter_sanitizer.permit(:account_update, keys: [:role])
   end
 
-      private
+  private
 
+  def check_analytics_consent
+    # Only send analytics server-side if consent given
+    @analytics_allowed = cookies[:analytics_consent] == 'true'
+  end
 
   def extract_locale_from_accept_language_header
     request.env['HTTP_ACCEPT_LANGUAGE']&.scan(/^[a-z]{2}/)&.first&.to_sym
