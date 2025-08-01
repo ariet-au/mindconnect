@@ -1,0 +1,30 @@
+<%= form_with(model: quiz) do |f| %>
+  <%= f.label :title %>
+  <%= f.text_field :title %>
+
+  <%= f.label :description %>
+  <%= f.text_area :description %>
+
+  <h3>Questions</h3>
+  <%= f.fields_for :questions do |qf| %>
+    <div class="box">
+      <%= qf.label :text, "Question Text" %>
+      <%= qf.text_field :text %>
+
+      <%= qf.label :input_type %>
+      <%= qf.select :input_type, Question.input_types.keys.map { |k| [k.humanize, k] } %>
+
+      <%= qf.fields_for :question_options do |optf| %>
+        <div class="field is-grouped">
+          <%= optf.label :label %>
+          <%= optf.text_field :label %>
+
+          <%= optf.label :score %>
+          <%= optf.number_field :score %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%= f.submit "Save Quiz", class: "button is-primary" %>
+<% end %>

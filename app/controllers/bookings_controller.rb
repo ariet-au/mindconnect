@@ -3,7 +3,12 @@ class BookingsController < ApplicationController
   before_action :set_booking, only: [:show, :edit, :update, :destroy]
 
   def index
-    @bookings = Booking.includes(:psychologist_profile, :client_profile, :internal_client_profile, :service).all
+    @psychologist_profile = current_user.psychologist_profile
+    if @psychologist_profile
+      @bookings = Booking.where(psychologist_profile_id: @psychologist_profile.id)
+    else
+      redirect_to new_psychologist_profile_path, alert: "Please complete your profile first."
+    end
   end
 
   def show
@@ -149,20 +154,64 @@ class BookingsController < ApplicationController
     end
   end
 
+
   def edit
   end
 
   def update
-    if @booking.update(booking_params)
-      redirect_to @booking, notice: 'Booking was successfully updated.'
-    else
-      render :edit, status: :unprocessable_entity
+    respond_to do |format|
+      if @booking.update(booking_params)
+        format.json { render json: { success: true }, status: :ok }
+        format.html { redirect_to @booking, notice: 'Booking was successfully updated.' }
+      else
+        format.json { render json: { success: false, error: @booking.errors.full_messages.join(', ') }, status: :unprocessable_entity }
+        format.html { render :edit, status: :unprocessable_entity }
+      end
     end
   end
+
 
   def destroy
     @booking.destroy
     redirect_to bookings_path, notice: 'Booking was successfully deleted.'
+  end
+
+  def create_json
+    @booking = @psychologist_profile.bookings.new(booking_params)
+    @booking.created_by = 'psychologist' if current_user.psychologist?
+    @booking.timezone = @psychologist_profile.timezone
+
+    if booking_conflicts?
+      render json: { success: false, error: "The selected time slot is not available." }, status: :unprocessable_entity
+      return
+    end
+
+    if @booking.save
+      render json: { success: true, id: @booking.id }, status: :created
+    else
+      render json: { success: false, error: @booking.errors.full_messages.join(', ') }, status: :unprocessable_entity
+    end
+  end
+
+  def update_json
+    if booking_conflicts?
+      render json: { success: false, error: "The selected time slot is not available." }, status: :unprocessable_entity
+      return
+    end
+
+    if @booking.update(booking_params)
+      render json: { success: true, id: @booking.id }, status: :ok
+    else
+      render json: { success: false, error: @booking.errors.full_messages.join(', ') }, status: :unprocessable_entity
+    end
+  end
+
+  def destroy_json
+    if @booking.destroy
+      render json: { success: true }, status: :ok
+    else
+      render json: { success: false, error: @booking.errors.full_messages.join(', ') }, status: :unprocessable_entity
+    end
   end
 
   def calendar_bookings
@@ -231,28 +280,83 @@ class BookingsController < ApplicationController
 
   private
 
-  def booking_to_event(booking)
-    client_name = booking.client_profile&.full_name || 'Unknown Client'
-    service_name = booking.service&.name || 'Unknown Service'
+ def booking_conflicts?
+    start_time = @booking.start_time
+    end_time = @booking.end_time
+    psychologist_profile_id = @booking.psychologist_profile_id
 
+    overlapping_bookings = Booking.where(psychologist_profile_id: psychologist_profile_id)
+                                 .where.not(id: @booking.id)
+                                 .where('start_time < ? AND end_time > ?', end_time, start_time)
+    return true if overlapping_bookings.exists?
+
+    overlapping_unavailabilities = PsychologistUnavailability.where(psychologist_profile_id: psychologist_profile_id)
+                                                             .where('start_time < ? AND end_time > ?', end_time, start_time)
+    return true if overlapping_unavailabilities.exists?
+
+    start_in_zone = start_time.in_time_zone(@psychologist_profile.timezone)
+    day_of_week = start_in_zone.wday
+    start_minutes = start_in_zone.hour * 60 + start_in_zone.min
+    end_minutes = end_time.in_time_zone(@psychologist_profile.timezone).hour * 60 + end_time.in_time_zone(@psychologist_profile.timezone).min
+
+    available = PsychologistAvailability.where(psychologist_profile_id: psychologist_profile_id)
+                                       .where(day_of_week: day_of_week)
+                                       .where('start_time <= ? AND end_time >= ?', start_minutes, end_minutes)
+    available.exists? # Fixed: Return true if within availability
+  end
+
+  # def booking_to_event(booking)
+  #   client_name = booking.client_profile&.full_name || 'Unknown Client'
+  #   service_name = booking.service&.name || 'Unknown Service'
+
+  #   {
+  #     id: booking.id,
+  #     title: "#{service_name} with #{client_name}",
+  #     start: booking.start_time.iso8601,
+  #     end: booking.end_time.iso8601,
+  #     color: '#0d6efd',
+  #     textColor: 'white',
+  #     extendedProps: {
+  #       status: booking.status,
+  #       client_profile_id: booking.client_profile_id,
+  #       internal_client_profile_id: booking.internal_client_profile_id,
+  #       service_id: booking.service_id
+  #     }
+  #   }
+  # end
+  def booking_to_event(booking)
+    client_name = booking.client_profile&.full_name || booking.internal_client_profile&.label || "N/A"
     {
       id: booking.id,
-      title: "#{service_name} with #{client_name}",
+      title: "#{booking.service&.name || 'Session'} - #{client_name} (#{booking.created_by})",
       start: booking.start_time.iso8601,
       end: booking.end_time.iso8601,
-      color: '#0d6efd',
-      textColor: 'white',
       extendedProps: {
+        bookingId: booking.id,
+        clientName: client_name,
         status: booking.status,
-        client_profile_id: booking.client_profile_id,
-        internal_client_profile_id: booking.internal_client_profile_id,
-        service_id: booking.service_id
-      }
+        notes: booking.notes,
+        created_by: booking.created_by,
+        service_name: booking.service&.name,
+        confirmation_token: booking.confirmation_token
+      },
+      color: booking.internal_client_profile_id.present? ? '#6f42c1' : '#0d6efd',
+      textColor: 'white'
     }
   end
 
   def set_booking
     @booking = Booking.find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    render json: { success: false, error: "Booking not found" }, status: :not_found
+    false # This ensures the action stops if the booking isn't found
+  end
+
+  def set_psychologist_profile
+    @psychologist_profile = current_user.psychologist_profile
+    unless @psychologist_profile
+      render json: { error: "Psychologist profile not found." }, status: :not_found
+    end
   end
 
   def booking_params
@@ -260,11 +364,13 @@ class BookingsController < ApplicationController
       :psychologist_profile_id,
       :client_profile_id,
       :internal_client_profile_id,
+      :notes,
       :service_id,
       :start_time,
       :end_time,
       :status,
-      :notes
+      :created_by,
+      :confirmation_token
     )
   end
 end

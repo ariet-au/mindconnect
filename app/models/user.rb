@@ -3,6 +3,7 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   has_one :psychologist_profile, dependent: :destroy
   has_one :client_profile, dependent: :destroy # Add this line
+  has_many :quizzes, dependent: :destroy
 
   has_many :services, dependent: :destroy
   enum :role, { client: 0, psychologist: 1, admin: 2 }

@@ -51,6 +51,8 @@ class PsychologistProfile < ApplicationRecord
 
   has_many :bookings
 
+  has_many :articles, dependent: :destroy
+
 
   # Scopes for filtering profiles
   scope :confirmed, -> { where(user_id: User.where.not(confirmed_at: nil).select(:id)) }  

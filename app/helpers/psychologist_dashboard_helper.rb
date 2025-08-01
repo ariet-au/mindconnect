@@ -1,0 +1,2 @@
+module PsychologistDashboardHelper
+end

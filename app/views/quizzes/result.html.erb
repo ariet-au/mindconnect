@@ -1,0 +1,6 @@
+<h2><%= @quiz.title %> Results</h2>
+
+<p><strong>Your total score:</strong> <%= @total_score %></p>
+<p><strong>Interpretation:</strong> <%= @result %></p>
+
+<%= link_to "Back to all quizzes", quizzes_path, class: "button" %>

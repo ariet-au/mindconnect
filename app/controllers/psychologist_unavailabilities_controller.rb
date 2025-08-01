@@ -47,11 +47,13 @@ class PsychologistUnavailabilitiesController < ApplicationController
     non_recurring_events = unavailabilities.where(recurring: false).map do |unavailability|
       {
         id: unavailability.id,
-        title: unavailability.reason,
-        start: unavailability.start_time.iso8601, # UTC time
-        end: unavailability.end_time.iso8601,     # UTC time
+        title: unavailability.reason || "Unavailable",
+        start: unavailability.start_time.iso8601,
+        end: unavailability.end_time.iso8601,
         recurring: false,
-        timezone: unavailability.timezone
+        timezone: unavailability.timezone,
+        color: '#d9534f',
+        textColor: 'white'
       }
     end
 
@@ -115,6 +117,55 @@ class PsychologistUnavailabilitiesController < ApplicationController
       }, status: :created
     else
       render json: @psychologist_unavailability.errors, status: :unprocessable_entity
+    end
+  end
+
+   # app/controllers/psychologist_unavailabilities_controller.rb
+  def create_json
+    @unavailability = @psychologist_profile.psychologist_unavailabilities.new(psychologist_unavailability_params)
+    
+    if @unavailability.save
+      render json: { success: true, id: @unavailability.id }, status: :created
+    else
+      render json: { success: false, error: @unavailability.errors.full_messages.join(', ') }, status: :unprocessable_entity
+    end
+  end
+
+  # app/controllers/psychologist_unavailabilities_controller.rb
+  def update_json
+    @psychologist_unavailability = PsychologistUnavailability.find(params[:id]) # Changed to params[:id]
+    unless @psychologist_unavailability.psychologist_profile_id == current_user.psychologist_profile.id
+      render json: { success: false, error: "Unauthorized" }, status: :unauthorized
+      return
+    end
+
+    psychologist_timezone = @psychologist_unavailability.timezone || current_user.psychologist_profile.timezone
+    start_time = Time.find_zone(psychologist_timezone).parse(params[:psychologist_unavailability][:start_time])
+    end_time = Time.find_zone(psychologist_timezone).parse(params[:psychologist_unavailability][:end_time])
+
+    if @psychologist_unavailability.update(
+      start_time: start_time.utc,
+      end_time: end_time.utc,
+      reason: params[:psychologist_unavailability][:reason],
+      timezone: psychologist_timezone
+    )
+      render json: { success: true, id: @psychologist_unavailability.id }, status: :ok
+    else
+      render json: { success: false, error: @psychologist_unavailability.errors.full_messages.join(', ') }, status: :unprocessable_entity
+    end
+  end
+
+  def destroy_json
+    @psychologist_unavailability = PsychologistUnavailability.find(params[:id])
+    if @psychologist_unavailability.psychologist_profile != @psychologist_profile
+      render json: { error: "Unauthorized" }, status: :unauthorized
+      return
+    end
+
+    if @psychologist_unavailability.destroy
+      render json: { success: true }, status: :ok
+    else
+      render json: { success: false, error: @psychologist_unavailability.errors.full_messages.join(', ') }, status: :unprocessable_entity
     end
   end
 
@@ -198,8 +249,8 @@ class PsychologistUnavailabilitiesController < ApplicationController
 
   def psychologist_unavailability_params
     params.require(:psychologist_unavailability).permit(
-      :start_time, :end_time, :reason, :recurring, :day_of_week,
-      :recurring_until
+      :psychologist_profile_id, :start_time, :end_time, :reason, :recurring, :day_of_week,
+      :recurring_until, :timezone
     )
   end
 end

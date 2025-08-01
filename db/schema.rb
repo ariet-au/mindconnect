@@ -10,9 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_28_194744) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_31_233136) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "action_text_rich_texts", force: :cascade do |t|
+    t.string "name", null: false
+    t.text "body"
+    t.string "record_type", null: false
+    t.bigint "record_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["record_type", "record_id", "name"], name: "index_action_text_rich_texts_uniqueness", unique: true
+  end
 
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
@@ -40,6 +50,21 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_28_194744) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "articles", force: :cascade do |t|
+    t.bigint "psychologist_profile_id", null: false
+    t.string "title"
+    t.boolean "is_published"
+    t.datetime "published_at"
+    t.string "slug"
+    t.integer "status"
+    t.integer "moderated_by_admin_id"
+    t.string "moderation_reason"
+    t.datetime "moderated_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["psychologist_profile_id"], name: "index_articles_on_psychologist_profile_id"
   end
 
   create_table "bookings", force: :cascade do |t|
@@ -281,6 +306,34 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_28_194744) do
     t.index ["psychologist_profile_id"], name: "index_psychologist_unavailabilities_on_psychologist_profile_id"
   end
 
+  create_table "question_options", force: :cascade do |t|
+    t.bigint "question_id", null: false
+    t.string "label"
+    t.integer "score"
+    t.integer "position"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["question_id"], name: "index_question_options_on_question_id"
+  end
+
+  create_table "questions", force: :cascade do |t|
+    t.bigint "quiz_id", null: false
+    t.string "text"
+    t.string "input_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["quiz_id"], name: "index_questions_on_quiz_id"
+  end
+
+  create_table "quizzes", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_quizzes_on_user_id"
+  end
+
   create_table "services", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.string "name"
@@ -343,6 +396,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_28_194744) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "articles", "psychologist_profiles"
   add_foreign_key "bookings", "client_profiles"
   add_foreign_key "bookings", "internal_client_profiles"
   add_foreign_key "bookings", "psychologist_profiles"
@@ -367,6 +421,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_28_194744) do
   add_foreign_key "psychologist_specialties", "psychologist_profiles"
   add_foreign_key "psychologist_specialties", "specialties"
   add_foreign_key "psychologist_unavailabilities", "psychologist_profiles"
+  add_foreign_key "question_options", "questions"
+  add_foreign_key "questions", "quizzes"
+  add_foreign_key "quizzes", "users"
   add_foreign_key "services", "users"
   add_foreign_key "therapy_plans", "internal_client_profiles"
   add_foreign_key "therapy_plans", "issues"

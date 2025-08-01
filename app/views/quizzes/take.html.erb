@@ -1,0 +1,18 @@
+<h1><%= @quiz.title %></h1>
+<p><%= @quiz.description %></p>
+
+<%= form_with url: submit_quiz_path(@quiz), method: :post, data: { turbo: false } do %>
+  <% @quiz.questions.each do |q| %>
+    <div class="box">
+      <p><strong><%= q.text %></strong></p>
+      <% q.question_options.each do |opt| %>
+        <div>
+          <%= radio_button_tag "responses[#{q.id}]", opt.score, false, id: "q#{q.id}_opt#{opt.id}" %>
+          <%= label_tag "q#{q.id}_opt#{opt.id}", opt.label %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%= submit_tag "Submit Quiz", class: "button is-primary" %>
+<% end %>
