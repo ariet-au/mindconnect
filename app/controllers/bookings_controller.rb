@@ -125,34 +125,39 @@ class BookingsController < ApplicationController
   #     render :new, status: :unprocessable_entity
   #   end
   # end
-  def create
-    @booking = Booking.new(booking_params)
-    @booking.created_by = current_user.psychologist? ? 'psychologist' : 'client'
+ def create
+  @booking = Booking.new(booking_params)
+  @booking.created_by = current_user.psychologist? ? 'psychologist' : 'client'
 
-    if current_user.psychologist?
-      @booking.psychologist_profile_id ||= current_user.psychologist_profile.id
-    else
-      @booking.client_profile_id = current_user.client_profile.id
-    end
-
-    if @booking.save
-      Rails.logger.info("Booking created successfully, redirecting...")
-      if @booking.created_by == 'psychologist'
-        redirect_to @booking, notice: "Booking created successfully. Share the confirmation link with the client."
-      else
-        redirect_to @booking, notice: "Booking created successfully. Awaiting psychologist confirmation."
-      end
-    else
-      @service = @booking.service || Service.find(params[:booking][:service_id])
-      @psychologist_profile = @booking.psychologist_profile || @service.user.psychologist_profile
-      psych_timezone = @psychologist_profile.timezone.presence || 'UTC'
-      @display_timezone = params[:browser_timezone] || session[:browser_timezone] || cookies[:browser_timezone] || psych_timezone
-      user_tz_obj = ActiveSupport::TimeZone[@display_timezone] || ActiveSupport::TimeZone['UTC']
-      @next_available_time = @booking.start_time || Time.current.in_time_zone(user_tz_obj)
-      @display_timezone_offset_seconds = @next_available_time.utc_total_offset
-      render :new, status: :unprocessable_entity
-    end
+  if current_user.psychologist?
+    @booking.psychologist_profile_id ||= current_user.psychologist_profile.id
+  else
+    @booking.client_profile_id = current_user.client_profile.id
   end
+
+  if @booking.save
+    Rails.logger.info("Booking created successfully, redirecting...")
+    
+    # Get the parent object from the newly saved booking
+    parent_object = @booking.psychologist_profile
+    
+    if @booking.created_by == 'psychologist'
+      redirect_to [parent_object, @booking], notice: "Booking created successfully. Share the confirmation link with the client."
+    else
+      redirect_to [parent_object, @booking], notice: "Booking created successfully. Awaiting psychologist confirmation."
+    end
+  else
+    # Your existing code to handle validation errors
+    @service = @booking.service || Service.find(params[:booking][:service_id])
+    @psychologist_profile = @booking.psychologist_profile || @service.user.psychologist_profile
+    psych_timezone = @psychologist_profile.timezone.presence || 'UTC'
+    @display_timezone = params[:browser_timezone] || session[:browser_timezone] || cookies[:browser_timezone] || psych_timezone
+    user_tz_obj = ActiveSupport::TimeZone[@display_timezone] || ActiveSupport::TimeZone['UTC']
+    @next_available_time = @booking.start_time || Time.current.in_time_zone(user_tz_obj)
+    @display_timezone_offset_seconds = @next_available_time.utc_total_offset
+    render :new, status: :unprocessable_entity
+  end
+end
 
 
   def edit
@@ -162,7 +167,8 @@ class BookingsController < ApplicationController
     respond_to do |format|
       if @booking.update(booking_params)
         format.json { render json: { success: true }, status: :ok }
-        format.html { redirect_to @booking, notice: 'Booking was successfully updated.' }
+        # Corrected redirect_to line
+        format.html { redirect_to [@booking.psychologist_profile, @booking], notice: 'Booking was successfully updated.' }
       else
         format.json { render json: { success: false, error: @booking.errors.full_messages.join(', ') }, status: :unprocessable_entity }
         format.html { render :edit, status: :unprocessable_entity }
@@ -237,36 +243,72 @@ class BookingsController < ApplicationController
   end
 
   def confirm
-    @booking = Booking.find(params[:id])
-    if (params[:token].present? && @booking.confirmation_token == params[:token]) ||
-       (current_user&.psychologist? && @booking.psychologist_profile.user == current_user)
-      if @booking.pending?
-        @booking.update(status: 'confirmed', confirmation_token: nil) if params[:token].present?
-        @booking.update(status: 'confirmed') unless params[:token].present?
-        redirect_to @booking, notice: 'Booking confirmed successfully.'
-      else
-        redirect_to @booking, alert: 'Booking cannot be confirmed.'
-      end
+  @booking = Booking.find(params[:id])
+  if (params[:token].present? && @booking.confirmation_token == params[:token]) ||
+     (current_user&.psychologist? && @booking.psychologist_profile.user == current_user)
+    if @booking.pending?
+      @booking.update(status: 'confirmed', confirmation_token: nil) if params[:token].present?
+      @booking.update(status: 'confirmed') unless params[:token].present?
+      
+      # Corrected redirect
+      redirect_to [@booking.psychologist_profile, @booking], notice: 'Booking confirmed successfully.'
     else
-      redirect_to root_path, alert: 'Unauthorized to confirm this booking.'
+      redirect_to [@booking.psychologist_profile, @booking], alert: 'Booking cannot be confirmed.'
     end
+  else
+    redirect_to root_path, alert: 'Unauthorized to confirm this booking.'
   end
+end
 
-  def decline
-    @booking = Booking.find(params[:id])
-    if (params[:token].present? && @booking.confirmation_token == params[:token]) ||
-       (current_user&.psychologist? && @booking.psychologist_profile.user == current_user)
-      if @booking.pending?
-        @booking.update(status: 'declined', confirmation_token: nil) if params[:token].present?
-        @booking.update(status: 'declined') unless params[:token].present?
-        redirect_to @booking, notice: 'Booking declined successfully.'
-      else
-        redirect_to @booking, alert: 'Booking cannot be declined.'
-      end
+def decline
+  @booking = Booking.find(params[:id])
+  if (params[:token].present? && @booking.confirmation_token == params[:token]) ||
+     (current_user&.psychologist? && @booking.psychologist_profile.user == current_user)
+    if @booking.pending?
+      @booking.update(status: 'declined', confirmation_token: nil) if params[:token].present?
+      @booking.update(status: 'declined') unless params[:token].present?
+      
+      # Corrected redirect
+      redirect_to [@booking.psychologist_profile, @booking], notice: 'Booking declined successfully.'
     else
-      redirect_to root_path, alert: 'Unauthorized to decline this booking.'
+      redirect_to [@booking.psychologist_profile, @booking], alert: 'Booking cannot be declined.'
     end
+  else
+    redirect_to root_path, alert: 'Unauthorized to decline this booking.'
   end
+end
+
+  # def confirm
+  #   @booking = Booking.find(params[:id])
+  #   if (params[:token].present? && @booking.confirmation_token == params[:token]) ||
+  #      (current_user&.psychologist? && @booking.psychologist_profile.user == current_user)
+  #     if @booking.pending?
+  #       @booking.update(status: 'confirmed', confirmation_token: nil) if params[:token].present?
+  #       @booking.update(status: 'confirmed') unless params[:token].present?
+  #       redirect_to @booking, notice: 'Booking confirmed successfully.'
+  #     else
+  #       redirect_to @booking, alert: 'Booking cannot be confirmed.'
+  #     end
+  #   else
+  #     redirect_to root_path, alert: 'Unauthorized to confirm this booking.'
+  #   end
+  # end
+
+  # def decline
+  #   @booking = Booking.find(params[:id])
+  #   if (params[:token].present? && @booking.confirmation_token == params[:token]) ||
+  #      (current_user&.psychologist? && @booking.psychologist_profile.user == current_user)
+  #     if @booking.pending?
+  #       @booking.update(status: 'declined', confirmation_token: nil) if params[:token].present?
+  #       @booking.update(status: 'declined') unless params[:token].present?
+  #       redirect_to @booking, notice: 'Booking declined successfully.'
+  #     else
+  #       redirect_to @booking, alert: 'Booking cannot be declined.'
+  #     end
+  #   else
+  #     redirect_to root_path, alert: 'Unauthorized to decline this booking.'
+  #   end
+  # end
 
   def psychologist_bookings
     if current_user&.psychologist_profile

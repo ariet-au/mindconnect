@@ -57,7 +57,7 @@ Rails.application.routes.draw do
       resources :psychologist_availabilities, except: [:show] do
         collection { get 'calendar_blocks' }
       end
-      resources :bookings, only: [:create, :show, :index, :update, :edit, :destroy] do
+      resources :bookings, only: [:create, :new, :show, :index, :update, :edit, :destroy] do
         collection do
           get 'calendar_bookings'
           get 'psychologist_bookings'

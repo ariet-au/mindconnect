@@ -16,7 +16,7 @@
     </div>
   <% end %>
 
-  <%= form_with model: @booking, url: bookings_path, class: "box" do |f| %>
+<%= form_with model: [@psychologist_profile, @booking], class: "box" do |f| %>
     <%= f.hidden_field :service_id, value: @service&.id %>
     <%= f.hidden_field :psychologist_profile_id, value: @psychologist_profile&.id %>
     
@@ -107,7 +107,7 @@
         <%= f.submit "Create Booking", class: "button is-primary", disabled: @available_slots.empty? %>
       </div>
       <div class="control">
-        <%= link_to "Cancel", bookings_path, class: "button is-link is-light" %>
+<%= link_to "Cancel", psychologist_profile_bookings_path(@psychologist_profile), class: "button is-link is-light" %>
       </div>
     </div>
   <% end %>

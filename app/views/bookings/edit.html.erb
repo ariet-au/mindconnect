@@ -84,7 +84,7 @@
     </div>
   <% end %>
 
-  <%= form_with model: @booking, url: booking_path(@booking), method: :patch do |f| %>
+  <%= form_with model: [@booking.psychologist_profile, @booking] do |f| %>
     <%= f.hidden_field :service_id %>
     <%= f.hidden_field :psychologist_profile_id %>
 
@@ -173,7 +173,7 @@
         <%= f.submit "Update Booking", class: "button is-primary-blue" %>
       </div>
       <div class="control">
-        <%= link_to "Cancel", booking_path(@booking), class: "button is-light" %>
+<%= link_to "Cancel", psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "button is-light" %>
       </div>
     </div>
   <% end %>

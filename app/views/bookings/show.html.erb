@@ -105,11 +105,17 @@
   </div>
 
   <% if @booking.pending? && @booking.created_by == 'psychologist' %>
+    <% 
+      # Set the parent object for the nested route helpers
+      psychologist_profile = @booking.psychologist_profile
+      # Correctly generate the confirmation URL
+      confirmation_url = confirm_psychologist_profile_booking_url(psychologist_profile, @booking, token: @booking.confirmation_token) 
+    %>
     <div class="booking-details-item">
       <p><span class="booking-details-label">Share this link with the client to confirm the booking:</span>
         <span class="booking-details-time-display">
-          <a href="<%= confirm_booking_url(@booking, token: @booking.confirmation_token) %>">
-            <%= confirm_booking_url(@booking, token: @booking.confirmation_token) %>
+          <a href="<%= confirmation_url %>">
+            <%= confirmation_url %>
           </a>
         </span>
       </p>
@@ -118,13 +124,13 @@
       <p><span class="booking-details-label">Share via:</span></p>
       <div class="field is-grouped booking-details-actions">
         <p class="control">
-          <a href="https://t.me/share/url?url=<%= CGI.escape(confirm_booking_url(@booking, token: @booking.confirmation_token)) %>&text=Please%20confirm%20your%20booking%20for%20<%= CGI.escape(@booking.service&.name || 'N/A') %>%20with%20<%= CGI.escape(@booking.psychologist_profile&.full_name || 'N/A') %>"
+          <a href="https://t.me/share/url?url=<%= CGI.escape(confirmation_url) %>&text=Please%20confirm%20your%20booking%20for%20<%= CGI.escape(@booking.service&.name || 'N/A') %>%20with%20<%= CGI.escape(@booking.psychologist_profile&.full_name || 'N/A') %>"
             class="button is-info" target="_blank">
             Share to Telegram
           </a>
         </p>
         <p class="control">
-          <a href="https://api.whatsapp.com/send?text=Please%20confirm%20your%20booking%20for%20<%= CGI.escape(@booking.service&.name || 'N/A') %>%20with%20<%= CGI.escape(@booking.psychologist_profile&.full_name || 'N/A') %>:%20<%= CGI.escape(confirm_booking_url(@booking, token: @booking.confirmation_token)) %>"
+          <a href="https://api.whatsapp.com/send?text=Please%20confirm%20your%20booking%20for%20<%= CGI.escape(@booking.service&.name || 'N/A') %>%20with%20<%= CGI.escape(@booking.psychologist_profile&.full_name || 'N/A') %>:%20<%= CGI.escape(confirmation_url) %>"
             class="button is-success" target="_blank">
             Share to WhatsApp
           </a>
@@ -135,10 +141,10 @@
 
   <div class="field is-grouped booking-details-actions">
     <p class="control">
-      <%= link_to "Edit Booking", edit_booking_path(@booking), class: "button is-primary-blue" %>
+      <%= link_to "Edit Booking", edit_psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "button is-primary-blue" %>
     </p>
     <p class="control">
-      <%= link_to "Back to Bookings", bookings_path, class: "button is-light" %>
+      <%= link_to "Back to Bookings", psychologist_profile_bookings_path(@booking.psychologist_profile), class: "button is-light" %>
     </p>
   </div>
 </div>
