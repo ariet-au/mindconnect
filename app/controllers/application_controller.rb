@@ -9,12 +9,14 @@ class ApplicationController < ActionController::Base
   helper_method :current_currency
   before_action :set_locale
 
-  def set_locale
-    I18n.locale = params[:locale] ||
-                  session[:locale] ||
-                  extract_locale_from_accept_language_header ||
-                  I18n.default_locale
-  end
+  # def set_locale
+  #   I18n.locale = params[:locale] ||
+  #                 session[:locale] ||
+  #                 extract_locale_from_accept_language_header ||
+  #                 I18n.default_locale
+  # end
+
+
 
   def default_url_options
     { locale: I18n.locale }
@@ -61,12 +63,48 @@ class ApplicationController < ActionController::Base
     @analytics_allowed = cookies[:analytics_consent] == 'true'
   end
 
-  def extract_locale_from_accept_language_header
-    request.env['HTTP_ACCEPT_LANGUAGE']&.scan(/^[a-z]{2}/)&.first&.to_sym
+  # def extract_locale_from_accept_language_header
+  #   request.env['HTTP_ACCEPT_LANGUAGE']&.scan(/^[a-z]{2}/)&.first&.to_sym
+  # end
+
+  # Ensure timezone is permitted in params
+  def set_timezone_params
+    params.require(:timezone)
   end
-    # Ensure timezone is permitted in params
-    def set_timezone_params
-      params.require(:timezone)
-    end
+
+  
+
+  def set_locale
+    I18n.locale =
+      params[:locale] ||
+      session[:locale] ||
+      extract_locale_from_accept_language_header ||
+      extract_locale_from_ip ||
+      I18n.default_locale
+
+    session[:locale] = I18n.locale
+  end
+
+  def extract_locale_from_accept_language_header
+    lang = request.env['HTTP_ACCEPT_LANGUAGE']&.scan(/^[a-z]{2}/)&.first
+    lang&.to_sym if I18n.available_locales.map(&:to_s).include?(lang)
+  end
+
+  def extract_locale_from_ip
+    location = Geocoder.search(request.remote_ip).first
+    country_code = location&.country_code
+    return nil unless country_code
+
+    locale_map = {
+      "RU" => :ru,
+      "BY" => :ru,
+      "KZ" => :ru,
+      "FR" => :fr,
+      "BE" => :fr,
+      "CH" => :fr
+    }
+
+    locale_map[country_code]
+  end
   
 end

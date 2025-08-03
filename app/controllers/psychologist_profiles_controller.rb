@@ -267,6 +267,16 @@ class PsychologistProfilesController < ApplicationController
     render json: cities.sort
   end
 
+  # Redirect by profile URL
+  def redirect_by_profile_url
+    profile = PsychologistProfile.find_by(profile_url: params[:profile_url])
+    if profile
+      redirect_to psychologist_profile_path(profile), status: :moved_permanently
+    else
+      render plain: 'Profile not found', status: :not_found
+    end
+  end
+
   def set
     session[:currency] = params[:currency]
     redirect_back fallback_location: root_path, allow_other_host: false, params: { country: params[:country] }

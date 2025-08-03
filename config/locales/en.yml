@@ -217,6 +217,7 @@ en:
       contact_service_details: "Contact & Service Details"
     labels:
       upload_profile_image: "Upload Profile Image"
+      profile_url: "Profile URL"
       timezone: "Time Zone"
       first_name: "First Name"
       last_name: "Last Name"

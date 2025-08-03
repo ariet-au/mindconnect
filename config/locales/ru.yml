@@ -216,6 +216,7 @@ ru:
       contact_service_details: "Контактные данные и услуги"
     labels:
       upload_profile_image: "Загрузить изображение профиля"
+      profile_url: "URL профиля"
       timezone: "Часовой пояс"
       first_name: "Имя"
       last_name: "Фамилия"

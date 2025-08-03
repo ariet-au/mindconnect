@@ -186,6 +186,7 @@ kg:
       contact_service_details: "Байланыш жана кызмат көрсөтүү маалыматтары"
     labels:
       upload_profile_image: "Профиль сүрөтүн жүктөө"
+      profile_url: "Профиль URL дареги"
       timezone: "Убакыт алкагы"
       first_name: "Аты"
       last_name: "Фамилиясы"

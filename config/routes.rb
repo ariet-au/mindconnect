@@ -1,5 +1,9 @@
 Rails.application.routes.draw do
   # Non-locale-scoped routes
+
+
+  get '/p/:profile_url', to: 'psychologist_profiles#redirect_by_profile_url', as: :profile_shortlink
+
   direct :rails_blob do |blob|
     route_for(:rails_service_blob, blob.signed_id, blob.filename)
   end

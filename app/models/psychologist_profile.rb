@@ -5,6 +5,9 @@
 class PsychologistProfile < ApplicationRecord
   include PgSearch::Model
 
+  before_validation :set_default_primary_contact_method, on: :create
+
+
 
 
   belongs_to :user
@@ -101,8 +104,15 @@ class PsychologistProfile < ApplicationRecord
 
 # URL 
   before_validation :slugify_profile_url
-  validates :profile_url, uniqueness: true, allow_blank: true,
-            format: { with: /\A[a-z0-9\-]+\z/, message: "can only contain lowercase letters, numbers, and hyphens" }
+  validates :profile_url,
+          uniqueness: true,
+          allow_blank: true,
+          length: { in: 3..30, message: "must be between 3 and 30 characters" },
+          format: {
+            with: /\A[a-z0-9\-_]+\z/,
+            message: "can only contain lowercase letters, numbers, hyphens, and underscores"
+          }
+
 
 pg_search_scope :search_full_text,
   against: [:first_name, :last_name, :about_me, :religion, :about_clients, :about_issues, :about_specialties],
@@ -215,11 +225,24 @@ end
   
   private 
   def slugify_profile_url
-      if profile_url.present?
-        self.profile_url = profile_url.downcase.strip
-                                      .gsub(/[^a-z0-9\s-]/, "")  
-                                      .gsub(/\s+/, "-")          
-                                      .gsub(/-+/, "-")           
+  if profile_url.present?
+    self.profile_url = profile_url.downcase.strip
+                                  .gsub(/[^a-z0-9\s_-]/, "") # allow underscores now
+                                  .gsub(/\s+/, "-")          
+                                  .gsub(/-+/, "-")           
+    end
+  end
+
+  def set_default_primary_contact_method
+    return if primary_contact_method.present? # respect user choice
+
+    self.primary_contact_method =
+      if telegram.present?
+        "telegram"
+      elsif whatsapp.present?
+        "whatsapp"
+      else
+        "email"
       end
   end
 

@@ -237,6 +237,17 @@
 
     <div class="column is-half">
       <div class="field">
+        <%= form.label :profile_url, t('psychologist_profile.labels.profile_url'), class: "label" %>
+        <div class="control">
+          <div >
+             <%= form.text_field :profile_url, class: "input", type: "text", pattern: nil %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="column is-half">
+      <div class="field">
         <%= form.label :country, t('psychologist_profile.labels.country'), class: "label" %>
         <div class="control">
           <div class="select is-fullwidth">
