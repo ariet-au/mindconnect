@@ -1187,10 +1187,15 @@ body {
 </style>
 
 <script>
-document.addEventListener('turbo:load', () => {
+// Define the functions separately so they can be reused
+function setupToggleButton() {
   const toggleButton = document.querySelector('.toggle-contacts');
   if (toggleButton) {
-    toggleButton.addEventListener('click', function() {
+    // Remove any existing event listener first to avoid duplicates
+    toggleButton.replaceWith(toggleButton.cloneNode(true));
+    const freshToggleButton = document.querySelector('.toggle-contacts');
+    
+    freshToggleButton.addEventListener('click', function() {
       const contactList = document.querySelector('.contact-list');
       const isExpanded = this.getAttribute('aria-expanded') === 'true';
       
@@ -1201,6 +1206,13 @@ document.addEventListener('turbo:load', () => {
       contactList.style.display = isExpanded ? 'none' : 'flex';
     });
   }
+}
+
+function setupCopyButtons() {
+  document.querySelectorAll('.copy-button').forEach(button => {
+    // Clone the button to remove any existing event listeners
+    button.replaceWith(button.cloneNode(true));
+  });
 
   document.querySelectorAll('.copy-button').forEach(button => {
     button.addEventListener('click', async (event) => {
@@ -1230,11 +1242,23 @@ document.addEventListener('turbo:load', () => {
         setTimeout(() => {
           icon.className = originalClass;
         }, 1500);
-
       } catch (err) {
         console.error('Failed to copy text: ', err);
       }
     });
   });
-});
+}
+
+// Initialize everything
+function initializeComponents() {
+  setupToggleButton();
+  setupCopyButtons();
+}
+
+// Set up event listeners for both turbo events
+document.addEventListener('turbo:load', initializeComponents);
+document.addEventListener('turbo:render', initializeComponents);
+
+// Also run once when the script loads (in case turbo isn't used)
+initializeComponents();
 </script>

@@ -683,36 +683,42 @@ fieldset[disabled] .button.is-primary-blue {
         </button>
       </div>
       <div class="menu" id="user-menu" role="menu">
-        <div class="menu-content">
-          <% if current_user.psychologist? && current_user.psychologist_profile.present? %>
-            <%= link_to psychologist_profile_path(current_user.psychologist_profile), 
-              class: "menu-item" do %>
-              <span class="icon">
-                <i class="fas fa-user-edit"></i>
-              </span>
-              <span><%= t('my_profile') %></span>
-            <% end %>
-          <% end %>
-          <% if current_user.client? && current_user.client_profile.present? %>
-            <%= link_to client_profile_path(current_user.client_profile), 
-              class: "menu-item" do %>
-              <span class="icon">
-                <i class="fas fa-user-edit"></i>
-              </span>
-              <span><%= t('my_profile') %></span>
-            <% end %>
-          <% end %>
-          <hr class="menu-divider">
-          <%= link_to destroy_user_session_path,
-            data: { turbo_method: :delete }, 
-            class: "menu-item" do %>
-            <span class="icon">
-              <i class="fas fa-sign-out-alt"></i>
-            </span>
-            <span><%= t('logout') %></span>
-          <% end %>
-        </div>
-      </div>
+  <div class="menu-content">
+    <% if current_user.psychologist? && current_user.psychologist_profile.present? %>
+      <%= link_to psychologist_dashboard_path, class: "menu-item" do %>
+        <span class="icon">
+          <i class="fas fa-calendar"></i>
+        </span>
+        <span><%= t('psychologist_profiles.show.dashboard') %></span>
+      <% end %>
+      <%= link_to psychologist_profile_path(current_user.psychologist_profile), 
+        class: "menu-item" do %>
+        <span class="icon">
+          <i class="fas fa-user-edit"></i>
+        </span>
+        <span><%= t('my_profile') %></span>
+      <% end %>
+    <% end %>
+    <% if current_user.client? && current_user.client_profile.present? %>
+      <%= link_to client_profile_path(current_user.client_profile), 
+        class: "menu-item" do %>
+        <span class="icon">
+          <i class="fas fa-user-edit"></i>
+        </span>
+        <span><%= t('my_profile') %></span>
+      <% end %>
+    <% end %>
+    <hr class="menu-divider">
+    <%= link_to destroy_user_session_path,
+      data: { turbo_method: :delete }, 
+      class: "menu-item" do %>
+      <span class="icon">
+        <i class="fas fa-sign-out-alt"></i>
+      </span>
+      <span><%= t('logout') %></span>
+    <% end %>
+  </div>
+</div>
     </div>
   <% else %>
     <div class="auth-buttons">
