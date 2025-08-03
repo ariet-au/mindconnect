@@ -376,33 +376,28 @@
       </div>
     </div>
 
-    <div class="column is-12">
-      <div class="field">
-        <div class="control">
-          <label class="checkbox">
-            <%= form.collection_select :language_ids, Language.all, :id, :name,
-              { prompt: t('psychologist_profile.prompts.select_languages') },
-              { multiple: true, class: "tom-select-languages", data: { tom_select: true } } %>
-          </label>
-        </div>
-      </div>
-    </div>
-
-
-<div class="field">
-  <%= form.label :featured_service_id, "Featured Service" %>
-  <%= form.collection_select :featured_service_id, @psychologist_profile.user.services, :id, :name, { prompt: "Select a featured service" }, { class: "form-control" } %>
-</div>
-
-
-    <div class="column is-full">
-      <div class="field">
-        <div class="control">
-          <%= form.submit t('psychologist_profile.buttons.submit'), class: "button is-primary is-fullwidth" %>
-        </div>
+   <div class="column is-12">
+    <div class="field">
+      <%= form.label :language_ids, t('psychologist_profile.labels.select_languages'), class: "label" %>
+      <div class="control">
+        <%= form.collection_select :language_ids, Language.all, :id, :name,
+          { prompt: t('psychologist_profile.prompts.select_languages') },
+          { multiple: true, class: "tom-select-languages", data: { tom_select: true } } %>
       </div>
     </div>
   </div>
+
+
+
+<div class="column is-full">
+  <div class="field">
+    <%= form.label :featured_service_id, t('psychologist_profile.labels.featured_service'), class: "label" %>
+    <div class="control">
+      <%= form.collection_select :featured_service_id, @psychologist_profile.user.services, :id, :name, { prompt: t('psychologist_profile.prompts.select_featured_service') }, { class: "form-control" } %>
+    </div>
+  </div>
+</div>
+
 
 
 

@@ -1,9 +1,10 @@
-
+<!-- views/educations/_form.html.erb -->
 <div class="box mb-4">
+  <div class="title is-4"><%= t('psychologist_profiles.education.education_title') %></div>
   <div class="columns is-multiline">
     <div class="column is-quarter">
       <div class="field">
-        <%= f.label :degree, class: "label" %>
+        <%= f.label :degree, t('psychologist_profiles.education.degree'), class: "label" %>
         <div class="control">
           <%= f.text_field :degree, class: "input" %>
         </div>
@@ -12,7 +13,7 @@
 
     <div class="column is-quarter">
       <div class="field">
-        <%= f.label :field_of_study, class: "label" %>
+        <%= f.label :field_of_study, t('psychologist_profiles.education.field_of_study'), class: "label" %>
         <div class="control">
           <%= f.text_field :field_of_study, class: "input" %>
         </div>
@@ -21,7 +22,7 @@
 
     <div class="column is-quarter">
       <div class="field">
-        <%= f.label :institution, class: "label" %>
+        <%= f.label :institution, t('psychologist_profiles.education.institution'), class: "label" %>
         <div class="control">
           <%= f.text_field :institution, class: "input" %>
         </div>
@@ -30,14 +31,12 @@
 
     <div class="column is-quarter">
       <div class="field">
-        <%= f.label :graduation_year, class: "label" %>
+        <%= f.label :graduation_year, t('psychologist_profiles.education.graduation_year'), class: "label" %>
         <div class="control">
           <%= f.text_field :graduation_year, class: "input" %>
         </div>
       </div>
     </div>
-
-
 
     <div class="column is-full">
       <!-- Hidden destroy field -->
@@ -46,15 +45,8 @@
       <!-- Remove button -->
       <button type="button" class="button is-danger is-light remove-education-button">
         <span class="icon"><i class="fas fa-trash"></i></span>
-        <span>Remove this education</span>
+        <span><%= t('psychologist_profiles.education.remove_education') %></span>
       </button>
     </div>
-  
-  
-  
   </div>
 </div>
-
-<script>
-  
-</script>

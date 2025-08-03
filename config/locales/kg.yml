@@ -1,4 +1,3 @@
-# config/locales/kg.yml
 kg:
   hello: "Салам"
   contact: "Байланыш"
@@ -8,18 +7,26 @@ kg:
   find_a_psychologist: "Психолог табуу"
   logout: "Чыгуу"
   login: "Кирүү"
-  registration: "Каттоо"
+  registration: "Катталуу"
+  online: "Онлайн"
+  in_person: "Жеке"
+
   filters:
     clear: "Баарын тазалоо"
-  languages: # This block is for the navbar locale selector (e.g., "English", "Русский", "Кыргызча")
+
+  languages:
     en: "Англисче"
     ru: "Орусча"
     kg: "Кыргызча"
-  
+
   countries:
     kyrgyzstan: "Кыргызстан"
     kazakhstan: "Казакстан"
     uzbekistan: "Өзбекстан"
+    united_states: "Америка Кошмо Штаттары"
+    canada: "Канада"
+    russia: "Орусия"
+
   cities:
     bishkek: "Бишкек"
     osh: "Ош"
@@ -34,7 +41,7 @@ kg:
     aktobe: "Актобе"
     atyrau: "Атырау"
     karaganda: "Караганда"
-    oskemen: "Өскемен"
+    oskemen: "Усть-Каменогорск"
     pavlodar: "Павлодар"
     djalal_abad: "Жалал-Абад"
     karakol: "Каракол"
@@ -45,6 +52,9 @@ kg:
     nukus: "Нукус"
     tashkent: "Ташкент"
     ferghana: "Фергана"
+    new_york: "Нью-Йорк"
+    toronto: "Торонто"
+
   time:
     formats:
       default: "%d.%m.%Y %H:%M:%S"
@@ -57,43 +67,44 @@ kg:
       long: "%B %d, %Y"
     day_names: ["Жекшемби", "Дүйшөмбү", "Шейшемби", "Шаршемби", "Бейшемби", "Жума", "Ишемби"]
     abbr_day_names: ["Жек", "Дүй", "Шей", "Шар", "Бей", "Жум", "Иш"]
-    month_names: [~, "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"]
-    abbr_month_names: [~, "Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"]
+    month_names: ["", "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"]
+    abbr_month_names: ["", "Янв", "Фев", "Мар", "Апр", "Май", "Июн", "Июл", "Авг", "Сен", "Окт", "Ноя", "Дек"]
     order:
       - :year
       - :month
-      - :day      
+      - :day
+        
   psychologist_profiles:
     show:
       dashboard: "Башкаруу панели"
       manage_availability: "Жеткиликтүүлүктү башкаруу"
       block_unavailability: "Жеткиликтүү эместикти бөгөттөө"
       view_my_bookings: "Менин жазууларым"
-      notes: "Эскертүүлөр"
+      notes: "Эскертмелер"
       doctor: "Доктор"
-      certified: "Сертификатталган"
+      certified: "Тастыкталган"
       religion: "Дин: %{religion}"
       years_experience:
         one: "1 жылдык тажрыйба"
         other: "%{count} жылдык тажрыйба"
-      years_experience_short: "%{count} жылдык таж."
+      years_experience_short: "%{count} жылдык тажрыйба"
       about_me: "Мен жөнүндө"
-      invalid_youtube_link: "YouTube шилтемесинин форматы туура эмес."
-      education: "Билим берүү"
-      degree_of_study: "%{degree} %{field} боюнча"
-      at_institution: "%{institution}да"
+      invalid_youtube_link: "YouTube шилтемесинин туура эмес форматы."
+      education: "Билим"
+      degree_of_study: "%{degree} %{field}"
+      at_institution: "%{institution} да"
       graduated_in: "Бүтүргөн жылы: %{year}"
       professional_qualification: "Кесиптик квалификация"
-      no_education_details: "Билим берүү маалыматы берилген жок."
-      no_specializations: "Адистештирүүлөр көрсөтүлгөн жок."
-      no_client_types: "Кардар түрлөрү көрсөтүлгөн жок."
+      no_education_details: "Билими тууралуу маалымат берилген эмес."
+      no_specializations: "Адистештирүү көрсөтүлгөн эмес."
+      no_client_types: "Кардардын түрлөрү көрсөтүлгөн эмес."
       areas_of_focus: "Фокус чөйрөлөрү"
-      no_issues: "Маселелер көрсөтүлгөн жок."
+      no_issues: "Маселелер көрсөтүлгөн эмес."
       services_offered: "Сунушталган кызматтар"
       add_new_service: "Жаңы кызмат кошуу"
-      next_available_appointment: "Кийинки жеткиликтүү жолугушуу"
+      next_available_appointment: "Кийинки жеткиликтүү жазылуу"
       no_availability: "Учурда жеткиликтүүлүк жок"
-      check_back_later: "Сураныч, кийинчерээк кайра текшериңиз же түздөн-түз байланышыңыз"
+      check_back_later: "Сураныч, кийинчерээк текшериңиз же түздөн-түз байланышыңыз"
       free: "Акысыз"
       duration_minutes:
         one: "1 мүн"
@@ -101,9 +112,9 @@ kg:
       book_this_service: "Бул кызматка жазылуу"
       no_services_available: "Учурда жеткиликтүү кызматтар жок."
       contact_information: "Байланыш маалыматы"
-      contact_me_via: "Мага %{label} аркылуу байланышыңыз"
-      show_all_contacts: "Бардык байланыш ыкмаларын көрсөтүү"
-      hide_all_contacts: "Бардык байланыш ыкмаларын жашыруу"
+      contact_me_via: "Мен менен %{label} аркылуу байланышуу"
+      show_all_contacts: "Бардык байланыштарды көрсөтүү"
+      hide_all_contacts: "Бардык байланыштарды жашыруу"
       copy: "Көчүрүү"
       open_link: "Шилтемени ачуу"
       contact_methods:
@@ -113,18 +124,27 @@ kg:
         primary_phone: "Негизги телефон"
         secondary_phone: "Кошумча телефон"
         additional_phone: "Кошумча телефон"
+        
+    education:
+      education_title: "Билим"
+      degree: "Даража"
+      field_of_study: "Окуу чөйрөсү"
+      institution: "Окуу жайы"
+      graduation_year: "Бүтүргөн жылы"
+      remove_education: "Бул билимди өчүрүү"
+    
   psychologist_search:
     placeholder: "Аты, адистиги же ачкыч сөз боюнча издөө..."
     search_button: "Издөө"
     clear_all: "Баарын тазалоо"
     filters: "Фильтрлер"
-    specialties_label: "Адистештирүүлөр"
+    specialties_label: "Адистештирүү"
     issues_label: "Маселелер"
-    client_types_label: "Кардар түрлөрү"
-    all_client_types: "Бардык кардар түрлөрү"
+    client_types_label: "Кардардын түрлөрү"
+    all_client_types: "Бардык кардардын түрлөрү"
     languages_label: "Тилдер"
-    select_languages_placeholder: "Тилдерди тандаңыз"
-    delivery_method_label: "Жеткирүү ыкмасы"
+    select_languages_placeholder: "Тилдерди тандоо"
+    delivery_method_label: "Кызмат көрсөтүү ыкмасы"
     in_person: "Жеке"
     online: "Онлайн"
     religion_label: "Дин"
@@ -135,14 +155,16 @@ kg:
     all_cities: "Бардык шаарлар"
     gender_label: "Жынысы"
     any_gender: "Каалаган жыныс"
-    price_range_label: "Баа диапазону"
+    price_range_label: "Баалар диапазону"
     min_rate_placeholder: "Мин"
     max_rate_placeholder: "Макс"
     apply_filters_button: "Фильтрлерди колдонуу"
     phd_badge: "PhD"
-    certified_badge: "Сертификатталган"
+    certified_badge: "Тастыкталган"
     view_profile_button: "Профилди көрүү"
     contact_button: "Байланыш"
+
+    
   enums:
     gender:
       unspecified: "Көрсөтүлгөн эмес"
@@ -150,79 +172,94 @@ kg:
       female: "Аял"
       other: "Башка"
     religion:
-      muslim: "Мусулман"
-      christian: "Христиан"
+      muslim: "Мусулмандык"
+      christian: "Христиандык"
       other_religion: "Башка дин"
-  spoken_languages: # This block is for languages spoken by psychologists in profiles/search filters
+      buddhist: "Буддизм"
+      hindu: "Индуизм"
+      jewish: "Иудаизм"
+      atheist: "Атеист"
+      agnostic: "Агностик"
+      spiritual: "Руханий"
+      
+  spoken_languages:
     Kyrgyz: "Кыргызча"
     Russian: "Орусча"
     Kazakh: "Казакча"
     English: "Англисче"
     Uzbek: "Өзбекче"
     Tatar: "Татарча"
+    Uyghur: "Уйгурча"
+    Dungan: "Дунганча"
+    Karakalpak: "Каракалпакча"
     Tajik: "Тажикче"
     Turkish: "Түркчө"
     Ukrainian: "Украинча"
-    Karakalpak: "Каракалпакча"
-    Uyghur: "Уйгурча"
-    Dungan: "Дунганча"
-    
 
-  client_types: 
-    single_adult: "Чон киши"
+  client_types:
+    single_adult: "Чоң киши"
+    adult: "Чоң киши"
     single_child: "Бала"
+    child: "Бала"
     single_teenager: "Өспүрүм"
-    romantic_couple: "Романтик жуп"
-    parent_child: "Ата-эне - бала"
+    teenager: "Өспүрүм"
+    romantic_couple: "Романтикалык жуп"
+    couple: "Жуп"
+    parent_child: "Ата-эне-бала"
     other_couple: "Башка жуп"
+    family: "Үй-бүлө"
+    group: "Топ"
+
   psychologist_profile:
     errors:
-      header: "Бул психолог профилин сактоого %{count} ката тоскоол болду:"
+      header: "%{count} ката бул психологдун профилин сактоого тоскоол болду:"
     sections:
       basic_information: "Негизги маалымат"
       professional_details: "Кесиптик маалыматтар"
       education_history: "Билим тарыхы"
-      client_issue_details: "Кардар жана маселенин чоо-жайы"
-      contact_service_details: "Байланыш жана кызмат көрсөтүү маалыматтары"
+      client_issue_details: "Кардар жана маселе маалыматтары"
+      contact_service_details: "Байланыш жана кызмат маалыматтары"
     labels:
-      upload_profile_image: "Профиль сүрөтүн жүктөө"
-      profile_url: "Профиль URL дареги"
+      upload_profile_image: "Профил сүрөтүн жүктөө"
+      profile_url: "Профилдин URL"
       timezone: "Убакыт алкагы"
       first_name: "Аты"
       last_name: "Фамилиясы"
       about_me: "Мен жөнүндө"
-      youtube_video_url: "YouTube видеосунун URL дареги"
+      youtube_video_url: "YouTube видео URL"
       years_of_experience: "Иш тажрыйбасы (жыл)"
       standard_rate: "Стандарттык тариф"
       currency: "Валюта"
-      select_client_types: "Кардар түрлөрүн тандоо"
+      select_client_types: "Кардардын түрлөрүн тандоо"
       about_clients: "Кардарлар жөнүндө"
       select_issues: "Маселелерди тандоо"
       about_issues: "Маселелер жөнүндө"
-      select_specialties: "Адистиктерди тандоо"
-      about_specialties: "Адистиктер жөнүндө"
+      select_specialties: "Адистештирүүлөрдү тандоо"
+      about_specialties: "Адистештирүүлөр жөнүндө"
       religion: "Дин"
       gender: "Жынысы"
       country: "Өлкө"
       city: "Шаар"
       address: "Дарек"
-      telegram: "Telegram"
+      telegram: "Телеграм"
       whatsapp: "WhatsApp"
       contact_phone1: "Байланыш телефону 1"
       contact_phone2: "Байланыш телефону 2"
       contact_phone3: "Байланыш телефону 3"
       primary_contact_method: "Негизги байланыш ыкмасы"
-      in_person_services: "Жеке кызматтар"
+      in_person_services: "Жеке кызматтар?"
       online_services: "Онлайн кызматтар?"
       select_languages: "Тилдерди тандоо"
+      featured_service: "Профилде көрсөтүлгөн кызмат"
+
     prompts:
       select_timezone: "Убакыт алкагыңызды тандаңыз"
-      select_currency: "Валютаны тандаңыз"
-      select_client_types: "Кардар түрлөрүн тандаңыз..."
+      select_currency: "Валюта тандаңыз"
+      select_client_types: "Кардардын түрлөрүн тандаңыз..."
       select_issues: "Маселелерди тандаңыз..."
-      select_specialties: "Адистиктерди тандаңыз..."
-      select_country: "Өлкөнү тандаңыз"
-      select_city: "Шаарды тандаңыз"
+      select_specialties: "Адистештирүүлөрдү тандаңыз..."
+      select_country: "Өлкө тандаңыз"
+      select_city: "Шаар тандаңыз"
       select_primary_contact: "Негизги байланышты тандаңыз"
       select_languages: "Тилдерди тандаңыз"
     placeholders:
@@ -240,13 +277,13 @@ kg:
       female: "Аял"
       other: "Башка"
     contact_methods:
-      telegram: "Telegram"
+      telegram: "Телеграм"
       whatsapp: "WhatsApp"
       phone1: "Телефон 1"
       phone2: "Телефон 2"
       phone3: "Телефон 3"
     modal:
-      crop_image_title: "Сүрөтүңүздү кесиңиз"
+      crop_image_title: "Сүрөттү кесүү"
       close_button_aria: "Жабуу"
       confirm_button: "Ырастоо"
       cancel_button: "Жокко чыгаруу"

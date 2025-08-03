@@ -1,25 +1,24 @@
-# config/locales/en.yml
 en:
   hello: "Hello"
   contact: "Contact"
-  my_profile: "My Profile"
-  edit_profile: "Edit Profile"
-  for_psychologists: "For Psychologists"
-  find_a_psychologist: "Find a Psychologist"
+  my_profile: "My profile"
+  edit_profile: "Edit profile"
+  for_psychologists: "For psychologists"
+  find_a_psychologist: "Find a psychologist"
   logout: "Logout"
   login: "Login"
   registration: "Registration"
   online: "Online"
-  in_person: "In Person"
-  
+  in_person: "In person"
+
   filters:
-    clear: "Clear All"
-    
-  languages: # This block is for the navbar locale selector (e.g., "English", "Русский", "Кыргызча")
+    clear: "Clear all"
+
+  languages:
     en: "English"
-    ru: "Русский"
-    kg: "Кыргызча"
-    
+    ru: "Russian"
+    kg: "Kyrgyz"
+
   countries:
     kyrgyzstan: "Kyrgyzstan"
     kazakhstan: "Kazakhstan"
@@ -27,10 +26,7 @@ en:
     united_states: "United States"
     canada: "Canada"
     russia: "Russia"
-    # IMPORTANT: Add all other country names from your database here.
-    # The keys here should be the exact (often snake_cased or original) strings
-    # stored in your database for country names (e.g., from your countries_cities.yml `name` field).
-    
+
   cities:
     bishkek: "Bishkek"
     osh: "Osh"
@@ -47,9 +43,9 @@ en:
     karaganda: "Karaganda"
     oskemen: "Oskemen"
     pavlodar: "Pavlodar"
-    djalal_abad: "Djalal-Abad" # Ensure consistency with jalal_abad if used
+    djalal_abad: "Jalal-Abad"
     karakol: "Karakol"
-    toshkent: "Toshkent"
+    toshkent: "Tashkent"
     namangan: "Namangan"
     samarkand: "Samarkand"
     andijan: "Andijan"
@@ -58,8 +54,7 @@ en:
     ferghana: "Ferghana"
     new_york: "New York"
     toronto: "Toronto"
-    # IMPORTANT: Add all other city names from your database here.
-    
+
   time:
     formats:
       default: "%d.%m.%Y %H:%M:%S"
@@ -72,8 +67,8 @@ en:
       long: "%B %d, %Y"
     day_names: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     abbr_day_names: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
-    month_names: [~, "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-    abbr_month_names: [~, "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+    month_names: ["", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    abbr_month_names: ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     order:
       - :year
       - :month
@@ -84,42 +79,42 @@ en:
       dashboard: "Dashboard"
       manage_availability: "Manage Availability"
       block_unavailability: "Block Unavailability"
-      view_my_bookings: "View My Bookings"
+      view_my_bookings: "My Bookings"
       notes: "Notes"
       doctor: "Doctor"
       certified: "Certified"
       religion: "Religion: %{religion}"
       years_experience:
-        one: "1 year experience"
-        other: "%{count} years experience"
-      years_experience_short: "%{count} years exp."
+        one: "1 year of experience"
+        other: "%{count} years of experience"
+      years_experience_short: "%{count} years of experience"
       about_me: "About Me"
       invalid_youtube_link: "Invalid YouTube link format."
       education: "Education"
-      degree_of_study: "%{degree} of %{field}"
+      degree_of_study: "%{degree} in %{field}"
       at_institution: "at %{institution}"
       graduated_in: "Graduated: %{year}"
       professional_qualification: "Professional Qualification"
       no_education_details: "No education details provided."
-      no_specializations: "No specializations specified."
-      no_client_types: "No client types specified."
+      no_specializations: "No specializations listed."
+      no_client_types: "No client types listed."
       areas_of_focus: "Areas of Focus"
-      no_issues: "No issues specified."
+      no_issues: "No issues listed."
       services_offered: "Services Offered"
-      add_new_service: "Add New Service"
+      add_new_service: "Add a new service"
       next_available_appointment: "Next available appointment"
-      no_availability: "Currently no availability"
+      no_availability: "No availability at this time"
       check_back_later: "Please check back later or contact directly"
       free: "Free"
       duration_minutes:
         one: "1 min"
-        other: "%{count} min"
-      book_this_service: "Book This Service"
+        other: "%{count} mins"
+      book_this_service: "Book this service"
       no_services_available: "No services available at this time."
       contact_information: "Contact Information"
       contact_me_via: "Contact me via %{label}"
-      show_all_contacts: "Show all contact methods"
-      hide_all_contacts: "Hide all contact methods"
+      show_all_contacts: "Show all contacts"
+      hide_all_contacts: "Hide all contacts"
       copy: "Copy"
       open_link: "Open link"
       contact_methods:
@@ -130,28 +125,36 @@ en:
         secondary_phone: "Secondary Phone"
         additional_phone: "Additional Phone"
         
+    education:
+      education_title: "Education"
+      degree: "Degree"
+      field_of_study: "Field of study"
+      institution: "Institution"
+      graduation_year: "Graduation year"
+      remove_education: "Remove this education"
+    
   psychologist_search:
     placeholder: "Search by name, specialty, or keyword..."
     search_button: "Search"
-    clear_all: "Clear All"
+    clear_all: "Clear all"
     filters: "Filters"
     specialties_label: "Specialties"
     issues_label: "Issues"
     client_types_label: "Client Types"
-    all_client_types: "All Client Types"
+    all_client_types: "All client types"
     languages_label: "Languages"
     select_languages_placeholder: "Select languages"
     delivery_method_label: "Delivery Method"
     in_person: "In Person"
     online: "Online"
     religion_label: "Religion"
-    any_religion: "Any Religion"
+    any_religion: "Any religion"
     country_label: "Country"
-    all_countries: "All Countries"
+    all_countries: "All countries"
     city_label: "City"
-    all_cities: "All Cities"
+    all_cities: "All cities"
     gender_label: "Gender"
-    any_gender: "Any Gender"
+    any_gender: "Any gender"
     price_range_label: "Price Range"
     min_rate_placeholder: "Min"
     max_rate_placeholder: "Max"
@@ -160,6 +163,7 @@ en:
     certified_badge: "Certified"
     view_profile_button: "View Profile"
     contact_button: "Contact"
+
     
   enums:
     gender:
@@ -178,7 +182,7 @@ en:
       agnostic: "Agnostic"
       spiritual: "Spiritual"
       
-  spoken_languages: # This block is for languages spoken by psychologists in profiles/search filters
+  spoken_languages:
     Kyrgyz: "Kyrgyz"
     Russian: "Russian"
     Kazakh: "Kazakh"
@@ -199,16 +203,16 @@ en:
     child: "Child"
     single_teenager: "Teenager"
     teenager: "Teenager"
-    romantic_couple: "Romantic Couple"
+    romantic_couple: "Romantic couple"
     couple: "Couple"
-    parent_child: "Parent-Child"
-    other_couple: "Other Couple"
+    parent_child: "Parent-child"
+    other_couple: "Other couple"
     family: "Family"
     group: "Group"
 
   psychologist_profile:
     errors:
-      header: "%{count} error prohibited this psychologist profile from being saved:"
+      header: "%{count} error prevented this psychologist profile from being saved:"
     sections:
       basic_information: "Basic Information"
       professional_details: "Professional Details"
@@ -216,22 +220,22 @@ en:
       client_issue_details: "Client & Issue Details"
       contact_service_details: "Contact & Service Details"
     labels:
-      upload_profile_image: "Upload Profile Image"
+      upload_profile_image: "Upload profile image"
       profile_url: "Profile URL"
-      timezone: "Time Zone"
+      timezone: "Timezone"
       first_name: "First Name"
       last_name: "Last Name"
       about_me: "About Me"
-      youtube_video_url: "YouTube Video URL"
-      years_of_experience: "Years of Experience"
+      youtube_video_url: "YouTube video URL"
+      years_of_experience: "Years of experience"
       standard_rate: "Standard Rate"
       currency: "Currency"
-      select_client_types: "Select Client Types"
-      about_clients: "About Clients"
-      select_issues: "Select Issues"
-      about_issues: "About Issues"
-      select_specialties: "Select Specialties"
-      about_specialties: "About Specialties"
+      select_client_types: "Select client types"
+      about_clients: "About clients"
+      select_issues: "Select issues"
+      about_issues: "About issues"
+      select_specialties: "Select specialties"
+      about_specialties: "About specialties"
       religion: "Religion"
       gender: "Gender"
       country: "Country"
@@ -239,28 +243,30 @@ en:
       address: "Address"
       telegram: "Telegram"
       whatsapp: "WhatsApp"
-      contact_phone1: "Contact Phone 1"
-      contact_phone2: "Contact Phone 2"
-      contact_phone3: "Contact Phone 3"
-      primary_contact_method: "Primary Contact Method"
-      in_person_services: "In person services"
-      online_services: "Online Services?"
+      contact_phone1: "Contact phone 1"
+      contact_phone2: "Contact phone 2"
+      contact_phone3: "Contact phone 3"
+      primary_contact_method: "Primary contact method"
+      in_person_services: "In-person services?"
+      online_services: "Online services?"
       select_languages: "Select languages"
+      featured_service: "Service shown on profile"
+
     prompts:
-      select_timezone: "Select your time zone"
-      select_currency: "Select Currency"
+      select_timezone: "Select your timezone"
+      select_currency: "Select a currency"
       select_client_types: "Select client types..."
       select_issues: "Select issues..."
       select_specialties: "Select specialties..."
-      select_country: "Select Country"
-      select_city: "Select City"
-      select_primary_contact: "Select Primary Contact"
+      select_country: "Select a country"
+      select_city: "Select a city"
+      select_primary_contact: "Select primary contact"
       select_languages: "Select languages"
     placeholders:
-      standard_rate: "e.g. 100.00"
+      standard_rate: "e.g., 100.00"
     buttons:
-      add_education: "Add Education"
-      submit: "Save Profile"
+      add_education: "Add education"
+      submit: "Save profile"
     religion_options:
       non_religious: "Non-religious"
       muslim: "Muslim"
@@ -269,7 +275,7 @@ en:
     gender_options:
       male: "Male"
       female: "Female"
-      other: "Other" # Assuming these are the keys from PsychologistProfile.genders
+      other: "Other"
     contact_methods:
       telegram: "Telegram"
       whatsapp: "WhatsApp"
@@ -277,7 +283,7 @@ en:
       phone2: "Phone 2"
       phone3: "Phone 3"
     modal:
-      crop_image_title: "Crop Your Image"
+      crop_image_title: "Crop image"
       close_button_aria: "Close"
       confirm_button: "Confirm"
       cancel_button: "Cancel"

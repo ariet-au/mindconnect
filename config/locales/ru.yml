@@ -14,7 +14,7 @@ ru:
   filters:
     clear: "Очистить все"
     
-  languages: # This block is for the navbar locale selector (e.g., "English", "Русский", "Кыргызча")
+  languages:
     en: "Английский"
     ru: "Русский"
     kg: "Кыргызский"
@@ -26,9 +26,6 @@ ru:
     united_states: "Соединенные Штаты"
     canada: "Канада"
     russia: "Россия"
-    # IMPORTANT: Add all other country names from your database here.
-    # The keys here should be the exact (often snake_cased or original) strings
-    # stored in your database for country names (e.g., from your countries_cities.yml `name` field).
     
   cities:
     bishkek: "Бишкек"
@@ -46,7 +43,7 @@ ru:
     karaganda: "Караганда"
     oskemen: "Усть-Каменогорск"
     pavlodar: "Павлодар"
-    djalal_abad: "Джалал-Абад" # Ensure consistency with jalal_abad if used
+    djalal_abad: "Джалал-Абад"
     karakol: "Каракол"
     toshkent: "Ташкент"
     namangan: "Наманган"
@@ -57,7 +54,6 @@ ru:
     ferghana: "Фергана"
     new_york: "Нью-Йорк"
     toronto: "Торонто"
-    # IMPORTANT: Add all other city names from your database here.
     
   time:
     formats:
@@ -129,6 +125,14 @@ ru:
         secondary_phone: "Дополнительный телефон"
         additional_phone: "Дополнительный телефон"
         
+    education:
+      education_title: "Образование"
+      degree: "Степень"
+      field_of_study: "Область обучения"
+      institution: "Учебное заведение"
+      graduation_year: "Год выпуска"
+      remove_education: "Удалить это образование"
+    
   psychologist_search:
     placeholder: "Поиск по имени, специальности или ключевому слову..."
     search_button: "Поиск"
@@ -177,7 +181,7 @@ ru:
       agnostic: "Агностик"
       spiritual: "Духовный"
       
-  spoken_languages: # This block is for languages spoken by psychologists in profiles/search filters
+  spoken_languages:
     Kyrgyz: "Кыргызский"
     Russian: "Русский"
     Kazakh: "Казахский"
@@ -245,6 +249,8 @@ ru:
       in_person_services: "Очные услуги"
       online_services: "Онлайн-услуги?"
       select_languages: "Выбрать языки"
+      featured_service: "Услуга, отображаемая в профиле"
+
     prompts:
       select_timezone: "Выберите свой часовой пояс"
       select_currency: "Выберите валюту"
@@ -268,7 +274,7 @@ ru:
     gender_options:
       male: "Мужской"
       female: "Женский"
-      other: "Другой" # Assuming these are the keys from PsychologistProfile.genders
+      other: "Другой"
     contact_methods:
       telegram: "Telegram"
       whatsapp: "WhatsApp"
