@@ -521,6 +521,25 @@ confirmCrop.addEventListener("click", () => {
 
 
     if (addEducationButton && educationsContainer && educationTemplate) {
+      
+      // add remove button
+      document.addEventListener('click', function(event) {
+        if (event.target.closest('.remove-education-button')) {
+          event.preventDefault();
+          const educationBox = event.target.closest('.box.mb-4');
+          if (educationBox) {
+            const destroyField = educationBox.querySelector('input[name*="_destroy"]');
+            if (destroyField) {
+              destroyField.value = '1'; // mark for deletion
+              educationBox.style.display = 'none';
+            } else {
+              educationBox.remove(); // for new records
+            }
+          }
+        }
+      });
+
+      //add remove button
       addEducationButton.addEventListener('click', (event) => {
         event.preventDefault(); // Prevent form submission
 
