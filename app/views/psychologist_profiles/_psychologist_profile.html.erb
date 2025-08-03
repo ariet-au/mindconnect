@@ -197,8 +197,10 @@
           <div class="services-grid">
             <div class="service-card">
               <div class="service-header">
-                <h3 class="service-title"><%= t("services.#{service.name}", default: service.name) %></h3>
-                <div class="service-meta">
+                <h3 class="service-title">
+                  <%= link_to t("services.#{service.name}", default: service.name), service_path(service) %>
+                </h3>                
+                  <div class="service-meta">
                   <span class="service-price">
                     <i class="fas fa-tag icon-price"></i>
                     <% if service.price == 0 %>
