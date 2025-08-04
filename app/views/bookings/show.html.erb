@@ -85,7 +85,7 @@
     <p><span class="booking-details-label">Booking Time:</span>
       <span class="utc-date-time-range booking-details-time-display"
             data-start-utc="<%= @booking.start_time.utc.iso8601 if @booking.start_time.present? %>"
-            data-end-utc="<%= @booking.start_time.utc.iso8601 if @booking.start_time.present? %>">
+            data-end-utc="<%= @booking.end_time.utc.iso8601 if @booking.start_time.present? %>">
         Loading time...
       </span>
     </p>

@@ -25,6 +25,12 @@ Rails.application.routes.draw do
 
   # Locale-scoped routes
   scope "(:locale)", locale: /en|ru|kg/ do
+
+    get '/book/select_service', to: 'bookings#select_service', as: :select_service
+    get '/book/choose_time', to: 'bookings#choose_time', as: :choose_time
+    get '/book/assign_client', to: 'bookings#assign_client', as: :assign_client
+    post '/book/confirm', to: 'bookings#confirm_booking', as: :confirm_booking
+
     resources :articles
     resources :internal_client_profiles
     resources :client_profiles
@@ -34,6 +40,7 @@ Rails.application.routes.draw do
     resources :psychological_issues
     resources :client_types
     resources :specialties
+
 
     # Static pages
     get 'find-a-psychologist', to: 'psychologist_profiles#search_landing', as: :search_landing
@@ -57,6 +64,8 @@ Rails.application.routes.draw do
 
     # Psychologist profiles and nested resources
     resources :psychologist_profiles do
+      get :available_slots, on: :member
+
       resources :educations, only: [:new, :create, :edit, :update, :destroy]
       resources :psychologist_availabilities, except: [:show] do
         collection { get 'calendar_blocks' }
@@ -66,6 +75,7 @@ Rails.application.routes.draw do
           get 'calendar_bookings'
           get 'psychologist_bookings'
           post :create_json
+          get :new_with_service_selection
         end
         member do
           get 'confirm', to: 'bookings#confirm_form'

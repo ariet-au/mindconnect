@@ -1,6 +1,9 @@
 class BookingsController < ApplicationController
+  #skip_before_action :set_psychologist_profile, only: [:dynamic_select]
   before_action :authenticate_user!, except: [:confirm_form, :confirm]
   before_action :set_booking, only: [:show, :edit, :update, :destroy]
+  #before_action :set_psychologist_profile, only: [:create_json, :update_json, :destroy_json, :new]
+
 
   def index
     @psychologist_profile = current_user.psychologist_profile
@@ -44,34 +47,27 @@ class BookingsController < ApplicationController
     
     # Initialize the slot finder
     # Pass the psychologist's timezone to the slot finder as it needs to know the source timezone
-    slot_finder = TimezoneAwareSlotFinder.new(
+    slot_finder = SlotFinder.new(
       @psychologist_profile.id,
       @service.duration_minutes,
       @psychologist_profile.timezone # Use psychologist's timezone for slot calculation logic
     )
 
     # Find ALL available slots for the view, converted to display_timezone for presentation
-    # The TimezoneAwareSlotFinder should return slots in UTC, then we convert for display
+    # The SlotFinder should return slots in UTC, then we convert for display
     raw_available_slots = slot_finder.all_available_slots_by_day
 
     # Convert slots to the @display_timezone for the view
     @available_slots = {}
     raw_available_slots.each do |date, slots|
-      # Convert the date key itself to the display timezone for consistency if needed,
-      # but typically the date key is just a date, not a time.
-      # For the slots (Time objects), convert them to the display timezone.
       @available_slots[date] = slots.map { |slot| slot.in_time_zone(@display_timezone) }
     end
 
     @available_slots ||= {} # Ensure it's an empty hash if no slots are found
 
-    # Find the NEXT available slot to use as a default selection
-    # This slot should also be converted to the @display_timezone for presentation
     next_slot_utc = slot_finder.next_available_slot(Time.current.in_time_zone(@display_timezone))
     @next_available_time = next_slot_utc&.in_time_zone(@display_timezone) # Convert to display timezone
 
-    # If no slots are available at all, handle this gracefully
-    # Use the current time in the display timezone, rounded up to the next hour
     @booking_start_time_for_form = @next_available_time || (Time.current.in_time_zone(@display_timezone).beginning_of_hour + 1.hour)
 
     # Build the booking object
@@ -81,8 +77,6 @@ class BookingsController < ApplicationController
       start_time: @booking_start_time_for_form.utc
     )
     
-    # --- NEW LOGIC ADDED HERE ---
-    # If the current user is a client, automatically set the client_profile_id
     if current_user.client? && current_user.client_profile.present?
       @booking.client_profile_id = current_user.client_profile.id
     end
@@ -98,67 +92,101 @@ class BookingsController < ApplicationController
     @internal_clients = InternalClientProfile.all # Adjust scope as needed
   end
 
-  # def create
-  #   @booking = Booking.new(booking_params)
-
-  #   if current_user.psychologist?
-  #     @booking.psychologist_profile_id ||= current_user.psychologist_profile.id
-  #   else
-  #     @booking.client_profile_id = current_user.client_profile.id
-  #   end
-
-  #   if @booking.save
-  #     Rails.logger.info("Booking created successfully, redirecting...")
-  #     redirect_to @booking, notice: "Booking created successfully."
-  #   else
-  #     @service = @booking.service || Service.find(params[:booking][:service_id])
-  #     @psychologist_profile = @booking.psychologist_profile || @service.user.psychologist_profile
-
-  #     psych_timezone = @psychologist_profile.timezone.presence || 'UTC'
-  #     @display_timezone = params[:browser_timezone] || session[:browser_timezone] || cookies[:browser_timezone] || psych_timezone
-  #     user_tz_obj = ActiveSupport::TimeZone[@display_timezone] || ActiveSupport::TimeZone['UTC']
+  def new_with_service_selection
+      @psychologist_profile = PsychologistProfile.find(params[:psychologist_profile_id])
       
-  #     @next_available_time = @booking.start_time || Time.current.in_time_zone(user_tz_obj)
-  #     # Corrected line for calculating display_timezone_offset_seconds on re-render
-  #     @display_timezone_offset_seconds = @next_available_time.period.utc_total_offset
-
-  #     render :new, status: :unprocessable_entity
-  #   end
-  # end
- def create
-  @booking = Booking.new(booking_params)
-  @booking.created_by = current_user.psychologist? ? 'psychologist' : 'client'
-
-  if current_user.psychologist?
-    @booking.psychologist_profile_id ||= current_user.psychologist_profile.id
-  else
-    @booking.client_profile_id = current_user.client_profile.id
-  end
-
-  if @booking.save
-    Rails.logger.info("Booking created successfully, redirecting...")
+      # Determine the timezone for display
+      @display_timezone = params[:browser_timezone] || session[:browser_timezone] || cookies[:browser_timezone] || @psychologist_profile.timezone.presence || 'UTC'
+      
+      # Get all services for this psychologist
+      @services = @psychologist_profile.services # Assuming you have an active scope
+      
+      # Set default service or get from params
+      @selected_service = if params[:service_id].present?
+        @services.find(params[:service_id])
+      else
+        @services.first
+      end
     
-    # Get the parent object from the newly saved booking
-    parent_object = @booking.psychologist_profile
+    # Initialize available slots if we have a service
+    @available_slots = {}
+    @next_available_time = nil
     
-    if @booking.created_by == 'psychologist'
-      redirect_to [parent_object, @booking], notice: "Booking created successfully. Share the confirmation link with the client."
-    else
-      redirect_to [parent_object, @booking], notice: "Booking created successfully. Awaiting psychologist confirmation."
+    if @selected_service
+      # Initialize the slot finder with the selected service duration
+      slot_finder = SlotFinder.new(
+        @psychologist_profile.id,
+        @selected_service.duration_minutes,
+        @psychologist_profile.timezone
+      )
+      
+      # Find available slots - we'll convert these to simple time options
+      raw_available_slots = slot_finder.all_available_slots_by_day
+      
+      # Convert to simple array of available start times for dropdown
+      @available_start_times = []
+      raw_available_slots.each do |date, slots|
+        slots.each do |slot|
+          @available_start_times << slot.utc
+        end
+      end
+      
+      # Sort by time
+      @available_start_times.sort!
+      
+      # Get next available slot
+      next_slot_utc = slot_finder.next_available_slot(Time.current)
+      @next_available_time = next_slot_utc
     end
-  else
-    # Your existing code to handle validation errors
-    @service = @booking.service || Service.find(params[:booking][:service_id])
-    @psychologist_profile = @booking.psychologist_profile || @service.user.psychologist_profile
-    psych_timezone = @psychologist_profile.timezone.presence || 'UTC'
-    @display_timezone = params[:browser_timezone] || session[:browser_timezone] || cookies[:browser_timezone] || psych_timezone
-    user_tz_obj = ActiveSupport::TimeZone[@display_timezone] || ActiveSupport::TimeZone['UTC']
-    @next_available_time = @booking.start_time || Time.current.in_time_zone(user_tz_obj)
-    @display_timezone_offset_seconds = @next_available_time.utc_total_offset
-    render :new, status: :unprocessable_entity
+    
+    # Build the booking object
+    @booking = Booking.new(
+      service: @selected_service,
+      psychologist_profile: @psychologist_profile,
+      start_time: @next_available_time
+    )
+    
+    if current_user.client? && current_user.client_profile.present?
+      @booking.client_profile_id = current_user.client_profile.id
+    end
+    
+    # Calculate end_time if we have a start_time and service
+    if @booking.start_time && @selected_service
+      @booking.end_time = @booking.start_time + @selected_service.duration_minutes.minutes
+    end
+    
+    # Prepare collections for client selection in the view
+    @external_clients = ClientProfile.all
+    @internal_clients = @psychologist_profile.internal_client_profiles # Assuming you have a scope for internal clients
   end
-end
+  # app/controllers/psychologist_profiles_controller.rb
+# app/controllers/psychologist_profiles_controller.rb
+  def available_slots
+    @psychologist_profile = PsychologistProfile.find(params[:id])
+    service = Service.find(params[:service_id])
+    timezone = params[:browser_timezone] || 'UTC'
 
+    slot_finder = SlotFinder.new(
+      @psychologist_profile.id,
+      service.duration_minutes,
+      @psychologist_profile.timezone
+    )
+
+    # Get all available slots (UTC times)
+    raw_slots = slot_finder.all_available_slots_by_day.values.flatten
+
+    # Format for JSON response
+    available_slots = raw_slots.map do |slot|
+      {
+        utc: slot.utc.iso8601,
+        local: slot.in_time_zone(timezone).strftime("%a, %b %d at %H:%M")
+      }
+    end
+
+    render json: { available_slots: available_slots }
+  rescue ActiveRecord::RecordNotFound => e
+    render json: { error: e.message }, status: :not_found
+  end
 
   def edit
   end
@@ -213,7 +241,8 @@ end
   end
 
   def destroy_json
-    if @booking.destroy
+    @booking = Booking.find(params[:id])
+    if @booking.psychologist_profile_id.to_s == params[:psychologist_profile_id] && @booking.destroy
       render json: { success: true }, status: :ok
     else
       render json: { success: false, error: @booking.errors.full_messages.join(', ') }, status: :unprocessable_entity
@@ -278,37 +307,6 @@ def decline
   end
 end
 
-  # def confirm
-  #   @booking = Booking.find(params[:id])
-  #   if (params[:token].present? && @booking.confirmation_token == params[:token]) ||
-  #      (current_user&.psychologist? && @booking.psychologist_profile.user == current_user)
-  #     if @booking.pending?
-  #       @booking.update(status: 'confirmed', confirmation_token: nil) if params[:token].present?
-  #       @booking.update(status: 'confirmed') unless params[:token].present?
-  #       redirect_to @booking, notice: 'Booking confirmed successfully.'
-  #     else
-  #       redirect_to @booking, alert: 'Booking cannot be confirmed.'
-  #     end
-  #   else
-  #     redirect_to root_path, alert: 'Unauthorized to confirm this booking.'
-  #   end
-  # end
-
-  # def decline
-  #   @booking = Booking.find(params[:id])
-  #   if (params[:token].present? && @booking.confirmation_token == params[:token]) ||
-  #      (current_user&.psychologist? && @booking.psychologist_profile.user == current_user)
-  #     if @booking.pending?
-  #       @booking.update(status: 'declined', confirmation_token: nil) if params[:token].present?
-  #       @booking.update(status: 'declined') unless params[:token].present?
-  #       redirect_to @booking, notice: 'Booking declined successfully.'
-  #     else
-  #       redirect_to @booking, alert: 'Booking cannot be declined.'
-  #     end
-  #   else
-  #     redirect_to root_path, alert: 'Unauthorized to decline this booking.'
-  #   end
-  # end
 
   def psychologist_bookings
     if current_user&.psychologist_profile
@@ -320,7 +318,113 @@ end
     end
   end
 
+
+  def select_service
+    @services = current_user.services
+    # Set psychologist_id based on current user if psychologist
+    @psychologist_id = current_user.psychologist_profile&.id if current_user.role == "psychologist"
+  end
+
+  def choose_time
+    @psychologist = if params[:psychologist_id].present?
+                     PsychologistProfile.find(params[:psychologist_id])
+                   elsif current_user.role == "psychologist"
+                     current_user.psychologist_profile || raise(ActiveRecord::RecordNotFound, "No psychologist profile found for current user")
+                   else
+                     raise ActiveRecord::RecordNotFound, "Psychologist ID is required"
+                   end
+    @service = Service.find(params[:service_id])
+    @date = Date.parse(params[:date]) if params[:date].present?
+
+    available_times = calculate_available_times(@psychologist, @date)
+    @time_slots = available_times.map { |time| time.strftime("%H:%M") }
+  end
+
+  def assign_client
+    @booking = Booking.new
+    @psychologist = PsychologistProfile.find(params[:psychologist_id])
+    @service = Service.find(params[:service_id])
+    #@selected_time = Time.zone.parse(params[:selected_time])
+    @selected_time = Time.zone.parse("#{params[:date]} #{params[:selected_time]}")
+
+    if current_user.role == "psychologist"
+      @clients = current_user.psychologist_profile.internal_client_profiles
+    else
+      @client = current_user.internal_client_profile # Assuming a single profile per client user
+    end
+  end
+
+  def confirm_booking
+    @psychologist = PsychologistProfile.find(params[:psychologist_id])
+    @service = Service.find(params[:service_id])
+
+    # --- MODIFIED LINE ---
+    # Combine the date and time strings before parsing
+    date_string = params[:date]
+    time_string = params[:selected_time]
+    #@selected_time = Time.zone.parse("#{date_string} #{time_string}")
+    @selected_time = Time.zone.parse("#{params[:date]} #{params[:selected_time]}")
+
+    # Determine the client based on user role
+    if current_user.role == "psychologist" && params[:client_id].present?
+      @internal_client = InternalClientProfile.find(params[:client_id])
+      @client_profile = nil
+    else
+      @internal_client = current_user.internal_client_profile
+      @client_profile = nil
+    end
+
+    # Set created_by based on user role
+    created_by = current_user.role == "psychologist" ? "psychologist" : "client"
+
+    booking = Booking.new(
+      psychologist_profile: @psychologist,
+      service: @service,
+      internal_client_profile: @internal_client,
+      client_profile: @client_profile,
+      start_time: @selected_time,
+      end_time: @selected_time + @service.duration_minutes.minutes,
+      status: "pending",
+      created_by: created_by
+    )
+
+    if booking.save
+      redirect_to psychologist_profile_booking_path(booking.psychologist_profile, booking), notice: "Booking confirmed!"
+    else
+      redirect_to select_service_path, alert: "Failed to create booking: #{booking.errors.full_messages.join(', ')}"
+    end
+  end
   private
+
+  def calculate_available_times(psychologist, date)
+    available_times = []
+    return available_times unless date
+
+    # Fetch availability and unavailability for the psychologist
+    availabilities = PsychologistAvailability.where(psychologist_profile: psychologist, day_of_week: date.wday)
+    unavailabilities = PsychologistUnavailability.where(psychologist_profile: psychologist)
+      .where("start_time <= ? AND end_time >= ?", date.end_of_day, date.beginning_of_day)
+
+    # Convert to UTC based on psychologist's timezone
+    availabilities.each do |avail|
+      start_time = date.to_datetime.change({ hour: avail.start_time_of_day.hour, min: avail.start_time_of_day.min })
+      end_time = date.to_datetime.change({ hour: avail.end_time_of_day.hour, min: avail.end_time_of_day.min })
+      start_time = start_time.in_time_zone(avail.timezone).utc
+      end_time = end_time.in_time_zone(avail.timezone).utc
+
+      current_time = start_time
+      while current_time < end_time
+        slot_end = current_time + 30.minutes
+        unless unavailabilities.any? { |unavail| unavail.start_time <= slot_end && unavail.end_time >= current_time } ||
+               Booking.where(psychologist_profile: psychologist, start_time: current_time..slot_end).exists?
+          available_times << current_time
+        end
+        current_time += 30.minutes
+      end
+    end
+
+    available_times
+  end
 
  def booking_conflicts?
     start_time = @booking.start_time
@@ -347,25 +451,7 @@ end
     available.exists? # Fixed: Return true if within availability
   end
 
-  # def booking_to_event(booking)
-  #   client_name = booking.client_profile&.full_name || 'Unknown Client'
-  #   service_name = booking.service&.name || 'Unknown Service'
 
-  #   {
-  #     id: booking.id,
-  #     title: "#{service_name} with #{client_name}",
-  #     start: booking.start_time.iso8601,
-  #     end: booking.end_time.iso8601,
-  #     color: '#0d6efd',
-  #     textColor: 'white',
-  #     extendedProps: {
-  #       status: booking.status,
-  #       client_profile_id: booking.client_profile_id,
-  #       internal_client_profile_id: booking.internal_client_profile_id,
-  #       service_id: booking.service_id
-  #     }
-  #   }
-  # end
   def booking_to_event(booking)
     client_name = booking.client_profile&.full_name || booking.internal_client_profile&.label || "N/A"
     {

@@ -75,6 +75,10 @@
               <span>New Booking</span>
             </button>
           </div>
+
+          <div class="level-right">
+            <%= link_to "Book a Session", select_service_path(psychologist_id: current_user.psychologist_profile.id), class: "button is-primary" %>
+          </div>
         </div>
         <div id="calendar-container"
              data-psychologist-profile-id="<%= @psychologist_profile.id %>"

@@ -1,0 +1,35 @@
+<div class="container is-max-desktop mt-6">
+  <h1 class="title has-text-centered mb-4">Assign a Client</h1>
+  <div class="box p-5 has-shadow">
+    <% if current_user.role == "psychologist" %>
+      <%= form_with url: confirm_booking_path, method: :post, local: true, class: "control" do |form| %>
+        <%= form.hidden_field :psychologist_id, value: @psychologist.id %>
+        <%= form.hidden_field :service_id, value: @service.id %>
+        <%= form.hidden_field :selected_time, value: @selected_time %>
+        <div class="field">
+          <%= form.label :client_id, "Select Client", class: "label" %>
+          <div class="control">
+            <%= form.collection_select :client_id, @clients, :id, :full_name, { include_blank: true }, class: "select" %>
+          </div>
+        </div>
+        <div class="field">
+          <div class="control">
+            <%= form.submit "Confirm Booking", class: "button is-primary" %>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <%= form_with url: confirm_booking_path, method: :post, local: true, class: "control" do |form| %>
+        <%= form.hidden_field :psychologist_id, value: @psychologist.id %>
+        <%= form.hidden_field :service_id, value: @service.id %>
+        <%= form.hidden_field :selected_time, value: @selected_time %>
+        <p class="has-text-centered">Booking will be assigned to you, <%= current_user.email %>.</p>
+        <div class="field">
+          <div class="control">
+            <%= form.submit "Confirm Booking", class: "button is-primary" %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>

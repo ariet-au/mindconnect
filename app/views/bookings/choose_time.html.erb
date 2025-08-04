@@ -1,0 +1,31 @@
+<div class="container is-max-desktop mt-6">
+  <h1 class="title has-text-centered mb-4">Choose a Time</h1>
+  <div class="box p-5 has-shadow">
+    <div class="mb-4">
+      <%= form_with url: choose_time_path, method: :get, local: true, class: "control" do |form| %>
+        <%= form.hidden_field :psychologist_id, value: @psychologist.id %>
+        <%= form.hidden_field :service_id, value: @service.id %>
+        <div class="field">
+          <%= form.label :date, "Select Date", class: "label" %>
+          <div class="control">
+            <%= form.date_field :date, value: @date || Date.today, class: "input" %>
+          </div>
+        </div>
+        <div class="field">
+          <div class="control">
+            <%= form.submit "Update Availability", class: "button is-primary" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    <div class="columns is-multiline">
+      <% @time_slots.each do |time| %>
+        <div class="column is-one-third">
+          <%= link_to assign_client_path(psychologist_id: @psychologist.id, service_id: @service.id, selected_time: time, date: @date), class: "button is-success is-fullwidth" do %>
+            <%= time %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

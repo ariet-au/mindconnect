@@ -1,0 +1,343 @@
+<div class="container is-max-desktop">
+  <h2 class="title is-2 has-text-centered">New Booking</h2>
+  <p class="subtitle is-5 has-text-centered">Select service and available time</p>
+
+  <% if @booking.errors.any? %>
+    <div class="notification is-danger">
+      <h4 class="title is-4">
+        <%= pluralize(@booking.errors.count, "error") %> prevented this booking from saving:
+      </h4>
+      <ul>
+        <% @booking.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= form_with model: [@psychologist_profile, @booking], class: "box", local: false, data: { turbo: false } do |f| %>
+    <%= f.hidden_field :psychologist_profile_id, value: @psychologist_profile&.id %>
+    <%= f.hidden_field :start_time, id: 'booking_start_time_utc' %>
+    <%= f.hidden_field :end_time, id: 'booking_end_time_utc' %>
+
+    <!-- Service Selection -->
+    <div class="field">
+      <%= label_tag :service_selection, "Select Service", class: "label" %>
+      <div class="control">
+        <div class="select is-fullwidth">
+          <%= select_tag :service_selection, 
+                options_from_collection_for_select(@services, :id, :name_with_duration, @selected_service&.id),
+                { 
+                  include_blank: "Choose a service...",
+                  id: 'service_selector',
+                  class: 'input'
+                } %>
+        </div>
+      </div>
+      <% if @selected_service %>
+        <p class="help">Duration: <%= @selected_service.duration_minutes %> minutes</p>
+      <% end %>
+    </div>
+
+    <%= f.hidden_field :service_id, value: @selected_service&.id, id: 'booking_service_id' %>
+
+    <% if current_user.psychologist? %>
+      <div class="field">
+        <%= f.label :client_profile_id, "Client Profile (if external)", class: "label" %>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <%= f.collection_select :client_profile_id, @external_clients || ClientProfile.all, :id, :full_name, { include_blank: true }, class: "input" %>
+          </div>
+        </div>
+      </div>
+      <div class="field">
+        <%= f.label :internal_client_profile_id, "Internal Client (for notes)", class: "label" %>
+        <div class="control">
+          <div class="select is-fullwidth">
+            <%= f.collection_select :internal_client_profile_id, @internal_clients || InternalClientProfile.all, :id, :label, { include_blank: true }, class: "input" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <!-- Time Slot Selection -->
+    <div class="field">
+      <label class="label">Select Start Time</label>
+      <div class="control">
+        <div class="select is-fullwidth">
+          <select id="time_slot_selector" class="input" <%= 'disabled' unless @selected_service && @available_start_times.any? %>>
+            <% if @selected_service.nil? %>
+              <option value="">First select a service</option>
+            <% elsif @available_start_times.empty? %>
+              <option value="">No available time slots</option>
+            <% else %>
+              <option value="">Choose a time slot...</option>
+              <% @available_start_times.each do |start_time_utc| %>
+                <option value="<%= start_time_utc.iso8601 %>" 
+                        <%= 'selected' if start_time_utc == @next_available_time %>>
+                  Loading...
+                </option>
+              <% end %>
+            <% end %>
+          </select>
+        </div>
+      </div>
+      <p class="help">Times displayed in your local timezone</p>
+    </div>
+
+    <hr>
+
+    <!-- Calculated Times Display -->
+    <div class="field">
+      <label class="label">Booking Time</label>
+      <div class="content">
+        <p><strong>Start:</strong> 
+          <span class="utc-date-time" id="start_time_display"
+                data-utc="<%= @booking.start_time&.utc&.iso8601 %>">
+            <% if @booking.start_time %>
+              <%= @booking.start_time.utc.iso8601 %>
+            <% else %>
+              Please select a time slot
+            <% end %>
+          </span>
+        </p>
+        <p><strong>End:</strong> 
+          <span class="utc-date-time" id="end_time_display"
+                data-utc="<%= @booking.end_time&.utc&.iso8601 %>">
+            <% if @booking.end_time %>
+              <%= @booking.end_time.utc.iso8601 %>
+            <% else %>
+              Please select a time slot
+            <% end %>
+          </span>
+        </p>
+      </div>
+    </div>
+
+    <div class="field">
+      <%= f.label :notes, class: "label" %>
+      <div class="control">
+        <%= f.text_area :notes, class: "textarea", placeholder: "Any specific notes for this booking?" %>
+      </div>
+    </div>
+
+    <div class="field is-grouped">
+      <div class="control">
+        <%= f.submit "Create Booking", class: "button is-primary", 
+              disabled: @selected_service.nil? || @available_start_times.empty?, 
+              id: 'submit_button' %>
+      </div>
+      <div class="control">
+        <%= link_to "Cancel", psychologist_profile_bookings_path(@psychologist_profile), class: "button is-link is-light" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<script>
+document.addEventListener("turbo:load", function () {
+  const serviceSelector = document.getElementById('service_selector');
+  const timeSlotSelector = document.getElementById('time_slot_selector');
+  const bookingServiceId = document.getElementById('booking_service_id');
+  const bookingStartTimeUtc = document.getElementById('booking_start_time_utc');
+  const bookingEndTimeUtc = document.getElementById('booking_end_time_utc');
+  const startTimeDisplay = document.getElementById('start_time_display');
+  const endTimeDisplay = document.getElementById('end_time_display');
+  const submitButton = document.getElementById('submit_button');
+  
+  // Service selection change handler
+  if (serviceSelector) {
+    serviceSelector.addEventListener('change', function() {
+      const selectedServiceId = this.value;
+      
+      if (selectedServiceId) {
+        // Update hidden service field
+        bookingServiceId.value = selectedServiceId;
+        
+        // Fetch available slots for this service
+        fetchAvailableSlots(selectedServiceId);
+      } else {
+        // Clear everything if no service selected
+        timeSlotSelector.innerHTML = '<option value="">First select a service</option>';
+        timeSlotSelector.disabled = true;
+        clearTimeDisplays();
+        submitButton.disabled = true;
+      }
+    });
+  }
+  
+  // Time slot selection change handler
+  if (timeSlotSelector) {
+    timeSlotSelector.addEventListener('change', function() {
+      const selectedStartTimeUtc = this.value;
+      
+      if (selectedStartTimeUtc && bookingServiceId.value) {
+        updateBookingTimes(selectedStartTimeUtc);
+        submitButton.disabled = false;
+      } else {
+        clearTimeDisplays();
+        submitButton.disabled = true;
+      }
+    });
+  }
+
+  
+  
+  function fetchAvailableSlots(serviceId) {
+  const psychologistId = '<%= @psychologist_profile.id %>';
+  const browserTimezone = encodeURIComponent(Intl.DateTimeFormat().resolvedOptions().timeZone);
+  const locale = '<%= I18n.locale %>'; // Get current locale from Rails
+
+  // Debug logging
+  console.log('Fetching slots with:', { psychologistId, serviceId, browserTimezone, locale });
+
+  fetch(`/${locale}/psychologist_profiles/${psychologistId}/available_slots?service_id=${serviceId}&browser_timezone=${browserTimezone}`, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json',
+      'X-CSRF-Token': document.querySelector("meta[name='csrf-token']").content
+    },
+    credentials: 'include'
+  })
+  .then(response => {
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return response.json();
+  })
+  .then(data => {
+    console.log('Received slots:', data);
+    updateTimeSlotOptions(data.available_slots || []);
+  })
+  .catch(error => {
+    console.error('Fetch error:', error);
+    showSlotError('Error loading time slots');
+  });
+}
+
+function updateTimeSlotOptions(slots) {
+  const selector = document.getElementById('time_slot_selector');
+  selector.innerHTML = '';
+  
+  if (slots.length === 0) {
+    selector.innerHTML = '<option value="">No available slots</option>';
+    selector.disabled = true;
+    return;
+  }
+
+  // Add default option
+  selector.innerHTML = '<option value="">Select a time...</option>';
+  
+  // Add available slots
+  slots.forEach(slot => {
+    const option = document.createElement('option');
+    option.value = slot.utc;
+    option.textContent = slot.local;
+    selector.appendChild(option);
+  });
+  
+  selector.disabled = false;
+}
+
+function showSlotError(message) {
+  const selector = document.getElementById('time_slot_selector');
+  selector.innerHTML = `<option value="">${message}</option>`;
+  selector.disabled = true;
+}
+  
+  function updateBookingTimes(startTimeUtcString) {
+    const serviceId = bookingServiceId.value;
+    if (!serviceId) return;
+    
+    // Get service duration from the current selection
+    const selectedServiceOption = serviceSelector.options[serviceSelector.selectedIndex];
+    const durationMatch = selectedServiceOption.text.match(/\((\d+)\s*minutes?\)/);
+    const durationMinutes = durationMatch ? parseInt(durationMatch[1]) : 60;
+    
+    const startTime = new Date(startTimeUtcString);
+    const endTime = new Date(startTime.getTime() + (durationMinutes * 60000));
+    
+    // Update hidden fields
+    bookingStartTimeUtc.value = startTime.toISOString();
+    bookingEndTimeUtc.value = endTime.toISOString();
+    
+    // Update display spans
+    startTimeDisplay.setAttribute('data-utc', startTime.toISOString());
+    startTimeDisplay.textContent = formatTimeForDisplay(startTime.toISOString());
+    
+    endTimeDisplay.setAttribute('data-utc', endTime.toISOString());
+    endTimeDisplay.textContent = formatTimeForDisplay(endTime.toISOString());
+  }
+  
+  function clearTimeDisplays() {
+    bookingStartTimeUtc.value = '';
+    bookingEndTimeUtc.value = '';
+    startTimeDisplay.setAttribute('data-utc', '');
+    startTimeDisplay.textContent = 'Please select a time slot';
+    endTimeDisplay.setAttribute('data-utc', '');
+    endTimeDisplay.textContent = 'Please select a time slot';
+  }
+  
+  function formatTimeForDisplay(utcTimeString) {
+    try {
+      const date = new Date(utcTimeString);
+      const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      
+      return new Intl.DateTimeFormat('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: userTimezone,
+        hour12: false
+      }).format(date);
+    } catch (e) {
+      console.error('Error formatting time:', e);
+      return utcTimeString;
+    }
+  }
+  
+  // Format existing time options on page load
+  const existingOptions = timeSlotSelector.querySelectorAll('option[value]:not([value=""])');
+  existingOptions.forEach(option => {
+    if (option.value && option.textContent === 'Loading...') {
+      option.textContent = formatTimeForDisplay(option.value);
+    }
+  });
+  
+  // Set initial state
+  if (timeSlotSelector.value) {
+    updateBookingTimes(timeSlotSelector.value);
+  }
+});
+
+// UTC time display formatter (for your existing .utc-date-time elements)
+document.addEventListener("turbo:load", function() {
+  function formatUTCTimes() {
+    const utcElements = document.querySelectorAll('.utc-date-time');
+    const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    
+    utcElements.forEach(element => {
+      const utcTime = element.getAttribute('data-utc');
+      if (utcTime) {
+        try {
+          const date = new Date(utcTime);
+          const formatted = new Intl.DateTimeFormat('en-US', {
+            weekday: 'short',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            timeZone: userTimezone,
+            hour12: false
+          }).format(date);
+          element.textContent = formatted;
+        } catch (e) {
+          console.error('Error formatting UTC time:', e);
+        }
+      }
+    });
+  }
+  
+  formatUTCTimes();
+});
+</script>

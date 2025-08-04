@@ -1,0 +1,16 @@
+<div class="container is-max-desktop mt-6">
+  <% if flash[:alert] %>
+    <div class="notification is-danger is-light">
+      <%= flash[:alert] %>
+    </div>
+  <% end %>
+  <h1 class="title has-text-centered mb-4">Select a Service</h1>
+  <div class="box p-5 has-shadow">
+    <% @services.each do |service| %>
+      <%= link_to choose_time_path(service_id: service.id, psychologist_id: params[:psychologist_id], date: Date.today), class: "button is-primary is-fullwidth mb-3" do %>
+        <h4 class="subtitle"><%= service.name %></h4>
+        <p class="has-text-grey"><%= service.duration_minutes %> minutes</p>
+      <% end %>
+    <% end %>
+  </div>
+</div>

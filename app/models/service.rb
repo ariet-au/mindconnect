@@ -25,7 +25,9 @@ unless defined?(ActiveRecord::Base)
 
 
 
-
+  def name_with_duration
+    "#{name} (#{duration_minutes} mins)"
+  end
 
   def converted_rate(target_currency)
     target_currency = target_currency.upcase
