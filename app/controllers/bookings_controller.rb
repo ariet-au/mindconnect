@@ -327,17 +327,20 @@ end
 
   def choose_time
     @psychologist = if params[:psychologist_id].present?
-                     PsychologistProfile.find(params[:psychologist_id])
-                   elsif current_user.role == "psychologist"
-                     current_user.psychologist_profile || raise(ActiveRecord::RecordNotFound, "No psychologist profile found for current user")
-                   else
-                     raise ActiveRecord::RecordNotFound, "Psychologist ID is required"
-                   end
+                    PsychologistProfile.find(params[:psychologist_id])
+                  elsif current_user.role == "psychologist"
+                    current_user.psychologist_profile || raise(ActiveRecord::RecordNotFound, "No psychologist profile found for current user")
+                  else
+                    raise ActiveRecord::RecordNotFound, "Psychologist ID is required"
+                  end
+
     @service = Service.find(params[:service_id])
     @date = Date.parse(params[:date]) if params[:date].present?
 
-    available_times = calculate_available_times(@psychologist, @date)
-    @time_slots = available_times.map { |time| time.strftime("%H:%M") }
+    available_times = calculate_available_times(@psychologist, @date, @service.duration_minutes)
+
+    # Send UTC ISO8601 times to frontend
+    @time_slots = available_times.map(&:iso8601)
   end
 
   def assign_client
@@ -396,35 +399,56 @@ end
   end
   private
 
-  def calculate_available_times(psychologist, date)
+  def calculate_available_times(psychologist, date, service_duration)
     available_times = []
     return available_times unless date
 
-    # Fetch availability and unavailability for the psychologist
-    availabilities = PsychologistAvailability.where(psychologist_profile: psychologist, day_of_week: date.wday)
-    unavailabilities = PsychologistUnavailability.where(psychologist_profile: psychologist)
-      .where("start_time <= ? AND end_time >= ?", date.end_of_day, date.beginning_of_day)
+    # Get all availability entries for that weekday
+    availabilities = PsychologistAvailability.where(
+      psychologist_profile: psychologist,
+      day_of_week: date.wday
+    )
 
-    # Convert to UTC based on psychologist's timezone
+    # Get all unavailability entries that intersect the date
+    unavailabilities = PsychologistUnavailability
+      .where(psychologist_profile: psychologist)
+      .where("start_time < ? AND end_time > ?", date.end_of_day, date.beginning_of_day)
+      .map { |u| { start_time: u.start_time.utc, end_time: u.end_time.utc } }
+
     availabilities.each do |avail|
-      start_time = date.to_datetime.change({ hour: avail.start_time_of_day.hour, min: avail.start_time_of_day.min })
-      end_time = date.to_datetime.change({ hour: avail.end_time_of_day.hour, min: avail.end_time_of_day.min })
+      # Build start/end in local timezone of the psychologist
+      start_time = date.to_datetime.change(hour: avail.start_time_of_day.hour, min: avail.start_time_of_day.min)
+      end_time   = date.to_datetime.change(hour: avail.end_time_of_day.hour, min: avail.end_time_of_day.min)
+
+      # Convert to UTC for all comparisons
       start_time = start_time.in_time_zone(avail.timezone).utc
-      end_time = end_time.in_time_zone(avail.timezone).utc
+      end_time   = end_time.in_time_zone(avail.timezone).utc
 
       current_time = start_time
-      while current_time < end_time
-        slot_end = current_time + 30.minutes
-        unless unavailabilities.any? { |unavail| unavail.start_time <= slot_end && unavail.end_time >= current_time } ||
-               Booking.where(psychologist_profile: psychologist, start_time: current_time..slot_end).exists?
+      while current_time + service_duration.minutes <= end_time
+        slot_end = current_time + service_duration.minutes
+
+        overlaps_unavailability = unavailabilities.any? do |u|
+          u[:start_time] < slot_end && u[:end_time] > current_time
+        end
+
+        overlaps_booking = Booking.where(psychologist_profile: psychologist)
+          .where("start_time < ? AND end_time > ?", slot_end, current_time)
+          .exists?
+
+        unless overlaps_unavailability || overlaps_booking
           available_times << current_time
         end
+
         current_time += 30.minutes
       end
     end
 
     available_times
   end
+
+
+
 
  def booking_conflicts?
     start_time = @booking.start_time

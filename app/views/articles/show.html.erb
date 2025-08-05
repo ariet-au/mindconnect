@@ -1,10 +1,24 @@
-<p style="color: green"><%= notice %></p>
-<%= link_to "Edit this article", edit_article_path(@article) %> |
-<%= render @article %>
-
-<div>
-  
-  <%= link_to "Back to articles", articles_path %>
-
-  <%= button_to "Destroy this article", @article, method: :delete %>
-</div>
+<article class="article-preview card mb-4">
+  <div class="card-body">
+    <% if article.is_published? %>
+      <span class="badge bg-success">Published</span>
+    <% else %>
+      <span class="badge bg-secondary">Draft</span>
+    <% end %>
+    
+    <h2 class="card-title">
+      <%= link_to article.title, article_path(article) %>
+    </h2>
+    
+    <p class="text-muted">
+      <%= article.published_at&.strftime("%B %d, %Y") || "Not published yet" %>
+      by <%= article.psychologist_profile.full_name %>
+    </p>
+    
+    <div class="article-actions mt-3">
+      <%= link_to "View", article, class: "btn btn-outline-primary btn-sm" %>
+      <%= link_to "Edit", edit_article_path(article), class: "btn btn-outline-secondary btn-sm" %>
+      <%= button_to "Delete", article, method: :delete, class: "btn btn-outline-danger btn-sm", form: { data: { turbo_confirm: "Are you sure?" } } %>
+    </div>
+  </div>
+</article>

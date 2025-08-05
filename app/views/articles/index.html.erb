@@ -1,12 +1,44 @@
-<p style="color: green"><%= notice %></p>
-<%= link_to "New article", new_article_path %>
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Articles</h1>
+    <%= link_to "New article", new_article_path, class: "btn btn-primary" %>
+  </div>
 
-
-<div id="articles">
-  <% @articles.each do |article| %>
-    <%= render article %>
-
+  <% if notice.present? %>
+    <div class="alert alert-success"><%= notice %></div>
   <% end %>
+
+  <div class="row">
+    <div class="col-md-8">
+      <% if @articles.any? %>
+        <div id="articles">
+          <% @articles.each do |article| %>
+            <%= render article %>
+          <% end %>
+        </div>
+        
+        <div class="mt-4">
+          <%= paginate @articles if @articles.respond_to?(:total_pages) %>
+        </div>
+      <% else %>
+        <div class="alert alert-info">No articles found.</div>
+      <% end %>
+    </div>
+    
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Categories</h5>
+          <p class="text-muted">Coming soon</p>
+        </div>
+      </div>
+      
+      <div class="card mt-3">
+        <div class="card-body">
+          <h5 class="card-title">Popular Articles</h5>
+          <p class="text-muted">Coming soon</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
-
-

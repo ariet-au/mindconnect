@@ -1,16 +1,21 @@
+<!-- app/views/bookings/choose_time.html.erb -->
+
 <div class="container is-max-desktop mt-6">
   <h1 class="title has-text-centered mb-4">Choose a Time</h1>
+
   <div class="box p-5 has-shadow">
     <div class="mb-4">
       <%= form_with url: choose_time_path, method: :get, local: true, class: "control" do |form| %>
         <%= form.hidden_field :psychologist_id, value: @psychologist.id %>
         <%= form.hidden_field :service_id, value: @service.id %>
+
         <div class="field">
           <%= form.label :date, "Select Date", class: "label" %>
           <div class="control">
             <%= form.date_field :date, value: @date || Date.today, class: "input" %>
           </div>
         </div>
+
         <div class="field">
           <div class="control">
             <%= form.submit "Update Availability", class: "button is-primary" %>
@@ -18,14 +23,122 @@
         </div>
       <% end %>
     </div>
+
     <div class="columns is-multiline">
-      <% @time_slots.each do |time| %>
+      <% @time_slots.each do |utc_time| %>
+        <% slot_end_time = (Time.parse(utc_time) + @service.duration_minutes.minutes).utc.iso8601 %>
+
         <div class="column is-one-third">
-          <%= link_to assign_client_path(psychologist_id: @psychologist.id, service_id: @service.id, selected_time: time, date: @date), class: "button is-success is-fullwidth" do %>
-            <%= time %>
+          <%= link_to assign_client_path(
+                psychologist_id: @psychologist.id,
+                service_id: @service.id,
+                selected_time: utc_time,
+                date: @date
+              ),
+              class: "button is-success is-fullwidth utc-date-time-range",
+              data: { utc: utc_time } do %>
+
+            <span class="local-time">Loading...</span>
+            &nbsp;/&nbsp;
+            <span class="utc-time"><%= Time.parse(utc_time).strftime("%H:%M") %> UTC</span>
+
           <% end %>
         </div>
       <% end %>
     </div>
   </div>
+</div>
+
+<script>
+  document.addEventListener("turbo:load", function () {
+    document.querySelectorAll(".utc-date-time-range").forEach(function (el) {
+      const utcString = el.dataset.utc;
+      if (!utcString) return;
+
+      const utcDate = new Date(utcString);
+
+      // Get browser local time in 12h format
+      const optionsTime = { hour: "2-digit", minute: "2-digit", hour12: true };
+
+      const localTimeStr = utcDate.toLocaleTimeString(undefined, optionsTime);
+
+      // Get browser timezone short name (like "AEDT", "PST", "GMT")
+      const tzName = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+      // Simple way to get short timezone abbreviation:
+      // Using toLocaleTimeString with timeZoneName: 'short' and slicing abbreviation
+      const tzShort = utcDate.toLocaleTimeString(undefined, { timeZoneName: "short" }).split(' ').pop();
+
+      // Set local time text with timezone abbreviation
+      const localTimeSpan = el.querySelector(".local-time");
+      if (localTimeSpan) {
+        localTimeSpan.textContent = `${localTimeStr} (${tzShort})`;
+      }
+    });
+  });
+</script>
+
+<div class="mt-6 box">
+  <h2 class="subtitle has-text-centered">Full Availability on <%= @date.strftime("%Y-%m-%d") %> (<%= @psychologist.timezone %>)</h2>
+
+  <%# Fetch availability blocks for that day_of_week %>
+  <% availabilities = PsychologistAvailability.where(
+    psychologist_profile: @psychologist,
+    day_of_week: @date.wday
+  ) %>
+
+  <% if availabilities.any? %>
+    <div class="columns is-multiline">
+      <% availabilities.each do |avail| %>
+        <% start_time = @date.to_datetime.change(
+          hour: avail.start_time_of_day.hour,
+          min: avail.start_time_of_day.min
+        ).in_time_zone(@psychologist.timezone) %>
+
+        <% end_time = @date.to_datetime.change(
+          hour: avail.end_time_of_day.hour,
+          min: avail.end_time_of_day.min
+        ).in_time_zone(@psychologist.timezone) %>
+
+        <div class="column is-one-third">
+          <div class="box has-text-centered has-text-success">
+            <strong>
+              <%= start_time.strftime("%I:%M %p") %> - <%= end_time.strftime("%I:%M %p") %>
+            </strong>
+            <br>
+            <small><%= start_time.utc.strftime("%Y-%m-%d %H:%M UTC") %> — <%= end_time.utc.strftime("%Y-%m-%d %H:%M UTC") %></small>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="has-text-centered has-text-grey">No availability blocks for this day.</p>
+  <% end %>
+
+  <h2 class="subtitle has-text-centered mt-5">Unavailabilities on <%= @date.strftime("%Y-%m-%d") %> (<%= @psychologist.timezone %>)</h2>
+
+  <% unavailabilities = PsychologistUnavailability
+                         .where(psychologist_profile: @psychologist)
+                         .where("start_time < ? AND end_time > ?", @date.end_of_day.utc, @date.beginning_of_day.utc)
+                         .order(:start_time) %>
+
+  <% if unavailabilities.any? %>
+    <div class="columns is-multiline">
+      <% unavailabilities.each do |unavail| %>
+        <% start_in_tz = unavail.start_time.in_time_zone(@psychologist.timezone) %>
+        <% end_in_tz = unavail.end_time.in_time_zone(@psychologist.timezone) %>
+        <div class="column is-one-third">
+          <div class="box has-text-centered has-text-danger">
+            <strong>
+              <%= start_in_tz.strftime("%I:%M %p") %> - <%= end_in_tz.strftime("%I:%M %p") %>
+            </strong>
+            <br>
+            <small><%= unavail.start_time.strftime("%Y-%m-%d %H:%M UTC") %> — <%= unavail.end_time.strftime("%Y-%m-%d %H:%M UTC") %></small>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="has-text-centered has-text-grey">No unavailabilities for this day.</p>
+  <% end %>
 </div>

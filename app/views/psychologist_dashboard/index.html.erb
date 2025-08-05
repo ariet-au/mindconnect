@@ -479,8 +479,23 @@
           return response.json();
         })
         .then(data => {
-          availabilities = data;
-          console.log('Availabilities loaded:', availabilities);
+          // Convert UTC times to the user's local timezone
+          const localAvailabilities = data.map(availability => {
+            const utcStartString = `2000-01-01T${availability.startTime}:00Z`;
+            const utcEndString = `2000-01-01T${availability.endTime}:00Z`;
+            
+            const localStartTime = new Date(utcStartString);
+            const localEndTime = new Date(utcEndString);
+
+            return {
+              daysOfWeek: availability.daysOfWeek,
+              startTime: localStartTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }),
+              endTime: localEndTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
+            };
+          });
+
+          availabilities = localAvailabilities;
+          console.log('Availabilities loaded and converted:', availabilities);
           if (availabilities.length === 0) {
             console.warn('No availabilities found for psychologist');
           }

@@ -296,7 +296,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_31_233136) do
     t.bigint "psychologist_profile_id", null: false
     t.datetime "start_time"
     t.datetime "end_time"
-    t.string "reason"
+    t.string "reason" 
     t.boolean "recurring", default: false
     t.integer "day_of_week"
     t.date "recurring_until"
