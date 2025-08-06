@@ -67,8 +67,13 @@ Rails.application.routes.draw do
       get :available_slots, on: :member
 
       resources :educations, only: [:new, :create, :edit, :update, :destroy]
-      resources :psychologist_availabilities, except: [:show] do
-        collection { get 'calendar_blocks' }
+      resources :psychologist_availabilities, only: [:index, :create, :update] do
+        collection do 
+           get 'calendar_blocks' 
+           patch '/', to: 'psychologist_availabilities#update', as: 'update_all'
+
+        end
+        
       end
       resources :bookings, only: [:create, :new, :show, :index, :update, :edit, :destroy] do
         collection do
