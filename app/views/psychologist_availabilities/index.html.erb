@@ -45,26 +45,29 @@
                         <select name="slots[<%= availability.id %>][start_time]" class="time-input start-time">
                           <option value="">Select Start</option>
                           <%
-                            # FIX: Use a neutral date (e.g., in August) to perform time zone conversions
-                            # to avoid Daylight Saving Time issues. The database stores time-of-day,
-                            # but Rails defaults to a date of 2000-01-01, which is in DST for Sydney.
+                            # FIX: Correctly convert the stored UTC time-of-day to the psychologist's
+                            # local time for the CURRENT date to handle DST dynamically.
 
-                            # 1. Get the original UTC time from the database.
+                            # 1. Get the UTC time components from the database.
                             s_time_utc = availability.start_time_of_day
-                            # 2. Create a new UTC Time object on a neutral date to get the correct standard offset.
-                            neutral_date_start_time_utc = Time.utc(2025, 8, 1, s_time_utc.hour, s_time_utc.min, s_time_utc.sec)
-                            # 3. Convert this corrected UTC time to the psychologist's local time to find the selected option.
-                            local_start_time = neutral_date_start_time_utc.in_time_zone(@psychologist_profile.timezone)
+                            # 2. Create a full UTC timestamp for today using those components.
+                            utc_timestamp = Time.now.utc.change(hour: s_time_utc.hour, min: s_time_utc.min, sec: s_time_utc.sec)
+                            # 3. Convert this full UTC timestamp to the psychologist's local timezone.
+                            local_start_time = utc_timestamp.in_time_zone(@psychologist_profile.timezone)
+                            # 4. The string for comparison is the formatted local time.
                             selected_start_time_str = local_start_time.strftime('%H:%M')
                           %>
                           <% (0..23).each do |hour| %>
                             <% [0, 15, 30, 45].each do |minute| %>
                               <%
+                                # The option's display text and value is the local time string.
                                 time_value = sprintf('%02d:%02d', hour, minute)
                                 is_selected = selected_start_time_str == time_value
-                                # 4. For every option, generate its UTC value based on the psychologist's timezone
-                                # on the same neutral date for consistency.
-                                option_utc_time = Time.zone.parse('2025-08-01').in_time_zone(@psychologist_profile.timezone).change(hour: hour, min: minute).utc.iso8601
+                                
+                                # To get the data-utc-time, create a local timestamp for today using the option's hour/minute...
+                                option_local_time = Time.current.in_time_zone(@psychologist_profile.timezone).change(hour: hour, min: minute)
+                                # ...and convert that local time to UTC. This gives us the correct UTC value for the selected local time on the current date.
+                                option_utc_time = option_local_time.utc.iso8601
                               %>
                               <option 
                                 value="<%= time_value %>" 
@@ -83,10 +86,10 @@
                         <select name="slots[<%= availability.id %>][end_time]" class="time-input end-time">
                           <option value="">Select End</option>
                           <%
-                            # FIX: Apply the same neutral-date logic for the end time.
+                            # FIX: Apply the same logic for the end time.
                             e_time_utc = availability.end_time_of_day
-                            neutral_date_end_time_utc = Time.utc(2025, 8, 1, e_time_utc.hour, e_time_utc.min, e_time_utc.sec)
-                            local_end_time = neutral_date_end_time_utc.in_time_zone(@psychologist_profile.timezone)
+                            utc_timestamp_end = Time.now.utc.change(hour: e_time_utc.hour, min: e_time_utc.min, sec: e_time_utc.sec)
+                            local_end_time = utc_timestamp_end.in_time_zone(@psychologist_profile.timezone)
                             selected_end_time_str = local_end_time.strftime('%H:%M')
                           %>
                           <% (0..23).each do |hour| %>
@@ -94,7 +97,9 @@
                               <%
                                 time_value = sprintf('%02d:%02d', hour, minute)
                                 is_selected = selected_end_time_str == time_value
-                                option_utc_time = Time.zone.parse('2025-08-01').in_time_zone(@psychologist_profile.timezone).change(hour: hour, min: minute).utc.iso8601
+
+                                option_local_time = Time.current.in_time_zone(@psychologist_profile.timezone).change(hour: hour, min: minute)
+                                option_utc_time = option_local_time.utc.iso8601
                               %>
                               <option 
                                 value="<%= time_value %>" 
@@ -357,21 +362,26 @@ document.addEventListener('DOMContentLoaded', function() {
       const slotsContainer = this.previousElementSibling;
       const newId = `new_${Date.now()}`;
 
-      // FIX: Generate options using a robust, non-DST-affected method.
-      // 1. Get the standard GMT offset for the psychologist's timezone using a neutral date.
-      const neutralDateForOffset = '2025-08-01T12:00:00Z'; // A date in winter (no DST for Sydney)
-      const offsetString = getGmtOffset(neutralDateForOffset, psychologistTimezone); // e.g., "+10:00"
+      // FIX: Generate options using a dynamic, DST-aware method based on the current date.
+      // 1. Get the current GMT offset for the psychologist's timezone.
+      const offsetString = getGmtOffset(new Date().toISOString(), psychologistTimezone);
 
-      // 2. Generate all possible time slots.
+      // 2. Get the components of the current date.
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+
+      // 3. Generate all possible time slots for the current date.
       const optionsHtml = Array.from({ length: 24 * 4 }, (_, i) => {
           const hour = Math.floor(i / 4);
           const minute = (i % 4) * 15;
           const timeValue = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
           
-          // 3. Construct an ISO 8601 string with the correct standard offset.
-          const localTimeWithOffset = `2025-08-01T${timeValue}:00${offsetString}`;
+          // 4. Construct an ISO 8601 string with the current date and the correct current offset.
+          const localTimeWithOffset = `${year}-${month}-${day}T${timeValue}:00${offsetString}`;
           
-          // 4. Create a Date object from this string and convert it to a pure UTC ISO string (Z-notation).
+          // 5. Create a Date object from this string and convert it to a pure UTC ISO string (Z-notation).
           const dateObj = new Date(localTimeWithOffset);
           const utcTime = dateObj.toISOString();
 
