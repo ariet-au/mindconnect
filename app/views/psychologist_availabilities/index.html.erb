@@ -34,7 +34,9 @@
             <h2 class="title is-5 has-text-grey-dark mb-4"><%= Date::DAYNAMES[day_index] %></h2>
             <div class="slots">
               <% @availabilities.select { |a| a.day_of_week == day_index }.each do |availability| %>
-                <div class="slot" data-id="<%= availability.id %>">
+                <div class="slot" data-id="<%= availability.id %>"
+                     data-db-start-time="<%= availability.start_time_of_day.iso8601 %>"
+                     data-db-end-time="<%= availability.end_time_of_day.iso8601 %>">
                   <input type="hidden" name="slots[<%= availability.id %>][id]" value="<%= availability.id %>">
                   <input type="hidden" name="slots[<%= availability.id %>][day_of_week]" value="<%= day_index %>">
                   <div class="field has-addons">
@@ -42,22 +44,34 @@
                       <div class="select is-fullwidth">
                         <select name="slots[<%= availability.id %>][start_time]" class="time-input start-time">
                           <option value="">Select Start</option>
+                          <%
+                            # FIX: Use a neutral date (e.g., in August) to perform time zone conversions
+                            # to avoid Daylight Saving Time issues. The database stores time-of-day,
+                            # but Rails defaults to a date of 2000-01-01, which is in DST for Sydney.
+
+                            # 1. Get the original UTC time from the database.
+                            s_time_utc = availability.start_time_of_day
+                            # 2. Create a new UTC Time object on a neutral date to get the correct standard offset.
+                            neutral_date_start_time_utc = Time.utc(2025, 8, 1, s_time_utc.hour, s_time_utc.min, s_time_utc.sec)
+                            # 3. Convert this corrected UTC time to the psychologist's local time to find the selected option.
+                            local_start_time = neutral_date_start_time_utc.in_time_zone(@psychologist_profile.timezone)
+                            selected_start_time_str = local_start_time.strftime('%H:%M')
+                          %>
                           <% (0..23).each do |hour| %>
                             <% [0, 15, 30, 45].each do |minute| %>
-                              <% time = "#{hour.to_s.rjust(2, '0')}:#{minute.to_s.rjust(2, '0')}" %>
-                              <% 
-                                # Use psychologist's timezone for initial display and selected state
-                                selected = availability.start_time_of_day&.in_time_zone(@psychologist_profile.timezone)&.strftime('%H:%M') == time 
-                                # Pass UTC time in a data attribute for JS conversion
-                                utc_time = availability.start_time_of_day&.utc&.iso8601
+                              <%
+                                time_value = sprintf('%02d:%02d', hour, minute)
+                                is_selected = selected_start_time_str == time_value
+                                # 4. For every option, generate its UTC value based on the psychologist's timezone
+                                # on the same neutral date for consistency.
+                                option_utc_time = Time.zone.parse('2025-08-01').in_time_zone(@psychologist_profile.timezone).change(hour: hour, min: minute).utc.iso8601
                               %>
                               <option 
-                                value="<%= time %>" 
-                                <%= 'selected' if selected %>
-                                data-utc-time="<%= utc_time %>"
-                                data-psych-time="<%= time %>"
+                                value="<%= time_value %>" 
+                                <%= 'selected' if is_selected %>
+                                data-utc-time="<%= option_utc_time %>"
                               >
-                                <%= time %>
+                                <%= time_value %>
                               </option>
                             <% end %>
                           <% end %>
@@ -68,22 +82,26 @@
                       <div class="select is-fullwidth">
                         <select name="slots[<%= availability.id %>][end_time]" class="time-input end-time">
                           <option value="">Select End</option>
+                          <%
+                            # FIX: Apply the same neutral-date logic for the end time.
+                            e_time_utc = availability.end_time_of_day
+                            neutral_date_end_time_utc = Time.utc(2025, 8, 1, e_time_utc.hour, e_time_utc.min, e_time_utc.sec)
+                            local_end_time = neutral_date_end_time_utc.in_time_zone(@psychologist_profile.timezone)
+                            selected_end_time_str = local_end_time.strftime('%H:%M')
+                          %>
                           <% (0..23).each do |hour| %>
                             <% [0, 15, 30, 45].each do |minute| %>
-                              <% time = "#{hour.to_s.rjust(2, '0')}:#{minute.to_s.rjust(2, '0')}" %>
-                              <% 
-                                # Use psychologist's timezone for initial display and selected state
-                                selected = availability.end_time_of_day&.in_time_zone(@psychologist_profile.timezone)&.strftime('%H:%M') == time
-                                # Pass UTC time in a data attribute for JS conversion
-                                utc_time = availability.end_time_of_day&.utc&.iso8601
+                              <%
+                                time_value = sprintf('%02d:%02d', hour, minute)
+                                is_selected = selected_end_time_str == time_value
+                                option_utc_time = Time.zone.parse('2025-08-01').in_time_zone(@psychologist_profile.timezone).change(hour: hour, min: minute).utc.iso8601
                               %>
                               <option 
-                                value="<%= time %>" 
-                                <%= 'selected' if selected %>
-                                data-utc-time="<%= utc_time %>"
-                                data-psych-time="<%= time %>"
+                                value="<%= time_value %>" 
+                                <%= 'selected' if is_selected %>
+                                data-utc-time="<%= option_utc_time %>"
                               >
-                                <%= time %>
+                                <%= time_value %>
                               </option>
                             <% end %>
                           <% end %>
@@ -192,27 +210,125 @@ document.addEventListener('DOMContentLoaded', function() {
   const timezoneToggle = document.getElementById('timezone-toggle');
   let showingPsychologistTime = true;
 
+  // Function to convert a UTC time string to a specific timezone
+  function convertUtcToTimezone(utcTime, timezone) {
+    if (!utcTime) return '';
+    const dateObj = new Date(utcTime);
+    // Use toLocaleTimeString which correctly handles timezone conversion for display.
+    // We use a 24-hour format for consistency.
+    return dateObj.toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: timezone,
+      hour12: false
+    });
+  }
+  
+  // A robust approach to get the GMT offset for a specific timezone's standard time.
+  function getGmtOffset(utcTime, timezone) {
+    if (!utcTime) return '+00:00';
+    const date = new Date(utcTime);
+
+    // Get date parts in the target timezone
+    const formatter = new Intl.DateTimeFormat('en-US', {
+        year: 'numeric', month: 'numeric', day: 'numeric',
+        hour: 'numeric', minute: 'numeric', second: 'numeric',
+        timeZone: timezone,
+        hour12: false
+    });
+    const parts = formatter.formatToParts(date);
+    const year = parts.find(p => p.type === 'year').value;
+    const month = parts.find(p => p.type === 'month').value;
+    const day = parts.find(p => p.type === 'day').value;
+    const hour = parts.find(p => p.type === 'hour').value;
+    const minute = parts.find(p => p.type === 'minute').value;
+    
+    // Construct a date object using the components from the target timezone
+    // Note the 'Z' which specifies this new date is UTC.
+    const targetDate = new Date(
+      `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00Z`
+    );
+
+    // The difference between the original UTC time and the new UTC time constructed
+    // from the local parts gives us the timezone offset.
+    const offsetMilliseconds = date.getTime() - targetDate.getTime();
+    const offsetMinutes = offsetMilliseconds / 60000;
+
+    // Format the offset as ±HH:MM
+    const sign = offsetMinutes <= 0 ? '+' : '-';
+    const hours = String(Math.floor(Math.abs(offsetMinutes) / 60)).padStart(2, '0');
+    const minutes = String(Math.abs(offsetMinutes) % 60).padStart(2, '0');
+
+    return `${sign}${hours}:${minutes}`;
+  }
+  
+  // --- DEBUGGING CONSOLE LOGS (ENHANCED) ---
+  console.log('--- DEBUGGING AVAILABILITY TIMEZONE VALUES ---');
+  console.log(`Psychologist's Timezone: ${psychologistTimezone}`);
+  console.log(`Browser's Timezone: ${browserTimezone}`);
+
+  document.querySelectorAll('.day-section').forEach(daySection => {
+    const day = daySection.dataset.day;
+    daySection.querySelectorAll('.slot').forEach(slot => {
+      const slotId = slot.dataset.id;
+      const dbStartTime = slot.dataset.dbStartTime;
+      const dbEndTime = slot.dataset.dbEndTime;
+      
+      console.log(`\nSlot ID: ${slotId} on day ${day}`);
+      console.log(`- Timezone from Profile: ${psychologistTimezone}`);
+      console.log(`- Database Start Time (UTC): ${dbStartTime}`);
+      console.log(`- Database End Time (UTC): ${dbEndTime}`);
+      
+      const startSelect = slot.querySelector('.start-time');
+      const startOption = startSelect.querySelector('option:checked');
+      if (startOption && startOption.value) {
+        const selectedUtcTime = startOption.dataset.utcTime;
+        const psychTime = convertUtcToTimezone(selectedUtcTime, psychologistTimezone);
+        const browserTime = convertUtcToTimezone(selectedUtcTime, browserTimezone);
+        const psychOffset = getGmtOffset(selectedUtcTime, psychologistTimezone);
+        const browserOffset = getGmtOffset(selectedUtcTime, browserTimezone);
+
+        console.log(`- Selected Start Time Option (data-utc-time): ${selectedUtcTime}`);
+        console.log(`- Converted Start Time (Psychologist's Timezone): ${psychTime}`);
+        console.log(`- Converted Start Time (Browser's Timezone): ${browserTime}`);
+        console.log(`- Psychologist's Offset: ${psychOffset}`);
+        console.log(`- Browser's Offset: ${browserOffset}`);
+      }
+
+      const endSelect = slot.querySelector('.end-time');
+      const endOption = endSelect.querySelector('option:checked');
+      if (endOption && endOption.value) {
+        const selectedUtcTime = endOption.dataset.utcTime;
+        const psychTime = convertUtcToTimezone(selectedUtcTime, psychologistTimezone);
+        const browserTime = convertUtcToTimezone(selectedUtcTime, browserTimezone);
+        const psychOffset = getGmtOffset(selectedUtcTime, psychologistTimezone);
+        const browserOffset = getGmtOffset(selectedUtcTime, browserTimezone);
+        
+        console.log(`- Selected End Time Option (data-utc-time): ${selectedUtcTime}`);
+        console.log(`- Converted End Time (Psychologist's Timezone): ${psychTime}`);
+        console.log(`- Converted End Time (Browser's Timezone): ${browserTime}`);
+        console.log(`- Psychologist's Offset: ${psychOffset}`);
+        console.log(`- Browser's Offset: ${browserOffset}`);
+      }
+    });
+  });
+  console.log('-----------------------------------------');
+  // --- END DEBUGGING CONSOLE LOGS ---
+
+  // Function to update the displayed times in the selects
   function updateTimeDisplays(targetTimezone) {
     document.querySelectorAll('select.time-input option').forEach(option => {
-      // Check if the option has UTC data; new slots won't have this.
       const utcTime = option.dataset.utcTime;
-      const psychTime = option.dataset.psychTime;
-
-      if (targetTimezone === psychologistTimezone) {
-        // Revert to original psychologist time
-        option.textContent = psychTime;
-      } else if (utcTime) {
-        // Convert UTC to local browser time
-        const dateObj = new Date(utcTime);
-        option.textContent = dateObj.toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-        });
+      if (utcTime) {
+        // The value of the option is always the HH:MM string, which we re-calculate
+        // based on the target timezone.
+        const localTime = convertUtcToTimezone(utcTime, targetTimezone);
+        option.textContent = localTime;
+        option.value = localTime;
       }
     });
   }
-
-  // Initial display setup
+  
   if (browserTimezone !== psychologistTimezone) {
     timezoneDisplay.innerHTML = `Psychologist's timezone (${psychologistTimezone})`;
     timezoneToggle.style.display = 'inline';
@@ -235,25 +351,33 @@ document.addEventListener('DOMContentLoaded', function() {
     timezoneDisplay.innerHTML = `Your local timezone (${browserTimezone})`;
   }
 
-  // Add new slot functionality
   document.querySelectorAll('.add-slot').forEach(button => {
     button.addEventListener('click', function() {
       const dayIndex = this.closest('.day-section').dataset.day;
       const slotsContainer = this.previousElementSibling;
       const newId = `new_${Date.now()}`;
-      
-      // We will generate options with placeholder data-utc-time and psych-time
-      const optionsHtml = `
-        <% (0..23).each do |hour| %>
-          <% [0, 15, 30, 45].each do |minute| %>
-            <% time = "#{hour.to_s.rjust(2, '0')}:#{minute.to_s.rjust(2, '0')}" %>
-            <option value="<%= time %>" data-psych-time="<%= time %>">
-              <%= time %>
-            </option>
-          <% end %>
-        <% end %>
-      `;
 
+      // FIX: Generate options using a robust, non-DST-affected method.
+      // 1. Get the standard GMT offset for the psychologist's timezone using a neutral date.
+      const neutralDateForOffset = '2025-08-01T12:00:00Z'; // A date in winter (no DST for Sydney)
+      const offsetString = getGmtOffset(neutralDateForOffset, psychologistTimezone); // e.g., "+10:00"
+
+      // 2. Generate all possible time slots.
+      const optionsHtml = Array.from({ length: 24 * 4 }, (_, i) => {
+          const hour = Math.floor(i / 4);
+          const minute = (i % 4) * 15;
+          const timeValue = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+          
+          // 3. Construct an ISO 8601 string with the correct standard offset.
+          const localTimeWithOffset = `2025-08-01T${timeValue}:00${offsetString}`;
+          
+          // 4. Create a Date object from this string and convert it to a pure UTC ISO string (Z-notation).
+          const dateObj = new Date(localTimeWithOffset);
+          const utcTime = dateObj.toISOString();
+
+          return `<option value="${timeValue}" data-utc-time="${utcTime}">${timeValue}</option>`;
+      }).join('');
+      
       const newSlot = document.createElement('div');
       newSlot.className = 'slot';
       newSlot.innerHTML = `
@@ -284,19 +408,24 @@ document.addEventListener('DOMContentLoaded', function() {
       
       slotsContainer.appendChild(newSlot);
       
-      // Add event listener to the new delete button
       newSlot.querySelector('.delete-slot').addEventListener('click', function() {
         this.closest('.slot').remove();
       });
 
-      // Update the new slots to the current timezone view
+      // If viewing in browser time, update the text of the new slot's options immediately.
       if (!showingPsychologistTime) {
-        updateTimeDisplays(browserTimezone);
+        newSlot.querySelectorAll('select.time-input option').forEach(option => {
+            const utcTime = option.dataset.utcTime;
+            if (utcTime) {
+                const localTime = convertUtcToTimezone(utcTime, browserTimezone);
+                option.textContent = localTime;
+                option.value = localTime;
+            }
+        });
       }
     });
   });
 
-  // Delete slot functionality
   document.querySelectorAll('.delete-slot').forEach(button => {
     button.addEventListener('click', function() {
       const slot = this.closest('.slot');
@@ -305,24 +434,34 @@ document.addEventListener('DOMContentLoaded', function() {
       if (slotId) {
         slot.classList.add('marked-for-deletion');
         
-        const hiddenInput = document.createElement('input');
-        hiddenInput.type = 'hidden';
-        hiddenInput.name = `deleted_slots[${slotId}]`;
+        // Instead of removing, we hide it and add a hidden input to mark for deletion on the server.
+        let hiddenInput = document.querySelector(`input[name="deleted_slots[${slotId}]"]`);
+        if (!hiddenInput) {
+            hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = `deleted_slots[${slotId}]`;
+            document.getElementById('availability-form').appendChild(hiddenInput);
+        }
         hiddenInput.value = '1';
-        document.getElementById('availability-form').appendChild(hiddenInput);
       } else {
+        // If it's a new, unsaved slot, just remove it from the DOM.
         slot.remove();
       }
     });
   });
 
-  // Form validation and submission
   document.getElementById('availability-form').addEventListener('submit', function(e) {
     const submitButton = document.getElementById('submit-button');
     submitButton.classList.add('is-loading');
     submitButton.disabled = true;
 
     let isValid = true;
+    
+    // Before submitting, ensure all select values are based on the psychologist's timezone,
+    // as the backend expects times in that context.
+    if (!showingPsychologistTime) {
+        updateTimeDisplays(psychologistTimezone);
+    }
     
     document.querySelectorAll('.slot:not(.marked-for-deletion)').forEach(slot => {
       const startSelect = slot.querySelector('.start-time');
@@ -332,7 +471,7 @@ document.addEventListener('DOMContentLoaded', function() {
       errorElement.style.display = 'none';
 
       if (!startSelect.value || !endSelect.value) {
-        errorElement.textContent = 'Both times must be selected';
+        errorElement.textContent = 'Both start and end times must be selected.';
         errorElement.style.display = 'block';
         isValid = false;
         return;
@@ -342,7 +481,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const [endHour, endMinute] = endSelect.value.split(':').map(Number);
       
       if (endHour < startHour || (endHour === startHour && endMinute <= startMinute)) {
-        errorElement.textContent = 'End time must be after start time';
+        errorElement.textContent = 'End time must be after start time.';
         errorElement.style.display = 'block';
         isValid = false;
       }
@@ -353,7 +492,12 @@ document.addEventListener('DOMContentLoaded', function() {
       submitButton.classList.remove('is-loading');
       submitButton.disabled = false;
       
-      const firstError = document.querySelector('.help.is-danger[style="display: block;"]');
+      // If we had to switch back to psychologist time for submission, switch back to browser time for the user.
+      if (!showingPsychologistTime) {
+          updateTimeDisplays(browserTimezone);
+      }
+      
+      const firstError = document.querySelector('.help.is-danger[style*="block"]');
       if (firstError) {
         firstError.closest('.slot').scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
