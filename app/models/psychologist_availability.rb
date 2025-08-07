@@ -16,6 +16,16 @@ class PsychologistAvailability < ApplicationRecord
     Date::DAYNAMES[day_of_week]
   end
 
+  def start_time_in_zone(timezone = nil)
+    timezone ||= self.timezone || 'UTC'
+    start_time_of_day.in_time_zone(timezone)
+  end
+
+  def end_time_in_zone(timezone = nil)
+    timezone ||= self.timezone || 'UTC'
+    end_time_of_day.in_time_zone(timezone)
+  end
+
   private
 
   def set_utc_times_from_form

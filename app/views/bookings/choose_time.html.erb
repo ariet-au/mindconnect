@@ -39,9 +39,6 @@
               data: { utc: utc_time } do %>
 
             <span class="local-time">Loading...</span>
-            &nbsp;/&nbsp;
-            <span class="utc-time"><%= Time.parse(utc_time).strftime("%H:%M") %> UTC</span>
-
           <% end %>
         </div>
       <% end %>
@@ -78,67 +75,3 @@
   });
 </script>
 
-<div class="mt-6 box">
-  <h2 class="subtitle has-text-centered">Full Availability on <%= @date.strftime("%Y-%m-%d") %> (<%= @psychologist.timezone %>)</h2>
-
-  <%# Fetch availability blocks for that day_of_week %>
-  <% availabilities = PsychologistAvailability.where(
-    psychologist_profile: @psychologist,
-    day_of_week: @date.wday
-  ) %>
-
-  <% if availabilities.any? %>
-    <div class="columns is-multiline">
-      <% availabilities.each do |avail| %>
-        <% start_time = @date.to_datetime.change(
-          hour: avail.start_time_of_day.hour,
-          min: avail.start_time_of_day.min
-        ).in_time_zone(@psychologist.timezone) %>
-
-        <% end_time = @date.to_datetime.change(
-          hour: avail.end_time_of_day.hour,
-          min: avail.end_time_of_day.min
-        ).in_time_zone(@psychologist.timezone) %>
-
-        <div class="column is-one-third">
-          <div class="box has-text-centered has-text-success">
-            <strong>
-              <%= start_time.strftime("%I:%M %p") %> - <%= end_time.strftime("%I:%M %p") %>
-            </strong>
-            <br>
-            <small><%= start_time.utc.strftime("%Y-%m-%d %H:%M UTC") %> — <%= end_time.utc.strftime("%Y-%m-%d %H:%M UTC") %></small>
-          </div>
-        </div>
-      <% end %>
-    </div>
-  <% else %>
-    <p class="has-text-centered has-text-grey">No availability blocks for this day.</p>
-  <% end %>
-
-  <h2 class="subtitle has-text-centered mt-5">Unavailabilities on <%= @date.strftime("%Y-%m-%d") %> (<%= @psychologist.timezone %>)</h2>
-
-  <% unavailabilities = PsychologistUnavailability
-                         .where(psychologist_profile: @psychologist)
-                         .where("start_time < ? AND end_time > ?", @date.end_of_day.utc, @date.beginning_of_day.utc)
-                         .order(:start_time) %>
-
-  <% if unavailabilities.any? %>
-    <div class="columns is-multiline">
-      <% unavailabilities.each do |unavail| %>
-        <% start_in_tz = unavail.start_time.in_time_zone(@psychologist.timezone) %>
-        <% end_in_tz = unavail.end_time.in_time_zone(@psychologist.timezone) %>
-        <div class="column is-one-third">
-          <div class="box has-text-centered has-text-danger">
-            <strong>
-              <%= start_in_tz.strftime("%I:%M %p") %> - <%= end_in_tz.strftime("%I:%M %p") %>
-            </strong>
-            <br>
-            <small><%= unavail.start_time.strftime("%Y-%m-%d %H:%M UTC") %> — <%= unavail.end_time.strftime("%Y-%m-%d %H:%M UTC") %></small>
-          </div>
-        </div>
-      <% end %>
-    </div>
-  <% else %>
-    <p class="has-text-centered has-text-grey">No unavailabilities for this day.</p>
-  <% end %>
-</div>

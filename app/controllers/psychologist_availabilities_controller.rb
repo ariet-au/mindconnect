@@ -12,7 +12,9 @@ class PsychologistAvailabilitiesController < ApplicationController
   # POST /psychologist_profiles/:psychologist_profile_id/psychologist_availabilities
   def create
     Rails.logger.debug "Received params: #{params.inspect}"
-    
+     timezone = @psychologist_profile.timezone.presence || 
+             params[:browser_timezone].presence || 
+             'UTC'
     slots = params[:slots]&.values || []
     Rails.logger.debug "Parsed slots: #{slots.inspect}"
     errors = []
@@ -47,7 +49,7 @@ class PsychologistAvailabilitiesController < ApplicationController
           day_of_week: day_of_week,
           start_time: slot[:start_time],
           end_time: slot[:end_time],
-          timezone: @psychologist_profile.timezone
+          timezone: timezone
         )
 
         # Custom server-side validation for start time before end time
@@ -117,6 +119,10 @@ class PsychologistAvailabilitiesController < ApplicationController
     errors = []
     updated_availabilities = []
 
+     timezone = @psychologist_profile.timezone.presence || 
+             params[:browser_timezone].presence || 
+             'UTC'
+
     ActiveRecord::Base.transaction do
       slots.each do |slot_id, slot_data|
         Rails.logger.debug "Processing slot #{slot_id}: #{slot_data.inspect}"
@@ -139,7 +145,7 @@ class PsychologistAvailabilitiesController < ApplicationController
             day_of_week: slot_data[:day_of_week],
             start_time: slot_data[:start_time],
             end_time: slot_data[:end_time],
-            timezone: @psychologist_profile.timezone
+            timezone: timezone
           )
         else
           # Update existing availability
@@ -182,22 +188,39 @@ class PsychologistAvailabilitiesController < ApplicationController
     end
   end
   # GET /psychologist_profiles/:psychologist_profile_id/calendar_blocks.json
-  def calendar_blocks
-    @availabilities = @psychologist_profile.psychologist_availabilities.where.not(start_time_of_day: nil, end_time_of_day: nil)
-    Rails.logger.debug "Calendar blocks: #{@availabilities.map { |a| { day: a.day_of_week, start: a.start_time_of_day, end: a.end_time_of_day } }}"
-    respond_to do |format|
-      format.json do
-        render json: @availabilities.map { |a|
-          {
-            daysOfWeek: [a.day_of_week],
-            startTime: a.start_time_of_day.utc.strftime("%H:%M"),
-            endTime: a.end_time_of_day.utc.strftime("%H:%M")
-          }
+  # def calendar_blocks
+  #   @availabilities = @psychologist_profile.psychologist_availabilities.where.not(start_time_of_day: nil, end_time_of_day: nil)
+  #   Rails.logger.debug "Calendar blocks: #{@availabilities.map { |a| { day: a.day_of_week, start: a.start_time_of_day, end: a.end_time_of_day } }}"
+  #   respond_to do |format|
+  #     format.json do
+  #       render json: @availabilities.map { |a|
+  #         {
+  #           daysOfWeek: [a.day_of_week],
+  #           startTime: a.start_time_of_day.utc.strftime("%H:%M"),
+  #           endTime: a.end_time_of_day.utc.strftime("%H:%M")
+  #         }
+  #       }
+  #     end
+  #     format.html { head :not_found }
+  #   end
+  # end
+def calendar_blocks
+  @availabilities = @psychologist_profile.psychologist_availabilities.where.not(start_time_of_day: nil, end_time_of_day: nil)
+  Rails.logger.debug "Calendar blocks: #{@availabilities.map { |a| { day: a.day_of_week, start: a.start_time_of_day, end: a.end_time_of_day } }}"
+  respond_to do |format|
+    format.json do
+      render json: @availabilities.map { |a|
+        {
+          daysOfWeek: [a.day_of_week],
+          # IMPORTANT: Remove .utc here. Send the time as HH:MM directly from the stored time.
+          startTime: a.start_time_of_day.strftime("%H:%M"),
+          endTime: a.end_time_of_day.strftime("%H:%M")
         }
-      end
-      format.html { head :not_found }
+      }
     end
+    format.html { head :not_found }
   end
+end
 
   private
 

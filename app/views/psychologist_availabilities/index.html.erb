@@ -4,7 +4,9 @@
       <%= @psychologist_profile.first_name %>'s Availability
     </h1>
     <p class="subtitle is-5 has-text-centered has-text-grey-dark mb-5">
-      Times shown in your local timezone: <span id="browser-timezone">Loading...</span>
+      Times shown in: 
+      <span id="timezone-display"></span>
+      <span id="timezone-toggle" class="is-size-7 has-text-info has-text-weight-bold" style="cursor: pointer; display: none;"></span>
     </p>
 
     <% if notice %>
@@ -20,12 +22,12 @@
       </div>
     <% end %>
 
-<%= form_with url: update_all_psychologist_profile_psychologist_availabilities_path(@psychologist_profile),
-              method: :patch,
-              local: false,
-              id: 'availability-form',
-              data: { turbo: false } do |f| %>
-            
+    <%= form_with url: update_all_psychologist_profile_psychologist_availabilities_path(@psychologist_profile),
+                  method: :patch,
+                  local: false,
+                  id: 'availability-form',
+                  data: { turbo: false } do |f| %>
+
       <div id="availability-container">
         <% (0..6).each do |day_index| %>
           <div class="day-section" data-day="<%= day_index %>">
@@ -43,8 +45,20 @@
                           <% (0..23).each do |hour| %>
                             <% [0, 15, 30, 45].each do |minute| %>
                               <% time = "#{hour.to_s.rjust(2, '0')}:#{minute.to_s.rjust(2, '0')}" %>
-                              <% selected = availability.start_time_of_day&.in_time_zone(@psychologist_profile.timezone)&.strftime('%H:%M') == time %>
-                              <option value="<%= time %>" <%= 'selected' if selected %>><%= time %></option>
+                              <% 
+                                # Use psychologist's timezone for initial display and selected state
+                                selected = availability.start_time_of_day&.in_time_zone(@psychologist_profile.timezone)&.strftime('%H:%M') == time 
+                                # Pass UTC time in a data attribute for JS conversion
+                                utc_time = availability.start_time_of_day&.utc&.iso8601
+                              %>
+                              <option 
+                                value="<%= time %>" 
+                                <%= 'selected' if selected %>
+                                data-utc-time="<%= utc_time %>"
+                                data-psych-time="<%= time %>"
+                              >
+                                <%= time %>
+                              </option>
                             <% end %>
                           <% end %>
                         </select>
@@ -57,8 +71,20 @@
                           <% (0..23).each do |hour| %>
                             <% [0, 15, 30, 45].each do |minute| %>
                               <% time = "#{hour.to_s.rjust(2, '0')}:#{minute.to_s.rjust(2, '0')}" %>
-                              <% selected = availability.end_time_of_day&.in_time_zone(@psychologist_profile.timezone)&.strftime('%H:%M') == time %>
-                              <option value="<%= time %>" <%= 'selected' if selected %>><%= time %></option>
+                              <% 
+                                # Use psychologist's timezone for initial display and selected state
+                                selected = availability.end_time_of_day&.in_time_zone(@psychologist_profile.timezone)&.strftime('%H:%M') == time
+                                # Pass UTC time in a data attribute for JS conversion
+                                utc_time = availability.end_time_of_day&.utc&.iso8601
+                              %>
+                              <option 
+                                value="<%= time %>" 
+                                <%= 'selected' if selected %>
+                                data-utc-time="<%= utc_time %>"
+                                data-psych-time="<%= time %>"
+                              >
+                                <%= time %>
+                              </option>
                             <% end %>
                           <% end %>
                         </select>
@@ -150,135 +176,188 @@
 </style>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    // Set browser timezone
-    const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    document.getElementById('browser-timezone').textContent = browserTimezone;
-    document.getElementById('browser-timezone-input').value = browserTimezone;
+document.addEventListener('DOMContentLoaded', function() {
+  const psychologistTimezone = '<%= @psychologist_profile.timezone %>';
+  let browserTimezone;
 
-    // Add new slot functionality
-    document.querySelectorAll('.add-slot').forEach(button => {
-      button.addEventListener('click', function() {
-        const dayIndex = this.closest('.day-section').dataset.day;
-        const slotsContainer = this.previousElementSibling;
-        const newId = `new_${Date.now()}`;
-        
-        const newSlot = document.createElement('div');
-        newSlot.className = 'slot';
-        newSlot.innerHTML = `
-          <input type="hidden" name="slots[${newId}][day_of_week]" value="${dayIndex}">
-          <div class="field has-addons">
-            <div class="control">
-              <div class="select is-fullwidth">
-                <select name="slots[${newId}][start_time]" class="time-input start-time">
-                  <option value="">Select Start</option>
-                  <% (0..23).each do |hour| %>
-                    <% [0, 15, 30, 45].each do |minute| %>
-                      <option value="<%= "#{hour.to_s.rjust(2, '0')}:#{minute.to_s.rjust(2, '0')}" %>">
-                        <%= "#{hour.to_s.rjust(2, '0')}:#{minute.to_s.rjust(2, '0')}" %>
-                      </option>
-                    <% end %>
-                  <% end %>
-                </select>
-              </div>
-            </div>
-            <div class="control">
-              <div class="select is-fullwidth">
-                <select name="slots[${newId}][end_time]" class="time-input end-time">
-                  <option value="">Select End</option>
-                  <% (0..23).each do |hour| %>
-                    <% [0, 15, 30, 45].each do |minute| %>
-                      <option value="<%= "#{hour.to_s.rjust(2, '0')}:#{minute.to_s.rjust(2, '0')}" %>">
-                        <%= "#{hour.to_s.rjust(2, '0')}:#{minute.to_s.rjust(2, '0')}" %>
-                      </option>
-                    <% end %>
-                  <% end %>
-                </select>
-              </div>
-            </div>
-            <div class="control">
-              <button type="button" class="button is-danger is-light delete-slot">Delete</button>
+  try {
+    browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    document.getElementById('browser-timezone-input').value = browserTimezone;
+  } catch (e) {
+    console.error('Could not detect browser timezone:', e);
+    return;
+  }
+
+  const timezoneDisplay = document.getElementById('timezone-display');
+  const timezoneToggle = document.getElementById('timezone-toggle');
+  let showingPsychologistTime = true;
+
+  function updateTimeDisplays(targetTimezone) {
+    document.querySelectorAll('select.time-input option').forEach(option => {
+      // Check if the option has UTC data; new slots won't have this.
+      const utcTime = option.dataset.utcTime;
+      const psychTime = option.dataset.psychTime;
+
+      if (targetTimezone === psychologistTimezone) {
+        // Revert to original psychologist time
+        option.textContent = psychTime;
+      } else if (utcTime) {
+        // Convert UTC to local browser time
+        const dateObj = new Date(utcTime);
+        option.textContent = dateObj.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+      }
+    });
+  }
+
+  // Initial display setup
+  if (browserTimezone !== psychologistTimezone) {
+    timezoneDisplay.innerHTML = `Psychologist's timezone (${psychologistTimezone})`;
+    timezoneToggle.style.display = 'inline';
+    timezoneToggle.textContent = '(Show in your local timezone)';
+    
+    timezoneToggle.addEventListener('click', function() {
+      showingPsychologistTime = !showingPsychologistTime;
+      
+      if (showingPsychologistTime) {
+        timezoneDisplay.innerHTML = `Psychologist's timezone (${psychologistTimezone})`;
+        timezoneToggle.textContent = '(Show in your local timezone)';
+        updateTimeDisplays(psychologistTimezone);
+      } else {
+        timezoneDisplay.innerHTML = `Your local timezone (${browserTimezone})`;
+        timezoneToggle.textContent = '(Show in psychologist\'s timezone)';
+        updateTimeDisplays(browserTimezone);
+      }
+    });
+  } else {
+    timezoneDisplay.innerHTML = `Your local timezone (${browserTimezone})`;
+  }
+
+  // Add new slot functionality
+  document.querySelectorAll('.add-slot').forEach(button => {
+    button.addEventListener('click', function() {
+      const dayIndex = this.closest('.day-section').dataset.day;
+      const slotsContainer = this.previousElementSibling;
+      const newId = `new_${Date.now()}`;
+      
+      // We will generate options with placeholder data-utc-time and psych-time
+      const optionsHtml = `
+        <% (0..23).each do |hour| %>
+          <% [0, 15, 30, 45].each do |minute| %>
+            <% time = "#{hour.to_s.rjust(2, '0')}:#{minute.to_s.rjust(2, '0')}" %>
+            <option value="<%= time %>" data-psych-time="<%= time %>">
+              <%= time %>
+            </option>
+          <% end %>
+        <% end %>
+      `;
+
+      const newSlot = document.createElement('div');
+      newSlot.className = 'slot';
+      newSlot.innerHTML = `
+        <input type="hidden" name="slots[${newId}][day_of_week]" value="${dayIndex}">
+        <div class="field has-addons">
+          <div class="control">
+            <div class="select is-fullwidth">
+              <select name="slots[${newId}][start_time]" class="time-input start-time">
+                <option value="">Select Start</option>
+                ${optionsHtml}
+              </select>
             </div>
           </div>
-          <p class="help is-danger" style="display: none;"></p>
-        `;
-        
-        slotsContainer.appendChild(newSlot);
-        
-        // Add event listener to the new delete button
-        newSlot.querySelector('.delete-slot').addEventListener('click', function() {
-          this.closest('.slot').remove();
-        });
-      });
-    });
-
-    // Delete slot functionality
-    document.querySelectorAll('.delete-slot').forEach(button => {
-      button.addEventListener('click', function() {
-        const slot = this.closest('.slot');
-        const slotId = this.dataset.availabilityId;
-        
-        if (slotId) {
-          // For existing slots - mark for deletion
-          slot.classList.add('marked-for-deletion');
-          
-          // Add hidden input to track deletion
-          const hiddenInput = document.createElement('input');
-          hiddenInput.type = 'hidden';
-          hiddenInput.name = `deleted_slots[${slotId}]`;
-          hiddenInput.value = '1';
-          document.getElementById('availability-form').appendChild(hiddenInput);
-        } else {
-          // For new slots - just remove from DOM
-          slot.remove();
-        }
-      });
-    });
-
-    // Form validation and submission
-    document.getElementById('availability-form').addEventListener('submit', function(e) {
-      const submitButton = document.getElementById('submit-button');
-      submitButton.classList.add('is-loading');
-      submitButton.disabled = true;
-
-      let isValid = true;
+          <div class="control">
+            <div class="select is-fullwidth">
+              <select name="slots[${newId}][end_time]" class="time-input end-time">
+                <option value="">Select End</option>
+                ${optionsHtml}
+              </select>
+            </div>
+          </div>
+          <div class="control">
+            <button type="button" class="button is-danger is-light delete-slot">Delete</button>
+          </div>
+        </div>
+        <p class="help is-danger" style="display: none;"></p>
+      `;
       
-      // Validate each slot
-      document.querySelectorAll('.slot:not(.marked-for-deletion)').forEach(slot => {
-        const startSelect = slot.querySelector('.start-time');
-        const endSelect = slot.querySelector('.end-time');
-        const errorElement = slot.querySelector('.help.is-danger');
-        
-        errorElement.style.display = 'none';
-
-        if (!startSelect.value || !endSelect.value) {
-          errorElement.textContent = 'Both times must be selected';
-          errorElement.style.display = 'block';
-          isValid = false;
-          return;
-        }
-
-        const [startHour, startMinute] = startSelect.value.split(':').map(Number);
-        const [endHour, endMinute] = endSelect.value.split(':').map(Number);
-        
-        if (endHour < startHour || (endHour === startHour && endMinute <= startMinute)) {
-          errorElement.textContent = 'End time must be after start time';
-          errorElement.style.display = 'block';
-          isValid = false;
-        }
+      slotsContainer.appendChild(newSlot);
+      
+      // Add event listener to the new delete button
+      newSlot.querySelector('.delete-slot').addEventListener('click', function() {
+        this.closest('.slot').remove();
       });
 
-      if (!isValid) {
-        e.preventDefault();
-        submitButton.classList.remove('is-loading');
-        submitButton.disabled = false;
-        
-        // Scroll to first error
-        const firstError = document.querySelector('.help.is-danger[style="display: block;"]');
-        if (firstError) {
-          firstError.closest('.slot').scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
+      // Update the new slots to the current timezone view
+      if (!showingPsychologistTime) {
+        updateTimeDisplays(browserTimezone);
       }
     });
   });
+
+  // Delete slot functionality
+  document.querySelectorAll('.delete-slot').forEach(button => {
+    button.addEventListener('click', function() {
+      const slot = this.closest('.slot');
+      const slotId = this.dataset.availabilityId;
+      
+      if (slotId) {
+        slot.classList.add('marked-for-deletion');
+        
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = `deleted_slots[${slotId}]`;
+        hiddenInput.value = '1';
+        document.getElementById('availability-form').appendChild(hiddenInput);
+      } else {
+        slot.remove();
+      }
+    });
+  });
+
+  // Form validation and submission
+  document.getElementById('availability-form').addEventListener('submit', function(e) {
+    const submitButton = document.getElementById('submit-button');
+    submitButton.classList.add('is-loading');
+    submitButton.disabled = true;
+
+    let isValid = true;
+    
+    document.querySelectorAll('.slot:not(.marked-for-deletion)').forEach(slot => {
+      const startSelect = slot.querySelector('.start-time');
+      const endSelect = slot.querySelector('.end-time');
+      const errorElement = slot.querySelector('.help.is-danger');
+      
+      errorElement.style.display = 'none';
+
+      if (!startSelect.value || !endSelect.value) {
+        errorElement.textContent = 'Both times must be selected';
+        errorElement.style.display = 'block';
+        isValid = false;
+        return;
+      }
+
+      const [startHour, startMinute] = startSelect.value.split(':').map(Number);
+      const [endHour, endMinute] = endSelect.value.split(':').map(Number);
+      
+      if (endHour < startHour || (endHour === startHour && endMinute <= startMinute)) {
+        errorElement.textContent = 'End time must be after start time';
+        errorElement.style.display = 'block';
+        isValid = false;
+      }
+    });
+
+    if (!isValid) {
+      e.preventDefault();
+      submitButton.classList.remove('is-loading');
+      submitButton.disabled = false;
+      
+      const firstError = document.querySelector('.help.is-danger[style="display: block;"]');
+      if (firstError) {
+        firstError.closest('.slot').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  });
+});
 </script>
