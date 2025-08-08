@@ -356,85 +356,76 @@ document.addEventListener('DOMContentLoaded', function() {
     timezoneDisplay.innerHTML = `Your local timezone (${browserTimezone})`;
   }
 
-  document.querySelectorAll('.add-slot').forEach(button => {
-    button.addEventListener('click', function() {
-      const dayIndex = this.closest('.day-section').dataset.day;
-      const slotsContainer = this.previousElementSibling;
-      const newId = `new_${Date.now()}`;
+document.querySelectorAll('.add-slot').forEach(button => {
+  button.addEventListener('click', function() {
+    const dayIndex = this.closest('.day-section').dataset.day;
+    const slotsContainer = this.previousElementSibling;
+    const newId = `new_${Date.now()}`;
 
-      // FIX: Generate options using a dynamic, DST-aware method based on the current date.
-      // 1. Get the current GMT offset for the psychologist's timezone.
-      const offsetString = getGmtOffset(new Date().toISOString(), psychologistTimezone);
+    // Get the current date in the psychologist's timezone to establish context
+    const now = new Date().toLocaleString("en-US", { timeZone: psychologistTimezone });
+    const localDateInPsychTimezone = new Date(now);
 
-      // 2. Get the components of the current date.
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
+    const year = localDateInPsychTimezone.getFullYear();
+    const month = String(localDateInPsychTimezone.getMonth() + 1).padStart(2, '0');
+    const day = String(localDateInPsychTimezone.getDate()).padStart(2, '0');
 
-      // 3. Generate all possible time slots for the current date.
-      const optionsHtml = Array.from({ length: 24 * 4 }, (_, i) => {
-          const hour = Math.floor(i / 4);
-          const minute = (i % 4) * 15;
-          const timeValue = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-          
-          // 4. Construct an ISO 8601 string with the current date and the correct current offset.
-          const localTimeWithOffset = `${year}-${month}-${day}T${timeValue}:00${offsetString}`;
-          
-          // 5. Create a Date object from this string and convert it to a pure UTC ISO string (Z-notation).
-          const dateObj = new Date(localTimeWithOffset);
-          const utcTime = dateObj.toISOString();
-
-          return `<option value="${timeValue}" data-utc-time="${utcTime}">${timeValue}</option>`;
-      }).join('');
+    // Generate all possible time slots for the current date in 30-minute intervals.
+    const optionsHtml = Array.from({ length: 24 * 2 }, (_, i) => {
+      const hour = Math.floor(i / 2);
+      const minute = (i % 2) * 30;
+      const timeValue = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
       
-      const newSlot = document.createElement('div');
-      newSlot.className = 'slot';
-      newSlot.innerHTML = `
-        <input type="hidden" name="slots[${newId}][day_of_week]" value="${dayIndex}">
-        <div class="field has-addons">
-          <div class="control">
-            <div class="select is-fullwidth">
-              <select name="slots[${newId}][start_time]" class="time-input start-time">
-                <option value="">Select Start</option>
-                ${optionsHtml}
-              </select>
-            </div>
-          </div>
-          <div class="control">
-            <div class="select is-fullwidth">
-              <select name="slots[${newId}][end_time]" class="time-input end-time">
-                <option value="">Select End</option>
-                ${optionsHtml}
-              </select>
-            </div>
-          </div>
-          <div class="control">
-            <button type="button" class="button is-danger is-light delete-slot">Delete</button>
+      // Construct a Date object directly in the psychologist's timezone.
+      // This correctly handles DST transitions.
+      const dateInPsychTimezone = new Date(year, localDateInPsychTimezone.getMonth(), day, hour, minute);
+      
+      // Convert this to a UTC ISO string, which is what the server expects.
+      const utcTime = dateInPsychTimezone.toISOString();
+
+      // The displayed time will be based on the current toggle state.
+      const displayedTime = showingPsychologistTime
+        ? timeValue
+        : convertUtcToTimezone(utcTime, browserTimezone);
+
+      return `<option value="${timeValue}" data-utc-time="${utcTime}">${displayedTime}</option>`;
+    }).join('');
+
+    const newSlot = document.createElement('div');
+    newSlot.className = 'slot';
+    newSlot.innerHTML = `
+      <input type="hidden" name="slots[${newId}][day_of_week]" value="${dayIndex}">
+      <div class="field has-addons">
+        <div class="control">
+          <div class="select is-fullwidth">
+            <select name="slots[${newId}][start_time]" class="time-input start-time">
+              <option value="">Select Start</option>
+              ${optionsHtml}
+            </select>
           </div>
         </div>
-        <p class="help is-danger" style="display: none;"></p>
-      `;
-      
-      slotsContainer.appendChild(newSlot);
-      
-      newSlot.querySelector('.delete-slot').addEventListener('click', function() {
-        this.closest('.slot').remove();
-      });
-
-      // If viewing in browser time, update the text of the new slot's options immediately.
-      if (!showingPsychologistTime) {
-        newSlot.querySelectorAll('select.time-input option').forEach(option => {
-            const utcTime = option.dataset.utcTime;
-            if (utcTime) {
-                const localTime = convertUtcToTimezone(utcTime, browserTimezone);
-                option.textContent = localTime;
-                option.value = localTime;
-            }
-        });
-      }
+        <div class="control">
+          <div class="select is-fullwidth">
+            <select name="slots[${newId}][end_time]" class="time-input end-time">
+              <option value="">Select End</option>
+              ${optionsHtml}
+            </select>
+          </div>
+        </div>
+        <div class="control">
+          <button type="button" class="button is-danger is-light delete-slot">Delete</button>
+        </div>
+      </div>
+      <p class="help is-danger" style="display: none;"></p>
+    `;
+    
+    slotsContainer.appendChild(newSlot);
+    
+    newSlot.querySelector('.delete-slot').addEventListener('click', function() {
+      this.closest('.slot').remove();
     });
   });
+});
 
   document.querySelectorAll('.delete-slot').forEach(button => {
     button.addEventListener('click', function() {
@@ -478,17 +469,30 @@ document.addEventListener('DOMContentLoaded', function() {
       const endSelect = slot.querySelector('.end-time');
       const errorElement = slot.querySelector('.help.is-danger');
       
+      // Reset error message
+      errorElement.textContent = '';
       errorElement.style.display = 'none';
 
-      if (!startSelect.value || !endSelect.value) {
+      const startValue = startSelect.value;
+      const endValue = endSelect.value;
+
+      // If both values are empty, it's a new slot that hasn't been filled out.
+      // We can safely ignore it and continue to the next one.
+      if (!startValue && !endValue) {
+        return; // This is like 'continue' in a forEach loop
+      }
+
+      // If one is filled but not the other, it's an error.
+      if (!startValue || !endValue) {
         errorElement.textContent = 'Both start and end times must be selected.';
         errorElement.style.display = 'block';
         isValid = false;
-        return;
+        return; // Continue to check other slots for errors
       }
 
-      const [startHour, startMinute] = startSelect.value.split(':').map(Number);
-      const [endHour, endMinute] = endSelect.value.split(':').map(Number);
+      // If both are filled, validate the time range.
+      const [startHour, startMinute] = startValue.split(':').map(Number);
+      const [endHour, endMinute] = endValue.split(':').map(Number);
       
       if (endHour < startHour || (endHour === startHour && endMinute <= startMinute)) {
         errorElement.textContent = 'End time must be after start time.';
