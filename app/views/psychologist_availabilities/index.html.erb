@@ -220,7 +220,7 @@ document.addEventListener('DOMContentLoaded', function() {
   let showingPsychologistTime = true;
 
   // Step 2: Function to normalize UTC time format (unchanged)
-function normalizeUtcTime(utcTime) {
+  function normalizeUtcTime(utcTime) {
   if (!utcTime) return '';
 
   // If it's already an ISO string with Z, keep it
@@ -238,7 +238,7 @@ function normalizeUtcTime(utcTime) {
 
   console.error(`Unrecognized UTC time format: ${utcTime}`);
   return '';
-}
+  }
 
   // Step 3: Function to convert UTC time to a specific timezone (unchanged)
   function convertUtcToTimezone(utcTime, timezone) {
@@ -378,52 +378,55 @@ function normalizeUtcTime(utcTime) {
   console.log('-----------------------------------------');
 
   // Step 6: Function to convert time from a source to a target timezone (unchanged)
-  function convertTimezone(timeString, sourceTimezone, targetTimezone) {
-    if (!timeString) return '';
-    const [hour, minute] = timeString.split(':').map(Number);
-
-    const dateInSourceTimezone = new Date().toLocaleString('en-US', { timeZone: sourceTimezone });
-    const dateObj = new Date(dateInSourceTimezone);
-    dateObj.setHours(hour, minute, 0, 0);
-
-    return dateObj.toLocaleTimeString('en-GB', {
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: targetTimezone,
-      hour12: false
-    });
+function convertUtcToTimezone(utcTime, timezone) {
+  if (!utcTime) return '';
+  const dateObj = new Date(utcTime);
+  if (isNaN(dateObj.getTime())) {
+    console.error(`Invalid Date from UTC time: ${utcTime}`);
+    return '';
   }
+  return dateObj.toLocaleTimeString('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: timezone,
+    hour12: false
+  });
+}
 
   // Step 7: Update time displays (unchanged)
   function updateTimeDisplays(targetTimezone) {
-    document.querySelectorAll('.day-section').forEach(daySection => {
-      daySection.querySelectorAll('.slot').forEach(slot => {
-        const dbStartTime = slot.dataset.dbStartTime;
-        const dbEndTime = slot.dataset.dbEndTime;
+  document.querySelectorAll('.day-section').forEach(daySection => {
+    daySection.querySelectorAll('.slot').forEach(slot => {
+      const startSelect = slot.querySelector('.start-time');
+      const endSelect = slot.querySelector('.end-time');
 
-        const startSelect = slot.querySelector('.start-time');
-        const endSelect = slot.querySelector('.end-time');
-
-        // Update start time display
-        if (dbStartTime) {
-          const displayedTime = convertTimezone(dbStartTime, psychologistTimezone, targetTimezone);
-          const option = startSelect.querySelector(`option[value="${dbStartTime}"]`);
-          if (option) {
-            option.textContent = displayedTime;
+      if (startSelect) {
+        startSelect.querySelectorAll('option').forEach(option => {
+          const utcTime = option.dataset.utcTime;
+          if (utcTime) {
+            // Format UTC time into the target timezone
+            const formattedTime = convertUtcToTimezone(utcTime, targetTimezone);
+            option.textContent = formattedTime;
+            // Keep the value as utcTime for consistency
+            option.value = utcTime;
           }
-        }
+        });
+      }
 
-        // Update end time display
-        if (dbEndTime) {
-          const displayedTime = convertTimezone(dbEndTime, psychologistTimezone, targetTimezone);
-          const option = endSelect.querySelector(`option[value="${dbEndTime}"]`);
-          if (option) {
-            option.textContent = displayedTime;
+      if (endSelect) {
+        endSelect.querySelectorAll('option').forEach(option => {
+          const utcTime = option.dataset.utcTime;
+          if (utcTime) {
+            const formattedTime = convertUtcToTimezone(utcTime, targetTimezone);
+            option.textContent = formattedTime;
+            option.value = utcTime;
           }
-        }
-      });
+        });
+      }
     });
-  }
+  });
+}
+
 
   // Step 8: Initialize timezone toggle
   if (browserTimezone !== psychologistTimezone) {
