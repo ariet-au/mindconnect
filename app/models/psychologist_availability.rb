@@ -15,22 +15,6 @@ class PsychologistAvailability < ApplicationRecord
   def day_name
     Date::DAYNAMES[day_of_week]
   end
-
-  # def start_time_in_zone(timezone = nil)
-  #   timezone ||= self.timezone || 'UTC'
-  #   # FIX: Combine the time with a consistent date to avoid DST conversion issues.
-  #   # This ensures the time is always displayed correctly.
-  #   base_date = ActiveSupport::TimeZone[timezone].now
-  #   base_date.change(hour: start_time_of_day.hour, min: start_time_of_day.min, sec: start_time_of_day.sec)
-  # end 
-
-  # def end_time_in_zone(timezone = nil)
-  #   timezone ||= self.timezone || 'UTC'
-  #   # FIX: Combine the time with a consistent date to avoid DST conversion issues.
-  #   # This ensures the time is always displayed correctly.
-  #   base_date = ActiveSupport::TimeZone[timezone].now
-  #   base_date.change(hour: end_time_of_day.hour, min: end_time_of_day.min, sec: end_time_of_day.sec)
-  # end
   def start_time_in_zone(timezone = nil)
     timezone ||= self.timezone || 'UTC'
     if self.start_time_of_day.present?
@@ -55,22 +39,37 @@ class PsychologistAvailability < ApplicationRecord
 
   private
 
+  # def set_utc_times_from_form
+  #   if start_time.present? && end_time.present?
+  #     base_date = ActiveSupport::TimeZone[timezone].now
+
+  #     # Parse start time
+  #     hour, minute = start_time.split(':').map(&:to_i)
+  #     self.start_time_of_day = base_date.change(hour: hour, min: minute).utc
+
+  #     # Parse end time
+  #     hour, minute = end_time.split(':').map(&:to_i)
+  #     self.end_time_of_day = base_date.change(hour: hour, min: minute).utc
+  #   else
+  #     self.start_time_of_day = nil
+  #     self.end_time_of_day = nil
+  #   end
+  # end
   def set_utc_times_from_form
     if start_time.present? && end_time.present?
-      # FIX: Use the current time in the specified timezone as a base.
-      # This correctly handles Daylight Saving Time (DST) by using the appropriate
-      # offset for the current date, whether it's summer or winter.
-      # The previous hardcoded date in winter was causing the one-hour shift
-      # when a user on a DST timezone saved their availability.
-      base_date = ActiveSupport::TimeZone[timezone].now
+      tz = ActiveSupport::TimeZone[timezone] || Time.zone
+      reference_date = Date.current
 
-      # Parse start time
-      hour, minute = start_time.split(':').map(&:to_i)
-      self.start_time_of_day = base_date.change(hour: hour, min: minute).utc
+      start_hour, start_minute = start_time.split(':').map(&:to_i)
+      end_hour, end_minute     = end_time.split(':').map(&:to_i)
 
-      # Parse end time
-      hour, minute = end_time.split(':').map(&:to_i)
-      self.end_time_of_day = base_date.change(hour: hour, min: minute).utc
+      # Build in psychologist's local zone
+      local_start = tz.local(reference_date.year, reference_date.month, reference_date.day, start_hour, start_minute)
+      local_end   = tz.local(reference_date.year, reference_date.month, reference_date.day, end_hour, end_minute)
+
+      # Convert to real UTC before saving
+      self.start_time_of_day = local_start.in_time_zone('UTC')
+      self.end_time_of_day   = local_end.in_time_zone('UTC')
     else
       self.start_time_of_day = nil
       self.end_time_of_day = nil
