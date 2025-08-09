@@ -23,10 +23,10 @@
     <% end %>
 
     <%= form_with url: update_all_psychologist_profile_psychologist_availabilities_path(@psychologist_profile),
-                  method: :patch,
-                  local: false,
-                  id: 'availability-form',
-                  data: { turbo: false } do |f| %>
+              method: :patch,
+              local: false,
+              id: 'availability-form',
+              data: { turbo: false } do |f| %>
 
       <div id="availability-container">
         <% (0..6).each do |day_index| %>
@@ -35,8 +35,8 @@
             <div class="slots">
               <% @availabilities.select { |a| a.day_of_week == day_index }.each do |availability| %>
                 <div class="slot" data-id="<%= availability.id %>"
-                     data-db-start-time="<%= availability.start_time_of_day.iso8601 %>"
-                     data-db-end-time="<%= availability.end_time_of_day.iso8601 %>">
+                     data-db-start-time="<%= availability.start_time_of_day.utc.iso8601 %>"
+                     data-db-end-time="<%= availability.end_time_of_day.utc.iso8601 %>">
                   <input type="hidden" name="slots[<%= availability.id %>][id]" value="<%= availability.id %>">
                   <input type="hidden" name="slots[<%= availability.id %>][day_of_week]" value="<%= day_index %>">
                   <div class="field has-addons">
@@ -45,28 +45,16 @@
                         <select name="slots[<%= availability.id %>][start_time]" class="time-input start-time">
                           <option value="">Select Start</option>
                           <%
-                            # FIX: Correctly convert the stored UTC time-of-day to the psychologist's
-                            # local time for the CURRENT date to handle DST dynamically.
-
-                            # 1. Get the UTC time components from the database.
                             s_time_utc = availability.start_time_of_day
-                            # 2. Create a full UTC timestamp for today using those components.
-                            utc_timestamp = Time.now.utc.change(hour: s_time_utc.hour, min: s_time_utc.min, sec: s_time_utc.sec)
-                            # 3. Convert this full UTC timestamp to the psychologist's local timezone.
-                            local_start_time = utc_timestamp.in_time_zone(@psychologist_profile.timezone)
-                            # 4. The string for comparison is the formatted local time.
+                            local_start_time = s_time_utc.in_time_zone(@psychologist_profile.timezone)
                             selected_start_time_str = local_start_time.strftime('%H:%M')
                           %>
                           <% (0..23).each do |hour| %>
                             <% [0, 15, 30, 45].each do |minute| %>
                               <%
-                                # The option's display text and value is the local time string.
                                 time_value = sprintf('%02d:%02d', hour, minute)
                                 is_selected = selected_start_time_str == time_value
-                                
-                                # To get the data-utc-time, create a local timestamp for today using the option's hour/minute...
                                 option_local_time = Time.current.in_time_zone(@psychologist_profile.timezone).change(hour: hour, min: minute)
-                                # ...and convert that local time to UTC. This gives us the correct UTC value for the selected local time on the current date.
                                 option_utc_time = option_local_time.utc.iso8601
                               %>
                               <option 
@@ -86,10 +74,8 @@
                         <select name="slots[<%= availability.id %>][end_time]" class="time-input end-time">
                           <option value="">Select End</option>
                           <%
-                            # FIX: Apply the same logic for the end time.
                             e_time_utc = availability.end_time_of_day
-                            utc_timestamp_end = Time.now.utc.change(hour: e_time_utc.hour, min: e_time_utc.min, sec: e_time_utc.sec)
-                            local_end_time = utc_timestamp_end.in_time_zone(@psychologist_profile.timezone)
+                            local_end_time = e_time_utc.in_time_zone(@psychologist_profile.timezone)
                             selected_end_time_str = local_end_time.strftime('%H:%M')
                           %>
                           <% (0..23).each do |hour| %>
@@ -135,6 +121,11 @@
     <% end %>
   </div>
 </div>
+
+
+
+
+
 
 <style>
   .day-section { 
@@ -199,406 +190,402 @@
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  // All script logic is now inside this event listener, which guarantees the DOM is ready.
-  // This removes the need for the unreliable setTimeout.
+  document.addEventListener('DOMContentLoaded', function() {
+    // All script logic is now inside this event listener, which guarantees the DOM is ready.
+    // This removes the need for the unreliable setTimeout.
 
-  const psychologistTimezone = '<%= @psychologist_profile.timezone %>';
-  let browserTimezone;
+    const psychologistTimezone = '<%= @psychologist_profile.timezone %>';
+    let browserTimezone;
 
-  // Step 1: Detect browser timezone
-  try {
-    browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-    document.getElementById('browser-timezone-input').value = browserTimezone;
-  } catch (e) {
-    console.error('Could not detect browser timezone:', e);
-    browserTimezone = 'UTC'; // Fallback to UTC
-  }
-
-  const timezoneDisplay = document.getElementById('timezone-display');
-  const timezoneToggle = document.getElementById('timezone-toggle');
-  let showingPsychologistTime = true;
-
-  // Step 2: Function to normalize UTC time format (unchanged)
-  function normalizeUtcTime(utcTime) {
-  if (!utcTime) return '';
-
-  // If it's already an ISO string with Z, keep it
-  if (utcTime.match(/Z$/)) {
-    return utcTime;
-  }
-
-  // Match "YYYY-MM-DD HH:MM:SS"
-  const match = utcTime.match(/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})/);
-  if (match) {
-    const [_, year, month, day, hour, min, sec] = match;
-    // Force to UTC regardless of browser's local zone
-    return new Date(Date.UTC(year, month - 1, day, hour, min, sec)).toISOString();
-  }
-
-  console.error(`Unrecognized UTC time format: ${utcTime}`);
-  return '';
-  }
-
-  // Step 3: Function to convert UTC time to a specific timezone (unchanged)
-  function convertUtcToTimezone(utcTime, timezone) {
-    const normalizedTime = normalizeUtcTime(utcTime);
-    if (!normalizedTime) return '';
-    const dateObj = new Date(normalizedTime);
-    if (isNaN(dateObj.getTime())) {
-      console.error(`Invalid Date from UTC time: ${normalizedTime}`);
-      return '';
+    // Step 1: Detect browser timezone
+    try {
+      browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      document.getElementById('browser-timezone-input').value = browserTimezone;
+    } catch (e) {
+      console.error('Could not detect browser timezone:', e);
+      browserTimezone = 'UTC'; // Fallback to UTC
     }
-    return dateObj.toLocaleTimeString('en-GB', {
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: timezone,
-      hour12: false
-    });
-  }
 
-  // Step 4: Function to get GMT offset (unchanged)
-  function getGmtOffset(utcTime, timezone) {
-    const normalizedTime = normalizeUtcTime(utcTime);
-    if (!normalizedTime) return '+00:00';
-    const date = new Date(normalizedTime);
-    if (isNaN(date.getTime())) {
-      console.error(`Invalid Date for offset: ${normalizedTime}`);
-      return '+00:00';
+    const timezoneDisplay = document.getElementById('timezone-display');
+    const timezoneToggle = document.getElementById('timezone-toggle');
+    let showingPsychologistTime = true;
+
+    // Step 2: Function to normalize UTC time format (unchanged)
+      function normalizeUtcTime(timeStr) {
+        if (!timeStr) return '';
+
+        // Try to parse the input string directly as a Date
+        const dateObj = new Date(timeStr);
+
+        // If invalid, log error and return empty string
+        if (isNaN(dateObj.getTime())) {
+          console.error(`Invalid Date: ${timeStr}`);
+          return '';
+        }
+
+        // Return ISO string in UTC (always ends with 'Z')
+        return dateObj.toISOString();
+      }
+
+    // Step 3: Function to convert UTC time to a specific timezone (unchanged)
+    function convertUtcToTimezone(utcTime, timezone) {
+      if (!utcTime) return '';
+      const dateObj = new Date(utcTime);
+      if (isNaN(dateObj.getTime())) {
+        console.error(`Invalid Date from UTC time: ${utcTime}`);
+        return '';
+      }
+      return dateObj.toLocaleTimeString('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: timezone,
+        hour12: false
+      });
     }
-    const formatter = new Intl.DateTimeFormat('en-US', {
-      year: 'numeric', month: 'numeric', day: 'numeric',
-      hour: 'numeric', minute: 'numeric', second: 'numeric',
-      timeZone: timezone,
-      hour12: false
-    });
-    const parts = formatter.formatToParts(date);
-    const year = parts.find(p => p.type === 'year').value;
-    const month = parts.find(p => p.type === 'month').value;
-    const day = parts.find(p => p.type === 'day').value;
-    const hour = parts.find(p => p.type === 'hour').value;
-    const minute = parts.find(p => p.type === 'minute').value;
 
-    const targetDate = new Date(
-      `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00Z`
-    );
 
-    const offsetMilliseconds = date.getTime() - targetDate.getTime();
-    const offsetMinutes = offsetMilliseconds / 60000;
-    const sign = offsetMinutes <= 0 ? '+' : '-';
-    const hours = String(Math.floor(Math.abs(offsetMinutes) / 60)).padStart(2, '0');
-    const minutes = String(Math.abs(offsetMinutes) % 60).padStart(2, '0');
-
-    return `${sign}${hours}:${minutes}`;
-  }
-
-  // Step 5: Debug logging for existing slots (unchanged, just moved)
-  console.log('--- DEBUGGING AVAILABILITY TIMEZONE VALUES ---');
-  console.log(`Psychologist's Timezone: ${psychologistTimezone}`);
-  console.log(`Browser's Timezone: ${browserTimezone}`);
-
-  document.querySelectorAll('.day-section').forEach(daySection => {
-    const day = daySection.dataset.day;
-    daySection.querySelectorAll('.slot').forEach(slot => {
-      const slotId = slot.dataset.id || 'new';
-      const dbStartTime = slot.dataset.dbStartTime;
-      const dbEndTime = slot.dataset.dbEndTime;
-
-      console.log(`\nSlot ID: ${slotId} on day ${day}`);
-      console.log(`- Timezone from Profile: ${psychologistTimezone}`);
-      console.log(`- Database Start Time (UTC): ${dbStartTime}`);
-      console.log(`- Database End Time (UTC): ${dbEndTime}`);
-
-      const startSelect = slot.querySelector('.start-time');
-      const endSelect = slot.querySelector('.end-time');
-
-      const startOption = startSelect && startSelect.querySelector('option:checked');
-      if (startOption && startOption.dataset.utcTime) {
-        const selectedUtcTime = startOption.dataset.utcTime;
-        const psychTime = convertUtcToTimezone(selectedUtcTime, psychologistTimezone);
-        const browserTime = convertUtcToTimezone(selectedUtcTime, browserTimezone);
-        const psychOffset = getGmtOffset(selectedUtcTime, psychologistTimezone);
-        const browserOffset = getGmtOffset(selectedUtcTime, browserTimezone);
-
-        console.log(`- Converted Start Time (Psychologist's Timezone): ${psychTime}`);
-        console.log(`- Converted Start Time (Browser's Timezone): ${browserTime}`);
-        console.log(`- Psychologist's Offset: ${psychOffset}`);
-        console.log(`- Browser's Offset: ${browserOffset}`);
-
-        startOption.textContent = showingPsychologistTime ? psychTime : browserTime;
-        startOption.value = psychTime;
-      } else {
-        console.warn(`No valid selected start time option for slot ${slotId}`);
+    // Step 4: Function to get GMT offset (unchanged)
+    function getGmtOffset(utcTime, timezone) {
+      const normalizedTime = normalizeUtcTime(utcTime);
+      if (!normalizedTime) return '+00:00';
+      const date = new Date(normalizedTime);
+      if (isNaN(date.getTime())) {
+        console.error(`Invalid Date for offset: ${normalizedTime}`);
+        return '+00:00';
       }
+      const formatter = new Intl.DateTimeFormat('en-US', {
+        year: 'numeric', month: 'numeric', day: 'numeric',
+        hour: 'numeric', minute: 'numeric', second: 'numeric',
+        timeZone: timezone,
+        hour12: false
+      });
+      const parts = formatter.formatToParts(date);
+      const year = parts.find(p => p.type === 'year').value;
+      const month = parts.find(p => p.type === 'month').value;
+      const day = parts.find(p => p.type === 'day').value;
+      const hour = parts.find(p => p.type === 'hour').value;
+      const minute = parts.find(p => p.type === 'minute').value;
 
-      const endOption = endSelect && endSelect.querySelector('option:checked');
-      if (endOption && endOption.dataset.utcTime) {
-        const selectedUtcTime = endOption.dataset.utcTime;
-        const psychTime = convertUtcToTimezone(selectedUtcTime, psychologistTimezone);
-        const browserTime = convertUtcToTimezone(selectedUtcTime, browserTimezone);
-        const psychOffset = getGmtOffset(selectedUtcTime, psychologistTimezone);
-        const browserOffset = getGmtOffset(selectedUtcTime, browserTimezone);
+      const targetDate = new Date(
+        `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00Z`
+      );
 
-        console.log(`- Converted End Time (Psychologist's Timezone): ${psychTime}`);
-        console.log(`- Converted End Time (Browser's Timezone): ${browserTime}`);
-        console.log(`- Psychologist's Offset: ${psychOffset}`);
-        console.log(`- Browser's Offset: ${browserOffset}`);
+      const offsetMilliseconds = date.getTime() - targetDate.getTime();
+      const offsetMinutes = offsetMilliseconds / 60000;
+      const sign = offsetMinutes <= 0 ? '+' : '-';
+      const hours = String(Math.floor(Math.abs(offsetMinutes) / 60)).padStart(2, '0');
+      const minutes = String(Math.abs(offsetMinutes) % 60).padStart(2, '0');
 
-        endOption.textContent = showingPsychologistTime ? psychTime : browserTime;
-        endOption.value = psychTime;
-      } else {
-        console.warn(`No valid selected end time option for slot ${slotId}`);
-      }
+      return `${sign}${hours}:${minutes}`;
+    }
 
-      console.log(`- All Start Time Options for Slot ${slotId}:`);
-      if (startSelect) {
-        startSelect.querySelectorAll('option').forEach(option => {
-          const utcTime = option.dataset.utcTime;
-          if (utcTime) {
-            const displayTime = convertUtcToTimezone(utcTime, showingPsychologistTime ? psychologistTimezone : browserTimezone);
-          }
-        });
-      } else {
-        console.warn(`No start-time select found for slot ${slotId}`);
-      }
+    // Step 5: Debug logging for existing slots (unchanged, just moved)
+    console.log('--- DEBUGGING AVAILABILITY TIMEZONE VALUES ---');
+    console.log(`Psychologist's Timezone: ${psychologistTimezone}`);
+    console.log(`Browser's Timezone: ${browserTimezone}`);
 
-      console.log(`- All End Time Options for Slot ${slotId}:`);
-      if (endSelect) {
-        endSelect.querySelectorAll('option').forEach(option => {
-          const utcTime = option.dataset.utcTime;
-          if (utcTime) {
-            const displayTime = convertUtcToTimezone(utcTime, showingPsychologistTime ? psychologistTimezone : browserTimezone);
-          }
-        });
-      } else {
-        console.warn(`No end-time select found for slot ${slotId}`);
-      }
-    });
-  });
-  console.log('-----------------------------------------');
+    document.querySelectorAll('.day-section').forEach(daySection => {
+      const day = daySection.dataset.day;
+      daySection.querySelectorAll('.slot').forEach(slot => {
+        const slotId = slot.dataset.id || 'new';
+        const dbStartTime = slot.dataset.dbStartTime;
+        const dbEndTime = slot.dataset.dbEndTime;
 
-  // Step 6: Function to convert time from a source to a target timezone (unchanged)
-function convertUtcToTimezone(utcTime, timezone) {
-  if (!utcTime) return '';
-  const dateObj = new Date(utcTime);
-  if (isNaN(dateObj.getTime())) {
-    console.error(`Invalid Date from UTC time: ${utcTime}`);
-    return '';
-  }
-  return dateObj.toLocaleTimeString('en-GB', {
-    hour: '2-digit',
-    minute: '2-digit',
-    timeZone: timezone,
-    hour12: false
-  });
-}
+        console.log(`\nSlot ID: ${slotId} on day ${day}`);
+        console.log(`- Timezone from Profile: ${psychologistTimezone}`);
+        console.log(`- Database Start Time (UTC): ${dbStartTime}`);
+        console.log(`- Database End Time (UTC): ${dbEndTime}`);
 
-  // Step 7: Update time displays (unchanged)
-  function updateTimeDisplays(targetTimezone) {
-  document.querySelectorAll('.day-section').forEach(daySection => {
-    daySection.querySelectorAll('.slot').forEach(slot => {
-      const startSelect = slot.querySelector('.start-time');
-      const endSelect = slot.querySelector('.end-time');
+        const startSelect = slot.querySelector('.start-time');
+        const endSelect = slot.querySelector('.end-time');
 
-      if (startSelect) {
-        startSelect.querySelectorAll('option').forEach(option => {
-          const utcTime = option.dataset.utcTime;
-          if (utcTime) {
-            // Format UTC time into the target timezone
-            const formattedTime = convertUtcToTimezone(utcTime, targetTimezone);
-            option.textContent = formattedTime;
-            // Keep the value as utcTime for consistency
-            option.value = utcTime;
-          }
-        });
-      }
+        const startOption = startSelect && startSelect.querySelector('option:checked');
+        if (startOption && startOption.dataset.utcTime) {
+          const selectedUtcTime = startOption.dataset.utcTime;
+          const psychTime = convertUtcToTimezone(selectedUtcTime, psychologistTimezone);
+          const browserTime = convertUtcToTimezone(selectedUtcTime, browserTimezone);
+          const psychOffset = getGmtOffset(selectedUtcTime, psychologistTimezone);
+          const browserOffset = getGmtOffset(selectedUtcTime, browserTimezone);
 
-      if (endSelect) {
-        endSelect.querySelectorAll('option').forEach(option => {
-          const utcTime = option.dataset.utcTime;
-          if (utcTime) {
-            const formattedTime = convertUtcToTimezone(utcTime, targetTimezone);
-            option.textContent = formattedTime;
-            option.value = utcTime;
-          }
-        });
-      }
-    });
-  });
-}
+          console.log(`- Converted Start Time (Psychologist's Timezone): ${psychTime}`);
+          console.log(`- Converted Start Time (Browser's Timezone): ${browserTime}`);
+          console.log(`- Psychologist's Offset: ${psychOffset}`);
+          console.log(`- Browser's Offset: ${browserOffset}`);
 
+          startOption.textContent = showingPsychologistTime ? psychTime : browserTime;
+          startOption.value = psychTime;
+        } else {
+          console.warn(`No valid selected start time option for slot ${slotId}`);
+        }
 
-  // Step 8: Initialize timezone toggle
-  if (browserTimezone !== psychologistTimezone) {
-    timezoneDisplay.innerHTML = `Psychologist's timezone (${psychologistTimezone})`;
-    timezoneToggle.style.display = 'inline';
-    timezoneToggle.textContent = '(Show in your local timezone)';
+        const endOption = endSelect && endSelect.querySelector('option:checked');
+        if (endOption && endOption.dataset.utcTime) {
+          const selectedUtcTime = endOption.dataset.utcTime;
+          const psychTime = convertUtcToTimezone(selectedUtcTime, psychologistTimezone);
+          const browserTime = convertUtcToTimezone(selectedUtcTime, browserTimezone);
+          const psychOffset = getGmtOffset(selectedUtcTime, psychologistTimezone);
+          const browserOffset = getGmtOffset(selectedUtcTime, browserTimezone);
 
-    timezoneToggle.addEventListener('click', function() {
-      showingPsychologistTime = !showingPsychologistTime;
-      if (showingPsychologistTime) {
-        timezoneDisplay.innerHTML = `Psychologist's timezone (${psychologistTimezone})`;
-        timezoneToggle.textContent = '(Show in your local timezone)';
-        updateTimeDisplays(psychologistTimezone);
-      } else {
-        timezoneDisplay.innerHTML = `Your local timezone (${browserTimezone})`;
-        timezoneToggle.textContent = '(Show in psychologist\'s timezone)';
-        updateTimeDisplays(browserTimezone);
-      }
-    });
-  } else {
-    timezoneDisplay.innerHTML = `Your local timezone (${browserTimezone})`;
-    timezoneToggle.style.display = 'none';
-  }
+          console.log(`- Converted End Time (Psychologist's Timezone): ${psychTime}`);
+          console.log(`- Converted End Time (Browser's Timezone): ${browserTime}`);
+          console.log(`- Psychologist's Offset: ${psychOffset}`);
+          console.log(`- Browser's Offset: ${browserOffset}`);
 
-  // Step 9: Force initial rendering
-  updateTimeDisplays(psychologistTimezone);
+          endOption.textContent = showingPsychologistTime ? psychTime : browserTime;
+          endOption.value = psychTime;
+        } else {
+          console.warn(`No valid selected end time option for slot ${slotId}`);
+        }
 
-  // Step 10: Add slot functionality (unchanged)
-  document.querySelectorAll('.add-slot').forEach(button => {
-    button.addEventListener('click', function() {
-      const dayIndex = this.closest('.day-section').dataset.day;
-      const slotsContainer = this.previousElementSibling;
-      const newId = `new_${Date.now()}`;
+        console.log(`- All Start Time Options for Slot ${slotId}:`);
+        if (startSelect) {
+          startSelect.querySelectorAll('option').forEach(option => {
+            const utcTime = option.dataset.utcTime;
+            if (utcTime) {
+              const displayTime = convertUtcToTimezone(utcTime, showingPsychologistTime ? psychologistTimezone : browserTimezone);
+            }
+          });
+        } else {
+          console.warn(`No start-time select found for slot ${slotId}`);
+        }
 
-      const now = new Date().toLocaleString("en-US", { timeZone: psychologistTimezone });
-      const localDateInPsychTimezone = new Date(now);
-
-      const year = localDateInPsychTimezone.getFullYear();
-      const month = String(localDateInPsychTimezone.getMonth() + 1).padStart(2, '0');
-      const day = String(localDateInPsychTimezone.getDate()).padStart(2, '0');
-
-      const optionsHtml = Array.from({ length: 24 * 2 }, (_, i) => {
-        const hour = Math.floor(i / 2);
-        const minute = (i % 2) * 30;
-        const timeValue = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-        const dateInPsychTimezone = new Date(year, localDateInPsychTimezone.getMonth(), day, hour, minute);
-        const utcTime = dateInPsychTimezone.toISOString();
-        const displayedTime = showingPsychologistTime
-          ? timeValue
-          : convertUtcToTimezone(utcTime, browserTimezone);
-
-        return `<option value="${timeValue}" data-utc-time="${utcTime}">${displayedTime}</option>`;
-      }).join('');
-
-      const newSlot = document.createElement('div');
-      newSlot.className = 'slot';
-      newSlot.innerHTML = `
-        <input type="hidden" name="slots[${newId}][day_of_week]" value="${dayIndex}">
-        <div class="field has-addons">
-          <div class="control">
-            <div class="select is-fullwidth">
-              <select name="slots[${newId}][start_time]" class="time-input start-time">
-                <option value="">Select Start</option>
-                ${optionsHtml}
-              </select>
-            </div>
-          </div>
-          <div class="control">
-            <div class="select is-fullwidth">
-              <select name="slots[${newId}][end_time]" class="time-input end-time">
-                <option value="">Select End</option>
-                ${optionsHtml}
-              </select>
-            </div>
-          </div>
-          <div class="control">
-            <button type="button" class="button is-danger is-light delete-slot">Delete</button>
-          </div>
-        </div>
-        <p class="help is-danger" style="display: none;"></p>
-      `;
-
-      slotsContainer.appendChild(newSlot);
-
-      newSlot.querySelector('.delete-slot').addEventListener('click', function() {
-        this.closest('.slot').remove();
+        console.log(`- All End Time Options for Slot ${slotId}:`);
+        if (endSelect) {
+          endSelect.querySelectorAll('option').forEach(option => {
+            const utcTime = option.dataset.utcTime;
+            if (utcTime) {
+              const displayTime = convertUtcToTimezone(utcTime, showingPsychologistTime ? psychologistTimezone : browserTimezone);
+            }
+          });
+        } else {
+          console.warn(`No end-time select found for slot ${slotId}`);
+        }
       });
     });
-  });
+    console.log('-----------------------------------------');
 
-  // Step 11: Delete slot functionality (unchanged)
-  document.querySelectorAll('.delete-slot').forEach(button => {
-    button.addEventListener('click', function() {
-      const slot = this.closest('.slot');
-      const slotId = this.dataset.availabilityId;
-
-      if (slotId) {
-        slot.classList.add('marked-for-deletion');
-        let hiddenInput = document.querySelector(`input[name="deleted_slots[${slotId}]"]`);
-        if (!hiddenInput) {
-          hiddenInput = document.createElement('input');
-          hiddenInput.type = 'hidden';
-          hiddenInput.name = `deleted_slots[${slotId}]`;
-          document.getElementById('availability-form').appendChild(hiddenInput);
-        }
-        hiddenInput.value = '1';
-      } else {
-        slot.remove();
+    // Step 6: Function to convert time from a source to a target timezone (unchanged)
+    function convertUtcToTimezone(utcTime, timezone) {
+      if (!utcTime) return '';
+      const dateObj = new Date(utcTime);
+      if (isNaN(dateObj.getTime())) {
+        console.error(`Invalid Date from UTC time: ${utcTime}`);
+        return '';
       }
-    });
-  });
-
-  // Step 12: Form submission (unchanged)
-  document.getElementById('availability-form').addEventListener('submit', function(e) {
-    const submitButton = document.getElementById('submit-button');
-    submitButton.classList.add('is-loading');
-    submitButton.disabled = true;
-
-    let isValid = true;
-
-    if (!showingPsychologistTime) {
-      updateTimeDisplays(psychologistTimezone);
+      return dateObj.toLocaleTimeString('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit',
+        timeZone: timezone,
+        hour12: false
+      });
     }
 
-    document.querySelectorAll('.slot:not(.marked-for-deletion)').forEach(slot => {
-      const startSelect = slot.querySelector('.start-time');
-      const endSelect = slot.querySelector('.end-time');
-      const errorElement = slot.querySelector('.help.is-danger');
+      // Step 7: Update time displays (unchanged)
+      function updateTimeDisplays(targetTimezone) {
+      document.querySelectorAll('.day-section').forEach(daySection => {
+        daySection.querySelectorAll('.slot').forEach(slot => {
+          const startSelect = slot.querySelector('.start-time');
+          const endSelect = slot.querySelector('.end-time');
 
-      errorElement.textContent = '';
-      errorElement.style.display = 'none';
+          if (startSelect) {
+            startSelect.querySelectorAll('option').forEach(option => {
+              const utcTime = option.dataset.utcTime;
+              if (utcTime) {
+                // Format UTC time into the target timezone
+                const formattedTime = convertUtcToTimezone(utcTime, targetTimezone);
+                option.textContent = formattedTime;
+                // Keep the value as utcTime for consistency
+                option.value = utcTime;
+              }
+            });
+          }
 
-      const startValue = startSelect.value;
-      const endValue = endSelect.value;
+          if (endSelect) {
+            endSelect.querySelectorAll('option').forEach(option => {
+              const utcTime = option.dataset.utcTime;
+              if (utcTime) {
+                const formattedTime = convertUtcToTimezone(utcTime, targetTimezone);
+                option.textContent = formattedTime;
+                option.value = utcTime;
+              }
+            });
+          }
+        });
+      });
+    }
 
-      if (!startValue && !endValue) {
-        return;
-      }
 
-      if (!startValue || !endValue) {
-        errorElement.textContent = 'Both start and end times must be selected.';
-        errorElement.style.display = 'block';
-        isValid = false;
-        return;
-      }
+    // Step 8: Initialize timezone toggle
+    if (browserTimezone !== psychologistTimezone) {
+      timezoneDisplay.innerHTML = `Psychologist's timezone (${psychologistTimezone})`;
+      timezoneToggle.style.display = 'inline';
+      timezoneToggle.textContent = '(Show in your local timezone)';
 
-      const [startHour, startMinute] = startValue.split(':').map(Number);
-      const [endHour, endMinute] = endValue.split(':').map(Number);
+      timezoneToggle.addEventListener('click', function() {
+        showingPsychologistTime = !showingPsychologistTime;
+        if (showingPsychologistTime) {
+          timezoneDisplay.innerHTML = `Psychologist's timezone (${psychologistTimezone})`;
+          timezoneToggle.textContent = '(Show in your local timezone)';
+          updateTimeDisplays(psychologistTimezone);
+        } else {
+          timezoneDisplay.innerHTML = `Your local timezone (${browserTimezone})`;
+          timezoneToggle.textContent = '(Show in psychologist\'s timezone)';
+          updateTimeDisplays(browserTimezone);
+        }
+      });
+    } else {
+      timezoneDisplay.innerHTML = `Your local timezone (${browserTimezone})`;
+      timezoneToggle.style.display = 'none';
+    }
 
-      if (endHour < startHour || (endHour === startHour && endMinute <= startMinute)) {
-        errorElement.textContent = 'End time must be after start time.';
-        errorElement.style.display = 'block';
-        isValid = false;
-      }
+    // Step 9: Force initial rendering
+    updateTimeDisplays(psychologistTimezone);
+
+    // Step 10: Add slot functionality (unchanged)
+    document.querySelectorAll('.add-slot').forEach(button => {
+      button.addEventListener('click', function() {
+        const dayIndex = this.closest('.day-section').dataset.day;
+        const slotsContainer = this.previousElementSibling;
+        const newId = `new_${Date.now()}`;
+
+        const now = new Date().toLocaleString("en-US", { timeZone: psychologistTimezone });
+        const localDateInPsychTimezone = new Date(now);
+
+        const year = localDateInPsychTimezone.getFullYear();
+        const month = String(localDateInPsychTimezone.getMonth() + 1).padStart(2, '0');
+        const day = String(localDateInPsychTimezone.getDate()).padStart(2, '0');
+
+        const optionsHtml = Array.from({ length: 24 * 2 }, (_, i) => {
+          const hour = Math.floor(i / 2);
+          const minute = (i % 2) * 30;
+          const timeValue = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+          const dateInPsychTimezone = new Date(year, localDateInPsychTimezone.getMonth(), day, hour, minute);
+          const utcTime = dateInPsychTimezone.toISOString();
+          const displayedTime = showingPsychologistTime
+            ? timeValue
+            : convertUtcToTimezone(utcTime, browserTimezone);
+
+          return `<option value="${timeValue}" data-utc-time="${utcTime}">${displayedTime}</option>`;
+        }).join('');
+
+        const newSlot = document.createElement('div');
+        newSlot.className = 'slot';
+        newSlot.innerHTML = `
+          <input type="hidden" name="slots[${newId}][day_of_week]" value="${dayIndex}">
+          <div class="field has-addons">
+            <div class="control">
+              <div class="select is-fullwidth">
+                <select name="slots[${newId}][start_time]" class="time-input start-time">
+                  <option value="">Select Start</option>
+                  ${optionsHtml}
+                </select>
+              </div>
+            </div>
+            <div class="control">
+              <div class="select is-fullwidth">
+                <select name="slots[${newId}][end_time]" class="time-input end-time">
+                  <option value="">Select End</option>
+                  ${optionsHtml}
+                </select>
+              </div>
+            </div>
+            <div class="control">
+              <button type="button" class="button is-danger is-light delete-slot">Delete</button>
+            </div>
+          </div>
+          <p class="help is-danger" style="display: none;"></p>
+        `;
+
+        slotsContainer.appendChild(newSlot);
+
+        newSlot.querySelector('.delete-slot').addEventListener('click', function() {
+          this.closest('.slot').remove();
+        });
+      });
     });
 
-    if (!isValid) {
-      e.preventDefault();
-      submitButton.classList.remove('is-loading');
-      submitButton.disabled = false;
+    // Step 11: Delete slot functionality (unchanged)
+    document.querySelectorAll('.delete-slot').forEach(button => {
+      button.addEventListener('click', function() {
+        const slot = this.closest('.slot');
+        const slotId = this.dataset.availabilityId;
+
+        if (slotId) {
+          slot.classList.add('marked-for-deletion');
+          let hiddenInput = document.querySelector(`input[name="deleted_slots[${slotId}]"]`);
+          if (!hiddenInput) {
+            hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = `deleted_slots[${slotId}]`;
+            document.getElementById('availability-form').appendChild(hiddenInput);
+          }
+          hiddenInput.value = '1';
+        } else {
+          slot.remove();
+        }
+      });
+    });
+
+    // Step 12: Form submission (unchanged)
+    document.getElementById('availability-form').addEventListener('submit', function(e) {
+      const submitButton = document.getElementById('submit-button');
+      submitButton.classList.add('is-loading');
+      submitButton.disabled = true;
+
+      let isValid = true;
 
       if (!showingPsychologistTime) {
-        updateTimeDisplays(browserTimezone);
+        updateTimeDisplays(psychologistTimezone);
       }
 
-      const firstError = document.querySelector('.help.is-danger[style*="block"]');
-      if (firstError) {
-        firstError.closest('.slot').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      document.querySelectorAll('.slot:not(.marked-for-deletion)').forEach(slot => {
+        const startSelect = slot.querySelector('.start-time');
+        const endSelect = slot.querySelector('.end-time');
+        const errorElement = slot.querySelector('.help.is-danger');
+
+        errorElement.textContent = '';
+        errorElement.style.display = 'none';
+
+        const startValue = startSelect.value;
+        const endValue = endSelect.value;
+
+        if (!startValue && !endValue) {
+          return;
+        }
+
+        if (!startValue || !endValue) {
+          errorElement.textContent = 'Both start and end times must be selected.';
+          errorElement.style.display = 'block';
+          isValid = false;
+          return;
+        }
+
+        const [startHour, startMinute] = startValue.split(':').map(Number);
+        const [endHour, endMinute] = endValue.split(':').map(Number);
+
+        if (endHour < startHour || (endHour === startHour && endMinute <= startMinute)) {
+          errorElement.textContent = 'End time must be after start time.';
+          errorElement.style.display = 'block';
+          isValid = false;
+        }
+      });
+
+      if (!isValid) {
+        e.preventDefault();
+        submitButton.classList.remove('is-loading');
+        submitButton.disabled = false;
+
+        if (!showingPsychologistTime) {
+          updateTimeDisplays(browserTimezone);
+        }
+
+        const firstError = document.querySelector('.help.is-danger[style*="block"]');
+        if (firstError) {
+          firstError.closest('.slot').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
       }
-    }
+    });
   });
-});
 
 </script>
 

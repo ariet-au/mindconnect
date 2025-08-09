@@ -4,74 +4,180 @@
   <h1 class="title has-text-centered mb-4">Choose a Time</h1>
 
   <div class="box p-5 has-shadow">
-    <div class="mb-4">
-      <%= form_with url: choose_time_path, method: :get, local: true, class: "control" do |form| %>
-        <%= form.hidden_field :psychologist_id, value: @psychologist.id %>
-        <%= form.hidden_field :service_id, value: @service.id %>
+    <p class="has-text-centered has-text-grey-light mb-4">
+      Select a date to see available times. Dates with availability are marked.
+    </p>
 
-        <div class="field">
-          <%= form.label :date, "Select Date", class: "label" %>
-          <div class="control">
-            <%= form.date_field :date, value: @date || Date.today, class: "input" %>
-          </div>
-        </div>
-
-        <div class="field">
-          <div class="control">
-            <%= form.submit "Update Availability", class: "button is-primary" %>
+    <!-- Calendar container -->
+    <div class="columns is-multiline is-mobile is-centered calendar-container">
+      <%# Iterate through the dates in @time_slots to build the calendar %>
+      <% (@time_slots.keys.min..@time_slots.keys.max).each do |date| %>
+        <div class="column is-one-fifth-mobile is-one-sixth-tablet is-one-seventh-desktop has-text-centered">
+          <%# Check if the date has any available slots %>
+          <% has_availability = @time_slots[date].present? %>
+          <div 
+            class="is-flex is-flex-direction-column is-align-items-center is-justify-content-center py-2 px-1 calendar-day <%= 'has-availability' if has_availability %>" 
+            data-date="<%= date.iso8601 %>"
+          >
+            <strong class="is-size-7"><%= date.strftime("%a") %></strong>
+            <span class="title is-4"><%= date.day %></span>
+            <% if has_availability %>
+              <div class="availability-dot"></div>
+            <% end %>
           </div>
         </div>
       <% end %>
     </div>
 
-    <div class="columns is-multiline">
-      <% @time_slots.each do |utc_time| %>
-        <% slot_end_time = (Time.parse(utc_time) + @service.duration_minutes.minutes).utc.iso8601 %>
-
-        <div class="column is-one-third">
-          <%= link_to assign_client_path(
-                psychologist_id: @psychologist.id,
-                service_id: @service.id,
-                selected_time: utc_time,
-                date: @date
-              ),
-              class: "button is-success is-fullwidth utc-date-time-range",
-              data: { utc: utc_time } do %>
-
-            <span class="local-time">Loading...</span>
-          <% end %>
-        </div>
-      <% end %>
+    <!-- Container for dynamic time slots -->
+    <div id="time-slots-container" class="mt-5">
+      <h2 class="title is-5" id="selected-date-title" style="display: none;"></h2>
+      <div class="columns is-multiline is-mobile" id="slots-display">
+        <!-- Time slots will be injected here by JavaScript -->
+      </div>
     </div>
+
+    <% if @time_slots.empty? %>
+      <p class="has-text-centered has-text-grey-light">No available slots in the next two weeks.</p>
+    <% end %>
   </div>
 </div>
 
+<style>
+  .calendar-day {
+    cursor: pointer;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+    position: relative;
+    border: 1px solid transparent;
+  }
+  .calendar-day:hover {
+    background-color: #f5f5f5;
+  }
+  .calendar-day.is-active {
+    background-color: #3273dc;
+    color: white;
+    border: 1px solid #3273dc;
+  }
+  .calendar-day.is-active strong, .calendar-day.is-active span {
+    color: white;
+  }
+  .availability-dot {
+    position: absolute;
+    bottom: 5px;
+    width: 6px;
+    height: 6px;
+    background-color: #3273dc;
+    border-radius: 50%;
+  }
+  .calendar-day.is-active .availability-dot {
+    background-color: white;
+  }
+</style>
+
 <script>
-  document.addEventListener("turbo:load", function () {
+  // Store the available slots data from the server
+  const timeSlotsData = JSON.parse('<%= @time_slots.to_json.html_safe %>');
+  console.log("Full two-week availability data:", timeSlotsData);
+
+  // Function to format the date for display
+  function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
+  }
+
+  // Function to create and inject the time slot buttons
+  function renderTimeSlots(dateString) {
+    const slotsDisplay = document.getElementById('slots-display');
+    const selectedDateTitle = document.getElementById('selected-date-title');
+    slotsDisplay.innerHTML = ''; // Clear previous slots
+    
+    selectedDateTitle.textContent = formatDate(dateString);
+    selectedDateTitle.style.display = 'block';
+
+    const slotsForDay = timeSlotsData[dateString] || [];
+    
+    // DEBUG: Log the slots for the selected day
+    console.log(`Time slots for selected date (${dateString}):`, slotsForDay);
+
+    if (slotsForDay.length === 0) {
+      slotsDisplay.innerHTML = `<div class="column is-full"><p class="has-text-centered has-text-grey-light">No available slots for this day.</p></div>`;
+      return;
+    }
+
+    slotsForDay.forEach(utcTime => {
+      const column = document.createElement('div');
+      column.className = 'column is-one-third-desktop is-half-tablet is-full-mobile';
+
+      const link = document.createElement('a');
+      // Construct the URL with all necessary parameters
+      const urlParams = new URLSearchParams({
+        psychologist_id: '<%= @psychologist.id %>',
+        service_id: '<%= @service.id %>',
+        selected_time: utcTime,
+        date: dateString
+      });
+      link.href = `assign_client?${urlParams.toString()}`;
+      link.className = 'button is-success is-fullwidth utc-date-time-range';
+      link.dataset.utc = utcTime;
+      
+      const span = document.createElement('span');
+      span.className = 'local-time';
+      span.textContent = 'Loading...';
+
+      link.appendChild(span);
+      column.appendChild(link);
+      slotsDisplay.appendChild(column);
+    });
+
+    // Run the timezone conversion for the newly rendered slots
+    updateLocalTimes();
+  }
+
+  // This is the original function to convert UTC times to local times
+  function updateLocalTimes() {
     document.querySelectorAll(".utc-date-time-range").forEach(function (el) {
       const utcString = el.dataset.utc;
       if (!utcString) return;
 
       const utcDate = new Date(utcString);
+      
+      const hour = String(utcDate.getHours()).padStart(2, '0');
+      const minute = String(utcDate.getMinutes()).padStart(2, '0');
+      const localTimeStr = `${hour}:${minute}`;
 
-      // Get browser local time in 12h format
-      const optionsTime = { hour: "2-digit", minute: "2-digit", hour12: true };
-
-      const localTimeStr = utcDate.toLocaleTimeString(undefined, optionsTime);
-
-      // Get browser timezone short name (like "AEDT", "PST", "GMT")
-      const tzName = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-      // Simple way to get short timezone abbreviation:
-      // Using toLocaleTimeString with timeZoneName: 'short' and slicing abbreviation
       const tzShort = utcDate.toLocaleTimeString(undefined, { timeZoneName: "short" }).split(' ').pop();
 
-      // Set local time text with timezone abbreviation
       const localTimeSpan = el.querySelector(".local-time");
       if (localTimeSpan) {
         localTimeSpan.textContent = `${localTimeStr} (${tzShort})`;
       }
     });
+  }
+
+  // Attach event listeners to the calendar days
+  document.addEventListener("turbo:load", function () {
+    const calendarDays = document.querySelectorAll('.calendar-day');
+
+    // Add a click listener to each calendar day
+    calendarDays.forEach(day => {
+      day.addEventListener('click', () => {
+        const date = day.dataset.date;
+        
+        // Remove active class from all other days
+        calendarDays.forEach(d => d.classList.remove('is-active'));
+        // Add active class to the clicked day
+        day.classList.add('is-active');
+
+        // Render the slots for the selected date
+        renderTimeSlots(date);
+      });
+    });
+
+    // Automatically select the first day with availability on page load
+    const firstAvailableDay = document.querySelector('.calendar-day.has-availability');
+    if (firstAvailableDay) {
+      firstAvailableDay.click();
+    }
   });
 </script>
-
