@@ -1,3 +1,4 @@
+# app/controllers/bookings_controller.rb
 class BookingsController < ApplicationController
   #skip_before_action :set_psychologist_profile, only: [:dynamic_select]
   before_action :authenticate_user!, except: [:confirm_form, :confirm]
@@ -93,20 +94,20 @@ class BookingsController < ApplicationController
   end
 
   def new_with_service_selection
-      @psychologist_profile = PsychologistProfile.find(params[:psychologist_profile_id])
-      
-      # Determine the timezone for display
-      @display_timezone = params[:browser_timezone] || session[:browser_timezone] || cookies[:browser_timezone] || @psychologist_profile.timezone.presence || 'UTC'
-      
-      # Get all services for this psychologist
-      @services = @psychologist_profile.services # Assuming you have an active scope
-      
-      # Set default service or get from params
-      @selected_service = if params[:service_id].present?
-        @services.find(params[:service_id])
-      else
-        @services.first
-      end
+    @psychologist_profile = PsychologistProfile.find(params[:psychologist_profile_id])
+    
+    # Determine the timezone for display
+    @display_timezone = params[:browser_timezone] || session[:browser_timezone] || cookies[:browser_timezone] || @psychologist_profile.timezone.presence || 'UTC'
+    
+    # Get all services for this psychologist
+    @services = @psychologist_profile.services # Assuming you have an active scope
+    
+    # Set default service or get from params
+    @selected_service = if params[:service_id].present?
+      @services.find(params[:service_id])
+    else
+      @services.first
+    end
     
     # Initialize available slots if we have a service
     @available_slots = {}
@@ -274,7 +275,7 @@ class BookingsController < ApplicationController
   def confirm
   @booking = Booking.find(params[:id])
   if (params[:token].present? && @booking.confirmation_token == params[:token]) ||
-     (current_user&.psychologist? && @booking.psychologist_profile.user == current_user)
+      (current_user&.psychologist? && @booking.psychologist_profile.user == current_user)
     if @booking.pending?
       @booking.update(status: 'confirmed', confirmation_token: nil) if params[:token].present?
       @booking.update(status: 'confirmed') unless params[:token].present?
@@ -292,7 +293,7 @@ end
 def decline
   @booking = Booking.find(params[:id])
   if (params[:token].present? && @booking.confirmation_token == params[:token]) ||
-     (current_user&.psychologist? && @booking.psychologist_profile.user == current_user)
+      (current_user&.psychologist? && @booking.psychologist_profile.user == current_user)
     if @booking.pending?
       @booking.update(status: 'declined', confirmation_token: nil) if params[:token].present?
       @booking.update(status: 'declined') unless params[:token].present?
@@ -311,8 +312,8 @@ end
   def psychologist_bookings
     if current_user&.psychologist_profile
       @bookings = Booking.includes(:client_profile, :internal_client_profile, :service)
-                   .where(psychologist_profile_id: current_user.psychologist_profile.id)
-                   .order(start_time: :desc)
+                     .where(psychologist_profile_id: current_user.psychologist_profile.id)
+                     .order(start_time: :desc)
     else
       redirect_to root_path, alert: "You must be logged in as a psychologist to view this page."
     end
@@ -348,7 +349,7 @@ end
       puts "Availabilities for day #{day_of_week}: #{availabilities.inspect}"
 
       unavailabilities = Booking.where(psychologist_profile_id: @psychologist.id)
-                                .where("start_time >= ? AND start_time < ?", date.beginning_of_day, date.end_of_day)
+                                 .where("start_time >= ? AND start_time < ?", date.beginning_of_day, date.end_of_day)
       puts "Existing bookings for #{date}: #{unavailabilities.inspect}"
       puts "--- End Debugging ---"
       
@@ -430,11 +431,17 @@ end
       .map { |u| { start_time: u.start_time.utc, end_time: u.end_time.utc } }
 
     availabilities.each do |avail|
-      # FIX: Use the psychologist's timezone to correctly build the local start and end times.
-      # This prevents a double conversion and ensures the times are accurate.
+      # FIX: This section has been updated.
+      # The start_time_of_day from the database is a UTC time with a dummy date.
+      # We first convert this UTC time to the psychologist's local timezone.
+      # This prevents a double conversion and ensures the correct local hour/minute are used.
       timezone_object = ActiveSupport::TimeZone[avail.timezone]
-      start_time_local = timezone_object.local(date.year, date.month, date.day, avail.start_time_of_day.hour, avail.start_time_of_day.min)
-      end_time_local   = timezone_object.local(date.year, date.month, date.day, avail.end_time_of_day.hour, avail.end_time_of_day.min)
+      
+      start_time_local_from_avail = avail.start_time_of_day.in_time_zone(timezone_object)
+      end_time_local_from_avail   = avail.end_time_of_day.in_time_zone(timezone_object)
+
+      start_time_local = timezone_object.local(date.year, date.month, date.day, start_time_local_from_avail.hour, start_time_local_from_avail.min)
+      end_time_local   = timezone_object.local(date.year, date.month, date.day, end_time_local_from_avail.hour, end_time_local_from_avail.min)
 
       # Convert these local times to UTC for all comparisons
       start_time = start_time_local.utc
@@ -469,7 +476,7 @@ end
 
 
 
- def booking_conflicts?
+  def booking_conflicts?
     start_time = @booking.start_time
     end_time = @booking.end_time
     psychologist_profile_id = @booking.psychologist_profile_id
