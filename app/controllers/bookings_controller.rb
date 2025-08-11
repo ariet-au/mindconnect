@@ -1,4 +1,6 @@
 # app/controllers/bookings_controller.rb
+require_relative '../models/booking' # <--- ADDED THIS LINE
+
 class BookingsController < ApplicationController
   #skip_before_action :set_psychologist_profile, only: [:dynamic_select]
   before_action :authenticate_user!, except: [:confirm_form, :confirm]
@@ -459,6 +461,7 @@ end
 
         # Check for overlap with existing bookings
         overlaps_booking = Booking.where(psychologist_profile: psychologist)
+                                  .where.not(status: ['declined', 'cancelled'])
                                   .where("start_time < ? AND end_time > ?", slot_end, current_time)
                                   .exists?
 
@@ -483,6 +486,7 @@ end
 
     overlapping_bookings = Booking.where(psychologist_profile_id: psychologist_profile_id)
                                  .where.not(id: @booking.id)
+                                 .where.not(status: ['declined', 'cancelled'])
                                  .where('start_time < ? AND end_time > ?', end_time, start_time)
     return true if overlapping_bookings.exists?
 

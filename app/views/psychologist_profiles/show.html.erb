@@ -1,40 +1,10 @@
 <p style="color: green"><%= notice %></p>
 
 
- <% if @psychologist_profile.user == current_user %>
-      <div class="psychologist-nav">
-        <div class="nav-content">
-          <h3 class="nav-title">
-            <i class="fas fa-user-cog"></i>
-            <%= t('psychologist_profiles.show.dashboard') %>
-          </h3>
-          <div class="nav-actions">
-
-            <%= link_to psychologist_dashboard_path, class: "button is-primary-blue is-small" do %>
-              <span class="icon"><i class="fas fa-calendar"></i></span>
-              <span><%= t('psychologist_profiles.show.dashboard') %></span>
-            <% end %>
-
-          
-          </div>
-        </div>
-      </div>
-    <% end %>
 
  
  
 <%= render @psychologist_profile %>
-
-<div>
-
-
-  <%#
-<%= button_to "Destroy this psychologist profile",
-              @psychologist_profile,
-              method: :delete,
-              data: { confirm: "Are you sure you want to delete this profile?" },
-              form_class: "mt-4", # optional margin-top
-              class: "button is-danger is-light" %>%>
 
 
 

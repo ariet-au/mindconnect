@@ -64,6 +64,10 @@ Rails.application.routes.draw do
 
     # Psychologist profiles and nested resources
     resources :psychologist_profiles do
+      member do 
+         get 'show_mob'
+         get 'show_mob2'
+      end
       get :available_slots, on: :member
 
       resources :educations, only: [:new, :create, :edit, :update, :destroy]

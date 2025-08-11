@@ -14,7 +14,9 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable,:confirmable # Add this line
 
      
-
+  def remember_me
+    true
+  end
  after_create :create_associated_profile
 
   private

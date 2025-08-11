@@ -39,30 +39,38 @@
                 <span><%= t('psychologist_profiles.show.certified') %></span>
               </span>
             <% end %>
-           
+           <% if @psychologist_profile.years_of_experience.present? %>
             <span class="badge-item">
               <i class="fas fa-clock icon-time"></i>
               <span><%= t('psychologist_profiles.show.years_experience', count: @psychologist_profile.years_of_experience) %></span>
             </span>
+            <% end %>
           </div>
+          <% if @psychologist_profile.country.present? %>
           <div class="profile-location">
             <i class="fas fa-map-marker-alt icon-location"></i>
             <span>
-              <%= t("cities.#{@psychologist_profile.city.downcase.gsub(' ', '_').gsub('-', '_')}", default: @psychologist_profile.city) %>, 
-              <%= t("countries.#{@psychologist_profile.country.downcase.gsub(' ', '_').gsub('-', '_')}", default: @psychologist_profile.country) %>
+              <% if @psychologist_profile.city.present? %>
+                <%= t("cities.#{@psychologist_profile.city.downcase.gsub(' ', '_').gsub('-', '_')}", default: @psychologist_profile.city) %>, 
+              <% end %>
+              
+                <%= t("countries.#{@psychologist_profile.country.downcase.gsub(' ', '_').gsub('-', '_')}", default: @psychologist_profile.country) %>
+              
             </span>
 
      
             <% if @psychologist_profile.address.present? %>
               <span>• <%= @psychologist_profile.address %></span>
             <% end %>
-            <% if @psychologist_profile.timezone.present? %>
+            
+          </div>
+          <% end %>
+          <% if @psychologist_profile.timezone.present? %>
               <span>
                 <i class="fas fa-globe icon-timezone"></i>
                 <%= format_timezone_offset(@psychologist_profile.timezone) %>
-              </span>
+               </span>
             <% end %>
-          </div>
         </div>
       </div>
     </div>
@@ -117,30 +125,29 @@
           <% end %>
         </div>
       </div>
-    <% else %>
-      <p class="empty-text"><%= t('psychologist_profiles.show.no_education_details') %></p>
     <% end %>
 
-
+<% if @psychologist_profile.about_issues.present? %>
     <div class="profile-section">
       <h2 class="section-title"><i class="fas fa-heart icon-issues"></i><%= t('psychologist_profiles.show.areas_of_focus') %></h2>
       <div class="section-content">
-        <% if @psychologist_profile.about_issues.present? %>
+        
           <p class="section-description"><%= simple_format(@psychologist_profile.about_issues) %></p>
-        <% end %>
+        
       </div>
     </div>
-
+<% end %>
+<% if @psychologist_profile.about_clients.present? %>
         <div class="profile-section">
       <h2 class="section-title"><i class="fas fa-users icon-clients"></i><%= t('psychologist_search.client_types_label') %></h2>
       <div class="section-content">
-        <% if @psychologist_profile.about_clients.present? %>
+        
           <p class="section-description"><%= simple_format(@psychologist_profile.about_clients) %></p>
-        <% end %>
+       
       </div>
     </div>
-
-
+ <% end %>
+<% if @psychologist_profile.specialties.any? %>
     <div class="profile-section">
       <h2 class="section-title"><i class="fas fa-star icon-specialization"></i><%= t('psychologist_search.specialties_label') %></h2>
       <div class="section-content">
@@ -158,7 +165,7 @@
         </div>
       </div>
     </div>
-
+ <% end %>
 
     <div class="profile-section">
       <div class="section-header">
@@ -329,936 +336,769 @@
 </div>
 
 <style>
-:root {
-  --primary-main: #2C3E50; /* The core dark blue/grey */
-  --primary-light: #34495e; /* Slightly lighter shade of primary for accents */
-  --primary-dark: #1A2B3C; /* Darker shade for hover states */
+  :root {
+    --primary-main: #2C3E50;
+    --primary-light: #34495e;
+    --primary-dark: #1A2B3C;
+    --accent-blue: #1e88e5;
+    --accent-dark-blue: #1565c0;
+    --text-primary: #333333;
+    --text-secondary: #555555;
+    --text-light: #888888;
+    --text-white: #ffffff;
+    --bg-page: #f8f9fa;
+    --bg-card: #ffffff;
+    --bg-light-accent: #eef2f5;
+    --border-color: #e0e0e0;
+    --shadow-subtle: 0 2px 8px rgba(0,0,0,0.08);
+    --shadow-card: 0 6px 20px rgba(0,0,0,0.08);
+    --color-doctor: #27ae60;
+    --color-certified: #F39237;
+    --color-specialization: #F39237;
+    --color-clients: #0EB1D2;
+    --color-issues: #BF1363;
+    --color-telegram: #0088cc;
+    --color-whatsapp: #25d366;
+    --warning-color: #BF1363;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    line-height: 1.65;
+    font-size: 16px;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
 
-  --accent-blue: #1e88e5; /* Reintroduced vibrant blue for specific sections */
-  --accent-dark-blue: #1565c0; /* Darker vibrant blue for hover states */
-
-  --text-primary: #333333; /* Dark text for main content */
-  --text-secondary: #555555; /* Medium grey for secondary text */
-  --text-light: #888888; /* Lighter grey for subtle text */
-  --text-white: #ffffff; /* White text for dark backgrounds */
-
-  --bg-page: #f8f9fa; /* Very light grey for overall page background */
-  --bg-card: #ffffff; /* White for main card background */
-  --bg-light-accent: #eef2f5; /* Light grey-blue for subtle backgrounds (e.g., tags, credentials) */
-  --bg-section-alt: #fcfcfc; /* Very subtle off-white for alternating section backgrounds (reverted) */
-
-  --border-color: #e0e0e0; /* Light grey for general borders */
-  --shadow-subtle: 0 2px 8px rgba(0,0,0,0.08);
-  --shadow-card: 0 6px 20px rgba(0,0,0,0.08);
-
-  /* Semantic Colors - adjusted to fit the new palette */
-  --color-education: var(--primary-light); /* Will be hidden */
-  --color-time: var(--text-secondary);
-  --color-location: var(--primary-light);
-  --color-doctor: #27ae60; /* Muted Green */
-  --color-certified: #F39237; /* New Orange for Certified */
-  --color-timezone: var(--primary-light); /* Will be hidden */
-  --color-about: var(--primary-light);
-  --color-experience: var(--primary-light);
-  --color-specialization: #F39237; /* New Orange for Specialization */
-  --color-clients: #0EB1D2; /* New Teal for Clients */
-  --color-issues: #BF1363; /* New Magenta for Issues */
-  --color-services: var(--primary-light);
-  --color-contact: var(--primary-light);
-  --color-price: #27ae60; /* Muted Green */
-  --color-duration: var(--text-secondary);
-  --color-email: var(--primary-light);
-  --color-telegram: #0088cc; /* Keep Telegram blue */
-  --color-whatsapp: #25d366; /* Keep WhatsApp green */
-  --color-phone: var(--primary-light);
-  --warning-color: #BF1363; /* New Magenta for unavailable status */
-}
-
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: var(--bg-page);
-  color: var(--text-primary);
-  line-height: 1.65;
-  font-size: 16px;
-  margin: 0;
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh;
-  box-sizing: border-box;
-}
-
-.profile-container {
-  max-width: 960px;
-  margin: 2rem auto;
-  padding: 0 1.5rem;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.profile-card {
-  background: var(--bg-card);
-  border-radius: 16px;
-  box-shadow: var(--shadow-card);
-  border: none;
-  overflow: hidden;
-  transition: transform 0.3s ease;
-  padding: 0;
-  margin-bottom: 30px;
-}
-
-.profile-card:hover {
-  transform: translateY(-4px);
-}
-
-/* Icon Colors (using new variables) */
-.icon-education { color: var(--color-education) !important; }
-.icon-time { color: var(--color-time) !important; }
-.icon-location { color: var(--color-location) !important; }
-.icon-doctor { color: var(--color-doctor) !important; }
-.icon-certified { color: var(--color-certified) !important; }
-.icon-timezone { color: var(--color-timezone) !important; }
-.icon-about { color: var(--color-about) !important; }
-.icon-experience { color: var(--color-experience) !important; }
-.icon-specialization { color: var(--color-specialization) !important; }
-.icon-clients { color: var(--color-clients) !important; }
-.icon-issues { color: var(--color-issues) !important; }
-.icon-services { color: var(--color-services) !important; }
-.icon-contact { color: var(--color-contact) !important; }
-.icon-price { color: var(--color-price) !important; }
-.icon-duration { color: var(--color-duration) !important; }
-.icon-email { color: var(--color-email) !important; }
-.icon-telegram { color: var(--color-telegram) !important; }
-.icon-whatsapp { color: var(--color-whatsapp) !important; }
-.icon-phone { color: var(--color-phone) !important; }
-
-/* Navigation (assuming this is part of the overall page, not the profile card) */
-.psychologist-nav {
-  background: var(--bg-page);
-  padding: 1.5rem 2rem;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.nav-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.nav-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.nav-actions {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-/* Profile Header Section */
-.profile-header {
-  padding: 1.5rem 2.5rem; /* Reduced padding to make it smaller */
-  background: linear-gradient(135deg, var(--bg-light-accent) 0%, var(--bg-card) 100%);
-  border-bottom: none;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  margin-bottom: 0;
-}
-
-.header-actions {
-  position: absolute;
-  top: 1rem;
-  right: 1.5rem;
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.profile-info {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  margin-top: 1rem;
-  flex-direction: column;
-  width: 100%;
-}
-
-.profile-avatar .image {
-  margin: 0;
-  transition: transform 0.3s ease;
-}
-
-.profile-avatar img {
-  border: 4px solid var(--primary-light);
-  box-shadow: var(--shadow-subtle);
-  transition: transform 0.3s ease;
-}
-
-.profile-avatar img:hover {
-  transform: scale(1.05);
-}
-
-.profile-details {
-  flex: 1;
-  width: 100%;
-}
-
-.profile-name {
-  font-size: 2.25rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 0.75rem;
-  line-height: 1.3;
-}
-
-.profile-credentials {
-  display: flex;
-  gap: 0.75rem;
-  margin-bottom: 0; /* Removed margin as education/timezone are hidden */
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-/* Hiding education and timezone credential tags */
-.credential-tag:has(.icon-education),
-.credential-tag:has(.icon-timezone) {
-  display: none;
-}
-
-.profile-badges {
-  display: flex;
-  gap: 1rem;
-  margin-top: 0.75rem; /* Adjusted margin to compensate for hidden credentials */
-  margin-bottom: 1.25rem;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.badge-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  background: var(--bg-card);
-  padding: 0.5rem 1rem;
-  border-radius: 9999px;
-  border: 1px solid var(--border-color);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-.badge-item:hover {
-  background: var(--bg-light-accent);
-  transform: translateY(-2px);
-}
-
-/* Specific badge item colors */
-.badge-item[title*="Doctor"] { color: var(--color-doctor); background-color: rgba(39, 174, 96, 0.1); }
-.badge-item[title*="Certified"] { color: var(--color-certified); background-color: rgba(243, 146, 55, 0.15); }
-.badge-item .icon-time { color: var(--color-time); background-color: var(--bg-light-accent); }
-
-
-.profile-location {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  justify-content: center;
-  margin-bottom: 0;
-}
-
-/* Section Styles - No Alternating Backgrounds */
-.profile-section {
-  padding: 2.5rem 2rem;
-  border-bottom: 1px solid var(--border-color);
-  background-color: var(--bg-card); /* All sections white */
-  transition: background-color 0.3s ease;
-}
-
-.profile-section:hover {
-  background: var(--bg-section-alt); /* Subtle hover background for sections */
-}
-
-.profile-section:last-child {
-  border-bottom: none;
-}
-
-.section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.section-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0;
-}
-
-.section-title i {
-  font-size: 1.25rem;
-  color: var(--primary-light);
-}
-
-.section-content {
-  color: var(--text-secondary);
-  line-height: 1.75;
-}
-
-.section-description {
-  margin-bottom: 1.5rem;
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-}
-
-.empty-text {
-  color: var(--text-light);
-  font-style: italic;
-  text-align: center;
-  padding: 15px 0;
-  border: 1px dashed var(--border-color);
-  border-radius: 8px;
-  margin-top: 20px;
-}
-
-/* Video Wrapper */
-.video-wrapper {
-  margin-top: 1.5rem;
-  position: relative;
-  padding-bottom: 56.25%;
-  height: 0;
-  overflow: hidden;
-  border-radius: 12px;
-  box-shadow: var(--shadow-subtle);
-  transition: transform 0.3s ease;
-}
-
-.video-wrapper:hover {
-  transform: scale(1.02);
-}
-
-.video-wrapper iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-/* Education/Experience Item */
-.experience-item {
-  padding: 1.5rem;
-  background: var(--bg-light-accent);
-  border-radius: 12px;
-  border-left: 4px solid var(--color-experience);
-  margin-bottom: 1.5rem;
-  box-shadow: var(--shadow-subtle);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.experience-item:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.experience-header h3 {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.5rem;
-}
-
-.experience-type {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-}
-
-/* Tags Container */
-.tags-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 1rem;
-}
-
-.tag-item {
-  background: var(--bg-light-accent);
-  border: 1px solid var(--border-color);
-  border-radius: 9999px;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  color: var(--primary-light);
-  transition: all 0.3s ease;
-}
-
-.tag-item:hover {
-  background: var(--primary-main);
-  color: var(--text-white);
-  border-color: var(--primary-main);
-  transform: translateY(-2px);
-}
-
-.tag-item.featured {
-  background: rgba(243, 146, 55, 0.15);
-  border-color: var(--color-specialization);
-  color: var(--color-specialization);
-}
-
-/* Services Offered */
-.services-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 1.5rem;
-}
-
-.service-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: var(--shadow-subtle);
-  transition: all 0.3s ease;
-}
-
-.service-card:hover {
-  box-shadow: var(--shadow-card);
-  border-color: var(--primary-light);
-  transform: translateY(-4px);
-}
-
-.service-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 1rem;
-}
-
-.service-meta {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-}
-
-.service-price,
-.service-duration {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-}
-
-.service-price {
-    color: var(--accent-blue);
-    font-weight: 600;
-}
-
-.service-delivery {
-  margin-bottom: 1rem;
-}
-
-.delivery-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.delivery-badge.online {
-  background: rgba(14, 177, 210, 0.15);
-  color: var(--color-clients);
-}
-
-.delivery-badge.in-person {
-  background: rgba(39, 174, 96, 0.15);
-  color: var(--color-doctor);
-}
-
-.service-description {
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  margin-bottom: 1.5rem;
-}
-
-.service-actions .button {
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.service-actions .button:hover {
-  background-color: var(--accent-dark-blue);
-  transform: translateY(-2px);
-}
-
-/* Contact Information */
-.primary-contact {
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-
-.contact-cta {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.75rem;
-  background: var(--accent-blue);
-  color: var(--text-white);
-  padding: 0.75rem 1.5rem;
-  border-radius: 8px;
-  text-decoration: none;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  width: 100%; /* Make it wide */
-  box-sizing: border-box;
-}
-
-.contact-cta:hover {
-  background: var(--accent-dark-blue);
-  transform: translateY(-2px);
-}
-
-.toggle-contacts {
-  background: none;
-  border: none;
-  color: var(--accent-blue);
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0;
-  margin-bottom: 1rem;
-  width: 100%;
-  justify-content: center;
-  transition: color 0.2s ease;
-}
-
-.toggle-contacts:hover {
-  color: var(--accent-dark-blue);
-}
-
-.contact-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.contact-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 1rem;
-  background: var(--bg-card);
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-subtle);
-  transition: transform 0.3s ease;
-}
-
-.contact-item:hover {
-  transform: translateY(-2px);
-}
-
-.contact-info {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.contact-info i {
-  width: 16px;
-  color: var(--accent-blue);
-}
-
-.contact-label {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  min-width: 80px;
-}
-
-.contact-actions {
-  display: flex;
-  gap: 0.5rem;
-  align-items: center;
-}
-
-.contact-input {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
-  color: var(--text-primary);
-  width: 220px;
-  transition: border-color 0.2s ease;
-}
-
-.contact-input:focus {
-  border-color: var(--accent-blue);
-}
-
-.copy-button,
-.contact-link {
-  background: rgba(30, 136, 229, 0.1);
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  padding: 0.5rem 0.75rem;
-  color: var(--accent-blue);
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.copy-button:hover,
-.contact-link:hover {
-  background: var(--accent-blue);
-  color: var(--text-white);
-  border-color: var(--accent-blue);
-  transform: translateY(-2px);
-}
-
-/* Bulma-like Button Styles */
-.button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 20px;
-  font-size: 0.9em;
-  font-weight: 600;
-  border-radius: 8px;
-  cursor: pointer;
-  text-decoration: none;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
-  border: none;
-}
-
-.button.is-primary-blue {
-  background-color: var(--bg-card);
-  border: 1px solid var(--accent-blue);
-  color: var(--accent-blue);
-  box-shadow: none;
-  font-weight: 500;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
-
-.button.is-primary-blue:hover,
-.button.is-primary-blue.is-hovered {
-  background-color: var(--accent-blue);
-  border-color: var(--accent-blue);
-  color: var(--text-white);
-  transform: translateY(-2px);
-}
-
-.button.is-small {
-  padding: 8px 15px;
-  font-size: 0.85em;
-  border-radius: 6px;
-}
-
-.button .icon {
-  margin-right: 8px;
-}
-
-.button.is-fullwidth {
-  width: 100%;
-  display: block;
-  margin-top: 15px;
-}
-
-.button.is-info {
-  background-color: var(--bg-card);
-  border: 1px solid var(--color-specialization);
-  color: var(--color-specialization);
-  box-shadow: none;
-  font-weight: 500;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
-
-.button.is-info:hover,
-.button.is-info.is-hovered {
-  background-color: var(--color-specialization);
-  border-color: var(--color-specialization);
-  color: var(--text-white);
-  transform: translateY(-2px);
-}
-
-/* Availability Banner */
-.availability-banner {
-  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light-accent) 100%);
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin-bottom: 1.5rem;
-  box-shadow: var(--shadow-subtle);
-  transition: all 0.3s ease;
-}
-
-.availability-banner:hover {
-  box-shadow: var(--shadow-card);
-  transform: translateY(-4px);
-}
-
-.availability-content {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.availability-icon {
-  background: var(--accent-blue);
-  color: var(--text-white);
-  width: 3rem;
-  height: 3rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.25rem;
-  flex-shrink: 0;
-  box-shadow: var(--shadow-subtle);
-  transition: transform 0.3s ease;
-}
-
-.availability-icon:hover {
-  transform: rotate(360deg);
-}
-
-.availability-status.available .availability-icon {
-  background: var(--color-doctor);
-}
-
-.availability-status.unavailable .availability-icon {
-  background: var(--warning-color);
-}
-
-.availability-label {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-}
-
-.availability-details {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-.availability-time {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.availability-timezone {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  background: var(--bg-card);
-  padding: 0.5rem 0.75rem;
-  border-radius: 9999px;
-  border: 1px solid var(--border-color);
-}
-
-.availability-message {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  margin-top: 0.25rem;
-  font-style: italic;
-}
-
-/* Responsive Adjustments */
-@media screen and (max-width: 768px) {
   .profile-container {
-    padding: 1rem;
+    max-width: 960px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+    width: 100%;
+    box-sizing: border-box;
   }
 
+  .profile-card {
+    background: var(--bg-card);
+    border-radius: 16px;
+    box-shadow: var(--shadow-card);
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    margin-bottom: 30px;
+  }
+
+  .icon-doctor { color: var(--color-doctor) !important; }
+  .icon-certified { color: var(--color-certified) !important; }
+  .icon-specialization { color: var(--color-specialization) !important; }
+  .icon-clients { color: var(--color-clients) !important; }
+  .icon-issues { color: var(--color-issues) !important; }
+  .icon-telegram { color: var(--color-telegram) !important; }
+  .icon-whatsapp { color: var(--color-whatsapp) !important; }
+  .icon-time, .icon-location, .icon-about, .icon-experience, .icon-services, .icon-contact, .icon-price, .icon-duration, .icon-email, .icon-phone, .icon-timezone {
+    color: var(--primary-light) !important;
+  }
   .profile-header {
-    padding: 1.5rem;
-  }
-
-  .header-actions {
-    position: static;
-    margin-bottom: 1.5rem;
-    justify-content: flex-start;
-  }
-
-  .profile-info {
+    padding: 1.5rem 2.5rem;
+    background: linear-gradient(135deg, var(--bg-light-accent) 0%, var(--bg-card) 100%);
+    display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
+  }
+
+  .header-actions {
+    position: absolute;
+    top: 1rem;
+    right: 1.5rem;
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .profile-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     gap: 1.5rem;
+    margin-top: 1rem;
+    width: 100%;
+  }
+
+  .profile-avatar .image {
+    margin: 0;
+    transition: transform 0.3s ease;
+  }
+
+  .profile-avatar img {
+    border: 4px solid var(--primary-light);
+    box-shadow: var(--shadow-subtle);
+    transition: transform 0.3s ease;
+  }
+
+  .profile-avatar img:hover {
+    transform: scale(1.05);
+  }
+
+  .profile-details {
+    flex: 1;
+    width: 100%;
   }
 
   .profile-name {
-    font-size: 1.75rem;
-  }
-
-  .profile-section {
-    padding: 1.5rem;
-  }
-
-  .section-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-
-  .services-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .service-meta {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
-
-  .contact-item {
-    flex-direction: column;
-    gap: 0.75rem;
-    align-items: flex-start;
-  }
-
-  .contact-input {
-    width: 100%;
-  }
-
-  .contact-actions {
-    width: 100%;
-    justify-content: space-between;
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+    line-height: 1.3;
   }
 
   .profile-badges {
-    flex-direction: column;
+    display: flex;
+    gap: 1rem;
+    margin: 0.75rem 0 1.25rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .badge-item {
+    display: flex;
+    align-items: center;
     gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    background: var(--bg-card);
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: background-color 0.2s ease, transform 0.2s ease;
   }
 
-  .credential-tag {
-    font-size: 0.8125rem;
+  .badge-item[title*="Doctor"] { color: var(--color-doctor); background-color: rgba(39, 174, 96, 0.1); }
+  .badge-item[title*="Certified"] { color: var(--color-certified); background-color: rgba(243, 146, 55, 0.15); }
+  .badge-item .icon-time { color: var(--color-time); }
+
+  .profile-location {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    justify-content: center;
   }
 
-  .availability-content {
-    flex-direction: column;
-    text-align: center;
+  .profile-section {
+    padding: 2.5rem 2rem;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--bg-card);
+    transition: background-color 0.3s ease;
+  }
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
     gap: 0.75rem;
   }
 
-  .availability-details {
+  .section-title i {
+    font-size: 1.25rem;
+  }
+
+  .section-content {
+    color: var(--text-secondary);
+    line-height: 1.75;
+  }
+
+  .section-description {
+    margin-bottom: 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .empty-text {
+    color: var(--text-light);
+    font-style: italic;
+    text-align: center;
+    padding: 15px 0;
+    border: 1px dashed var(--border-color);
+    border-radius: 8px;
+    margin-top: 20px;
+  }
+
+  .video-wrapper {
+    margin-top: 1.5rem;
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: var(--shadow-subtle);
+    transition: transform 0.3s ease;
+  }
+
+  .video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .experience-item {
+    padding: 1.5rem;
+    background: var(--bg-light-accent);
+    border-radius: 12px;
+    border-left: 4px solid var(--primary-light);
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-subtle);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+
+  .experience-header h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .experience-type {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+
+  .tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  .tag-item {
+    background: var(--bg-light-accent);
+    border: 1px solid var(--border-color);
+    border-radius: 9999px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    color: var(--primary-light);
+    transition: all 0.3s ease;
+  }
+
+  .tag-item.featured {
+    background: rgba(243, 146, 55, 0.15);
+    border-color: var(--color-specialization);
+    color: var(--color-specialization);
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .service-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-subtle);
+    transition: all 0.3s ease;
+  }
+
+
+
+  .service-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+  }
+
+  .service-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .service-price,
+  .service-duration {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+
+  .service-price {
+    color: var(--accent-blue);
+    font-weight: 600;
+  }
+
+  .service-delivery {
+    margin-bottom: 1rem;
+  }
+
+  .delivery-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .delivery-badge.online {
+    background: rgba(14, 177, 210, 0.15);
+    color: var(--color-clients);
+  }
+
+  .delivery-badge.in-person {
+    background: rgba(39, 174, 96, 0.15);
+    color: var(--color-doctor);
+  }
+
+  .service-description {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .service-actions .button {
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+
+  .service-actions .button:hover {
+    background-color: var(--accent-dark-blue);
+
+  }
+
+  .primary-contact {
+    margin-bottom: 1.5rem;
+    text-align: center;
+  }
+
+  .contact-cta {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--accent-blue);
+    color: var(--text-white);
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .contact-cta:hover {
+    background: var(--accent-dark-blue);
+    
+  }
+
+  .toggle-contacts {
+    background: none;
+    border: none;
+    color: var(--accent-blue);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    margin-bottom: 1rem;
+    width: 100%;
+    justify-content: center;
+    transition: color 0.2s ease;
+  }
+
+  .toggle-contacts:hover {
+    color: var(--accent-dark-blue);
+  }
+
+  .contact-list {
+    display: flex;
     flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .contact-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background: var(--bg-card);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-subtle);
+    transition: transform 0.3s ease;
+  }
+
+
+
+  .contact-info {
+    display: flex;
+    align-items: center;
     gap: 0.5rem;
   }
 
-  .availability-banner {
-    padding: 1rem;
+  .contact-info i {
+    width: 16px;
+    color: var(--accent-blue);
   }
-}
+
+  .contact-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    min-width: 80px;
+  }
+
+  .contact-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .contact-input {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    width: 220px;
+    transition: border-color 0.2s ease;
+  }
+
+  .contact-input:focus {
+    border-color: var(--accent-blue);
+  }
+
+  .contact-action {
+    background: rgba(30, 136, 229, 0.1);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    color: var(--accent-blue);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .contact-action:hover {
+    background: var(--accent-blue);
+    color: var(--text-white);
+    border-color: var(--accent-blue);
+  }
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    font-size: 0.9em;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+    border: none;
+  }
+
+  .button.is-primary-blue {
+    background-color: var(--bg-card);
+    border: 1px solid var(--accent-blue);
+    color: var(--accent-blue);
+    font-weight: 500;
+    border-radius: 8px;
+  }
+
+  .button.is-primary-blue:hover {
+    background-color: var(--accent-blue);
+    border-color: var(--accent-blue);
+    color: var(--text-white);
+  }
+
+  .button.is-small {
+    padding: 8px 15px;
+    font-size: 0.85em;
+    border-radius: 6px;
+  }
+
+  .button .icon {
+    margin-right: 8px;
+  }
+
+  .button.is-fullwidth {
+    width: 100%;
+    display: block;
+    margin-top: 15px;
+  }
 
 
+
+  .availability-banner {
+    background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-light-accent) 100%);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-subtle);
+    transition: all 0.3s ease;
+  }
+
+  .availability-banner:hover {
+    box-shadow: var(--shadow-card);
+    
+  }
+
+  .availability-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .availability-icon {
+    background: var(--accent-blue);
+    color: var(--text-white);
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-subtle);
+    transition: transform 0.3s ease;
+  }
+
+
+
+  .availability-status.available .availability-icon {
+    background: var(--color-doctor);
+  }
+
+  .availability-status.unavailable .availability-icon {
+    background: var(--warning-color);
+  }
+
+  .availability-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+
+  .availability-details {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .availability-time {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .availability-timezone {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    background: var(--bg-card);
+    padding: 0.5rem 0.75rem;
+    border-radius: 9999px;
+    border: 1px solid var(--border-color);
+  }
+
+  .availability-message {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-top: 0.25rem;
+    font-style: italic;
+  }
+
+  @media screen and (max-width: 768px) {
+    .profile-container {
+      padding: 1rem;
+    }
+
+    .profile-header {
+      padding: 1.5rem;
+    }
+
+    .header-actions {
+      position: static;
+      margin-bottom: 1.5rem;
+      justify-content: flex-start;
+    }
+
+    .profile-info {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 1.5rem;
+    }
+
+    .profile-name {
+      font-size: 1.75rem;
+    }
+
+    .profile-section {
+      padding: 1.5rem;
+    }
+
+    .section-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .services-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .service-meta {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .contact-item {
+      flex-direction: column;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+
+    .contact-input {
+      width: 100%;
+    }
+
+    .contact-actions {
+      width: 100%;
+      justify-content: space-between;
+    }
+
+    .profile-badges {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .availability-content {
+      flex-direction: column;
+      text-align: center;
+      gap: 0.75rem;
+    }
+
+    .availability-details {
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .availability-banner {
+      padding: 1rem;
+    }
+  }
 </style>
 
+
 <script>
-// Define the functions separately so they can be reused
-function setupToggleButton() {
-  const toggleButton = document.querySelector('.toggle-contacts');
-  if (toggleButton) {
-    // Remove any existing event listener first to avoid duplicates
-    toggleButton.replaceWith(toggleButton.cloneNode(true));
-    const freshToggleButton = document.querySelector('.toggle-contacts');
-    
-    freshToggleButton.addEventListener('click', function() {
-      const contactList = document.querySelector('.contact-list');
-      const isExpanded = this.getAttribute('aria-expanded') === 'true';
+  // Define the functions separately so they can be reused
+  function setupToggleButton() {
+    const toggleButton = document.querySelector('.toggle-contacts');
+    if (toggleButton) {
+      // Remove any existing event listener first to avoid duplicates
+      toggleButton.replaceWith(toggleButton.cloneNode(true));
+      const freshToggleButton = document.querySelector('.toggle-contacts');
       
-      this.setAttribute('aria-expanded', !isExpanded);
-      this.querySelector('.toggle-text').textContent = isExpanded ? 'Show all contact methods' : 'Hide contact methods';
-      this.querySelector('i').classList.toggle('fa-chevron-down');
-      this.querySelector('i').classList.toggle('fa-chevron-up');
-      contactList.style.display = isExpanded ? 'none' : 'flex';
+      freshToggleButton.addEventListener('click', function() {
+        const contactList = document.querySelector('.contact-list');
+        const isExpanded = this.getAttribute('aria-expanded') === 'true';
+        
+        this.setAttribute('aria-expanded', !isExpanded);
+        this.querySelector('.toggle-text').textContent = isExpanded ? 'Show all contact methods' : 'Hide contact methods';
+        this.querySelector('i').classList.toggle('fa-chevron-down');
+        this.querySelector('i').classList.toggle('fa-chevron-up');
+        contactList.style.display = isExpanded ? 'none' : 'flex';
+      });
+    }
+  }
+
+  function setupCopyButtons() {
+    document.querySelectorAll('.copy-button').forEach(button => {
+      // Clone the button to remove any existing event listeners
+      button.replaceWith(button.cloneNode(true));
+    });
+
+    document.querySelectorAll('.copy-button').forEach(button => {
+      button.addEventListener('click', async (event) => {
+        const valueToCopy = event.currentTarget.dataset.value;
+        const icon = event.currentTarget.querySelector('i');
+        
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(valueToCopy);
+          } else {
+            // Fallback for older browsers
+            const textarea = document.createElement('textarea');
+            textarea.value = valueToCopy;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+          }
+
+          // Visual feedback
+          const originalClass = icon.className;
+          icon.className = 'fas fa-check';
+          
+          setTimeout(() => {
+            icon.className = originalClass;
+          }, 1500);
+        } catch (err) {
+          console.error('Failed to copy text: ', err);
+        }
+      });
     });
   }
-}
 
-function setupCopyButtons() {
-  document.querySelectorAll('.copy-button').forEach(button => {
-    // Clone the button to remove any existing event listeners
-    button.replaceWith(button.cloneNode(true));
-  });
+  // Initialize everything
+  function initializeComponents() {
+    setupToggleButton();
+    setupCopyButtons();
+  }
 
-  document.querySelectorAll('.copy-button').forEach(button => {
-    button.addEventListener('click', async (event) => {
-      const valueToCopy = event.currentTarget.dataset.value;
-      const icon = event.currentTarget.querySelector('i');
-      
-      try {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          await navigator.clipboard.writeText(valueToCopy);
-        } else {
-          // Fallback for older browsers
-          const textarea = document.createElement('textarea');
-          textarea.value = valueToCopy;
-          textarea.style.position = 'fixed';
-          textarea.style.opacity = '0';
-          document.body.appendChild(textarea);
-          textarea.focus();
-          textarea.select();
-          document.execCommand('copy');
-          document.body.removeChild(textarea);
-        }
+  // Set up event listeners for both turbo events
+  document.addEventListener('turbo:load', initializeComponents);
+  document.addEventListener('turbo:render', initializeComponents);
 
-        // Visual feedback
-        const originalClass = icon.className;
-        icon.className = 'fas fa-check';
-        
-        setTimeout(() => {
-          icon.className = originalClass;
-        }, 1500);
-      } catch (err) {
-        console.error('Failed to copy text: ', err);
-      }
-    });
-  });
-}
-
-// Initialize everything
-function initializeComponents() {
-  setupToggleButton();
-  setupCopyButtons();
-}
-
-// Set up event listeners for both turbo events
-document.addEventListener('turbo:load', initializeComponents);
-document.addEventListener('turbo:render', initializeComponents);
-
-// Also run once when the script loads (in case turbo isn't used)
-initializeComponents();
+  // Also run once when the script loads (in case turbo isn't used)
+  initializeComponents();
 </script>

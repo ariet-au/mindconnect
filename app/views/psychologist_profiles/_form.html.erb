@@ -139,25 +139,7 @@
       <hr>
     </div>
 
-    <div class="column is-full">
-      <div class="field">
-        <%= form.label :client_type_ids, t('psychologist_profile.labels.select_client_types'), class: "label" %>
-        <div class="control">
-          <%= form.collection_select :client_type_ids, ClientType.all, :id, :name,
-            { prompt: t('psychologist_profile.prompts.select_client_types') },
-            { multiple: true, class: "tom-select-client-types", data: { tom_select: true } } %>
-        </div>
-      </div>
-    </div>
 
-    <div class="column is-full">
-      <div class="field">
-        <%= form.label :about_clients, t('psychologist_profile.labels.about_clients'), class: "label" %>
-        <div class="control">
-          <%= form.text_area :about_clients, class: "textarea" %>
-        </div>
-      </div>
-    </div>
 
     <div class="column is-full">
       <div class="field">
@@ -175,6 +157,26 @@
         <%= form.label :about_issues, t('psychologist_profile.labels.about_issues'), class: "label" %>
         <div class="control">
           <%= form.text_area :about_issues, class: "textarea" %>
+        </div>
+      </div>
+    </div>
+
+        <div class="column is-full">
+      <div class="field">
+        <%= form.label :client_type_ids, t('psychologist_profile.labels.select_client_types'), class: "label" %>
+        <div class="control">
+          <%= form.collection_select :client_type_ids, ClientType.all, :id, :name,
+            { prompt: t('psychologist_profile.prompts.select_client_types') },
+            { multiple: true, class: "tom-select-client-types", data: { tom_select: true } } %>
+        </div>
+      </div>
+    </div>
+
+    <div class="column is-full">
+      <div class="field">
+        <%= form.label :about_clients, t('psychologist_profile.labels.about_clients'), class: "label" %>
+        <div class="control">
+          <%= form.text_area :about_clients, class: "textarea" %>
         </div>
       </div>
     </div>
