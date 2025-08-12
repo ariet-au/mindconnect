@@ -197,7 +197,7 @@ class PsychologistAvailabilitiesController < ApplicationController
     @availabilities = @psychologist_profile.psychologist_availabilities.where.not(start_time_of_day: nil, end_time_of_day: nil)
 
     Rails.logger.debug "Calendar blocks raw data: #{@availabilities.map { |a| { id: a.id, day: a.day_of_week, start: a.start_time_of_day.strftime('%H:%M:%S %Z'), end: a.end_time_of_day.strftime('%H:%M:%S %Z'), timezone: a.timezone } }}"
-
+ 
     respond_to do |format|
       format.json do
         json_data = @availabilities.map do |a|

@@ -529,39 +529,44 @@
             }
           },
           {
-            url: `/psychologist_profiles/${psychologistProfileId}/psychologist_availabilities/calendar_blocks.json`,
-            method: 'GET',
-            display: 'background',
-            color: '#d4edda',
-            eventDataTransform: function(eventData) {
-              if (eventData.startTime && eventData.endTime) {
-                const psychologistTimezone = calendar.getOption('timeZone'); // e.g., "Australia/Sydney"
+          url: `/psychologist_profiles/${psychologistProfileId}/psychologist_availabilities/calendar_blocks.json`,
+          method: 'GET',
+          display: 'background',
+          color: '#d4edda',
+          eventDataTransform: function(eventData) {
+            // Assuming your server returns `daysOfWeek`, `startTime`, `endTime`, and `timezone`
+            if (eventData.startTime && eventData.endTime) {
+              const calendarTimezone = calendar.getOption('timeZone');
+              const eventTimezone = eventData.timezone;
+
+              // Only perform a conversion if the event's timezone differs from the calendar's
+              if (eventTimezone && eventTimezone !== calendarTimezone) {
                 const currentDate = moment().format('YYYY-MM-DD');
 
-                // Parse as naive local times in psychologist's timezone
-                const startMomentLocal = moment.tz(`${currentDate}T${eventData.startTime}`, psychologistTimezone);
-                const endMomentLocal   = moment.tz(`${currentDate}T${eventData.endTime}`, psychologistTimezone);
+                // Create moments in the event's original timezone
+                const startMoment = moment.tz(`${currentDate}T${eventData.startTime}`, eventTimezone);
+                const endMoment = moment.tz(`${currentDate}T${eventData.endTime}`, eventTimezone);
 
-                // Format back to HH:mm:ss for display
-                eventData.startTime = startMomentLocal.format('HH:mm:ss');
-                eventData.endTime   = endMomentLocal.format('HH:mm:ss');
+                // Convert moments to the calendar's timezone
+                const convertedStartTime = startMoment.clone().tz(calendarTimezone).format('HH:mm:ss');
+                const convertedEndTime = endMoment.clone().tz(calendarTimezone).format('HH:mm:ss');
 
-                console.log(`[DEBUG] Showing availability for ${psychologistTimezone}: ${eventData.startTime} - ${eventData.endTime}`);
+                // Return the new event data with converted times
+                return {
+                  daysOfWeek: eventData.daysOfWeek,
+                  startTime: convertedStartTime,
+                  endTime: convertedEndTime
+                };
               }
-              return eventData;
-            },
-                      success: function(data) {
-              console.log('[DEBUG] Availability request successful.');
-              console.log('[DEBUG] Raw availability data from server:', data);
-              data.forEach(item => {
-                console.log(`[DEBUG] Raw Availability Block - Day: ${item.daysOfWeek[0]}, Start: ${item.startTime}, End: ${item.endTime}`);
-              });
-            },
-            failure: function(error) {
+            }
+            // If no conversion is needed, return the original data.
+            return eventData;
+          },
+          failure: function(error) {
               console.error('[DEBUG] Error fetching availability blocks:', error);
               showCustomAlert('Error fetching availability blocks.');
-            }
           }
+      }
         ],
         eventDidMount: function(info) {
           console.log(`[DEBUG] Event mounted: ${info.event.title || 'Availability Block'}`);
