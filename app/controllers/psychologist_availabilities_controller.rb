@@ -192,32 +192,51 @@ class PsychologistAvailabilitiesController < ApplicationController
     end
   end
 
+  # def calendar_blocks
+  #   # Fetch all psychologist availabilities
+  #   @availabilities = @psychologist_profile.psychologist_availabilities.where.not(start_time_of_day: nil, end_time_of_day: nil)
+
+  #   Rails.logger.debug "Calendar blocks raw data: #{@availabilities.map { |a| { id: a.id, day: a.day_of_week, start: a.start_time_of_day.strftime('%H:%M:%S %Z'), end: a.end_time_of_day.strftime('%H:%M:%S %Z'), timezone: a.timezone } }}"
+ 
+  #   respond_to do |format|
+  #     format.json do
+  #       json_data = @availabilities.map do |a|
+  #         # Build a DateTime object using today's date and the stored time (e.g., 06:00:00)
+  #         today = Date.current
+  #         tz = ActiveSupport::TimeZone[a.timezone]
+
+  #         # Compose today's datetime in the correct timezone
+  #         start_time = tz.parse("#{today} #{a.start_time_of_day.strftime('%H:%M:%S')}")
+  #         end_time   = tz.parse("#{today} #{a.end_time_of_day.strftime('%H:%M:%S')}")
+
+  #         # Send only the time portion in HH:MM:SS format, in current offset
+  #         {
+  #           daysOfWeek: [a.day_of_week],
+  #           startTime: start_time.strftime("%H:%M:%S"),
+  #           endTime: end_time.strftime("%H:%M:%S")
+  #         }
+  #       end
+
+  #       Rails.logger.debug "JSON output: #{json_data}"
+  #       render json: json_data
+  #     end
+  #     format.html { head :not_found }
+  #   end
+  # end
   def calendar_blocks
-    # Fetch all psychologist availabilities
     @availabilities = @psychologist_profile.psychologist_availabilities.where.not(start_time_of_day: nil, end_time_of_day: nil)
 
-    Rails.logger.debug "Calendar blocks raw data: #{@availabilities.map { |a| { id: a.id, day: a.day_of_week, start: a.start_time_of_day.strftime('%H:%M:%S %Z'), end: a.end_time_of_day.strftime('%H:%M:%S %Z'), timezone: a.timezone } }}"
- 
     respond_to do |format|
       format.json do
         json_data = @availabilities.map do |a|
-          # Build a DateTime object using today's date and the stored time (e.g., 06:00:00)
-          today = Date.current
-          tz = ActiveSupport::TimeZone[a.timezone]
-
-          # Compose today's datetime in the correct timezone
-          start_time = tz.parse("#{today} #{a.start_time_of_day.strftime('%H:%M:%S')}")
-          end_time   = tz.parse("#{today} #{a.end_time_of_day.strftime('%H:%M:%S')}")
-
-          # Send only the time portion in HH:MM:SS format, in current offset
           {
             daysOfWeek: [a.day_of_week],
-            startTime: start_time.strftime("%H:%M:%S"),
-            endTime: end_time.strftime("%H:%M:%S")
+            startTime: a.start_time_of_day.strftime("%H:%M:%S"),
+            endTime: a.end_time_of_day.strftime("%H:%M:%S"),
+            timezone: a.timezone
           }
         end
 
-        Rails.logger.debug "JSON output: #{json_data}"
         render json: json_data
       end
       format.html { head :not_found }
