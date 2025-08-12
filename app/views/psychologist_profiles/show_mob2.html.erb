@@ -23,8 +23,8 @@
         line-height: 1.6;
     }
 
-    .container {
-        max-width: 700px;
+    .container2 {
+        max-width: 1200px;
         margin: 2rem auto;
         padding: 0 1rem;
     }
@@ -344,7 +344,7 @@
     .mb-4 { margin-bottom: 1.5rem; }
 </style>
 
-<div class="container">
+<div class="container2">
     <div class="card">
         <div class="profile-header">
             <% if @psychologist_profile.profile_img.attached? %>
@@ -388,7 +388,7 @@
         <div class="button-group">
             <% if @psychologist_profile.featured_service.present? %>
                 <% service = @psychologist_profile.featured_service %>
-                <%= link_to new_service_booking_path(service), class: "button is-primary flex-1" do %>
+                <%= link_to select_service_path(psychologist_id: @psychologist_profile.id), class: "button is-primary flex-1" do %>
                     <i class="fas fa-calendar-check mr-2"></i>
                     <span><%= t('psychologist_profiles.show.book_a_session') %></span>
                 <% end %>
@@ -504,7 +504,8 @@
                                 <span class="badge" style="background-color: #FFF3E0; color: #EF6C00;"><i class="fas fa-user"></i><%= t('psychologist_search.in_person') %></span>
                             <% end %>
                         </div>
-                        <%= link_to t('psychologist_profiles.show.book_this_service'), new_service_booking_path(service), class: "button is-primary" %>
+                            <%= link_to t('psychologist_profiles.show.book_this_service'), choose_time_path(psychologist_id: @psychologist_profile.id, service_id: @psychologist_profile.featured_service) , class: "button is-primary"%>
+
                     </div>
                 </div>
             <% end %>

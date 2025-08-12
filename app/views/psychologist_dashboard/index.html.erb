@@ -633,71 +633,7 @@ dateClick: function(info) {
 </script>
 <script>
 
-    function openEditBookingModal(event) {
-      console.log("Edit booking");
-      currentEditingBookingId = event.extendedProps.bookingId || event.id;
-      const clientName = event.extendedProps.clientName || 'Unknown Client';
-      const serviceName = event.extendedProps.service_name || '';
-
-      console.log(`[DEBUG] Opening Edit Booking Modal for ID: ${currentEditingBookingId}`);
-      console.log(`[DEBUG] Event Start (UTC): ${event.start.toISOString()}`);
-
-      const eventStart = moment.tz(event.start.toISOString(), calendar.getOption('timeZone'));
-      const dateString = eventStart.format('YYYY-MM-DD');
-      const startTimeString = eventStart.format('HH:mm');
-
-      console.log(`[DEBUG] Converted to Psychologist Timezone for form: ${dateString} ${startTimeString}`);
-
-      const status = event.extendedProps.status || 'pending';
-      const notes = event.extendedProps.notes || '';
-      const createdBy = event.extendedProps.created_by || '';
-      const confirmationToken = event.extendedProps.confirmation_token || '';
-
-      document.getElementById('bookingClient').value = clientName;
-      document.getElementById('bookingService').value = event.extendedProps.service_id || '';
-      document.getElementById('bookingDate').value = dateString;
-      document.getElementById('bookingStartTime').value = startTimeString;
-      document.getElementById('bookingStatus').value = status;
-      document.getElementById('bookingNotes').value = notes;
-
-      const confirmationLinkSection = document.getElementById('confirmationLinkSection');
-      const confirmationLink = document.getElementById('confirmationLink');
-      if (status === 'pending' && createdBy === 'psychologist' && confirmationToken) {
-        const link = `/bookings/${currentEditingBookingId}/confirm?token=${confirmationToken}`;
-        confirmationLink.href = link;
-        confirmationLink.textContent = link;
-        confirmationLinkSection.style.display = 'block';
-      } else {
-        confirmationLinkSection.style.display = 'none';
-      }
-
-      document.getElementById('editBookingModal').classList.add('is-active');
-    }
-
-    function openEditUnavailabilityModal(event) {
-      console.log("Edit openEditUnavailabilityModal");
-      currentEditingUnavailabilityId = event.id;
-      console.log(`[DEBUG] Opening Edit Unavailability Modal for ID: ${currentEditingUnavailabilityId}`);
-      console.log(`[DEBUG] Event Start (UTC): ${event.start.toISOString()}, End (UTC): ${event.end.toISOString()}`);
-
-      // Use moment.utc to keep time in UTC and format in 24h
-      const eventStart = moment.utc(event.start.toISOString());
-      const eventEnd = moment.utc(event.end.toISOString());
-      const dateString = eventStart.format('YYYY-MM-DD');
-      const startTimeString = eventStart.format('HH:mm');
-      const endTimeString = eventEnd.format('HH:mm');
-
-      console.log(`[DEBUG] Showing UTC time in form: ${dateString} ${startTimeString} to ${endTimeString}`);
-
-      document.getElementById('unavailabilityDate').value = dateString;
-      document.getElementById('unavailabilityStartTime').value = startTimeString;
-      document.getElementById('unavailabilityEndTime').value = endTimeString;
-      document.getElementById('unavailabilityReason').value = event.extendedProps.reason || '';
-
-      document.getElementById('editUnavailabilityModal').classList.add('is-active');
-    }
-
-
+   
 
 
 
@@ -1171,6 +1107,72 @@ dateClick: function(info) {
         showCustomAlert('Error creating unavailability: ' + error.message);
       });
     }
+
+     function openEditBookingModal(event) {
+      console.log("Edit booking");
+      currentEditingBookingId = event.extendedProps.bookingId || event.id;
+      const clientName = event.extendedProps.clientName || 'Unknown Client';
+      const serviceName = event.extendedProps.service_name || '';
+
+      console.log(`[DEBUG] Opening Edit Booking Modal for ID: ${currentEditingBookingId}`);
+      console.log(`[DEBUG] Event Start (UTC): ${event.start.toISOString()}`);
+
+      const eventStart = moment.tz(event.start.toISOString(), calendar.getOption('timeZone'));
+      const dateString = eventStart.format('YYYY-MM-DD');
+      const startTimeString = eventStart.format('HH:mm');
+
+      console.log(`[DEBUG] Converted to Psychologist Timezone for form: ${dateString} ${startTimeString}`);
+
+      const status = event.extendedProps.status || 'pending';
+      const notes = event.extendedProps.notes || '';
+      const createdBy = event.extendedProps.created_by || '';
+      const confirmationToken = event.extendedProps.confirmation_token || '';
+  console.log('[DEBUG] service_id:', event.extendedProps.service_id, 'Type:', typeof event.extendedProps.service_id);
+      document.getElementById('bookingClient').value = clientName;
+      document.getElementById('bookingService').value = event.extendedProps.service_id || '';
+      document.getElementById('bookingDate').value = dateString;
+      document.getElementById('bookingStartTime').value = startTimeString;
+      document.getElementById('bookingStatus').value = status;
+      document.getElementById('bookingNotes').value = notes;
+
+      const confirmationLinkSection = document.getElementById('confirmationLinkSection');
+      const confirmationLink = document.getElementById('confirmationLink');
+      if (status === 'pending' && createdBy === 'psychologist' && confirmationToken) {
+        const link = `/bookings/${currentEditingBookingId}/confirm?token=${confirmationToken}`;
+        confirmationLink.href = link;
+        confirmationLink.textContent = link;
+        confirmationLinkSection.style.display = 'block';
+      } else {
+        confirmationLinkSection.style.display = 'none';
+      }
+
+      document.getElementById('editBookingModal').classList.add('is-active');
+    }
+
+function openEditUnavailabilityModal(event) {
+  console.log("Edit openEditUnavailabilityModal");
+
+  // Set the current editing ID for the save function
+  currentEditingUnavailabilityId = event.id;
+  
+  console.log(`[DEBUG] Opening Edit Unavailability Modal for ID: ${currentEditingUnavailabilityId}`);
+
+  // Get date and time strings directly from the event object
+  const dateString = event.start.toISOString().substring(0, 10);
+  const startTimeString = event.start.toISOString().substring(11, 16);
+  const endTimeString = event.end.toISOString().substring(11, 16);
+
+  console.log(`[DEBUG] Date: ${dateString}, Start Time: ${startTimeString}, End Time: ${endTimeString}`);
+
+  document.getElementById('unavailabilityDate').value = dateString;
+  document.getElementById('unavailabilityStartTime').value = startTimeString;
+  document.getElementById('unavailabilityEndTime').value = endTimeString;
+  document.getElementById('unavailabilityReason').value = event.extendedProps.reason || '';
+
+  document.getElementById('editUnavailabilityModal').classList.add('is-active');
+}
+
+
 
     function closeModal(modalId) {
                         console.log("close modal");
