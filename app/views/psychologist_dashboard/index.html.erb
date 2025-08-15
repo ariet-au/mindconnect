@@ -168,50 +168,7 @@
       </div>
     </div>
 
-    <!-- Edit Unavailability Modal -->
-    <div class="modal" id="editUnavailabilityModal">
-      <div class="modal-background"></div>
-      <div class="modal-card">
-        <header class="modal-card-head">
-          <p class="modal-card-title">Edit Unavailability</p>
-          <button class="delete" aria-label="close" onclick="closeModal('editUnavailabilityModal')"></button>
-        </header>
-        <section class="modal-card-body">
-          <p class="help">Times are shown in your local timezone (<span id="browserTimezone"></span>).</p>
-          <form id="editUnavailabilityForm">
-            <div class="field">
-              <label class="label">Date</label>
-              <div class="control">
-                <input class="input" type="date" id="unavailabilityDate" required>
-              </div>
-            </div>
-            <div class="field">
-              <label class="label">Start Time</label>
-              <div class="control">
-                <input class="input" type="time" id="unavailabilityStartTime" step="900" required>
-              </div>
-            </div>
-            <div class="field">
-              <label class="label">End Time</label>
-              <div class="control">
-                <input class="input" type="time" id="unavailabilityEndTime" step="900" required>
-              </div>
-            </div>
-            <div class="field">
-              <label class="label">Reason</label>
-              <div class="control">
-                <textarea class="textarea" id="unavailabilityReason" rows="3" placeholder="Optional reason for unavailability"></textarea>
-              </div>
-            </div>
-          </form>
-        </section>
-        <footer class="modal-card-foot">
-          <button class="button is-success" onclick="saveUnavailabilityChanges()">Save Changes</button>
-          <button class="button is-danger" onclick="deleteUnavailability()">Delete</button>
-          <button class="button" onclick="closeModal('editUnavailabilityModal')">Cancel</button>
-        </footer>
-      </div>
-    </div>
+    
 
     <!-- Create New Booking Modal -->
     <div class="modal" id="createBookingModal">
@@ -344,6 +301,51 @@
     </div>
 
 
+    <!-- Edit Unavailability Modal -->
+    <div class="modal" id="editUnavailabilityModal">
+      <div class="modal-background"></div>
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title">Edit Unavailability</p>
+          <button class="delete" aria-label="close" onclick="closeModal('editUnavailabilityModal')"></button>
+        </header>
+        <section class="modal-card-body">
+          <p class="help">Times are shown in your local timezone (<span id="browserTimezone"></span>).</p>
+          <form id="editUnavailabilityForm">
+            <div class="field">
+              <label class="label">Date</label>
+              <div class="control">
+                <input class="input" type="date" id="unavailabilityDate" required>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Start Time</label>
+              <div class="control">
+                <input class="input" type="time" id="unavailabilityStartTime" step="900" required>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">End Time</label>
+              <div class="control">
+                <input class="input" type="time" id="unavailabilityEndTime" step="900" required>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label">Reason</label>
+              <div class="control">
+                <textarea class="textarea" id="unavailabilityReason" rows="3" placeholder="Optional reason for unavailability"></textarea>
+              </div>
+            </div>
+          </form>
+        </section>
+        <footer class="modal-card-foot">
+          <button class="button is-success" onclick="saveUnavailabilityChanges()">Save Changes</button>
+          <button class="button is-danger" onclick="deleteUnavailability()">Delete</button>
+          <button class="button" onclick="closeModal('editUnavailabilityModal')">Cancel</button>
+        </footer>
+      </div>
+    </div>
+
 
 
 
@@ -441,178 +443,181 @@
     // --- End Custom Alert/Confirm Modals --
 </script>
 <script>    
-    // Global calendar variable
-    let calendar;
-    let currentEditingBookingId = null;
-    let currentEditingUnavailabilityId = null;
+  
+  let calendar;
+  let currentEditingBookingId = null;
+  let currentEditingUnavailabilityId = null;
 
-    document.addEventListener('turbo:load', function () {
-      initializeCalendar();
+  document.addEventListener('turbo:load', function () {
+    initializeCalendar();
+  });
+
+  function generateBackgroundEvents(availabilities) {
+    const now = luxon.DateTime.now();
+
+    return availabilities.flatMap(av => {
+      const events = [];
+
+      for (let week = 0; week < 52; week++) {
+        const date = now.startOf('week')
+                        .plus({ weeks: week })
+                        .plus({ days: av.day_of_week })
+                        .setZone(av.timezone);
+
+        const start = date.set({
+          hour: parseInt(av.start_time.split(':')[0], 10),
+          minute: parseInt(av.start_time.split(':')[1], 10)
+        });
+
+        const end = date.set({
+          hour: parseInt(av.end_time.split(':')[0], 10),
+          minute: parseInt(av.end_time.split(':')[1], 10)
+        });
+
+        events.push({
+          start: start.toISO(),
+          end: end.toISO(),
+          display: 'background',
+          color: '#008000'
+        });
+      }
+
+      return events;
+    });
+  }
+
+
+  function initializeCalendar() {
+    const calendarEl = document.getElementById('calendar');
+    const container = document.getElementById('calendar-container');
+
+    if (!calendarEl || !container) {
+      console.error("Missing required elements or data for calendar initialization.");
+      return;
+    }
+
+    const psychologistProfileId = container.dataset.psychologistProfileId;
+    const displayedTimezoneSpan = document.getElementById('displayedTimezone');
+    const browserTimezoneSpans = document.querySelectorAll('#browserTimezone');
+    const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    browserTimezoneSpans.forEach(span => span.textContent = browserTimezone);
+    if (displayedTimezoneSpan) displayedTimezoneSpan.textContent = browserTimezone;
+
+    console.log(`[DEBUG] Initializing calendar.`);
+    console.log(`[DEBUG] Psychologist Profile ID: ${psychologistProfileId}`);
+    console.log(`[DEBUG] Browser Timezone: ${browserTimezone}`);
+
+    calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'timeGridWeek',
+      slotMinTime: "04:00:00",
+      slotMaxTime: "23:00:00",
+      allDaySlot: false,
+      editable: true,
+      eventStartEditable: true,
+      eventDurationEditable: true,
+      selectable: true,
+      firstDay: 1,
+      timeZone: 'local', // use browser timezone (DST-aware)
+      displayEventTime: true,
+      eventTimeFormat: { hour: 'numeric', minute: '2-digit', meridiem: 'short' },
+      slotLabelFormat: { hour: 'numeric', minute: '2-digit', omitZeroMinute: false, meridiem: 'short' },
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
+      },
+      views: { listWeek: { buttonText: 'List' } },
+      selectAllow: function(selectInfo) {
+        const backgroundEvents = calendar.getEvents().filter(e => e.display === 'background');
+        return backgroundEvents.some(event => selectInfo.start >= event.start && selectInfo.end <= event.end);
+      },
+      eventSources: [
+        {
+          url: `/psychologist_profiles/${psychologistProfileId}/psychologist_unavailabilities/`,
+          method: 'GET',
+          color: '#d9534f',
+          textColor: 'white',
+          failure: error => {
+            console.error('Error fetching unavailabilities:', error);
+            showCustomAlert('Error fetching unavailabilities.');
+          }
+        },
+        {
+          url: `/psychologist_profiles/${psychologistProfileId}/bookings/calendar_bookings.json`,
+          method: 'GET',
+          color: '#0d6efd',
+          textColor: 'white',
+          failure: error => {
+            console.error('Error loading bookings:', error);
+            showCustomAlert('Error loading bookings.');
+          }
+        },
+        {
+          url: `/psychologist_profiles/${psychologistProfileId}/psychologist_availabilities/calendar_blocks.json`,
+          method: 'GET',
+          display: 'background',
+          failure: error => {
+            console.error('Error fetching availability blocks:', error);
+            showCustomAlert('Error fetching availability blocks.');
+          }
+        }
+      ],
+      eventDidMount: function(info) {
+        const isBooking = info.event.extendedProps.bookingId ||
+                          info.event.extendedProps.type === 'booking' ||
+                          info.event.extendedProps.clientName ||
+                          info.event.extendedProps.status;
+
+        if (isBooking) {
+          info.el.style.cursor = 'pointer';
+          info.el.title = 'Click to edit booking';
+          info.el.classList.add('fc-event-booking');
+        } else if (info.event.display !== 'background') {
+          info.el.style.cursor = 'pointer';
+          info.el.title = 'Click to edit unavailability';
+          info.el.classList.add('fc-event-unavailability');
+        }
+
+        console.log(`[DEBUG] Event mounted: ${info.event.title || 'Availability Block'}`);
+        console.log(`[DEBUG] Event time: ${info.event.startStr} - ${info.event.endStr}`);
+      },
+      eventClick: function(info) {
+        if (!info.event || !info.event.id) return;
+
+        const isBooking = info.event.extendedProps.bookingId ||
+                          info.event.extendedProps.type === 'booking' ||
+                          info.event.extendedProps.clientName ||
+                          info.event.extendedProps.status;
+
+        if (isBooking) {
+          console.log('[DEBUG] Booking clicked:', info.event);
+          openEditBookingModal(info.event);
+        } else if (info.event.display === 'background') {
+          console.log('[DEBUG] Background slot clicked → creating unavailability');
+          openCreateUnavailabilityModal(info.event.start, info.event.end);
+        } else {
+          console.log('[DEBUG] Unavailability clicked:', info.event);
+          openEditUnavailabilityModal(info.event);
+        }
+      },
+      dateClick: function(info) {
+        console.log('[DEBUG] Empty space clicked at:', info.dateStr);
+        const start = info.date;
+        const end = new Date(start.getTime() + 30 * 60 * 1000);
+        openCreateUnavailabilityModal(start, end);
+      },
+      select: function(info) {
+        console.log(`[DEBUG] Time slot selected. Start: ${info.startStr}, End: ${info.endStr}`);
+        openCreateUnavailabilityModal(info.start, info.end);
+        calendar.unselect();
+      }
     });
 
+    calendar.render();
+  }
 
-    function initializeCalendar() {
-      const calendarEl = document.getElementById('calendar');
-      const container = document.getElementById('calendar-container');
 
-      if (!calendarEl || !container) {
-        console.error("Missing required elements or data for calendar initialization.");
-        return;
-      }
-
-      const psychologistProfileId = container.dataset.psychologistProfileId;
-      const psychologistTimezone = container.dataset.psychologistTimezone;
-      const displayTimezone = container.dataset.displayTimezone || 'UTC'; // Use display_timezone from controller
-      const displayedTimezoneSpan = document.getElementById('displayedTimezone');
-      const browserTimezoneSpans = document.querySelectorAll('#browserTimezone');
-      const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-      if (!psychologistProfileId || !displayTimezone) {
-        console.error("Missing psychologist profile ID or display timezone data.");
-        return;
-      }
-
-      browserTimezoneSpans.forEach(span => {
-        span.textContent = browserTimezone;
-      });
-
-      if (displayedTimezoneSpan) {
-        displayedTimezoneSpan.textContent = displayTimezone;
-      }
-
-      console.log(`[DEBUG] Initializing calendar.`);
-      console.log(`[DEBUG] Psychologist Profile ID: ${psychologistProfileId}`);
-      console.log(`[DEBUG] Display Timezone: ${displayTimezone}`);
-      console.log(`[DEBUG] Browser Timezone: ${browserTimezone}`);
-
-      calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'timeGridWeek',
-        slotMinTime: "04:00:00",
-        slotMaxTime: "23:00:00",
-        allDaySlot: false,
-        editable: true,
-        eventStartEditable: true,
-        eventDurationEditable: true,
-        selectable: true,
-        selectAllow: function(selectInfo) {
-          const events = calendar.getEvents().filter(event => event.display === 'background');
-          return events.some(event => {
-            return selectInfo.start >= event.start && selectInfo.end <= event.end;
-          });
-        },
-        firstDay: 1,
-        timeZone: displayTimezone, // Use display_timezone for calendar rendering
-        displayEventTime: true,
-        eventTimeFormat: { hour: 'numeric', minute: '2-digit', meridiem: 'short' },
-        slotLabelFormat: { hour: 'numeric', minute: '2-digit', omitZeroMinute: false, meridiem: 'short' },
-        headerToolbar: {
-          left: 'prev,next today',
-          center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
-        },
-        views: {
-          listWeek: { buttonText: 'List' }
-        },
-        eventSources: [
-          {
-            url: `/psychologist_profiles/${psychologistProfileId}/psychologist_unavailabilities/`,
-            method: 'GET',
-            color: '#d9534f',
-            textColor: 'white',
-            extraParams: { timezone: displayTimezone }, // Pass display_timezone to backend
-            failure: function(error) {
-              console.error('Error fetching unavailabilities:', error);
-              showCustomAlert('Error fetching unavailabilities.');
-            }
-          },
-          {
-            url: `/psychologist_profiles/${psychologistProfileId}/bookings/calendar_bookings.json`,
-            method: 'GET',
-            color: '#0d6efd',
-            textColor: 'white',
-            extraParams: { timezone: displayTimezone },
-            failure: function(error) {
-              console.error('Error loading bookings:', error);
-              showCustomAlert('Error loading bookings.');
-            }
-          },
-          {
-            url: `/psychologist_profiles/${psychologistProfileId}/psychologist_availabilities/calendar_blocks.json`,
-            method: 'GET',
-            display: 'background',
-            color: '#d4edda',
-            extraParams: { timezone: displayTimezone },
-            eventDataTransform: function(eventData) {
-              if (eventData.startTime && eventData.endTime) {
-                const startMomentLocal = moment.tz(`${eventData.date}T${eventData.startTime}`, displayTimezone);
-                const endMomentLocal = moment.tz(`${eventData.date}T${eventData.endTime}`, displayTimezone);
-                eventData.startTime = startMomentLocal.format('HH:mm:ss');
-                eventData.endTime = endMomentLocal.format('HH:mm:ss');
-                console.log(`[DEBUG] Showing availability for ${displayTimezone}: ${eventData.startTime} - ${eventData.endTime}`);
-              }
-              return eventData;
-            },
-            success: function(data) {
-              console.log('[DEBUG] Availability request successful.');
-              console.log('[DEBUG] Raw availability data from server:', data);
-            },
-            failure: function(error) {
-              console.error('[DEBUG] Error fetching availability blocks:', error);
-              showCustomAlert('Error fetching availability blocks.');
-            }
-          }
-        ],
-        eventDidMount: function(info) {
-          console.log(`[DEBUG] Event mounted: ${info.event.title || 'Availability Block'}`);
-          console.log(`[DEBUG] Displayed Time (${displayTimezone}): ${info.event.startStr} to ${info.event.endStr}`);
-          const isBooking = info.event.extendedProps.bookingId || info.event.extendedProps.type === 'booking' ||
-                            info.event.extendedProps.clientName || info.event.extendedProps.status;
-          if (isBooking) {
-            info.el.style.cursor = 'pointer';
-            info.el.title = 'Click to edit booking';
-            info.el.classList.add('fc-event-booking');
-          } else if (info.event.display !== 'background') {
-            info.el.style.cursor = 'pointer';
-            info.el.title = 'Click to edit unavailability';
-            info.el.classList.add('fc-event-unavailability');
-          }
-        },
-        eventClick: function(info) {
-          if (!info.event || !info.event.id) {
-            console.warn('[DEBUG] Clicked on an invalid event or empty space. Ignoring.');
-            return;
-          }
-          const isBooking = info.event.extendedProps.bookingId || info.event.extendedProps.type === 'booking' ||
-                            info.event.extendedProps.clientName || info.event.extendedProps.status;
-          if (isBooking) {
-            console.log('[DEBUG] Event Clicked (Booking):', info.event);
-            openEditBookingModal(info.event);
-          } else if (info.event.display === 'background') {
-            console.log('[DEBUG] Clicked on background time slot → creating unavailability');
-            openCreateUnavailabilityModal(info.event.start, info.event.end);
-          } else {
-            console.log('[DEBUG] Event Clicked (Unavailability):', info.event);
-            openEditUnavailabilityModal(info.event);
-          }
-        },
-        dateClick: function(info) {
-          console.log('[DEBUG] Empty space clicked at:', info.dateStr);
-          const start = info.date;
-          const end = new Date(start.getTime() + 30 * 60 * 1000);
-          openCreateUnavailabilityModal(start, end);
-        },
-        select: function(info) {
-          console.log(`[DEBUG] Time slot selected. Start: ${info.startStr}, End: ${info.endStr}`);
-          openCreateUnavailabilityModal(info.start, info.end);
-          calendar.unselect();
-        }
-      });
-
-      console.log('[DEBUG] FullCalendar timeZone:', calendar.getOption('timeZone'));
-      calendar.render();
-    }
-      
-    
 </script>
 <script>
 
@@ -621,33 +626,103 @@
 
 
 
+    document.addEventListener("DOMContentLoaded", () => {
+      const zoneName = luxon.DateTime.local().zoneName;
+      document.querySelectorAll("#browserTimezone").forEach(el => {
+        el.textContent = zoneName;
+      });
+    });
 
 
-   function openCreateUnavailabilityModal(start, end) {
-    const psychologistTimezone = calendar.getOption('timeZone');
+    function openCreateUnavailabilityModal(start, end) {
+      const psychologistTimezone = calendar.getOption('timeZone'); // e.g., "Australia/Sydney"
 
-    console.log("openCreateUnavailabilityModal");
+      console.log("openCreateUnavailabilityModal");
 
-    console.log(`[DEBUG] Opening Create Unavailability Modal from calendar selection`);
-    console.log(`[DEBUG] Selected Start (UTC): ${start.toISOString()}, End (UTC): ${end.toISOString()}`);
+      console.log(`[DEBUG] Opening Create Unavailability Modal from calendar selection`);
+      console.log(`[DEBUG] Selected Start (UTC): ${start.toISOString()}, End (UTC): ${end.toISOString()}`);
 
-    // Convert from UTC Date to moment in psychologist timezone correctly:
-    const startMoment = moment.utc(start);
-    const endMoment = moment.utc(end);
+      // Convert from UTC to the psychologist's timezone
+      const startZoned = luxon.DateTime.fromJSDate(start, { zone: 'utc' }).setZone(psychologistTimezone);
+      const endZoned = luxon.DateTime.fromJSDate(end, { zone: 'utc' }).setZone(psychologistTimezone);
 
-    const dateString = startMoment.format('YYYY-MM-DD');
-    const startTimeString = startMoment.format('HH:mm');
-    const endTimeString = endMoment.format('HH:mm');
+      const dateString = startZoned.toFormat('yyyy-MM-dd');
+      const startTimeString = startZoned.toFormat('HH:mm');
+      const endTimeString = endZoned.toFormat('HH:mm');
 
-    console.log(`[DEBUG] Converted to Psychologist Timezone for form: ${dateString} ${startTimeString} to ${endTimeString}`);
+      console.log(`[DEBUG] Converted to Psychologist Timezone for form: ${dateString} ${startTimeString} to ${endTimeString}`);
 
-    document.getElementById('newUnavailabilityDate').value = dateString;
-    document.getElementById('newUnavailabilityStartTime').value = startTimeString;
-    document.getElementById('newUnavailabilityEndTime').value = endTimeString;
-    document.getElementById('newUnavailabilityReason').value = '';
+      document.getElementById('newUnavailabilityDate').value = dateString;
+      document.getElementById('newUnavailabilityStartTime').value = startTimeString;
+      document.getElementById('newUnavailabilityEndTime').value = endTimeString;
+      document.getElementById('newUnavailabilityReason').value = '';
 
-    document.getElementById('createUnavailabilityModal').classList.add('is-active');
-  }
+      document.getElementById('createUnavailabilityModal').classList.add('is-active');
+    }
+
+    function createUnavailability() {
+      const tz = luxon.DateTime.local().zoneName;
+      const date = document.getElementById('newUnavailabilityDate').value;
+      const startTime = document.getElementById('newUnavailabilityStartTime').value;
+      const endTime = document.getElementById('newUnavailabilityEndTime').value;
+      const reason = document.getElementById('newUnavailabilityReason').value;
+
+      const start = luxon.DateTime.fromISO(`${date}T${startTime}`, { zone: tz }).toUTC();
+      const end = luxon.DateTime.fromISO(`${date}T${endTime}`, { zone: tz }).toUTC();
+
+      fetch(`/psychologist_unavailabilities`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          start_time: start.toISO(),
+          end_time: end.toISO(),
+          reason: reason
+        })
+      }).then(() => location.reload());
+    }
+
+
+    function openEditUnavailabilityModal(event) {
+      const tz = luxon.DateTime.local().zoneName; // Or use event.timezone if stored per entry
+
+      // event.start is assumed to be UTC from backend
+      const start = luxon.DateTime.fromISO(event.start, { zone: 'utc' }).setZone(tz);
+      const end = luxon.DateTime.fromISO(event.end, { zone: 'utc' }).setZone(tz);
+
+      document.getElementById('unavailabilityDate').value = start.toISODate();
+      document.getElementById('unavailabilityStartTime').value = start.toFormat('HH:mm');
+      document.getElementById('unavailabilityEndTime').value = end.toFormat('HH:mm');
+      document.getElementById('unavailabilityReason').value = event.reason || "";
+
+      openModal('editUnavailabilityModal');
+    }
+
+    function saveUnavailabilityChanges() {
+      const tz = luxon.DateTime.local().zoneName;
+      const date = document.getElementById('unavailabilityDate').value;
+      const startTime = document.getElementById('unavailabilityStartTime').value;
+      const endTime = document.getElementById('unavailabilityEndTime').value;
+      const reason = document.getElementById('unavailabilityReason').value;
+
+      // Merge date and time in local tz, then convert to UTC for storage
+      const start = luxon.DateTime.fromISO(`${date}T${startTime}`, { zone: tz }).toUTC();
+      const end = luxon.DateTime.fromISO(`${date}T${endTime}`, { zone: tz }).toUTC();
+
+      fetch(`/psychologist_unavailabilities/${currentEditingUnavailabilityId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          start_time: start.toISO(),
+          end_time: end.toISO(),
+          reason: reason
+        })
+      }).then(() => location.reload());
+    }
+
+
+
+
+
 
     function createBooking() {
                         console.log("createbooking");
@@ -820,6 +895,47 @@
         showCustomAlert('Error updating booking: ' + error.message);
       });
     }
+    
+    function openEditBookingModal(event) {
+      console.log("Edit booking");
+      currentEditingBookingId = event.extendedProps.bookingId || event.id;
+      const clientName = event.extendedProps.clientName || 'Unknown Client';
+      const serviceName = event.extendedProps.service_name || '';
+
+      console.log(`[DEBUG] Opening Edit Booking Modal for ID: ${currentEditingBookingId}`);
+      console.log(`[DEBUG] Event Start (UTC): ${event.start.toISOString()}`);
+
+      const eventStart = moment.tz(event.start.toISOString(), calendar.getOption('timeZone'));
+      const dateString = eventStart.format('YYYY-MM-DD');
+      const startTimeString = eventStart.format('HH:mm');
+
+      console.log(`[DEBUG] Converted to Psychologist Timezone for form: ${dateString} ${startTimeString}`);
+
+      const status = event.extendedProps.status || 'pending';
+      const notes = event.extendedProps.notes || '';
+      const createdBy = event.extendedProps.created_by || '';
+      const confirmationToken = event.extendedProps.confirmation_token || '';
+      console.log('[DEBUG] service_id:', event.extendedProps.service_id, 'Type:', typeof event.extendedProps.service_id);
+      document.getElementById('bookingClient').value = clientName;
+      document.getElementById('bookingService').value = event.extendedProps.service_id || '';
+      document.getElementById('bookingDate').value = dateString;
+      document.getElementById('bookingStartTime').value = startTimeString;
+      document.getElementById('bookingStatus').value = status;
+      document.getElementById('bookingNotes').value = notes;
+
+      const confirmationLinkSection = document.getElementById('confirmationLinkSection');
+      const confirmationLink = document.getElementById('confirmationLink');
+      if (status === 'pending' && createdBy === 'psychologist' && confirmationToken) {
+        const link = `/bookings/${currentEditingBookingId}/confirm?token=${confirmationToken}`;
+        confirmationLink.href = link;
+        confirmationLink.textContent = link;
+        confirmationLinkSection.style.display = 'block';
+      } else {
+        confirmationLinkSection.style.display = 'none';
+      }
+
+      document.getElementById('editBookingModal').classList.add('is-active');
+    }
 
     function deleteBooking() {
                         console.log("delete booking");
@@ -861,115 +977,7 @@
         });
       });
     }
-    function saveUnavailabilityChanges() {
-      console.log("save unavailability");
 
-      if (!currentEditingUnavailabilityId) {
-        console.error('[ERROR] No current editing unavailability ID');
-        return;
-      }
-
-      const date = document.getElementById('unavailabilityDate').value;
-      const startTime = document.getElementById('unavailabilityStartTime').value;
-      const endTime = document.getElementById('unavailabilityEndTime').value;
-      const container = document.getElementById('calendar-container');
-      const psychologistProfileId = container?.dataset.psychologistProfileId;
-      const psychologistTimezone = calendar.getOption('timeZone');
-
-      if (!psychologistProfileId) {
-        showCustomAlert('Error: Missing psychologist profile ID');
-        return;
-      }
-      if (!date || !startTime || !endTime) {
-        showCustomAlert('Please fill in all date and time fields.');
-        return;
-      }
-
-      const startDateTime = moment.tz(`${date} ${startTime}`, 'YYYY-MM-DD HH:mm', psychologistTimezone);
-      const endDateTime = moment.tz(`${date} ${endTime}`, 'YYYY-MM-DD HH:mm', psychologistTimezone);
-
-      if (!startDateTime.isValid() || !endDateTime.isValid()) {
-        showCustomAlert('Invalid date or time format.');
-        return;
-      }
-      if (endDateTime.isSameOrBefore(startDateTime)) {
-        showCustomAlert('End time must be after start time.');
-        return;
-      }
-
-      // Convert to Date objects (UTC)
-      const startUtcDate = startDateTime.toDate();
-      const endUtcDate = endDateTime.toDate();
-
-      console.log(`[DEBUG] Saving unavailability changes for ID: ${currentEditingUnavailabilityId}`);
-      console.log(`[DEBUG] Form Input (Psychologist TZ): ${date} ${startTime} to ${endTime}`);
-      console.log(`[DEBUG] Converted to UTC ISO: Start: ${startUtcDate.toISOString()}, End: ${endUtcDate.toISOString()}`);
-      console.log(`[DEBUG] Timezone sent to backend: ${psychologistTimezone}`);
-
-      // Check availability in calendar's background events
-      // ... (rest of the function remains the same until the check) ...
-
-      // Get all events from the calendar
-      const allEvents = calendar.getEvents();
-
-      // Check for any conflicting events (bookings or other unavailabilities)
-      const hasConflict = allEvents.some(event => {
-        // Ignore the current unavailability being edited
-        if (event.id === currentEditingUnavailabilityId) {
-          return false;
-        }
-        // Check for overlap with other events
-        const eventStart = event.start;
-        const eventEnd = event.end;
-        return (
-          // Check if the new unavailability starts or ends within an existing event
-          (startUtcDate < eventEnd && endUtcDate > eventStart)
-        );
-      });
-
-      if (hasConflict) {
-        showCustomAlert('The selected time slot conflicts with an existing booking or unavailability.');
-        return;
-      }
-
-      // ... (rest of the function for the API call) ...
-
-      const formData = {
-        psychologist_unavailability: {
-          id: currentEditingUnavailabilityId,
-          start_time: startUtcDate.toISOString(),
-          end_time: endUtcDate.toISOString(),
-          reason: document.getElementById('unavailabilityReason').value,
-          timezone: psychologistTimezone
-        }
-      };
-
-      fetch(`/psychologist_profiles/${psychologistProfileId}/psychologist_unavailabilities/${currentEditingUnavailabilityId}/update_json`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': document.querySelector("[name='csrf-token']").content
-        },
-        body: JSON.stringify(formData)
-      })
-      .then(response => {
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        return response.json();
-      })
-      .then(data => {
-        if (data.success) {
-          calendar.refetchEvents();
-          closeModal('editUnavailabilityModal');
-          showCustomAlert('Unavailability updated successfully!');
-        } else {
-          showCustomAlert('Error updating unavailability: ' + (data.error || 'Unknown error'));
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        showCustomAlert('Error updating unavailability: ' + error.message);
-      });
-    }
 
 
     function deleteUnavailability() {
@@ -1013,147 +1021,58 @@
       });
     }
 
-    function createUnavailability() {
-                        console.log("create unavailability");
 
-      const container = document.getElementById('calendar-container');
-      const psychologistProfileId = container ? container.dataset.psychologistProfileId : null;
-      const psychologistTimezone = calendar.getOption('timeZone');
 
-      if (!psychologistProfileId) {
-        showCustomAlert('Error: Missing psychologist profile ID');
-        return;
-      }
 
-      const date = document.getElementById('newUnavailabilityDate').value;
-      const startTime = document.getElementById('newUnavailabilityStartTime').value;
-      const endTime = document.getElementById('newUnavailabilityEndTime').value;
+ 
 
-      const startDateTime = moment.tz(`${date} ${startTime}`, 'YYYY-MM-DD HH:mm', psychologistTimezone).toDate();
-      const endDateTime = moment.tz(`${date} ${endTime}`, 'YYYY-MM-DD HH:mm', psychologistTimezone).toDate();
+    function openEditUnavailabilityModal(event) {
+      const psychologistTimezone = document.getElementById('calendar-container').dataset.psychologistTimezone;
 
-      console.log(`[DEBUG] Creating new unavailability.`);
-      console.log(`[DEBUG] Form Input (Psychologist TZ): ${date} ${startTime} to ${endTime}`);
-      console.log(`[DEBUG] Converted to UTC for backend: Start: ${startDateTime.toISOString()}, End: ${endDateTime.toISOString()}`);
-      console.log(`[DEBUG] Timezone being sent to backend: ${psychologistTimezone}`);
+      // Convert UTC event times to psychologist's local time
+      const startInLocal = luxon.DateTime.fromJSDate(event.start, { zone: 'utc' }).setZone(psychologistTimezone);
+      const endInLocal = luxon.DateTime.fromJSDate(event.end, { zone: 'utc' }).setZone(psychologistTimezone);
 
-      // Check for conflicts with other events (bookings or other unavailabilities)
-      const allEvents = calendar.getEvents();
-      const hasConflict = allEvents.some(event => {
-      const eventStart = event.start;
-      const eventEnd = event.end;
-        // Check for overlap between the new unavailability and an existing event
-        // The new unavailability starts before an event ends AND ends after that event starts
-      return (
-          startDateTime < eventEnd && endDateTime > eventStart
-        );
-      });
+      document.getElementById('editUnavailabilityDate').value = startInLocal.toFormat('yyyy-MM-dd');
+      document.getElementById('editUnavailabilityStartTime').value = startInLocal.toFormat('HH:mm');
+      document.getElementById('editUnavailabilityEndTime').value = endInLocal.toFormat('HH:mm');
 
-      if (hasConflict) {
-        showCustomAlert('The selected time slot conflicts with an existing booking or unavailability.');
-        return;
-      }
+      document.getElementById('editUnavailabilityReason').value = event.extendedProps.reason || '';
+      
+      currentEditingUnavailabilityId = event.id;
+      openModal('editUnavailabilityModal');
+    }
 
-      const formData = {
-        psychologist_unavailability: {
-          start_time: startDateTime.toISOString(),
-          end_time: endDateTime.toISOString(),
-          reason: document.getElementById('newUnavailabilityReason').value,
-          psychologist_profile_id: psychologistProfileId,
-          timezone: psychologistTimezone
-        }
-      };
 
-      fetch(`/psychologist_profiles/${psychologistProfileId}/psychologist_unavailabilities/create_json.json`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': document.querySelector("[name='csrf-token']").content
-        },
-        body: JSON.stringify(formData)
-      })
-      .then(response => {
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        return response.json();
-      })
-      .then(data => {
-        if (data.success) {
-          calendar.refetchEvents();
-          closeModal('createUnavailabilityModal');
-          showCustomAlert('Unavailability created successfully!');
-        } else {
-          showCustomAlert('Error creating unavailability: ' + (data.error || 'Unknown error'));
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        showCustomAlert('Error creating unavailability: ' + error.message);
+    function saveUnavailability() {
+      const tz = 'Australia/Sydney'; // or get dynamically
+
+      const date       = document.getElementById('unavailabilityDate').value;
+      const startTime  = document.getElementById('unavailabilityStartTime').value;
+      const endTime    = document.getElementById('unavailabilityEndTime').value;
+      const reason     = document.getElementById('unavailabilityReason').value;
+
+      // Merge into DateTime objects
+      const startInTz = luxon.DateTime.fromISO(`${date}T${startTime}`, { zone: tz });
+      const endInTz   = luxon.DateTime.fromISO(`${date}T${endTime}`, { zone: tz });
+
+      // Convert to UTC for storage
+      const startUtc = startInTz.toUTC().toISO();
+      const endUtc   = endInTz.toUTC().toISO();
+
+      // Send to server
+      fetch(`/psychologist_unavailabilities/${currentEditingUnavailabilityId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          start_time: startUtc,
+          end_time: endUtc,
+          reason: reason
+        })
       });
     }
 
-     function openEditBookingModal(event) {
-      console.log("Edit booking");
-      currentEditingBookingId = event.extendedProps.bookingId || event.id;
-      const clientName = event.extendedProps.clientName || 'Unknown Client';
-      const serviceName = event.extendedProps.service_name || '';
 
-      console.log(`[DEBUG] Opening Edit Booking Modal for ID: ${currentEditingBookingId}`);
-      console.log(`[DEBUG] Event Start (UTC): ${event.start.toISOString()}`);
-
-      const eventStart = moment.tz(event.start.toISOString(), calendar.getOption('timeZone'));
-      const dateString = eventStart.format('YYYY-MM-DD');
-      const startTimeString = eventStart.format('HH:mm');
-
-      console.log(`[DEBUG] Converted to Psychologist Timezone for form: ${dateString} ${startTimeString}`);
-
-      const status = event.extendedProps.status || 'pending';
-      const notes = event.extendedProps.notes || '';
-      const createdBy = event.extendedProps.created_by || '';
-      const confirmationToken = event.extendedProps.confirmation_token || '';
-  console.log('[DEBUG] service_id:', event.extendedProps.service_id, 'Type:', typeof event.extendedProps.service_id);
-      document.getElementById('bookingClient').value = clientName;
-      document.getElementById('bookingService').value = event.extendedProps.service_id || '';
-      document.getElementById('bookingDate').value = dateString;
-      document.getElementById('bookingStartTime').value = startTimeString;
-      document.getElementById('bookingStatus').value = status;
-      document.getElementById('bookingNotes').value = notes;
-
-      const confirmationLinkSection = document.getElementById('confirmationLinkSection');
-      const confirmationLink = document.getElementById('confirmationLink');
-      if (status === 'pending' && createdBy === 'psychologist' && confirmationToken) {
-        const link = `/bookings/${currentEditingBookingId}/confirm?token=${confirmationToken}`;
-        confirmationLink.href = link;
-        confirmationLink.textContent = link;
-        confirmationLinkSection.style.display = 'block';
-      } else {
-        confirmationLinkSection.style.display = 'none';
-      }
-
-      document.getElementById('editBookingModal').classList.add('is-active');
-    }
-
-function openEditUnavailabilityModal(event) {
-  console.log("Edit openEditUnavailabilityModal");
-
-  // Set the current editing ID for the save function
-  currentEditingUnavailabilityId = event.id;
-  
-  console.log(`[DEBUG] Opening Edit Unavailability Modal for ID: ${currentEditingUnavailabilityId}`);
-
-  // Get date and time strings directly from the event object
-  const dateString = event.start.toISOString().substring(0, 10);
-  const startTimeString = event.start.toISOString().substring(11, 16);
-  const endTimeString = event.end.toISOString().substring(11, 16);
-
-  console.log(`[DEBUG] Date: ${dateString}, Start Time: ${startTimeString}, End Time: ${endTimeString}`);
-
-  document.getElementById('unavailabilityDate').value = dateString;
-  document.getElementById('unavailabilityStartTime').value = startTimeString;
-  document.getElementById('unavailabilityEndTime').value = endTimeString;
-  document.getElementById('unavailabilityReason').value = event.extendedProps.reason || '';
-
-  document.getElementById('editUnavailabilityModal').classList.add('is-active');
-}
 
 
 

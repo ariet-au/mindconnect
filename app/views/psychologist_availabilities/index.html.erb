@@ -22,7 +22,7 @@
 
     <%= form_with url: update_all_psychologist_profile_psychologist_availabilities_path(@psychologist_profile),
                   method: :patch,
-                  local: true, # Set to local: true so the browser handles submission
+                  local: true,
                   id: 'availability-form' do |f| %>
 
       <div id="availability-container">
@@ -31,60 +31,53 @@
             <h2 class="title is-5 has-text-grey-dark mb-4"><%= Date::DAYNAMES[day_index] %></h2>
             <div class="slots">
               <% @availabilities.select { |a| a.day_of_week == day_index }.each do |availability| %>
-                  <%# The conditional check has been removed to render all records, even if times are blank %>
-                  <% selected_start_time_str = availability.start_time_of_day.present? ? availability.start_time_of_day.strftime('%H:%M') : '' %>
-                  <% selected_end_time_str = availability.end_time_of_day.present? ? availability.end_time_of_day.strftime('%H:%M') : '' %>
-                  <div class="slot" data-id="<%= availability.id %>">
-                    <input type="hidden" name="slots[<%= availability.id %>][id]" value="<%= availability.id %>">
-                    <input type="hidden" name="slots[<%= availability.id %>][day_of_week]" value="<%= day_index %>">
-                    <div class="field has-addons">
-                      <div class="control">
-                        <div class="select is-fullwidth">
-                          <select name="slots[<%= availability.id %>][start_time]" class="time-input start-time">
-                            <option value="">Select Start</option>
-                            <% (0..23).each do |hour| %>
-                              <% [0, 15, 30, 45].each do |minute| %>
-                                <% time_value = sprintf('%02d:%02d', hour, minute) %>
-                                <option value="<%= time_value %>" <%= 'selected' if selected_start_time_str == time_value %>>
-                                  <%= time_value %>
-                                </option>
-                              <% end %>
+                <% start_str = availability.start_time_of_day&.strftime('%H:%M') || '' %>
+                <% end_str = availability.end_time_of_day&.strftime('%H:%M') || '' %>
+                <div class="slot" data-id="<%= availability.id %>">
+                  <input type="hidden" name="slots[<%= availability.id %>][id]" value="<%= availability.id %>">
+                  <input type="hidden" name="slots[<%= availability.id %>][day_of_week]" value="<%= day_index %>">
+                  <div class="field has-addons">
+                    <div class="control">
+                      <div class="select is-fullwidth">
+                        <select name="slots[<%= availability.id %>][start_time]" class="time-input start-time">
+                          <option value="">Select Start</option>
+                          <% (0..23).each do |h| %>
+                            <% [0,15,30,45].each do |m| %>
+                              <% val = sprintf("%02d:%02d", h, m) %>
+                              <option value="<%= val %>" <%= 'selected' if start_str == val %>><%= val %></option>
                             <% end %>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="control">
-                        <div class="select is-fullwidth">
-                          <select name="slots[<%= availability.id %>][end_time]" class="time-input end-time">
-                            <option value="">Select End</option>
-                            <% (0..23).each do |hour| %>
-                              <% [0, 15, 30, 45].each do |minute| %>
-                                <% time_value = sprintf('%02d:%02d', hour, minute) %>
-                                <option value="<%= time_value %>" <%= 'selected' if selected_end_time_str == time_value %>>
-                                  <%= time_value %>
-                                </option>
-                              <% end %>
-                            <% end %>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="control">
-                        <button type="button" class="button is-danger is-light delete-slot"
-                                data-availability-id="<%= availability.id %>">Delete</button>
+                          <% end %>
+                        </select>
                       </div>
                     </div>
-                    <p class="help is-danger" style="display: none;"></p>
+                    <div class="control">
+                      <div class="select is-fullwidth">
+                        <select name="slots[<%= availability.id %>][end_time]" class="time-input end-time">
+                          <option value="">Select End</option>
+                          <% (0..23).each do |h| %>
+                            <% [0,15,30,45].each do |m| %>
+                              <% val = sprintf("%02d:%02d", h, m) %>
+                              <option value="<%= val %>" <%= 'selected' if end_str == val %>><%= val %></option>
+                            <% end %>
+                          <% end %>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="control">
+                      <button type="button" class="button is-danger is-light delete-slot">Delete</button>
+                    </div>
                   </div>
+                  <p class="help is-danger" style="display:none;"></p>
+                </div>
               <% end %>
             </div>
             <button type="button" class="button is-info is-light add-slot mt-3">Add Slot</button>
           </div>
         <% end %>
       </div>
-      
-      <!-- This hidden div is for tracking deleted slots -->
+
       <div id="deleted-slots-container"></div>
-      
+
       <div class="field is-grouped is-grouped-right mt-5">
         <div class="control">
           <%= f.submit 'Save All', class: 'button is-primary', id: 'submit-button' %>
@@ -95,245 +88,115 @@
 </div>
 
 <style>
-  /* [CSS STYLES RETAINED AS IS] */
-  .day-section {
-    margin-bottom: 1.5rem;
-    border: 1px solid #dbdbdb;
-    padding: 1rem;
-    border-radius: 5px;
-  }
-  .slot {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-    background: #f9f9f9;
-    padding: 0.5rem;
-    border-radius: 3px;
-    transition: opacity 0.3s ease;
-  }
-  .slot.marked-for-deletion {
-    opacity: 0.5;
-    pointer-events: none;
-  }
-  .slot select, .slot button {
-    padding: 0.25rem;
-    min-width: 120px;
-    font-size: 1rem;
-  }
-  .slot .select { width: 100%; }
-  .slot .field.has-addons {
-    flex-grow: 1;
-    display: flex;
-  }
-  .slot .control { flex-grow: 1; }
-  .slot .help.is-danger {
-    display: none;
-    color: red;
-    font-size: 0.8rem;
-  }
-  .add-slot { padding: 0.5rem 1rem; }
-  .is-loading {
-    position: relative;
-    pointer-events: none;
-  }
-  .is-loading::after {
-    animation: spinAround 0.5s infinite linear;
-    border: 2px solid #dbdbdb;
-    border-radius: 50%;
-    border-right-color: transparent;
-    border-top-color: transparent;
-    content: "";
-    display: block;
-    height: 1em;
-    width: 1em;
-    position: absolute;
-    left: calc(50% - 0.5em);
-    top: calc(50% - 0.5em);
-  }
-  @keyframes spinAround {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(359deg); }
-  }
+  .day-section { margin-bottom:1.5rem; border:1px solid #dbdbdb; padding:1rem; border-radius:5px; }
+  .slot { display:flex; align-items:center; gap:0.5rem; margin-bottom:0.5rem; background:#f9f9f9; padding:0.5rem; border-radius:3px; transition: opacity 0.3s ease; }
+  .slot.marked-for-deletion { opacity:0.5; pointer-events:none; }
+  .slot select, .slot button { padding:0.25rem; min-width:120px; font-size:1rem; }
+  .slot .select { width:100%; }
+  .slot .field.has-addons { flex-grow:1; display:flex; }
+  .slot .control { flex-grow:1; }
+  .slot .help.is-danger { display:none; color:red; font-size:0.8rem; }
+  .add-slot { padding:0.5rem 1rem; }
+  .is-loading { position:relative; pointer-events:none; }
+  .is-loading::after { animation:spinAround 0.5s infinite linear; border:2px solid #dbdbdb; border-radius:50%; border-right-color:transparent; border-top-color:transparent; content:""; display:block; height:1em; width:1em; position:absolute; left:calc(50% - 0.5em); top:calc(50% - 0.5em); }
+  @keyframes spinAround { from { transform:rotate(0deg); } to { transform:rotate(359deg); } }
 </style>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-    console.log("DOM fully loaded and parsed. Initializing availability form scripts.");
-    console.log("---------------------------------------------------------");
-
-    const availabilities = <%= raw @availabilities.to_json %>;
-    console.log("Total availabilities from controller:", availabilities.length);
-    
-    // DEBUGGING: Log all availability records directly from the controller
-    console.log("--- START DEBUG: Controller Availabilities ---");
-    availabilities.forEach(a => {
-      const startTime = a.start_time_of_day ? a.start_time_of_day : 'NIL';
-      const endTime = a.end_time_of_day ? a.end_time_of_day : 'NIL';
-      console.log(`Day: ${a.day_of_week}, ID: ${a.id}, Start: ${startTime}, End: ${endTime}`);
-    });
-    console.log("--- END DEBUG: Controller Availabilities ---");
-
-    // Log the initial values of all existing slots
-    document.querySelectorAll('.slot').forEach(slot => {
-      const slotId = slot.dataset.id;
-      const startSelect = slot.querySelector('.start-time');
-      const endSelect = slot.querySelector('.end-time');
-      console.log(`Initial values for slot ID ${slotId}: Start Time = "${startSelect.value}", End Time = "${endSelect.value}"`);
-    });
-
-    // Helper function to generate time options
-    function generateTimeOptions(selectedValue = '') {
-      let optionsHtml = '<option value="">Select Time</option>';
-      for (let hour = 0; hour < 24; hour++) {
-        for (let minute of [0, 15, 30, 45]) {
-          const timeValue = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-          const isSelected = selectedValue === timeValue;
-          optionsHtml += `<option value="${timeValue}" ${isSelected ? 'selected' : ''}>${timeValue}</option>`;
-        }
+document.addEventListener('DOMContentLoaded', function() {
+  const generateTimeOptions = (selectedValue='') => {
+    let html = '<option value="">Select Time</option>';
+    for (let h=0; h<24; h++) {
+      for (let m of [0,15,30,45]) {
+        const val = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+        const sel = (val === selectedValue) ? 'selected' : '';
+        html += `<option value="${val}" ${sel}>${val}</option>`;
       }
-      console.log("Generated time options for new slot.");
-      return optionsHtml;
     }
+    return html;
+  }
 
-    // Add slot functionality
-    document.querySelectorAll('.add-slot').forEach(button => {
-      button.addEventListener('click', function() {
-        console.log("Add slot button clicked.");
-        const daySection = this.closest('.day-section');
-        const dayIndex = daySection.dataset.day;
-        const slotsContainer = daySection.querySelector('.slots');
-        const newId = `new_${Date.now()}`;
+  const bindDelete = (button) => {
+    button.addEventListener('click', function() {
+      const slot = this.closest('.slot');
+      const slotId = slot.dataset.id;
 
-        const newSlot = document.createElement('div');
-        newSlot.className = 'slot';
-        newSlot.innerHTML = `
-          <input type="hidden" name="slots[${newId}][id]" value="${newId}">
-          <input type="hidden" name="slots[${newId}][day_of_week]" value="${dayIndex}">
-          <div class="field has-addons">
-            <div class="control">
-              <div class="select is-fullwidth">
-                <select name="slots[${newId}][start_time]" class="time-input start-time">
-                  ${generateTimeOptions()}
-                </select>
-              </div>
-            </div>
-            <div class="control">
-              <div class="select is-fullwidth">
-                <select name="slots[${newId}][end_time]" class="time-input end-time">
-                  ${generateTimeOptions()}
-                </select>
-              </div>
-            </div>
-            <div class="control">
-              <button type="button" class="button is-danger is-light delete-slot">Delete</button>
-            </div>
-          </div>
-          <p class="help is-danger" style="display: none;"></p>
-        `;
-
-        slotsContainer.appendChild(newSlot);
-        bindDeleteListener(newSlot.querySelector('.delete-slot'));
-        console.log(`New slot created for day: ${dayIndex}, with temp ID: ${newId}`);
-      });
-    });
-
-    // Function to bind the delete event listener to a button
-    function bindDeleteListener(button) {
-      button.addEventListener('click', function() {
-        console.log("Delete button clicked.");
-        const slot = this.closest('.slot');
-        const slotId = slot.dataset.id;
-
-        if (slotId) {
-          console.log(`Marking existing slot for deletion with ID: ${slotId}`);
-          slot.classList.add('marked-for-deletion');
-          let deletedSlotsContainer = document.getElementById('deleted-slots-container');
-          let hiddenInput = document.createElement('input');
+      if (slotId && !slotId.startsWith('new_')) {
+        slot.classList.add('marked-for-deletion');
+        const deletedSlotsContainer = document.getElementById('deleted-slots-container');
+        // Prevent duplicate hidden inputs
+        if (!deletedSlotsContainer.querySelector(`input[name="deleted_slots[${slotId}]"]`)) {
+          const hiddenInput = document.createElement('input');
           hiddenInput.type = 'hidden';
           hiddenInput.name = `deleted_slots[${slotId}]`;
           hiddenInput.value = '1';
           deletedSlotsContainer.appendChild(hiddenInput);
-        } else {
-          console.log("Removing newly created slot from the DOM.");
-          slot.remove();
-        }
-      });
-    }
-
-    // Bind delete listeners to all initial delete buttons
-    document.querySelectorAll('.delete-slot').forEach(bindDeleteListener);
-    console.log("Bound delete listeners to all initial slots.");
-
-    // Form submission validation
-    document.getElementById('availability-form').addEventListener('submit', function(e) {
-      console.log("Form submission started.");
-      const submitButton = document.getElementById('submit-button');
-      submitButton.classList.add('is-loading');
-      submitButton.disabled = true;
-
-      let isValid = true;
-      let firstErrorElement = null;
-      
-      // DEBUGGING: Log what the form is about to send
-      const formData = new FormData(this);
-      console.log("--- Form Data to be Submitted ---");
-      for (let pair of formData.entries()) {
-        console.log(pair[0] + ': ' + pair[1]);
-      }
-      console.log("--- End Form Data ---");
-
-      document.querySelectorAll('.slot:not(.marked-for-deletion)').forEach(slot => {
-        const startSelect = slot.querySelector('.start-time');
-        const endSelect = slot.querySelector('.end-time');
-        const errorElement = slot.querySelector('.help.is-danger');
-
-        errorElement.textContent = '';
-        errorElement.style.display = 'none';
-
-        const startValue = startSelect.value;
-        const endValue = endSelect.value;
-
-        console.log(`Validating slot with start time: ${startValue}, end time: ${endValue}`);
-
-        if (!startValue && !endValue) {
-          console.log("Skipping empty slot.");
-          return;
-        }
-
-        if (!startValue || !endValue) {
-          errorElement.textContent = 'Both start and end times must be selected.';
-          errorElement.style.display = 'block';
-          isValid = false;
-          if (!firstErrorElement) firstErrorElement = errorElement;
-          console.log("Validation failed: Missing start or end time.");
-          return;
-        }
-
-        const [startHour, startMinute] = startValue.split(':').map(Number);
-        const [endHour, endMinute] = endValue.split(':').map(Number);
-
-        if (endHour < startHour || (endHour === startHour && endMinute <= startMinute)) {
-          errorElement.textContent = 'End time must be after start time.';
-          errorElement.style.display = 'block';
-          isValid = false;
-          if (!firstErrorElement) firstErrorElement = errorElement;
-          console.log("Validation failed: End time is not after start time.");
-        }
-      });
-
-      if (!isValid) {
-        e.preventDefault();
-        submitButton.classList.remove('is-loading');
-        submitButton.disabled = false;
-        console.log("Form validation failed. Preventing submission.");
-
-        if (firstErrorElement) {
-          firstErrorElement.closest('.slot').scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
       } else {
-        console.log("Form validation successful. Submitting form.");
+        slot.remove();
       }
     });
+  };
+
+  document.querySelectorAll('.delete-slot').forEach(bindDelete);
+
+  document.querySelectorAll('.add-slot').forEach(button => {
+    button.addEventListener('click', function() {
+      const daySection = this.closest('.day-section');
+      const dayIndex = daySection.dataset.day;
+      const slotsContainer = daySection.querySelector('.slots');
+      const newId = `new_${Date.now()}`;
+      const slot = document.createElement('div');
+      slot.className = 'slot';
+      slot.dataset.id = newId;
+      slot.innerHTML = `
+        <input type="hidden" name="slots[${newId}][id]" value="${newId}">
+        <input type="hidden" name="slots[${newId}][day_of_week]" value="${dayIndex}">
+        <div class="field has-addons">
+          <div class="control">
+            <div class="select is-fullwidth">
+              <select name="slots[${newId}][start_time]" class="time-input start-time">
+                ${generateTimeOptions()}
+              </select>
+            </div>
+          </div>
+          <div class="control">
+            <div class="select is-fullwidth">
+              <select name="slots[${newId}][end_time]" class="time-input end-time">
+                ${generateTimeOptions()}
+              </select>
+            </div>
+          </div>
+          <div class="control">
+            <button type="button" class="button is-danger is-light delete-slot">Delete</button>
+          </div>
+        </div>
+        <p class="help is-danger" style="display:none;"></p>
+      `;
+      slotsContainer.appendChild(slot);
+      bindDelete(slot.querySelector('.delete-slot'));
+    });
   });
+
+  document.getElementById('availability-form').addEventListener('submit', function(e) {
+    const submitBtn = document.getElementById('submit-button');
+    submitBtn.classList.add('is-loading'); submitBtn.disabled = true;
+    let isValid = true; let firstError = null;
+
+    document.querySelectorAll('.slot:not(.marked-for-deletion)').forEach(slot => {
+      const start = slot.querySelector('.start-time').value;
+      const end = slot.querySelector('.end-time').value;
+      const err = slot.querySelector('.help.is-danger');
+      err.style.display = 'none'; err.textContent = '';
+
+      if (!start && !end) return;
+      if (!start || !end) { err.textContent='Both start and end times must be selected.'; err.style.display='block'; isValid=false; if(!firstError) firstError=err; return; }
+      const [sh, sm] = start.split(':').map(Number);
+      const [eh, em] = end.split(':').map(Number);
+      if(eh<sh || (eh===sh && em<=sm)){ err.textContent='End time must be after start time.'; err.style.display='block'; isValid=false; if(!firstError) firstError=err;}
+    });
+
+    if(!isValid){ e.preventDefault(); submitBtn.classList.remove('is-loading'); submitBtn.disabled=false; if(firstError) firstError.closest('.slot').scrollIntoView({behavior:'smooth', block:'center'});}
+  });
+});
 </script>

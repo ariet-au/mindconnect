@@ -4,112 +4,116 @@ class PsychologistAvailabilitiesController < ApplicationController
   before_action :set_psychologist_availability, only: [:destroy]
 
   # GET /psychologist_profiles/:psychologist_profile_id/psychologist_availabilities
- def index
-  @display_timezone = 
-    params[:browser_timezone] || session[:browser_timezone] || cookies[:browser_timezone] || @psychologist_profile.timezone.presence ||'UTC'
+#  def index
+#   @display_timezone = 
+#     @psychologist_profile.timezone.presence || params[:browser_timezone] || session[:browser_timezone] || cookies[:browser_timezone] 
 
-  # Load availabilities
-  @availabilities = @psychologist_profile.psychologist_availabilities
-                                         .order(:day_of_week, :start_time_of_day)
+#   # Load availabilities
+#   @availabilities = @psychologist_profile.psychologist_availabilities
+#                                          .order(:day_of_week, :start_time_of_day)
 
-  # Convert each availability's start and end to the display timezone
-  @availabilities_in_display_tz = @availabilities.map do |a|
-    tz = ActiveSupport::TimeZone[@psychologist_profile.timezone] || ActiveSupport::TimeZone['UTC']
+#   # Convert each availability's start and end to the display timezone
+#   @availabilities_in_display_tz = @availabilities.map do |a|
+#     tz = ActiveSupport::TimeZone[@psychologist_profile.timezone] || ActiveSupport::TimeZone['UTC']
 
-    # Extract the time-of-day from the stored datetime
-    start_local = tz.parse(a.start_time_of_day.strftime("%H:%M"))
-    end_local   = tz.parse(a.end_time_of_day.strftime("%H:%M"))
-    # Convert to display timezone
-    start_in_display = start_local.in_time_zone(@display_timezone)
-    end_in_display   = end_local.in_time_zone(@display_timezone)
+#     # Extract the time-of-day from the stored datetime
+#     start_local = tz.parse(a.start_time_of_day.strftime("%H:%M"))
+#     end_local   = tz.parse(a.end_time_of_day.strftime("%H:%M"))
+#     # Convert to display timezone
+#     start_in_display = start_local.in_time_zone(@display_timezone)
+#     end_in_display   = end_local.in_time_zone(@display_timezone)
 
-    {
-      id: a.id,
-      day_of_week: a.day_of_week,
-      start_time: start_in_display,
-      end_time: end_in_display
-    }
+#     {
+#       id: a.id,
+#       day_of_week: a.day_of_week,
+#       start_time: start_in_display,
+#       end_time: end_in_display
+#     }
+#   end
+
+#   Rails.logger.debug "Availabilities in display timezone: #{@availabilities_in_display_tz.inspect}"
+# end
+
+  def index
+    # Load availabilities ordered by day_of_week
+    @availabilities = @psychologist_profile.psychologist_availabilities
+                                          .order(:day_of_week, :start_time_of_day)
+
+    # Convert times to HH:MM strings to avoid timezone issues
+    @availabilities_str = @availabilities.map do |a|
+      {
+        id: a.id,
+        day_of_week: a.day_of_week,
+        start_time_of_day: a.start_time_of_day&.strftime('%H:%M'),
+        end_time_of_day: a.end_time_of_day&.strftime('%H:%M')
+      }
+    end
   end
 
-  Rails.logger.debug "Availabilities in display timezone: #{@availabilities_in_display_tz.inspect}"
-end
 
 
+  
   def update_all
-  submitted_slots_data = availability_params
-  errors = []
+    submitted_slots_data = availability_params
+    deleted_slot_ids = params[:deleted_slots]&.keys || []   # Grab the IDs of slots marked for deletion
+    errors = []
 
-  ActiveRecord::Base.transaction do
-    Rails.logger.debug "--- STARTING AVAILABILITIES UPDATE TRANSACTION ---"
+    ActiveRecord::Base.transaction do
+      Rails.logger.debug "--- STARTING AVAILABILITIES UPDATE TRANSACTION ---"
 
-    submitted_slots_data.each do |slot_data|
-      Rails.logger.debug "Processing slot_data: #{slot_data.inspect}"
+      # DELETE slots first
+      if deleted_slot_ids.any?
+        deleted_slot_ids.each do |id|
+          availability = @psychologist_profile.psychologist_availabilities.find_by(id: id)
+          if availability
+            Rails.logger.debug "Deleting availability ID: #{availability.id}"
+            availability.destroy
+          else
+            Rails.logger.debug "Could not find availability ID #{id} to delete"
+          end
+        end
+      end
 
-      # Skip blank slots
-      next if slot_data[:start_time].blank? || slot_data[:end_time].blank?
+      # CREATE/UPDATE slots
+      submitted_slots_data.each do |slot_data|
+        next if slot_data[:start_time].blank? || slot_data[:end_time].blank?
 
-      # Find an existing record by ID or build a new one.
-      # The key check: Is the ID a numeric string?
-      is_existing = slot_data[:id].present? && slot_data[:id].to_s.match?(/\A\d+\z/)
-      Rails.logger.debug "Is existing slot? #{is_existing}"
+        is_existing = slot_data[:id].present? && slot_data[:id].to_s.match?(/\A\d+\z/)
 
-      if is_existing
-        # Logic for existing records
-        availability = @psychologist_profile.psychologist_availabilities.find_by(id: slot_data[:id])
-        if availability
-          Rails.logger.debug "Found existing availability with ID: #{availability.id}"
-          availability.assign_attributes(
+        if is_existing
+          availability = @psychologist_profile.psychologist_availabilities.find_by(id: slot_data[:id])
+          if availability
+            availability.assign_attributes(
+              day_of_week: slot_data[:day_of_week],
+              start_time_of_day: slot_data[:start_time],
+              end_time_of_day: slot_data[:end_time],
+              timezone: @psychologist_profile.timezone
+            )
+            errors << "Slot #{availability.id}: #{availability.errors.full_messages.join(', ')}" unless availability.save
+          end
+        else
+          new_availability = @psychologist_profile.psychologist_availabilities.build(
             day_of_week: slot_data[:day_of_week],
             start_time_of_day: slot_data[:start_time],
             end_time_of_day: slot_data[:end_time],
             timezone: @psychologist_profile.timezone
           )
-          unless availability.save
-            errors << "Slot: #{availability.errors.full_messages.join(', ')}"
-            Rails.logger.debug "Failed to save existing slot. Errors: #{availability.errors.full_messages}"
-          else
-            Rails.logger.debug "Successfully updated existing slot ID: #{availability.id}"
-          end
-        else
-          errors << "Slot with ID #{slot_data[:id]} not found."
-          Rails.logger.debug "ERROR: Existing slot with ID #{slot_data[:id]} not found."
-        end
-      else
-        # This is the crucial logic for NEW records that was previously failing
-        Rails.logger.debug "Building NEW availability record."
-        new_availability = @psychologist_profile.psychologist_availabilities.build(
-          day_of_week: slot_data[:day_of_week],
-          start_time_of_day: slot_data[:start_time],
-          end_time_of_day: slot_data[:end_time],
-          timezone: @psychologist_profile.timezone
-        )
-        unless new_availability.save
-          errors << "Slot: #{new_availability.errors.full_messages.join(', ')}"
-          Rails.logger.debug "Failed to save new slot. Errors: #{new_availability.errors.full_messages}"
-        else
-          Rails.logger.debug "Successfully saved NEW slot with ID: #{new_availability.id}"
+          errors << "Slot: #{new_availability.errors.full_messages.join(', ')}" unless new_availability.save
         end
       end
+
+      raise ActiveRecord::Rollback if errors.present?
     end
 
-    if errors.present?
-      Rails.logger.debug "Errors found, rolling back transaction: #{errors.join('; ')}"
-      raise ActiveRecord::Rollback
+    if errors.empty?
+      redirect_to psychologist_profile_psychologist_availabilities_path(@psychologist_profile), notice: 'Availabilities saved successfully.'
     else
-      Rails.logger.debug "No errors. Committing transaction."
+      @availabilities = @psychologist_profile.psychologist_availabilities.order(:day_of_week, :start_time_of_day)
+      flash.now[:alert] = errors.join('; ')
+      render :index, status: :unprocessable_entity
     end
   end
 
-  # The rest of your redirect and render logic is unchanged
-  if errors.empty?
-    redirect_to psychologist_profile_psychologist_availabilities_path(@psychologist_profile),
-                notice: 'Availabilities saved successfully.'
-  else
-    @availabilities = @psychologist_profile.psychologist_availabilities.order(:day_of_week, :start_time_of_day)
-    flash.now[:alert] = errors.join('; ')
-    render :index, status: :unprocessable_entity
-  end
-end
 
   def destroy
     Rails.logger.debug "Destroying availability ID: #{@psychologist_availability.id}"
@@ -121,62 +125,45 @@ end
   end
 
   def calendar_blocks
-    # Determine viewer/browser timezone
-    display_timezone = params[:tz].presence || 'UTC'
+    tz = @psychologist_profile&.timezone || 'UTC'
+    zone = ActiveSupport::TimeZone[tz]
 
-    # Load all availabilities with start and end times
-    @availabilities = @psychologist_profile.psychologist_availabilities
+    # Get all availabilities with start/end times
+    availabilities = @psychologist_profile.psychologist_availabilities
                                           .where.not(start_time_of_day: nil, end_time_of_day: nil)
 
-    respond_to do |format|
-      format.json do
-        json_data = @availabilities.map do |a|
-          # Use availability timezone, fallback to psychologist, fallback to UTC
-          availability_tz = a.timezone.presence || @psychologist_profile.timezone.presence || 'UTC'
-          tz = ActiveSupport::TimeZone[availability_tz]
+    json_data = []
 
-          # Parse stored time-of-day in availability's timezone
-          start_local = tz.parse(a.start_time_of_day.strftime("%H:%M"))
-          end_local   = tz.parse(a.end_time_of_day.strftime("%H:%M"))
+    # Start from the beginning of this week
+    start_date = Time.zone.now.beginning_of_week
+    end_date = start_date + 8.weeks
 
-          # Convert to viewer's timezone
-          start_in_display = start_local.in_time_zone(display_timezone)
-          end_in_display   = end_local.in_time_zone(display_timezone)
+    availabilities.each do |a|
+      availability_zone = ActiveSupport::TimeZone[a.timezone || tz]
 
-          {
-            daysOfWeek: [a.day_of_week],
-            startTime: start_in_display.strftime("%H:%M:%S"),
-            endTime: end_in_display.strftime("%H:%M:%S"),
-            timezone: display_timezone
-          }
-        end
+      (start_date.to_date..end_date.to_date).each do |date|
+        next unless date.wday == a.day_of_week
 
-        render json: json_data
+        start_dt = availability_zone.local(date.year, date.month, date.day,
+                                          a.start_time_of_day.hour, a.start_time_of_day.min)
+        end_dt = availability_zone.local(date.year, date.month, date.day,
+                                        a.end_time_of_day.hour, a.end_time_of_day.min)
+
+        # --- THIS IS THE FIX ---
+        # Send a full ISO 8601 string with the timezone offset.
+        # e.g., "2025-08-17T15:00:00+10:00"
+        json_data << {
+          start: start_dt.iso8601,
+          end: end_dt.iso8601,
+          display: 'background',
+          color: '#008000'
+        }
       end
-
-      format.html { head :not_found }
     end
+
+    render json: json_data
   end
 
-
-
-  # def calendar_blocks
-  #   @availabilities = @psychologist_profile.psychologist_availabilities.where.not(start_time_of_day: nil, end_time_of_day: nil)
-  #   respond_to do |format|
-  #     format.json do
-  #       json_data = @availabilities.map do |a|
-  #         {
-  #           daysOfWeek: [a.day_of_week],
-  #           startTime: a.start_time_of_day.strftime("%H:%M:%S"),
-  #           endTime: a.end_time_of_day.strftime("%H:%M:%S"),
-  #           timezone: a.timezone
-  #         }
-  #       end
-  #       render json: json_data
-  #     end
-  #     format.html { head :not_found }
-  #   end
-  # end
 
   private
 
