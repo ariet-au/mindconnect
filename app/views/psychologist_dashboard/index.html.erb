@@ -453,37 +453,15 @@
   });
 
   function generateBackgroundEvents(availabilities) {
-    const now = luxon.DateTime.now();
+    // Rails should already send start_iso and end_iso for each block
+    // e.g., { start_iso: "2025-08-17T15:00:00+10:00", end_iso: "2025-08-17T18:00:00+10:00" }
 
-    return availabilities.flatMap(av => {
-      const events = [];
-
-      for (let week = 0; week < 52; week++) {
-        const date = now.startOf('week')
-                        .plus({ weeks: week })
-                        .plus({ days: av.day_of_week })
-                        .setZone(av.timezone);
-
-        const start = date.set({
-          hour: parseInt(av.start_time.split(':')[0], 10),
-          minute: parseInt(av.start_time.split(':')[1], 10)
-        });
-
-        const end = date.set({
-          hour: parseInt(av.end_time.split(':')[0], 10),
-          minute: parseInt(av.end_time.split(':')[1], 10)
-        });
-
-        events.push({
-          start: start.toISO(),
-          end: end.toISO(),
-          display: 'background',
-          color: '#008000'
-        });
-      }
-
-      return events;
-    });
+    return availabilities.map(av => ({
+      start: av.start_iso,
+      end: av.end_iso,
+      display: 'background',
+      color: '#008000'
+    }));
   }
 
 
@@ -557,6 +535,7 @@
           url: `/psychologist_profiles/${psychologistProfileId}/psychologist_availabilities/calendar_blocks.json`,
           method: 'GET',
           display: 'background',
+          color: '#008000',
           failure: error => {
             console.error('Error fetching availability blocks:', error);
             showCustomAlert('Error fetching availability blocks.');

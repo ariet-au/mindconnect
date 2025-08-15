@@ -124,45 +124,43 @@ class PsychologistAvailabilitiesController < ApplicationController
     end
   end
 
-  def calendar_blocks
-    tz = @psychologist_profile&.timezone || 'UTC'
-    zone = ActiveSupport::TimeZone[tz]
+def calendar_blocks
+  tz = @psychologist_profile.timezone || 'UTC'
+  zone = ActiveSupport::TimeZone[tz]
 
-    # Get all availabilities with start/end times
-    availabilities = @psychologist_profile.psychologist_availabilities
-                                          .where.not(start_time_of_day: nil, end_time_of_day: nil)
+  availabilities = @psychologist_profile.psychologist_availabilities
+                                         .where.not(start_time_of_day: nil, end_time_of_day: nil)
 
-    json_data = []
+  json_data = []
+  start_date = Time.zone.now.beginning_of_week
+  end_date   = start_date + 8.weeks
 
-    # Start from the beginning of this week
-    start_date = Time.zone.now.beginning_of_week
-    end_date = start_date + 8.weeks
+  availabilities.each do |a|
+    availability_zone = ActiveSupport::TimeZone[a.timezone || tz]
 
-    availabilities.each do |a|
-      availability_zone = ActiveSupport::TimeZone[a.timezone || tz]
+    (start_date.to_date..end_date.to_date).each do |date|
+      next unless date.wday == a.day_of_week
 
-      (start_date.to_date..end_date.to_date).each do |date|
-        next unless date.wday == a.day_of_week
+      # Treat stored hour/minute as local to psychologist
+      start_dt = availability_zone.local(date.year, date.month, date.day,
+                                        a.start_time_of_day.hour,
+                                        a.start_time_of_day.min)
+      end_dt   = availability_zone.local(date.year, date.month, date.day,
+                                        a.end_time_of_day.hour,
+                                        a.end_time_of_day.min)
 
-        start_dt = availability_zone.local(date.year, date.month, date.day,
-                                          a.start_time_of_day.hour, a.start_time_of_day.min)
-        end_dt = availability_zone.local(date.year, date.month, date.day,
-                                        a.end_time_of_day.hour, a.end_time_of_day.min)
-
-        # --- THIS IS THE FIX ---
-        # Send a full ISO 8601 string with the timezone offset.
-        # e.g., "2025-08-17T15:00:00+10:00"
-        json_data << {
-          start: start_dt.iso8601,
-          end: end_dt.iso8601,
-          display: 'background',
-          color: '#008000'
-        }
-      end
+      json_data << {
+        start: start_dt.iso8601,  # includes proper +10:00 / +11:00 offset
+        end:   end_dt.iso8601,
+        display: 'background',
+        color: '#008000'
+      }
     end
-
-    render json: json_data
   end
+
+  render json: json_data
+end
+
 
 
   private
