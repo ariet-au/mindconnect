@@ -82,7 +82,8 @@
           </div>
           <div id="calendar-container"
               data-psychologist-profile-id="<%= @psychologist_profile.id %>"
-              data-psychologist-timezone="<%= @psychologist_profile.timezone %>">
+              data-psychologist-timezone="<%= @psychologist_profile.timezone %>"
+              data-display-timezone="<%= @display_timezone %>">
             <div class="timezone-info mb-2">
               <small class="text-muted">Calendar displayed in: <span id="displayedTimezone"></span></small>
             </div>
@@ -449,23 +450,25 @@
       initializeCalendar();
     });
 
+
     function initializeCalendar() {
       const calendarEl = document.getElementById('calendar');
       const container = document.getElementById('calendar-container');
 
       if (!calendarEl || !container) {
-        console.error("Missing required elements or data for calendar initialization. Ensure 'calendar' and 'calendar-container' IDs exist.");
+        console.error("Missing required elements or data for calendar initialization.");
         return;
       }
 
       const psychologistProfileId = container.dataset.psychologistProfileId;
       const psychologistTimezone = container.dataset.psychologistTimezone;
+      const displayTimezone = container.dataset.displayTimezone || 'UTC'; // Use display_timezone from controller
       const displayedTimezoneSpan = document.getElementById('displayedTimezone');
       const browserTimezoneSpans = document.querySelectorAll('#browserTimezone');
       const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-      if (!psychologistProfileId || !psychologistTimezone) {
-        console.error("Missing psychologist profile ID or timezone data from 'calendar-container' dataset.");
+      if (!psychologistProfileId || !displayTimezone) {
+        console.error("Missing psychologist profile ID or display timezone data.");
         return;
       }
 
@@ -474,12 +477,12 @@
       });
 
       if (displayedTimezoneSpan) {
-        displayedTimezoneSpan.textContent = psychologistTimezone;
+        displayedTimezoneSpan.textContent = displayTimezone;
       }
 
       console.log(`[DEBUG] Initializing calendar.`);
       console.log(`[DEBUG] Psychologist Profile ID: ${psychologistProfileId}`);
-      console.log(`[DEBUG] Psychologist Timezone (for display): ${psychologistTimezone}`);
+      console.log(`[DEBUG] Display Timezone: ${displayTimezone}`);
       console.log(`[DEBUG] Browser Timezone: ${browserTimezone}`);
 
       calendar = new FullCalendar.Calendar(calendarEl, {
@@ -498,7 +501,7 @@
           });
         },
         firstDay: 1,
-        timeZone: psychologistTimezone,
+        timeZone: displayTimezone, // Use display_timezone for calendar rendering
         displayEventTime: true,
         eventTimeFormat: { hour: 'numeric', minute: '2-digit', meridiem: 'short' },
         slotLabelFormat: { hour: 'numeric', minute: '2-digit', omitZeroMinute: false, meridiem: 'short' },
@@ -516,6 +519,7 @@
             method: 'GET',
             color: '#d9534f',
             textColor: 'white',
+            extraParams: { timezone: displayTimezone }, // Pass display_timezone to backend
             failure: function(error) {
               console.error('Error fetching unavailabilities:', error);
               showCustomAlert('Error fetching unavailabilities.');
@@ -526,6 +530,7 @@
             method: 'GET',
             color: '#0d6efd',
             textColor: 'white',
+            extraParams: { timezone: displayTimezone },
             failure: function(error) {
               console.error('Error loading bookings:', error);
               showCustomAlert('Error loading bookings.');
@@ -536,29 +541,20 @@
             method: 'GET',
             display: 'background',
             color: '#d4edda',
+            extraParams: { timezone: displayTimezone },
             eventDataTransform: function(eventData) {
               if (eventData.startTime && eventData.endTime) {
-                const psychologistTimezone = calendar.getOption('timeZone'); // e.g., "Australia/Sydney"
-                const currentDate = moment().format('YYYY-MM-DD');
-
-                // Parse as naive local times in psychologist's timezone
-                const startMomentLocal = moment.tz(`${currentDate}T${eventData.startTime}`, psychologistTimezone);
-                const endMomentLocal   = moment.tz(`${currentDate}T${eventData.endTime}`, psychologistTimezone);
-
-                // Format back to HH:mm:ss for display
+                const startMomentLocal = moment.tz(`${eventData.date}T${eventData.startTime}`, displayTimezone);
+                const endMomentLocal = moment.tz(`${eventData.date}T${eventData.endTime}`, displayTimezone);
                 eventData.startTime = startMomentLocal.format('HH:mm:ss');
-                eventData.endTime   = endMomentLocal.format('HH:mm:ss');
-
-                console.log(`[DEBUG] Showing availability for ${psychologistTimezone}: ${eventData.startTime} - ${eventData.endTime}`);
+                eventData.endTime = endMomentLocal.format('HH:mm:ss');
+                console.log(`[DEBUG] Showing availability for ${displayTimezone}: ${eventData.startTime} - ${eventData.endTime}`);
               }
               return eventData;
             },
-                      success: function(data) {
+            success: function(data) {
               console.log('[DEBUG] Availability request successful.');
               console.log('[DEBUG] Raw availability data from server:', data);
-              data.forEach(item => {
-                console.log(`[DEBUG] Raw Availability Block - Day: ${item.daysOfWeek[0]}, Start: ${item.startTime}, End: ${item.endTime}`);
-              });
             },
             failure: function(error) {
               console.error('[DEBUG] Error fetching availability blocks:', error);
@@ -568,11 +564,7 @@
         ],
         eventDidMount: function(info) {
           console.log(`[DEBUG] Event mounted: ${info.event.title || 'Availability Block'}`);
-          console.log(`[DEBUG] Received Time (UTC): ${info.event.start.toISOString()} to ${info.event.end.toISOString()}`);
-          console.log(`[DEBUG] Displayed Time (${calendar.getOption('timeZone')}): ${info.event.startStr} to ${info.event.endStr}`);
-          if (info.event.display === 'background') {
-            console.log(`[DEBUG] Availability Block - Day: ${info.event.start.getUTCDay()}, Start: ${info.event.startStr}, End: ${info.event.endStr}`);
-          }
+          console.log(`[DEBUG] Displayed Time (${displayTimezone}): ${info.event.startStr} to ${info.event.endStr}`);
           const isBooking = info.event.extendedProps.bookingId || info.event.extendedProps.type === 'booking' ||
                             info.event.extendedProps.clientName || info.event.extendedProps.status;
           if (isBooking) {
@@ -586,40 +578,29 @@
           }
         },
         eventClick: function(info) {
-  // If no valid event clicked
-  if (!info.event || !info.event.id) {
-    console.warn('[DEBUG] Clicked on an invalid event or empty space. Ignoring.');
-    return;
-  }
-
-  const isBooking = info.event.extendedProps.bookingId ||
-                    info.event.extendedProps.type === 'booking' ||
-                    info.event.extendedProps.clientName ||
-                    info.event.extendedProps.status;
-
-  if (isBooking) {
-    console.log('[DEBUG] Event Clicked (Booking):', info.event);
-    openEditBookingModal(info.event);
-  } 
-  else if (info.event.display === 'background') {
-    // Background event → open create unavailability instead of edit
-    console.log('[DEBUG] Clicked on background time slot → creating unavailability');
-    openCreateUnavailabilityModal(info.event.start, info.event.end);
-  } 
-  else {
-    // Real unavailability event (has an ID)
-    console.log('[DEBUG] Event Clicked (Unavailability):', info.event);
-    openEditUnavailabilityModal(info.event);
-  }
-},
-dateClick: function(info) {
-  console.log('[DEBUG] Empty space clicked at:', info.dateStr);
-  const start = info.date;
-  const end = new Date(start.getTime() + 30 * 60 * 1000); // default +0.5 hour
-  console.log(start);
-  console.log(end);
-  openCreateUnavailabilityModal(start, end);
-},
+          if (!info.event || !info.event.id) {
+            console.warn('[DEBUG] Clicked on an invalid event or empty space. Ignoring.');
+            return;
+          }
+          const isBooking = info.event.extendedProps.bookingId || info.event.extendedProps.type === 'booking' ||
+                            info.event.extendedProps.clientName || info.event.extendedProps.status;
+          if (isBooking) {
+            console.log('[DEBUG] Event Clicked (Booking):', info.event);
+            openEditBookingModal(info.event);
+          } else if (info.event.display === 'background') {
+            console.log('[DEBUG] Clicked on background time slot → creating unavailability');
+            openCreateUnavailabilityModal(info.event.start, info.event.end);
+          } else {
+            console.log('[DEBUG] Event Clicked (Unavailability):', info.event);
+            openEditUnavailabilityModal(info.event);
+          }
+        },
+        dateClick: function(info) {
+          console.log('[DEBUG] Empty space clicked at:', info.dateStr);
+          const start = info.date;
+          const end = new Date(start.getTime() + 30 * 60 * 1000);
+          openCreateUnavailabilityModal(start, end);
+        },
         select: function(info) {
           console.log(`[DEBUG] Time slot selected. Start: ${info.startStr}, End: ${info.endStr}`);
           openCreateUnavailabilityModal(info.start, info.end);
@@ -630,6 +611,8 @@ dateClick: function(info) {
       console.log('[DEBUG] FullCalendar timeZone:', calendar.getOption('timeZone'));
       calendar.render();
     }
+      
+    
 </script>
 <script>
 

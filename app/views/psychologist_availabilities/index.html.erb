@@ -208,6 +208,7 @@
         const newSlot = document.createElement('div');
         newSlot.className = 'slot';
         newSlot.innerHTML = `
+          <input type="hidden" name="slots[${newId}][id]" value="${newId}">
           <input type="hidden" name="slots[${newId}][day_of_week]" value="${dayIndex}">
           <div class="field has-addons">
             <div class="control">

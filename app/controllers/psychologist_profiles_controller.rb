@@ -199,9 +199,10 @@ end
     # Determine display timezone (similar to your booking controller)
     @display_timezone = params[:browser_timezone] || session[:browser_timezone] || cookies[:browser_timezone] || @psychologist_profile.timezone.presence || 'UTC'
     Rails.logger.info "[TIMEZONE DEBUG] Display timezone set to: #{@display_timezone.inspect}"
-
+    Time.zone = @display_timezone
     # Get next available slot
     next_slot_utc = @psychologist_profile.next_available_slot
+    
 
     @next_available_slot = next_slot_utc&.in_time_zone(@display_timezone)
     
@@ -219,7 +220,7 @@ def show_mob2
     cookies[:browser_timezone] ||
     @psychologist_profile.timezone.presence ||
     'UTC'
-    
+
   Time.zone = @display_timezone
   next_slot_utc = @psychologist_profile.next_available_slot
   @next_available_slot = next_slot_utc&.in_time_zone(@display_timezone)
