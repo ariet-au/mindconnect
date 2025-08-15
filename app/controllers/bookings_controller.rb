@@ -328,6 +328,37 @@ end
     @psychologist_id = current_user.psychologist_profile&.id if current_user.role == "psychologist"
   end
 
+  # def choose_time
+  #   @psychologist = if params[:psychologist_id].present?
+  #                     PsychologistProfile.find(params[:psychologist_id])
+  #                   elsif current_user.role == "psychologist"
+  #                     current_user.psychologist_profile || raise(ActiveRecord::RecordNotFound, "No psychologist profile found for current user")
+  #                   else
+  #                     raise ActiveRecord::RecordNotFound, "Psychologist ID is required"
+  #                   end
+
+  #   @service = Service.find(params[:service_id])
+    
+  #   # We will now show available slots for the next 14 days
+  #   date_range = (Date.current..Date.current + 13.days)
+
+  #   @time_slots = {}
+    
+  #   date_range.each do |date|
+  #     puts "--- Debugging for date: #{date} ---"
+  #     day_of_week = date.wday
+  #     availabilities = @psychologist.psychologist_availabilities.where(day_of_week: day_of_week)
+  #     puts "Availabilities for day #{day_of_week}: #{availabilities.inspect}"
+
+  #     unavailabilities = Booking.where(psychologist_profile_id: @psychologist.id)
+  #                                .where("start_time >= ? AND start_time < ?", date.beginning_of_day, date.end_of_day)
+  #     puts "Existing bookings for #{date}: #{unavailabilities.inspect}"
+  #     puts "--- End Debugging ---"
+      
+  #     available_times_for_day = calculate_available_times(@psychologist, date, @service.duration_minutes)
+  #     @time_slots[date] = available_times_for_day unless available_times_for_day.empty?
+  #   end
+  # end
   def choose_time
     @psychologist = if params[:psychologist_id].present?
                       PsychologistProfile.find(params[:psychologist_id])
@@ -338,27 +369,18 @@ end
                     end
 
     @service = Service.find(params[:service_id])
-    
-    # We will now show available slots for the next 14 days
-    date_range = (Date.current..Date.current + 13.days)
 
-    @time_slots = {}
-    
-    date_range.each do |date|
-      puts "--- Debugging for date: #{date} ---"
-      day_of_week = date.wday
-      availabilities = @psychologist.psychologist_availabilities.where(day_of_week: day_of_week)
-      puts "Availabilities for day #{day_of_week}: #{availabilities.inspect}"
+    slot_finder = SlotFinder.new(@psychologist.id, @service.duration_minutes, Time.zone.name)
+    @time_slots = slot_finder.all_available_slots_by_day(Time.current, 14)
 
-      unavailabilities = Booking.where(psychologist_profile_id: @psychologist.id)
-                                 .where("start_time >= ? AND start_time < ?", date.beginning_of_day, date.end_of_day)
-      puts "Existing bookings for #{date}: #{unavailabilities.inspect}"
-      puts "--- End Debugging ---"
-      
-      available_times_for_day = calculate_available_times(@psychologist, date, @service.duration_minutes)
-      @time_slots[date] = available_times_for_day unless available_times_for_day.empty?
+    # Optional debug
+    @time_slots.each do |date, slots|
+      formatted_slots = slots.map { |s| s.in_time_zone(@psychologist.timezone).strftime('%H:%M %Z') }
+      Rails.logger.debug "Available slots for #{date}: #{formatted_slots}"
     end
   end
+
+
 
   def assign_client
     @booking = Booking.new

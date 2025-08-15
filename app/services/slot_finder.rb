@@ -119,12 +119,23 @@ class SlotFinder
     nil
   end
 
+  # def combine_date_and_time_to_utc(date_obj, time_of_day_obj)
+  #    return nil unless date_obj.is_a?(Date) && time_of_day_obj.respond_to?(:hour)
+  #    @psych_tz.local(date_obj.year, date_obj.month, date_obj.day, time_of_day_obj.hour, time_of_day_obj.min, time_of_day_obj.sec || 0).utc
+  # rescue ArgumentError => e
+  #    Rails.logger.error "Error combining date and time: #{e.message}"
+  #    nil
+  # end
   def combine_date_and_time_to_utc(date_obj, time_of_day_obj)
-     return nil unless date_obj.is_a?(Date) && time_of_day_obj.respond_to?(:hour)
-     @psych_tz.local(date_obj.year, date_obj.month, date_obj.day, time_of_day_obj.hour, time_of_day_obj.min, time_of_day_obj.sec || 0).utc
+    return nil unless date_obj.is_a?(Date) && time_of_day_obj.respond_to?(:hour)
+    
+    # Treat the stored hour/minute as local to the psychologist
+    local_dt = @psych_tz.local(date_obj.year, date_obj.month, date_obj.day,
+                              time_of_day_obj.hour, time_of_day_obj.min, time_of_day_obj.sec || 0)
+    local_dt.utc
   rescue ArgumentError => e
-     Rails.logger.error "Error combining date and time: #{e.message}"
-     nil
+    Rails.logger.error "Error combining date and time: #{e.message}"
+    nil
   end
 
   def time_slot_unavailable?(start_time_utc, end_time_utc)
