@@ -73,11 +73,10 @@ Rails.application.routes.draw do
       resources :educations, only: [:new, :create, :edit, :update, :destroy]
       resources :psychologist_availabilities, only: [:index, :create, :update] do
         collection do 
-           get 'calendar_blocks' 
-           patch '/', to: 'psychologist_availabilities#update', as: 'update_all'
-
+          get 'calendar_blocks' 
+           #patch '/', to: 'psychologist_availabilities#update', as: 'update_all'
+          patch 'update_all'
         end
-        
       end
       resources :bookings, only: [:create, :new, :show, :index, :update, :edit, :destroy] do
         collection do

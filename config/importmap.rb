@@ -9,3 +9,6 @@ pin_all_from "app/javascript/controllers", under: "controllers"
 
 pin "trix"
 pin "@rails/actiontext", to: "actiontext.esm.js"
+
+
+# Pin FullCalendar and its dependencies from local files

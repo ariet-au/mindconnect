@@ -404,22 +404,84 @@
 
     <div class="card">
         <%# ---- Availability ---- %>
-        <div class="profile-section">
-             <% if @next_available_slot %>
-                <div class="availability-status available">
-                    <span class="availability-label"><i class="fas fa-check-circle"></i><%= t('psychologist_profiles.show.next_available_appointment') %></span>
-                    <div class="availability-details">
-                        <strong class="availability-time"><%= l(@next_available_slot, format: :long) %></strong>
-                        <span class="availability-timezone"><%= @display_timezone %></span>
-                    </div>
-                </div>
-            <% else %>
-                <div class="availability-status unavailable">
-                    <span class="availability-label"><i class="fas fa-calendar-times"></i><%= t('psychologist_profiles.show.no_availability') %></span>
-                </div>
-            <% end %>
+       <div class="availability-widget">
+        <% if @next_available_slot %>
+            <div class="avail-widget available">
+            <i class="fas fa-calendar-check widget-icon"></i>
+            <div class="widget-text">
+                <span class="widget-label">Next available:</span>
+                <span class="widget-time">
+                <%= l(@next_available_slot, format: "%a %-d %b") %> - 
+                <%= l(@next_available_slot, format: "%-l:%M%P") %>
+                </span>
+            </div>
+            </div>
+        <% else %>
+            <div class="avail-widget unavailable">
+            <i class="fas fa-calendar-times widget-icon"></i>
+            <span class="widget-label">No availability</span>
+            </div>
+        <% end %>
+        <div class="widget-timezone"><%= @display_timezone %></div>
         </div>
-        
+       
+        <style>
+        .availability-widget {
+  display: inline-flex;
+  flex-direction: column;
+  font-size: 0.8rem;
+  max-width: 180px;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.avail-widget {
+  display: flex;
+  align-items: center;
+  padding: 6px 8px;
+  gap: 6px;
+}
+
+.avail-widget.available {
+  background-color: #f0fdf4;
+  color: #15803d;
+}
+
+.avail-widget.unavailable {
+  background-color: #fef2f2;
+  color: #b91c1c;
+}
+
+.widget-icon {
+  font-size: 0.9rem;
+}
+
+.widget-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.widget-label {
+  font-weight: 500;
+  font-size: 0.75rem;
+}
+
+.widget-time {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.widget-timezone {
+  padding: 2px 8px;
+  font-size: 0.6rem;
+  text-align: center;
+  color: #64748b;
+  background-color: #f8fafc;
+  border-top: 1px solid #e2e8f0;
+}
+        </style>
         <%# ---- About Me ---- %>
         <div class="profile-section">
             <h2 class="section-title"><i class="fas fa-user-circle"></i> <%= t('psychologist_profiles.show.about_me') %></h2>
@@ -471,7 +533,26 @@
 
         <%# ---- Services Offered ---- %>
         <div class="profile-section">
-            <h2 class="section-title"><i class="fas fa-concierge-bell"></i> <%= t('psychologist_profiles.show.services_offered') %></h2>
+
+            
+        <%# ---- Availability ---- %>
+                    <h2 class="section-title"><i class="fas fa-concierge-bell"></i> <%= t('psychologist_profiles.show.services_offered') %></h2>
+
+        <div class="profile-section">
+             <% if @next_available_slot %>
+                <div class="availability-status available">
+                    <span class="availability-label"><i class="fas fa-check-circle"></i><%= t('psychologist_profiles.show.next_available_appointment') %></span>
+                    <div class="availability-details">
+                        <strong class="availability-time"><%= l(@next_available_slot, format: :long) %></strong>
+                        <span class="availability-timezone"><%= @display_timezone %></span>
+                    </div>
+                </div>
+            <% else %>
+                <div class="availability-status unavailable">
+                    <span class="availability-label"><i class="fas fa-calendar-times"></i><%= t('psychologist_profiles.show.no_availability') %></span>
+                </div>
+            <% end %>
+        </div>
             <% if @psychologist_profile.featured_service.present? %>
                 <% service = @psychologist_profile.featured_service %>
                 <div class="service-card">

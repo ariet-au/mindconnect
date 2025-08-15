@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_08_090957) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_31_233136) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -208,8 +208,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_08_090957) do
   create_table "psychologist_availabilities", force: :cascade do |t|
     t.bigint "psychologist_profile_id", null: false
     t.integer "day_of_week"
-    t.datetime "start_time_of_day", precision: nil
-    t.datetime "end_time_of_day", precision: nil
+    t.time "start_time_of_day"
+    t.time "end_time_of_day"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "timezone"

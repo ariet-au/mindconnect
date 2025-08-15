@@ -156,18 +156,41 @@ class PsychologistProfilesController < ApplicationController
 
   # GET /psychologist_profiles/1 or /psychologist_profiles/1.json
   def show
-    @psychologist_profile = PsychologistProfile.find(params[:id])
-  
-    # Determine display timezone (similar to your booking controller)
-    @display_timezone = params[:browser_timezone] || session[:browser_timezone] || cookies[:browser_timezone] || @psychologist_profile.timezone.presence || 'UTC'
-    
-    # Get next available slot
-    next_slot_utc = @psychologist_profile.next_available_slot
-    @next_available_slot = next_slot_utc&.in_time_zone(@display_timezone)
-    
-    # For timezone conversion in JavaScript
-    @display_timezone_offset_seconds = ActiveSupport::TimeZone.new(@display_timezone).utc_offset if @display_timezone
+  @psychologist_profile = PsychologistProfile.find(params[:id])
+
+  # Debug each source of timezone
+  Rails.logger.info "[TIMEZONE DEBUG] params[:browser_timezone]: #{params[:browser_timezone].inspect}"
+  Rails.logger.info "[TIMEZONE DEBUG] session[:browser_timezone]: #{session[:browser_timezone].inspect}"
+  Rails.logger.info "[TIMEZONE DEBUG] cookies[:browser_timezone]: #{cookies[:browser_timezone].inspect}"
+  Rails.logger.info "[TIMEZONE DEBUG] profile timezone: #{@psychologist_profile.timezone.inspect}"
+
+  # Determine display timezone (similar to your booking controller)
+  @display_timezone =
+    params[:browser_timezone] ||
+    session[:browser_timezone] ||
+    cookies[:browser_timezone] ||
+    @psychologist_profile.timezone.presence ||
+    'UTC'
+  Time.zone = @display_timezone
+
+  Rails.logger.info "[TIMEZONE DEBUG] Chosen display timezone: #{@display_timezone.inspect}"
+
+  # Get next available slot
+  next_slot_utc = @psychologist_profile.next_available_slot
+  Rails.logger.info "[TIMEZONE DEBUG] Next available slot (UTC): #{next_slot_utc.inspect}"
+
+  @next_available_slot = next_slot_utc&.in_time_zone(@display_timezone)
+  Rails.logger.info "[TIMEZONE DEBUG] Next available slot (in display timezone): #{@next_available_slot.inspect}"
+
+  # For timezone conversion in JavaScript
+  if @display_timezone
+    @display_timezone_offset_seconds = ActiveSupport::TimeZone.new(@display_timezone).utc_offset
+    Rails.logger.info "[TIMEZONE DEBUG] Offset seconds for #{@display_timezone}: #{@display_timezone_offset_seconds}"
+  else
+    Rails.logger.warn "[TIMEZONE DEBUG] No display timezone set, skipping offset calculation"
   end
+end
+
 
 
   def show_mob
@@ -175,28 +198,38 @@ class PsychologistProfilesController < ApplicationController
   
     # Determine display timezone (similar to your booking controller)
     @display_timezone = params[:browser_timezone] || session[:browser_timezone] || cookies[:browser_timezone] || @psychologist_profile.timezone.presence || 'UTC'
-    
+    Rails.logger.info "[TIMEZONE DEBUG] Display timezone set to: #{@display_timezone.inspect}"
+
     # Get next available slot
     next_slot_utc = @psychologist_profile.next_available_slot
+
     @next_available_slot = next_slot_utc&.in_time_zone(@display_timezone)
     
     # For timezone conversion in JavaScript
     @display_timezone_offset_seconds = ActiveSupport::TimeZone.new(@display_timezone).utc_offset if @display_timezone
   end
 
-    def show_mob2
-    @psychologist_profile = PsychologistProfile.find(params[:id])
-  
-    # Determine display timezone (similar to your booking controller)
-    @display_timezone = params[:browser_timezone] || session[:browser_timezone] || cookies[:browser_timezone] || @psychologist_profile.timezone.presence || 'UTC'
+def show_mob2
+  @psychologist_profile = PsychologistProfile.find(params[:id])
+
+  # Determine display timezone (similar to your booking controller)
+  @display_timezone =
+    params[:browser_timezone] ||
+    session[:browser_timezone] ||
+    cookies[:browser_timezone] ||
+    @psychologist_profile.timezone.presence ||
+    'UTC'
     
-    # Get next available slot
-    next_slot_utc = @psychologist_profile.next_available_slot
-    @next_available_slot = next_slot_utc&.in_time_zone(@display_timezone)
-    
-    # For timezone conversion in JavaScript
-    @display_timezone_offset_seconds = ActiveSupport::TimeZone.new(@display_timezone).utc_offset if @display_timezone
+  Time.zone = @display_timezone
+  next_slot_utc = @psychologist_profile.next_available_slot
+  @next_available_slot = next_slot_utc&.in_time_zone(@display_timezone)
+  # For timezone conversion in JavaScript
+  if @display_timezone
+    @display_timezone_offset_seconds = ActiveSupport::TimeZone.new(@display_timezone).utc_offset
+  else
+    Rails.logger.warn "[TIMEZONE DEBUG] No display timezone set, skipping offset calculation"
   end
+end
 
   # GET /psychologist_profiles/new
   def new
