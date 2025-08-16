@@ -396,6 +396,38 @@ end
     end
   end
 
+  def edit_time
+    # Find psychologist and service
+    @psychologist = if params[:psychologist_id].present?
+                      PsychologistProfile.find(params[:psychologist_id])
+                    elsif current_user.role == "psychologist"
+                      current_user.psychologist_profile || raise(ActiveRecord::RecordNotFound, "No psychologist profile found for current user")
+                    else
+                      raise ActiveRecord::RecordNotFound, "Psychologist ID is required"
+                    end
+
+    @service = Service.find(params[:service_id])
+
+    # Find the booking being edited
+    @booking = Booking.find(params[:booking_id])
+
+    # Initialize SlotFinder
+    slot_finder = SlotFinder.new(@psychologist.id, @service.duration_minutes, Time.zone.name)
+
+    # Exclude current booking from overlap checks
+    @time_slots = slot_finder.all_available_slots_by_day(Time.current, 14).transform_values do |slots|
+      slots.reject { |s| s.utc == @booking.start_time.utc }
+    end
+
+    # Optional debug log
+    @time_slots.each do |date, slots|
+      formatted_slots = slots.map { |s| s.in_time_zone(@psychologist.timezone).strftime('%H:%M %Z') }
+      Rails.logger.debug "Available slots for #{date}: #{formatted_slots}"
+    end
+
+    # Pre-select existing booking slot in the view (JavaScript can highlight it)
+  end
+
   def confirm_booking
     @psychologist = PsychologistProfile.find(params[:psychologist_id])
     @service = Service.find(params[:service_id])
