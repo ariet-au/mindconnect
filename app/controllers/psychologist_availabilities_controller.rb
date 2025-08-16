@@ -38,18 +38,7 @@ def index
   # Load availabilities ordered by day_of_week
   @availabilities = @psychologist_profile.psychologist_availabilities
                                         .order(:day_of_week, :start_time_of_day)
-
-  # Convert times to HH:MM strings in UTC to avoid timezone issues
-  @availabilities_str = @availabilities.map do |a|
-    {
-      id: a.id,
-      day_of_week: a.day_of_week,
-      start_time_of_day: a.start_time_of_day&.utc&.strftime('%H:%M'),
-      end_time_of_day: a.end_time_of_day&.utc&.strftime('%H:%M')
-    }
-  end
 end
-
 
 
   

@@ -31,8 +31,9 @@
             <h2 class="title is-5 has-text-grey-dark mb-4"><%= Date::DAYNAMES[day_index] %></h2>
             <div class="slots">
               <% @availabilities.select { |a| a.day_of_week == day_index }.each do |availability| %>
-                <% start_str = availability.start_time_of_day&.utc&.strftime('%H:%M') || '' %>
-                <% end_str = availability.end_time_of_day&.utc.strftime('%H:%M') || '' %>
+               <% tz = availability.timezone.presence || @psychologist_profile.timezone.presence || 'UTC' %>
+<%   start_str = availability.start_time_of_day&.in_time_zone(tz)&.strftime('%H:%M') || '' %>
+                <%   end_str = availability.end_time_of_day&.in_time_zone(tz)&.strftime('%H:%M') || '' %>
                 <div class="slot" data-id="<%= availability.id %>">
                   <input type="hidden" name="slots[<%= availability.id %>][id]" value="<%= availability.id %>">
                   <input type="hidden" name="slots[<%= availability.id %>][day_of_week]" value="<%= day_index %>">
