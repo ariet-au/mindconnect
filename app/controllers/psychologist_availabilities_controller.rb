@@ -67,6 +67,10 @@ end
       submitted_slots_data.each do |slot_data|
         next if slot_data[:start_time].blank? || slot_data[:end_time].blank?
 
+          # Parse times as simple strings without timezone conversion
+        start_time = Time.parse(slot_data[:start_time]).strftime('%H:%M:%S')
+        end_time = Time.parse(slot_data[:end_time]).strftime('%H:%M:%S')
+
         is_existing = slot_data[:id].present? && slot_data[:id].to_s.match?(/\A\d+\z/)
 
         if is_existing
