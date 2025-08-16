@@ -3,16 +3,16 @@ class PsychologistDashboardController < ApplicationController
   before_action :ensure_psychologist_role
 
 def index
-  # Determine browser/display timezone
-  @display_timezone =
-      params[:browser_timezone] ||
-      session[:browser_timezone] ||
-      cookies[:browser_timezone] ||
-      @psychologist_profile.timezone.presence ||
-      'UTC'
-      
   @psychologist = current_user
   @psychologist_profile = @psychologist.psychologist_profile
+
+  # Determine browser/display timezone safely
+  @display_timezone =
+    params[:browser_timezone] ||
+    session[:browser_timezone] ||
+    cookies[:browser_timezone] ||
+    @psychologist_profile&.timezone.presence ||
+    'UTC'
 
   if @psychologist_profile
     @upcoming_bookings = Booking.where(psychologist_profile_id: @psychologist_profile.id)
