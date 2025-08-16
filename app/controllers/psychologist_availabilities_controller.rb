@@ -34,21 +34,21 @@ class PsychologistAvailabilitiesController < ApplicationController
 #   Rails.logger.debug "Availabilities in display timezone: #{@availabilities_in_display_tz.inspect}"
 # end
 
-  def index
-    # Load availabilities ordered by day_of_week
-    @availabilities = @psychologist_profile.psychologist_availabilities
-                                          .order(:day_of_week, :start_time_of_day)
+def index
+  # Load availabilities ordered by day_of_week
+  @availabilities = @psychologist_profile.psychologist_availabilities
+                                        .order(:day_of_week, :start_time_of_day)
 
-    # Convert times to HH:MM strings to avoid timezone issues
-    @availabilities_str = @availabilities.map do |a|
-      {
-        id: a.id,
-        day_of_week: a.day_of_week,
-        start_time_of_day: a.start_time_of_day&.strftime('%H:%M'),
-        end_time_of_day: a.end_time_of_day&.strftime('%H:%M')
-      }
-    end
+  # Convert times to HH:MM strings in UTC to avoid timezone issues
+  @availabilities_str = @availabilities.map do |a|
+    {
+      id: a.id,
+      day_of_week: a.day_of_week,
+      start_time_of_day: a.start_time_of_day&.utc&.strftime('%H:%M'),
+      end_time_of_day: a.end_time_of_day&.utc&.strftime('%H:%M')
+    }
   end
+end
 
 
 
@@ -125,11 +125,13 @@ class PsychologistAvailabilitiesController < ApplicationController
   end
 
 def calendar_blocks
-  tz = @psychologist_profile.timezone || 'UTC'
+  tz = @psychologist_profile.timezone || params[:browser_timezone] || session[:browser_timezone] || cookies[:browser_timezone]  || 'UTC'
+
+
   zone = ActiveSupport::TimeZone[tz]
 
   availabilities = @psychologist_profile.psychologist_availabilities
-                                         .where.not(start_time_of_day: nil, end_time_of_day: nil)
+                                       .where.not(start_time_of_day: nil, end_time_of_day: nil)
 
   json_data = []
   start_date = Time.zone.now.beginning_of_week
@@ -143,15 +145,16 @@ def calendar_blocks
 
       # Treat stored hour/minute as local to psychologist
       start_dt = availability_zone.local(date.year, date.month, date.day,
-                                        a.start_time_of_day.hour,
-                                        a.start_time_of_day.min)
+                                         a.start_time_of_day.hour,
+                                         a.start_time_of_day.min)
       end_dt   = availability_zone.local(date.year, date.month, date.day,
-                                        a.end_time_of_day.hour,
-                                        a.end_time_of_day.min)
+                                         a.end_time_of_day.hour,
+                                         a.end_time_of_day.min)
 
       json_data << {
-        start: start_dt.iso8601,  # includes proper +10:00 / +11:00 offset
-        end:   end_dt.iso8601,
+        # CORRECTED: Convert to UTC before creating the ISO8601 string
+        start: start_dt.utc.iso8601,
+        end:   end_dt.utc.iso8601,
         display: 'background',
         color: '#008000'
       }

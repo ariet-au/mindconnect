@@ -1,6 +1,6 @@
 # app/services/slot_finder.rb
 class SlotFinder
-  SLOT_INTERVAL = 15.minutes # 15-minute intervals: 00, 15, 30, 45
+  SLOT_INTERVAL = 15.minutes
 
   def initialize(psychologist_profile_id, duration_minutes, user_timezone = 'UTC')
     @psychologist = PsychologistProfile.find(psychologist_profile_id)
@@ -26,11 +26,10 @@ class SlotFinder
 
         slots_in_period_utc = find_all_slots_in_period(availability_start_utc, availability_end_utc, search_start_time.utc)
 
-        slots_in_period_utc.each do |slot_utc|
-          slot_in_user_tz = slot_utc.in_time_zone(@user_timezone)
-          date_key = slot_in_user_tz.to_date
-          (available_slots_by_day[date_key] ||= []) << slot_in_user_tz
-        end
+        # CORRECTED: Store the UTC time directly in the hash
+        # The key is the date in the psychologist's time zone for grouping
+        date_key = availability_start_utc.in_time_zone(@psych_tz).to_date
+        (available_slots_by_day[date_key] ||= []).concat(slots_in_period_utc)
       end
     end
 
@@ -62,7 +61,8 @@ class SlotFinder
         next if slot_search_start_utc >= availability_period_end_utc
 
         if found_slot_utc = find_first_valid_slot_in_period(slot_search_start_utc, availability_period_end_utc)
-          return found_slot_utc.in_time_zone(@user_timezone)
+          # CORRECTED: Return UTC time directly
+          return found_slot_utc
         end
       end
     end
@@ -119,19 +119,12 @@ class SlotFinder
     nil
   end
 
-  # def combine_date_and_time_to_utc(date_obj, time_of_day_obj)
-  #    return nil unless date_obj.is_a?(Date) && time_of_day_obj.respond_to?(:hour)
-  #    @psych_tz.local(date_obj.year, date_obj.month, date_obj.day, time_of_day_obj.hour, time_of_day_obj.min, time_of_day_obj.sec || 0).utc
-  # rescue ArgumentError => e
-  #    Rails.logger.error "Error combining date and time: #{e.message}"
-  #    nil
-  # end
   def combine_date_and_time_to_utc(date_obj, time_of_day_obj)
     return nil unless date_obj.is_a?(Date) && time_of_day_obj.respond_to?(:hour)
     
     # Treat the stored hour/minute as local to the psychologist
     local_dt = @psych_tz.local(date_obj.year, date_obj.month, date_obj.day,
-                              time_of_day_obj.hour, time_of_day_obj.min, time_of_day_obj.sec || 0)
+                               time_of_day_obj.hour, time_of_day_obj.min, time_of_day_obj.sec || 0)
     local_dt.utc
   rescue ArgumentError => e
     Rails.logger.error "Error combining date and time: #{e.message}"
