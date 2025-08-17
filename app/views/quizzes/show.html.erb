@@ -4,6 +4,12 @@
 
 <div>
   <%= link_to "Edit this quiz", edit_quiz_path(@quiz) %> |
+
+
+  <%= link_to "Edit Questions", edit_questions_quiz_path(@quiz), class: "button is-warning" %>
+
+
+
   <%= link_to "Back to quizzes", quizzes_path %>
   <%= link_to "Take This Quiz", take_quiz_path(@quiz), class: "button is-primary" %>
 

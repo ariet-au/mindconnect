@@ -490,6 +490,20 @@
             </div>
         </div>
 
+        <div class="section-content">
+            <% if @psychologist_profile.youtube_video_url.present? %>
+            <% video_id = youtube_embed_url(@psychologist_profile.youtube_video_url) %>
+            <% if video_id %>
+                <div class="video-wrapper">
+                <iframe width="560" height="315" src="https://www.youtube.com/embed/<%= video_id %>" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            <% else %>
+                <p class="has-text-danger"><%= t('psychologist_profiles.show.invalid_youtube_link') %></p>
+            <% end %>
+            <% end %>
+        </div>
+    
+
         <%# ---- Areas of Focus ---- %>
         <% if @psychologist_profile.about_issues.present? %>
             <div class="profile-section">

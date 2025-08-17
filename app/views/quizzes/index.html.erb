@@ -1,8 +1,10 @@
 <p style="color: green"><%= notice %></p>
 
-<% content_for :title, "Quizzes" %>
+<% content_for :title do %>
+  <h1 >Quizzes</h1>
+<% end %>
 
-<h1>Quizzes</h1>
+<h1 style="margin-top: 2rem;">Quizzes</h1>
 
 <div id="quizzes">
   <% @quizzes.each do |quiz| %>

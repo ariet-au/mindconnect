@@ -259,9 +259,9 @@ class BookingsController < ApplicationController
                       .order(:start_time)
                       .includes(:service, :client_profile)
 
-    render json: bookings.map { |booking| booking_to_event(booking) }
-  rescue ActiveRecord::RecordNotFound
-    render json: { error: "Psychologist profile not found" }, status: :not_found
+      render json: bookings.map { |booking| booking_to_event(booking) }
+    rescue ActiveRecord::RecordNotFound
+      render json: { error: "Psychologist profile not found" }, status: :not_found
   end
 
 

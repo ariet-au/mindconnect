@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_31_233136) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_17_133913) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -325,6 +325,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_31_233136) do
     t.index ["quiz_id"], name: "index_questions_on_quiz_id"
   end
 
+  create_table "quiz_scoring_rules", force: :cascade do |t|
+    t.bigint "quiz_id", null: false
+    t.integer "min_score", null: false
+    t.integer "max_score", null: false
+    t.string "label", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["quiz_id"], name: "index_quiz_scoring_rules_on_quiz_id"
+  end
+
   create_table "quizzes", force: :cascade do |t|
     t.string "title"
     t.text "description"
@@ -423,6 +433,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_31_233136) do
   add_foreign_key "psychologist_unavailabilities", "psychologist_profiles"
   add_foreign_key "question_options", "questions"
   add_foreign_key "questions", "quizzes"
+  add_foreign_key "quiz_scoring_rules", "quizzes"
   add_foreign_key "quizzes", "users"
   add_foreign_key "services", "users"
   add_foreign_key "therapy_plans", "internal_client_profiles"

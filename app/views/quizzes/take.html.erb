@@ -2,17 +2,28 @@
 <p><%= @quiz.description %></p>
 
 <%= form_with url: submit_quiz_path(@quiz), method: :post, data: { turbo: false } do %>
-  <% @quiz.questions.each do |q| %>
-    <div class="box">
-      <p><strong><%= q.text %></strong></p>
-      <% q.question_options.each do |opt| %>
-        <div>
-          <%= radio_button_tag "responses[#{q.id}]", opt.score, false, id: "q#{q.id}_opt#{opt.id}" %>
-          <%= label_tag "q#{q.id}_opt#{opt.id}", opt.label %>
-        </div>
+  <% @quiz.questions.each do |question| %>
+    <div class="question <%= 'missing' if @missing_questions&.include?(question) %>">
+      <p><%= question.content %></p>
+      <% question.question_options.each do |option| %>
+        <label>
+          <%= radio_button_tag "responses[#{question.id}]", option.value,
+                              params.dig(:responses, question.id.to_s) == option.value.to_s %>
+          <%= option.text %>
+        </label>
       <% end %>
     </div>
   <% end %>
 
   <%= submit_tag "Submit Quiz", class: "button is-primary" %>
 <% end %>
+
+
+<style>
+.question.missing {
+  border: 2px solid red;
+  padding: 10px;
+  border-radius: 6px;
+  background-color: #ffe6e6;
+}
+</style>

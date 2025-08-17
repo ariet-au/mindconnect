@@ -41,27 +41,32 @@ class PsychologistUnavailabilitiesController < ApplicationController
 
 
 
-  def index
-    unavailabilities = PsychologistUnavailability.where(psychologist_profile_id: @psychologist_profile.id)
+def index
+  # define the time window: from 1 week ago until the future
+  from_time = 1.week.ago.beginning_of_day
 
-    non_recurring_events = unavailabilities.where(recurring: false).map do |unavailability|
-      {
-        id: unavailability.id,
-        title: unavailability.reason || "Unavailable",
-        start: unavailability.start_time.iso8601,
-        end: unavailability.end_time.iso8601,
-        recurring: false,
-        timezone: unavailability.timezone,
-        color: '#d9534f',
-        textColor: 'white'
-      }
-    end
+  unavailabilities = PsychologistUnavailability
+    .where(psychologist_profile_id: @psychologist_profile.id)
+    .where("end_time >= ?", from_time) # ignore unavailabilities that ended before last week
 
-    recurring_unavailabilities = unavailabilities.where(recurring: true)
-    all_events = non_recurring_events + generate_recurring_events(recurring_unavailabilities)
-
-    render json: all_events
+  non_recurring_events = unavailabilities.where(recurring: false).map do |unavailability|
+    {
+      id: unavailability.id,
+      title: unavailability.reason || "Unavailable",
+      start: unavailability.start_time.iso8601,
+      end: unavailability.end_time.iso8601,
+      recurring: false,
+      timezone: unavailability.timezone,
+      color: '#d9534f',
+      textColor: 'white'
+    }
   end
+
+  recurring_unavailabilities = unavailabilities.where(recurring: true)
+  all_events = non_recurring_events + generate_recurring_events(recurring_unavailabilities)
+
+  render json: all_events
+end
 
   def create
     psychologist_profile_id = @psychologist_profile.id

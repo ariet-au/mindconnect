@@ -1,0 +1,22 @@
+<%= form_with(model: @quiz, url: update_questions_quiz_path(@quiz), local: true) do |f| %>
+  <% @quiz.questions.each_with_index do |question, qi| %>
+    <div class="question-block">
+      <%= f.fields_for :questions, question do |qf| %>
+        <p>Question <%= qi + 1 %>:</p>
+        <%= qf.text_field :text %>
+
+        <p>Options:</p>
+        <%= qf.fields_for :question_options, question.question_options do |of| %>
+          <div class="option-box">
+            <%= of.label :label, "Option" %>
+            <%= of.text_field :label %>
+            <%= of.label :score, "Score" %>
+            <%= of.number_field :score %>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%= f.submit "Save Questions" %>
+<% end %>

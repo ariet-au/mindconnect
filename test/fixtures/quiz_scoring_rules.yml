@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  quiz: one
+  min_score: 1
+  max_score: 1
+  label: MyString
+
+two:
+  quiz: two
+  min_score: 1
+  max_score: 1
+  label: MyString
