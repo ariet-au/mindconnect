@@ -288,7 +288,7 @@
             <div class="field">
               <label class="label">Reason</label>
               <div class="control">
-                <textarea class="textarea" id="newUnavailabilityReason" rows="3" placeholder="Optional reason for unavailability"></textarea>
+                <textarea class="textarea" id="newUnavailabilityReason" rows="3" placeholder="Optional reason for unavailability (required)" required></textarea>
               </div>
             </div>
           </form>
@@ -640,26 +640,77 @@
     }
 
     function createUnavailability() {
-      const tz = luxon.DateTime.local().zoneName;
-      const date = document.getElementById('newUnavailabilityDate').value;
-      const startTime = document.getElementById('newUnavailabilityStartTime').value;
-      const endTime = document.getElementById('newUnavailabilityEndTime').value;
-      const reason = document.getElementById('newUnavailabilityReason').value;
+  const container = document.getElementById('calendar-container');
+  const psychologistProfileId = container ? container.dataset.psychologistProfileId : null;
+  const psychologistTimezone = container ? container.dataset.psychologistTimezone : 'UTC';
 
-      const start = luxon.DateTime.fromISO(`${date}T${startTime}`, { zone: tz }).toUTC();
-      const end = luxon.DateTime.fromISO(`${date}T${endTime}`, { zone: tz }).toUTC();
+  if (!psychologistProfileId) {
+    showCustomAlert('Error: Missing psychologist profile ID');
+    return;
+  }
 
-      fetch(`/psychologist_unavailabilities`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          start_time: start.toISO(),
-          end_time: end.toISO(),
-          reason: reason
-        })
-      }).then(() => location.reload());
+  const date = document.getElementById('newUnavailabilityDate').value;
+  const startTime = document.getElementById('newUnavailabilityStartTime').value;
+  const endTime = document.getElementById('newUnavailabilityEndTime').value;
+  const reason = document.getElementById('newUnavailabilityReason').value;
+
+  if (!date || !startTime || !endTime) {
+    showCustomAlert('Please fill in all required fields (date, start time, end time).');
+    return;
+  }
+
+  // Parse date and time in the psychologist's timezone
+  const startDateTime = luxon.DateTime.fromISO(`${date}T${startTime}`, { zone: psychologistTimezone }).toUTC();
+  const endDateTime = luxon.DateTime.fromISO(`${date}T${endTime}`, { zone: psychologistTimezone }).toUTC();
+
+  // Validate that end time is after start time
+  if (endDateTime <= startDateTime) {
+    showCustomAlert('End time must be after start time.');
+    return;
+  }
+
+  console.log(`[DEBUG] Creating unavailability.`);
+  console.log(`[DEBUG] Form Input (Psychologist TZ): ${date} ${startTime} - ${endTime}`);
+  console.log(`[DEBUG] Converted to UTC for backend: Start: ${startDateTime.toISO()}, End: ${endDateTime.toISO()}`);
+  console.log(`[DEBUG] Timezone being sent to backend: ${psychologistTimezone}`);
+
+  const formData = {
+    psychologist_unavailability: {
+      psychologist_profile_id: psychologistProfileId,
+      start_time: startDateTime.toISO(),
+      end_time: endDateTime.toISO(),
+      reason: reason || 'Unavailable', // Provide default reason to satisfy validation
+      recurring: false, // Assume non-recurring for one-off unavailability
+      timezone: psychologistTimezone
     }
+  };
 
+  fetch(`/psychologist_profiles/${psychologistProfileId}/psychologist_unavailabilities`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': document.querySelector("[name='csrf-token']").content
+    },
+    body: JSON.stringify(formData)
+  })
+    .then(response => {
+      if (!response.ok) {
+        return response.json().then(errorData => {
+          throw new Error(errorData.error || JSON.stringify(errorData) || 'Unknown error');
+        });
+      }
+      return response.json();
+    })
+    .then(data => {
+      calendar.refetchEvents();
+      closeModal('createUnavailabilityModal');
+      showCustomAlert('Unavailability created successfully!');
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      showCustomAlert('Error creating unavailability: ' + error.message);
+    });
+}
 
     function openEditUnavailabilityModal(event) {
       const tz = luxon.DateTime.local().zoneName; // Or use event.timezone if stored per entry

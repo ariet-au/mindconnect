@@ -146,8 +146,8 @@ def calendar_blocks
 
       json_data << {
         # CORRECTED: Convert to UTC before creating the ISO8601 string
-        start: start_dt.utc.iso8601,
-        end:   end_dt.utc.iso8601,
+        start: start_dt.iso8601,
+        end:   end_dt.iso8601,
         display: 'background',
         color: '#008000'
       }
