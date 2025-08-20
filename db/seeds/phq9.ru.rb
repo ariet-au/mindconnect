@@ -30,7 +30,7 @@ likert_options = [
 ]
 
 # Create questions + options
-questions.each do |q_text|
+questions_texts.each do |q_text|
   q = phq9.questions.create!(text: q_text, input_type: "likert")
   likert_options.each_with_index do |opt, i|
     q.question_options.create!(label: opt[:label], score: opt[:score], position: i + 1)
