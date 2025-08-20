@@ -1,73 +1,174 @@
+
 <style>
     @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
     :root {
-        --primary-blue: #3498DB;
+        --primary-blue: #2A7CCC;
         --dark-charcoal: #2C3E50;
-        --accent-pink: #BF1363;
+        --accent-pink: #D62878;
         --telegram-blue: #0088CC;
         --whatsapp-green: #25D366;
-        --background-light: #F4F6F7;
+        --background-white: #FFFFFF;
+        --background-light: #F8FAFC;
         --card-background: #FFFFFF;
-        --border-color: #EAECEE;
-        --text-light: #5D6D7E;
-        --radius: 0.8rem;
-        --shadow: 0 8px 25px rgba(44, 62, 80, 0.1);
+        --border-color: #E5E7EB;
+        --text-primary: #374151;
+        --text-secondary: #6B7280;
+        --text-light: #9CA3AF;
+        --success-muted: #10B981;
+        --warning-muted: #F59E0B;
+        --radius: 0.75rem;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     }
 
     body {
         font-family: 'Inter', sans-serif;
         background-color: var(--background-light);
-        color: var(--dark-charcoal);
+        color: var(--text-primary);
         line-height: 1.6;
     }
 
     .container2 {
         max-width: 1200px;
-        margin: 2rem auto;
-        padding: 0 1rem;
+        margin: 3rem auto;
+        padding: 0 1.5rem;
     }
 
     .card {
         background-color: var(--card-background);
         border-radius: var(--radius);
         box-shadow: var(--shadow);
-        padding: 2.5rem;
-        margin-bottom: 2rem;
-        /* Removed the top border for a cleaner look */
+        padding: 3rem;
+        margin-bottom: 2.5rem;
+        border: 1px solid var(--border-color);
     }
 
-    /* Profile Header */
+    /* Redesigned Profile Header */
     .profile-header {
         text-align: center;
-        /* Removed bottom margin to let the avatar's margin control the space */
+        position: relative;
     }
 
     .profile-avatar {
-        width: 130px;
-        height: 130px;
+        width: 200px;
+        height: 200px;
         border-radius: 50%;
         object-fit: cover;
-        border: 5px solid var(--primary-blue);
-        box-shadow: 0 4px 15px rgba(44, 62, 80, 0.15);
-        /* Removed negative margin to keep avatar inside the card */
-        margin-bottom: 1.5rem; /* Added margin for spacing */
+        border: 4px solid var(--background-white);
+        box-shadow: var(--shadow-lg);
+        margin-bottom: 1.5rem;
+    }
+
+    .profile-name-section {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+
+    .profile-name-with-badges {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.75rem;
     }
 
     .profile-name {
-        font-size: 2.2rem;
+        font-size: 2.25rem;
         font-weight: 700;
         color: var(--dark-charcoal);
         margin: 0;
+        letter-spacing: -0.025em;
     }
 
     .profile-location {
-        color: var(--text-light);
+        color: var(--text-secondary);
         font-size: 1rem;
-        margin-top: 0.25rem;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
     }
 
+    .profile-location i {
+        color: var(--primary-blue);
+        font-size: 0.875rem;
+    }
+
+    /* Minimalistic Availability Widget */
+    .availability-widget-top {
+        display: inline-flex;
+        align-items: center;
+        background-color: var(--background-white);
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        padding: 0.5rem 0.875rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        gap: 0.5rem;
+    }
+
+    .availability-widget-top.available {
+        border-color: #D1FAE5;
+        background-color: #F0FDF4;
+        color: var(--success-muted);
+    }
+
+    .availability-widget-top.unavailable {
+        border-color: #FED7AA;
+        background-color: #FFFBEB;
+        color: var(--warning-muted);
+    }
+
+    .widget-icon-top {
+        font-size: 0.75rem;
+    }
+
+    .widget-time-top {
+        font-weight: 600;
+    }
+
+    /* Small Badge Design */
+    .name-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        gap: 0.25rem;
+    }
+    
+    .name-badge.is-doctor {
+        background-color: #FEF2F2;
+        color: var(--accent-pink);
+        border: 1px solid #FECACA;
+    }
+
+    .name-badge.is-doctor i {
+        color: var(--accent-pink);
+        font-size: 0.6rem;
+    }
+
+    .name-badge.certified {
+        background-color: #F0FDF4;
+        color: var(--success-muted);
+        border: 1px solid #D1FAE5;
+    }
+
+    .name-badge.certified i {
+        color: var(--success-muted);
+        font-size: 0.6rem;
+    }
+
+    /* Regular badges for experience */
     .profile-badges {
         display: flex;
         justify-content: center;
@@ -79,47 +180,56 @@
     .badge {
         display: inline-flex;
         align-items: center;
-        padding: 0.4rem 1rem;
-        background-color: #ECF0F1;
-        color: var(--text-light);
-        border-radius: 2rem;
-        font-size: 0.8rem;
+        padding: 0.5rem 1rem;
+        background-color: var(--background-light);
+        color: var(--text-secondary);
+        border-radius: 9999px;
+        font-size: 0.875rem;
         font-weight: 500;
+        border: 1px solid var(--border-color);
     }
 
     .badge i {
         margin-right: 0.5rem;
         color: var(--primary-blue);
-    }
-    
-    .badge.is-doctor {
-        background-color: var(--accent-pink);
-        color: white;
-    }
-    .badge.is-doctor i {
-        color: white;
+        font-size: 0.75rem;
     }
 
-    /* Buttons */
+    /* Original Button Colors */
     .button-group {
         display: flex;
-        gap: 1rem;
+        gap: 1.5rem;
         justify-content: center;
-        margin-top: 2rem; /* Increased margin for better separation */
+        margin-top: 2.5rem;
+        flex-wrap: wrap;
+    }
+
+    @media (max-width: 768px) {
+        .button-group {
+            flex-direction: column;
+            align-items: center;
+        }
+        .profile-name-with-badges {
+            flex-direction: column;
+        }
+        .profile-name {
+            font-size: 1.875rem;
+        }
     }
 
     .button {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: 0.8rem 1.8rem;
+        padding: 1rem 2rem;
         border-radius: 50px;
         font-weight: 600;
         cursor: pointer;
         text-decoration: none;
         transition: all 0.3s ease;
         border: 2px solid transparent;
-        font-size: 0.95rem;
+        font-size: 1rem;
+        min-width: 200px;
     }
 
     .button.is-primary {
@@ -127,9 +237,9 @@
         color: white;
     }
     .button.is-primary:hover {
-        background-color: #2980B9;
+        background-color: #1E6091;
         transform: translateY(-3px);
-        box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+        box-shadow: 0 4px 15px rgba(42, 124, 204, 0.4);
     }
     
     .button.is-secondary {
@@ -145,7 +255,7 @@
 
     /* Sections */
     .profile-section {
-        padding: 2rem 0;
+        padding: 2.5rem 0;
         border-bottom: 1px solid var(--border-color);
     }
     .profile-section:last-of-type {
@@ -154,26 +264,26 @@
     }
     
     .section-title {
-        font-size: 1.6rem;
+        font-size: 1.8rem;
         font-weight: 700;
         color: var(--dark-charcoal);
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.8rem;
         display: flex;
         align-items: center;
-        gap: 0.8rem;
+        gap: 1rem;
     }
     .section-title i {
         color: var(--primary-blue);
     }
     
     .section-content p, .section-content ul {
-        color: var(--text-light);
-        font-size: 1rem;
+        color: var(--text-secondary);
+        font-size: 1.05rem;
     }
 
-    /* Availability */
+    /* Services Section Availability */
     .availability-status {
-        padding: 1.5rem;
+        padding: 1.8rem;
         border-radius: var(--radius);
         text-align: center;
     }
@@ -186,28 +296,29 @@
         border: 1px solid #F5CBA7;
     }
     .availability-label {
-        font-size: 1rem;
+        font-size: 1.1rem;
         font-weight: 600;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 0.5rem;
+        gap: 0.6rem;
     }
     .availability-time {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
         font-weight: 700;
         color: var(--dark-charcoal);
-        margin-top: 0.5rem;
+        margin-top: 0.6rem;
     }
 
-    /* Services Section */
+    /* Services Section - Original Colors */
     .service-card {
-        background: linear-gradient(to right, #F8F9F9, #FFFFFF);
+        background: linear-gradient(to right, #F9FAFB, #FFFFFF);
         border: 1px solid var(--border-color);
-        border-left: 5px solid var(--primary-blue);
+        border-left: 6px solid var(--primary-blue);
         border-radius: var(--radius);
         padding: 2rem;
         transition: all 0.3s ease;
+        margin-top: 1.5rem;
     }
     .service-card:hover {
         transform: translateY(-5px);
@@ -216,7 +327,7 @@
     .service-card h3 {
         font-size: 1.4rem;
         font-weight: 700;
-        margin: 0 0 0.5rem 0;
+        margin: 0 0 0.6rem 0;
     }
     .service-card h3 a {
         color: var(--dark-charcoal);
@@ -228,19 +339,20 @@
     .service-card p {
         font-size: 1rem;
         margin-bottom: 1.5rem;
-        color: var(--text-light);
+        color: var(--text-secondary);
     }
     .service-details-row {
         display: flex;
         gap: 1rem;
         margin-bottom: 1.5rem;
+        flex-wrap: wrap;
     }
     .details-item {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        background-color: #ECF0F1;
-        padding: 0.5rem 1rem;
+        gap: 0.6rem;
+        background-color: #F3F4F6;
+        padding: 0.6rem 1.2rem;
         border-radius: 50px;
         font-size: 0.9rem;
     }
@@ -252,67 +364,86 @@
         gap: 1rem;
     }
 
-    /* Education Section Redesign */
+    @media (max-width: 768px) {
+        .service-card {
+            padding: 1.5rem;
+        }
+        .service-card h3 {
+            font-size: 1.2rem;
+        }
+        .service-card p {
+            font-size: 0.95rem;
+        }
+        .service-details-row {
+            flex-direction: column;
+        }
+        .details-item {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    /* Education Section */
     .education-list {
         display: flex;
         flex-direction: column;
-        gap: 1rem; /* Spacing between education items */
+        gap: 1.5rem;
     }
     .education-item {
-        background-color: #F8F9F9;
+        background-color: #F9FAFB;
         border: 1px solid var(--border-color);
         border-radius: var(--radius);
-        padding: 1.5rem;
+        padding: 1.8rem;
         display: flex;
         align-items: flex-start;
-        gap: 1rem;
+        gap: 1.2rem;
     }
     .education-item .education-icon {
         color: var(--primary-blue);
-        font-size: 1.5rem;
-        margin-top: 0.25rem;
+        font-size: 1.6rem;
+        margin-top: 0.3rem;
     }
     .education-item .education-details h3 {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         font-weight: 600;
         color: var(--dark-charcoal);
-        margin: 0 0 0.25rem 0;
+        margin: 0 0 0.3rem 0;
     }
     .education-item .education-details p {
         margin: 0;
-        color: var(--text-light);
-        font-size: 0.9rem;
+        color: var(--text-secondary);
+        font-size: 0.95rem;
     }
 
     /* Contact Section */
-    .toggle-contacts {
+    .toggle-contacts, .toggle-video {
         width: 100%;
         text-align: center;
         background: none;
         border: 1px dashed var(--border-color);
-        padding: 0.75rem;
+        padding: 1rem;
         border-radius: var(--radius);
         cursor: pointer;
-        color: var(--text-light);
+        color: var(--text-secondary);
         font-weight: 500;
         transition: all 0.3s ease;
     }
-    .toggle-contacts:hover {
+    .toggle-contacts:hover, .toggle-video:hover {
         border-color: var(--primary-blue);
         color: var(--primary-blue);
     }
-    .contact-list {
-        margin-top: 1.5rem;
-        display: flex;
+    .contact-list, .video-content {
+        margin-top: 2rem;
+        display: none;
         flex-direction: column;
-        gap: 0.75rem;
+        gap: 1rem;
     }
     .contact-item {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 0.75rem 1rem;
-        background-color: #F8F9F9;
+        padding: 1rem 1.5rem;
+        background-color: #F9FAFB;
         border-radius: var(--radius);
         border: 1px solid var(--border-color);
     }
@@ -326,8 +457,8 @@
     .contact-input {
         border: none;
         background: none;
-        color: var(--text-light);
-        font-size: 0.9rem;
+        color: var(--text-secondary);
+        font-size: 0.95rem;
     }
     .copy-button, .contact-link {
         color: var(--text-light);
@@ -339,20 +470,51 @@
         color: var(--primary-blue);
     }
     
+    /* Video Wrapper */
+    .video-wrapper {
+        position: relative;
+        padding-bottom: 56.25%;
+        height: 0;
+        overflow: hidden;
+        max-width: 100%;
+        background: #f0f0f0;
+        border-radius: var(--radius);
+    }
+    .video-wrapper iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
     /* Utility */
     .text-center { text-align: center; }
     .mb-4 { margin-bottom: 1.5rem; }
+    .mr-2 { margin-right: 0.5rem; }
 </style>
 
 <div class="container2">
     <div class="card">
         <div class="profile-header">
             <% if @psychologist_profile.profile_img.attached? %>
-                <%= image_tag url_for(@psychologist_profile.profile_img.variant(resize_to_limit: [120, 120])), class: "profile-avatar" %>
+                <%= image_tag url_for(@psychologist_profile.profile_img.variant(resize_to_limit: [200, 200])), class: "profile-avatar" %>
             <% else %>
-                <%= image_tag "https://placehold.co/120x120/E9ECEF/6C757D?text=PP", alt: "Default Profile", class: "profile-avatar" %>
+                <%= image_tag "https://placehold.co/140x140/E9ECEF/6C757D?text=PP", alt: "Default Profile", class: "profile-avatar" %>
             <% end %>
-            <h1 class="profile-name"><%= "#{@psychologist_profile.first_name} #{@psychologist_profile.last_name}" %></h1>
+            
+            <div class="profile-name-section">
+                <div class="profile-name-with-badges">
+                    <h1 class="profile-name"><%= "#{@psychologist_profile.first_name} #{@psychologist_profile.last_name}" %></h1>
+                    <% if @psychologist_profile.is_doctor %>
+                        <span class="name-badge is-doctor"><i class="fas fa-user-md"></i><%= t('psychologist_profiles.show.doctor') %></span>
+                    <% end %>
+                    <% if @psychologist_profile.is_degree_boolean %>
+                        <span class="name-badge certified"><i class="fas fa-certificate"></i><%= t('psychologist_profiles.show.certified') %></span>
+                    <% end %>
+                </div>
+            </div>
+            
             <p class="profile-location">
                 <% if @psychologist_profile.country.present? %>
                     <i class="fas fa-map-marker-alt"></i>
@@ -362,13 +524,23 @@
                     <%= t("countries.#{@psychologist_profile.country.downcase.gsub(' ', '_').gsub('-', '_')}", default: @psychologist_profile.country) %>
                 <% end %>
             </p>
+
+            <%# Minimalistic Availability Widget %>
+            <% if @next_available_slot %>
+                <div class="availability-widget-top available">
+                    <i class="fas fa-calendar-check widget-icon-top"></i>
+                    <span class="widget-time-top">
+                        <%= l(@next_available_slot, format: "%a %-d %b - %-l:%M%P") %>
+                    </span>
+                </div>
+            <% else %>
+                <div class="availability-widget-top unavailable">
+                    <i class="fas fa-calendar-times widget-icon-top"></i>
+                    <span>No availability</span>
+                </div>
+            <% end %>
+
             <div class="profile-badges">
-                <% if @psychologist_profile.is_doctor %>
-                    <span class="badge is-doctor"><i class="fas fa-user-md"></i><%= t('psychologist_profiles.show.doctor') %></span>
-                <% end %>
-                <% if @psychologist_profile.is_degree_boolean %>
-                    <span class="badge"><i class="fas fa-certificate"></i><%= t('psychologist_profiles.show.certified') %></span>
-                <% end %>
                 <% if @psychologist_profile.years_of_experience.present? %>
                     <span class="badge"><i class="fas fa-clock"></i><%= t('psychologist_profiles.show.years_experience', count: @psychologist_profile.years_of_experience) %></span>
                 <% end %>
@@ -403,85 +575,6 @@
     </div>
 
     <div class="card">
-        <%# ---- Availability ---- %>
-       <div class="availability-widget">
-        <% if @next_available_slot %>
-            <div class="avail-widget available">
-            <i class="fas fa-calendar-check widget-icon"></i>
-            <div class="widget-text">
-                <span class="widget-label">Next available:</span>
-                <span class="widget-time">
-                <%= l(@next_available_slot, format: "%a %-d %b") %> - 
-                <%= l(@next_available_slot, format: "%-l:%M%P") %>
-                </span>
-            </div>
-            </div>
-        <% else %>
-            <div class="avail-widget unavailable">
-            <i class="fas fa-calendar-times widget-icon"></i>
-            <span class="widget-label">No availability</span>
-            </div>
-        <% end %>
-        <div class="widget-timezone"><%= @display_timezone %></div>
-        </div>
-       
-        <style>
-        .availability-widget {
-  display: inline-flex;
-  flex-direction: column;
-  font-size: 0.8rem;
-  max-width: 180px;
-  border-radius: 6px;
-  overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.avail-widget {
-  display: flex;
-  align-items: center;
-  padding: 6px 8px;
-  gap: 6px;
-}
-
-.avail-widget.available {
-  background-color: #f0fdf4;
-  color: #15803d;
-}
-
-.avail-widget.unavailable {
-  background-color: #fef2f2;
-  color: #b91c1c;
-}
-
-.widget-icon {
-  font-size: 0.9rem;
-}
-
-.widget-text {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.2;
-}
-
-.widget-label {
-  font-weight: 500;
-  font-size: 0.75rem;
-}
-
-.widget-time {
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-.widget-timezone {
-  padding: 2px 8px;
-  font-size: 0.6rem;
-  text-align: center;
-  color: #64748b;
-  background-color: #f8fafc;
-  border-top: 1px solid #e2e8f0;
-}
-        </style>
         <%# ---- About Me ---- %>
         <div class="profile-section">
             <h2 class="section-title"><i class="fas fa-user-circle"></i> <%= t('psychologist_profiles.show.about_me') %></h2>
@@ -490,19 +583,24 @@
             </div>
         </div>
 
-        <div class="section-content">
-            <% if @psychologist_profile.youtube_video_url.present? %>
+        <%# ---- Video Section (Expandable) ---- %>
+        <% if @psychologist_profile.youtube_video_url.present? %>
             <% video_id = youtube_embed_url(@psychologist_profile.youtube_video_url) %>
             <% if video_id %>
-                <div class="video-wrapper">
-                <iframe width="560" height="315" src="https://www.youtube.com/embed/<%= video_id %>" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <div class="profile-section">
+                    <button class="toggle-video" aria-expanded="false" data-show-text="Watch a video about me" data-hide-text="Hide video">
+                        <span class="toggle-text">Watch a video about me</span> <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="video-content">
+                        <div class="video-wrapper">
+                            <iframe src="https://www.youtube.com/embed/<%= video_id %>" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    </div>
                 </div>
             <% else %>
                 <p class="has-text-danger"><%= t('psychologist_profiles.show.invalid_youtube_link') %></p>
             <% end %>
-            <% end %>
-        </div>
-    
+        <% end %>
 
         <%# ---- Areas of Focus ---- %>
         <% if @psychologist_profile.about_issues.present? %>
@@ -547,13 +645,8 @@
 
         <%# ---- Services Offered ---- %>
         <div class="profile-section">
-
-            
-        <%# ---- Availability ---- %>
-                    <h2 class="section-title"><i class="fas fa-concierge-bell"></i> <%= t('psychologist_profiles.show.services_offered') %></h2>
-
-        <div class="profile-section">
-             <% if @next_available_slot %>
+            <h2 class="section-title"><i class="fas fa-concierge-bell"></i> <%= t('psychologist_profiles.show.services_offered') %></h2>
+            <% if @next_available_slot %>
                 <div class="availability-status available">
                     <span class="availability-label"><i class="fas fa-check-circle"></i><%= t('psychologist_profiles.show.next_available_appointment') %></span>
                     <div class="availability-details">
@@ -566,7 +659,6 @@
                     <span class="availability-label"><i class="fas fa-calendar-times"></i><%= t('psychologist_profiles.show.no_availability') %></span>
                 </div>
             <% end %>
-        </div>
             <% if @psychologist_profile.featured_service.present? %>
                 <% service = @psychologist_profile.featured_service %>
                 <div class="service-card">
@@ -599,23 +691,22 @@
                                 <span class="badge" style="background-color: #FFF3E0; color: #EF6C00;"><i class="fas fa-user"></i><%= t('psychologist_search.in_person') %></span>
                             <% end %>
                         </div>
-                            <%= link_to t('psychologist_profiles.show.book_this_service'), choose_time_path(psychologist_id: @psychologist_profile.id, service_id: @psychologist_profile.featured_service) , class: "button is-primary"%>
-
+                        <%= link_to t('psychologist_profiles.show.book_this_service'), choose_time_path(psychologist_id: @psychologist_profile.id, service_id: @psychologist_profile.featured_service), class: "button is-primary" %>
                     </div>
                 </div>
             <% end %>
         </div>
 
-        <%# ---- NEW Contact Me Button ---- %>
+        <%# ---- Contact Me Button ---- %>
         <% if contact_link %>
-        <div class="profile-section text-center">
-            <h2 class="section-title" style="justify-content: center;"><i class="fas fa-paper-plane"></i> Ready to Talk?</h2>
-            <p class="text-light mb-4">Reach out directly for any questions or to get started.</p>
-            <a href="<%= contact_link %>" class="button is-primary">
-                <i class="<%= contact_keys[primary_contact_method.to_sym] %> mr-2"></i>
-                <span><%= t('psychologist_profiles.show.contact_me') %></span>
-            </a>
-        </div>
+            <div class="profile-section text-center">
+                <h2 class="section-title" style="justify-content: center;"><i class="fas fa-paper-plane"></i> Ready to Talk?</h2>
+                <p class="text-light mb-4">Reach out directly for any questions or to get started.</p>
+                <a href="<%= contact_link %>" class="button is-primary">
+                    <i class="<%= contact_keys[primary_contact_method.to_sym] %> mr-2"></i>
+                    <span><%= t('psychologist_profiles.show.contact_me') %></span>
+                </a>
+            </div>
         <% end %>
 
         <%# ---- Other Contacts Toggle ---- %>
@@ -676,7 +767,6 @@
     document.querySelectorAll('.copy-button').forEach(button => {
         button.addEventListener('click', function() {
             const value = this.getAttribute('data-value');
-            // Use the 'copy' command for broader compatibility in iFrames
             const textArea = document.createElement("textarea");
             textArea.value = value;
             document.body.appendChild(textArea);
@@ -684,11 +774,24 @@
             textArea.select();
             try {
                 document.execCommand('copy');
-                // You can add a temporary "Copied!" message here if you like
             } catch (err) {
                 console.error('Fallback: Oops, unable to copy', err);
             }
             document.body.removeChild(textArea);
         });
     });
+
+    // Video toggle functionality
+    const videoToggle = document.querySelector('.toggle-video');
+    if (videoToggle) {
+        videoToggle.addEventListener('click', function() {
+            const videoContent = document.querySelector('.video-content');
+            const isExpanded = this.getAttribute('aria-expanded') === 'true';
+            this.setAttribute('aria-expanded', !isExpanded);
+            videoContent.style.display = isExpanded ? 'none' : 'block';
+            this.querySelector('.toggle-text').textContent = isExpanded ? 
+                this.getAttribute('data-show-text') : 
+                this.getAttribute('data-hide-text');
+        });
+    }
 </script>
