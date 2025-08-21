@@ -147,4 +147,14 @@
       <%= link_to "Back to Bookings", psychologist_profile_bookings_path(@booking.psychologist_profile), class: "button is-light" %>
     </p>
   </div>
+
+
+
+    <div class="booking-details-item">
+    <p><span class="booking-details-label">Add to Calendar:</span></p>
+    <div class="buttons">
+      <%= link_to "Add to Calendar", download_ics_psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "button is-link" %>
+      <%= link_to "Google Calendar", "https://calendar.google.com/calendar/render?action=TEMPLATE&text=#{CGI.escape(@booking.service&.name || 'Therapy Session')}&dates=#{@booking.start_time.utc.strftime('%Y%m%dT%H%M%SZ')}/#{@booking.end_time.utc.strftime('%Y%m%dT%H%M%SZ')}&details=#{CGI.escape("Session with #{@booking.psychologist_profile&.full_name}")}", target: "_blank", class: "button is-success" %>
+    </div>
+  </div>
 </div>

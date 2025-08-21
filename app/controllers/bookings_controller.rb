@@ -1,5 +1,9 @@
 # app/controllers/bookings_controller.rb
 require_relative '../models/booking' # <--- ADDED THIS LINE
+require 'icalendar'
+require 'tzinfo'
+require 'icalendar/tzinfo'
+
 
 class BookingsController < ApplicationController
   #skip_before_action :set_psychologist_profile, only: [:dynamic_select]
@@ -328,37 +332,6 @@ end
     @psychologist_id = current_user.psychologist_profile&.id if current_user.role == "psychologist"
   end
 
-  # def choose_time
-  #   @psychologist = if params[:psychologist_id].present?
-  #                     PsychologistProfile.find(params[:psychologist_id])
-  #                   elsif current_user.role == "psychologist"
-  #                     current_user.psychologist_profile || raise(ActiveRecord::RecordNotFound, "No psychologist profile found for current user")
-  #                   else
-  #                     raise ActiveRecord::RecordNotFound, "Psychologist ID is required"
-  #                   end
-
-  #   @service = Service.find(params[:service_id])
-    
-  #   # We will now show available slots for the next 14 days
-  #   date_range = (Date.current..Date.current + 13.days)
-
-  #   @time_slots = {}
-    
-  #   date_range.each do |date|
-  #     puts "--- Debugging for date: #{date} ---"
-  #     day_of_week = date.wday
-  #     availabilities = @psychologist.psychologist_availabilities.where(day_of_week: day_of_week)
-  #     puts "Availabilities for day #{day_of_week}: #{availabilities.inspect}"
-
-  #     unavailabilities = Booking.where(psychologist_profile_id: @psychologist.id)
-  #                                .where("start_time >= ? AND start_time < ?", date.beginning_of_day, date.end_of_day)
-  #     puts "Existing bookings for #{date}: #{unavailabilities.inspect}"
-  #     puts "--- End Debugging ---"
-      
-  #     available_times_for_day = calculate_available_times(@psychologist, date, @service.duration_minutes)
-  #     @time_slots[date] = available_times_for_day unless available_times_for_day.empty?
-  #   end
-  # end
   def choose_time
     @psychologist = if params[:psychologist_id].present?
                       PsychologistProfile.find(params[:psychologist_id])
@@ -468,6 +441,36 @@ end
       redirect_to select_service_path, alert: "Failed to create booking: #{booking.errors.full_messages.join(', ')}"
     end
   end
+
+
+  def download_ics
+    booking = Booking.find(params[:id])
+    psychologist = booking.psychologist_profile
+
+    # Fall back to UTC if you don’t store timezone per psychologist
+    tzid = psychologist&.timezone || "Australia/Sydney"
+    tz = TZInfo::Timezone.get(tzid)
+
+    cal = Icalendar::Calendar.new
+
+    # Add timezone info to calendar
+    timezone = tz.ical_timezone(booking.start_time)
+    cal.add_timezone(timezone)
+
+    cal.event do |e|
+      e.dtstart     = Icalendar::Values::DateTime.new(booking.start_time, 'tzid' => tzid)
+      e.dtend       = Icalendar::Values::DateTime.new(booking.end_time, 'tzid' => tzid)
+      e.summary     = booking.service&.name || "Therapy Session"
+      e.description = "Session with #{psychologist&.full_name}"
+      e.location    = psychologist&.address
+    end
+
+    send_data cal.to_ical,
+              type: 'text/calendar',
+              disposition: 'attachment',
+              filename: "booking-#{booking.id}.ics"
+  end
+
   private
 
   def calculate_available_times(psychologist, date, service_duration)

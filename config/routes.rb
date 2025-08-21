@@ -93,6 +93,8 @@ Rails.application.routes.draw do
           post 'decline'
           patch :update_json
           delete :destroy_json
+                    get :download_ics
+
         end
       end
       resources :psychologist_unavailabilities, only: [:index, :create, :update, :destroy] do
