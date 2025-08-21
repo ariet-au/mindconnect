@@ -1,0 +1,33 @@
+<div class="section">
+  <div class="container">
+    <div class="box has-text-centered">
+      <h1 class="title is-3 has-text-primary">Booking Request</h1>
+      <p class="subtitle is-5">Please confirm or decline the following booking:</p>
+
+      <div class="box has-background-light mt-5">
+        <p><strong>Psychologist:</strong> <%= @booking.psychologist_profile.full_name %></p>
+        <p><strong>Date:</strong> <%= @booking.start_time.strftime("%A, %d %B %Y") %></p>
+        <p><strong>Time:</strong> <%= @booking.start_time.strftime("%I:%M %p") %> - <%= @booking.end_time.strftime("%I:%M %p") %></p>
+        <% if @booking.service.present? %>
+          <p><strong>Service:</strong> <%= @booking.service.name %></p>
+        <% end %>
+      </div>
+
+      <% if @booking.pending? %>
+        <div class="buttons is-centered mt-5">
+          <%= button_to "✅ Confirm Booking", confirm_booking_path(@booking, token: params[:token]),
+                method: :post,
+                class: "button is-success is-medium" %>
+
+          <%= button_to "❌ Decline Booking", decline_booking_path(@booking, token: params[:token]),
+                method: :post,
+                class: "button is-danger is-medium" %>
+        </div>
+      <% else %>
+        <div class="notification is-info mt-5">
+          This booking has already been <strong><%= @booking.status.capitalize %></strong>.
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

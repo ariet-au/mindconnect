@@ -270,31 +270,34 @@ class BookingsController < ApplicationController
 
 
   def confirm_form
-    @booking = Booking.find(params[:id])
-    if @booking.confirmation_token == params[:token] && @booking.pending?
-      # Render confirmation form (details below)
+    @booking = Booking.find_by(id: params[:id], confirmation_token: params[:token])
+
+    if @booking.nil?
+      redirect_to root_path, alert: "Invalid or expired link"
     else
-      redirect_to root_path, alert: 'Invalid or expired token'
+      # Render a separate view for token users
+      render :confirm_form_client
     end
   end
 
   def confirm
-  @booking = Booking.find(params[:id])
-  if (params[:token].present? && @booking.confirmation_token == params[:token]) ||
-      (current_user&.psychologist? && @booking.psychologist_profile.user == current_user)
-    if @booking.pending?
-      @booking.update(status: 'confirmed', confirmation_token: nil) if params[:token].present?
-      @booking.update(status: 'confirmed') unless params[:token].present?
-      
-      # Corrected redirect
-      redirect_to [@booking.psychologist_profile, @booking], notice: 'Booking confirmed successfully.'
-    else
-      redirect_to [@booking.psychologist_profile, @booking], alert: 'Booking cannot be confirmed.'
+    @booking = Booking.find_by(id: params[:id], confirmation_token: params[:token])
+
+    if @booking.nil?
+      redirect_to root_path, alert: "Invalid or expired link"
+      return
     end
-  else
-    redirect_to root_path, alert: 'Unauthorized to confirm this booking.'
+
+    if @booking.pending?
+      @booking.update(status: 'confirmed', confirmation_token: nil)
+      flash[:notice] = "Booking confirmed successfully."
+    else
+      flash[:alert] = "Booking cannot be confirmed."
+    end
+
+    render :confirm_form_client
   end
-end
+
 
 def decline
   @booking = Booking.find(params[:id])

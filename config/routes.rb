@@ -93,7 +93,7 @@ Rails.application.routes.draw do
           post 'decline'
           patch :update_json
           delete :destroy_json
-                    get :download_ics
+          get :download_ics
 
         end
       end

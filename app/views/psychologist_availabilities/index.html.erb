@@ -31,10 +31,9 @@
             <h2 class="title is-5 has-text-grey-dark mb-4"><%= Date::DAYNAMES[day_index] %></h2>
             <div class="slots">
               <% @availabilities.select { |a| a.day_of_week == day_index }.each do |availability| %>
-               <% tz = availability.timezone.presence || @psychologist_profile.timezone.presence || 'UTC' %>
-                  <% start_str = availability.start_time_of_day&.in_time_zone(tz)&.strftime('%H:%M') || '' %>
-                  <% end_str   = availability.end_time_of_day&.in_time_zone(tz)&.strftime('%H:%M') || '' %>
-
+                <% tz = @psychologist_profile.timezone.presence || 'UTC' %>
+                <% start_str = availability.start_time_of_day.strftime('%H:%M') %>
+                <% end_str   = availability.end_time_of_day.strftime('%H:%M') %>
                 <div class="slot" data-id="<%= availability.id %>">
                   <input type="hidden" name="slots[<%= availability.id %>][id]" value="<%= availability.id %>">
                   <input type="hidden" name="slots[<%= availability.id %>][day_of_week]" value="<%= day_index %>">
@@ -122,11 +121,11 @@ document.addEventListener('DOMContentLoaded', function() {
     button.addEventListener('click', function() {
       const slot = this.closest('.slot');
       const slotId = slot.dataset.id;
+      const deletedSlotsContainer = document.getElementById('deleted-slots-container');
 
+      // For existing slots, create the hidden input and remove the slot's inputs from the main form.
       if (slotId && !slotId.startsWith('new_')) {
-        slot.classList.add('marked-for-deletion');
-        const deletedSlotsContainer = document.getElementById('deleted-slots-container');
-        // Prevent duplicate hidden inputs
+        // Check if the hidden input already exists to prevent duplicates
         if (!deletedSlotsContainer.querySelector(`input[name="deleted_slots[${slotId}]"]`)) {
           const hiddenInput = document.createElement('input');
           hiddenInput.type = 'hidden';
@@ -134,7 +133,13 @@ document.addEventListener('DOMContentLoaded', function() {
           hiddenInput.value = '1';
           deletedSlotsContainer.appendChild(hiddenInput);
         }
+        
+        // Now, remove all the input fields from the original slot
+        slot.querySelectorAll('input, select').forEach(input => input.remove());
+        // Visually hide the slot
+        slot.classList.add('marked-for-deletion');
       } else {
+        // For new slots, just remove the slot entirely
         slot.remove();
       }
     });
@@ -182,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   document.getElementById('availability-form').addEventListener('submit', function(e) {
     const submitBtn = document.getElementById('submit-button');
-    submitBtn.classList.add('is-loading'); submitBtn.disabled = true;
+    console.log("submitted");
     let isValid = true; let firstError = null;
 
     document.querySelectorAll('.slot:not(.marked-for-deletion)').forEach(slot => {
@@ -198,7 +203,6 @@ document.addEventListener('DOMContentLoaded', function() {
       if(eh<sh || (eh===sh && em<=sm)){ err.textContent='End time must be after start time.'; err.style.display='block'; isValid=false; if(!firstError) firstError=err;}
     });
 
-    if(!isValid){ e.preventDefault(); submitBtn.classList.remove('is-loading'); submitBtn.disabled=false; if(firstError) firstError.closest('.slot').scrollIntoView({behavior:'smooth', block:'center'});}
   });
 });
 </script>
