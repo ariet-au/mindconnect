@@ -2,6 +2,20 @@
   <div class="container">
     <div class="box has-text-centered">
       <h1 class="title is-3 has-text-primary">Booking Request</h1>
+      <p>Debug Status: <%= @booking.status %></p>
+
+      <% if flash[:notice] %>
+        <div class="notification is-success" id="flash-notice">
+          <%= flash[:notice] %>
+        </div>
+      <% end %>
+
+      <% if flash[:alert] %>
+        <div class="notification is-danger" id="flash-alert">
+          <%= flash[:alert] %>
+        </div>
+      <% end %>
+
       <p class="subtitle is-5">Please confirm or decline the following booking:</p>
 
       <div class="box has-background-light mt-5">
@@ -14,18 +28,31 @@
       </div>
 
       <% if @booking.pending? %>
+        <div class="buttons is-centered mt-5" id="booking-actions">
+          <%= form_with url: confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking, token: params[:token]), method: :patch, data: { turbo: true, "turbo-frame": "_top" } do %>
+            <%= submit_tag "✅ Confirm Booking", class: "button is-success is-medium", data: { "disable-with": "Processing..." } %>
+          <% end %>
+          <%= form_with url: decline_psychologist_profile_booking_path(@booking.psychologist_profile, @booking, token: params[:token]), method: :patch, data: { turbo: true, "turbo-frame": "_top" } do %>
+            <%= submit_tag "❌ Decline Booking", class: "button is-danger is-medium", data: { "disable-with": "Processing..." } %>
+          <% end %>
+        </div>
+      <% elsif @booking.confirmed? %>
+        <div class="notification is-success mt-5" id="booking-status">
+          <p class="title is-5">This booking has been <strong>confirmed</strong>.</p>
+          <p>You can add it to your calendar using the options below.</p>
+        </div>
         <div class="buttons is-centered mt-5">
-          <%= button_to "✅ Confirm Booking", confirm_booking_path(@booking, token: params[:token]),
-                method: :post,
-                class: "button is-success is-medium" %>
-
-          <%= button_to "❌ Decline Booking", decline_booking_path(@booking, token: params[:token]),
-                method: :post,
-                class: "button is-danger is-medium" %>
+          <%= link_to "Add to Calendar (ICS)", download_ics_psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "button is-link" %>
+          <%= link_to "Google Calendar", "https://calendar.google.com/calendar/render?action=TEMPLATE&text=#{CGI.escape(@booking.service&.name || 'Therapy Session')}&dates=#{@booking.start_time.utc.strftime('%Y%m%dT%H%M%SZ')}/#{@booking.end_time.utc.strftime('%Y%m%dT%H%M%SZ')}&details=#{CGI.escape("Session with #{@booking.psychologist_profile&.full_name}")}", target: "_blank", class: "button is-success" %>
+        </div>
+      <% elsif @booking.declined? %>
+        <div class="notification is-danger mt-5" id="booking-status">
+          <p class="title is-5">This booking has been <strong>permanently declined</strong>.</p>
+          <p>If you would like to rebook, please contact the psychologist.</p>
         </div>
       <% else %>
-        <div class="notification is-info mt-5">
-          This booking has already been <strong><%= @booking.status.capitalize %></strong>.
+        <div class="notification is-info mt-5" id="booking-status">
+          <p>This booking has already been <strong><%= @booking.status.capitalize %></strong>.</p>
         </div>
       <% end %>
     </div>

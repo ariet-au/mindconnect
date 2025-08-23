@@ -270,63 +270,65 @@ class BookingsController < ApplicationController
 
 
   def confirm_form
-    @booking = Booking.find_by(id: params[:id], confirmation_token: params[:token])
-
+    @booking = Booking.find_by(id: params[:id])
     if @booking.nil?
-      redirect_to root_path, alert: "Invalid or expired link"
+      redirect_to root_path, alert: "Booking not found."
+    elsif @booking.pending? && params[:token] != @booking.confirmation_token
+      redirect_to root_path, alert: "Invalid or expired link."
     else
-      # Render a separate view for token users
       render :confirm_form_client
     end
   end
 
   def confirm
-    @booking = Booking.find_by(id: params[:id], confirmation_token: params[:token])
-
-    if @booking.nil?
-      redirect_to root_path, alert: "Invalid or expired link"
-      return
-    end
-
     if @booking.pending?
-      @booking.update(status: 'confirmed', confirmation_token: nil)
-      flash[:notice] = "Booking confirmed successfully."
+      if @booking.update(status: 'confirmed', confirmation_token: nil)
+        flash[:notice] = "Booking confirmed successfully."
+      else
+        flash[:alert] = "Failed to confirm booking: #{@booking.errors.full_messages.to_sentence}"
+      end
     else
-      flash[:alert] = "Booking cannot be confirmed."
+      flash[:alert] = "Booking cannot be confirmed as its status is #{@booking.status}."
     end
-
-    render :confirm_form_client
+    respond_to do |format|
+      format.html { redirect_to confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking) }
+      format.turbo_stream { render turbo_stream: turbo_stream.replace("booking_content", partial: "bookings/confirm_form_client", locals: { booking: @booking }) }
+    end
   end
 
-
-def decline
-  @booking = Booking.find(params[:id])
-  if (params[:token].present? && @booking.confirmation_token == params[:token]) ||
-      (current_user&.psychologist? && @booking.psychologist_profile.user == current_user)
+  def decline
     if @booking.pending?
-      @booking.update(status: 'declined', confirmation_token: nil) if params[:token].present?
-      @booking.update(status: 'declined') unless params[:token].present?
-      
-      # Corrected redirect
-      redirect_to [@booking.psychologist_profile, @booking], notice: 'Booking declined successfully.'
+      if @booking.update(status: 'declined', confirmation_token: nil)
+        flash[:notice] = "Booking successfully declined."
+      else
+        flash[:alert] = "Failed to decline booking: #{@booking.errors.full_messages.to_sentence}"
+      end
     else
-      redirect_to [@booking.psychologist_profile, @booking], alert: 'Booking cannot be declined.'
+      flash[:alert] = "Booking cannot be declined as its status is #{@booking.status}."
     end
-  else
-    redirect_to root_path, alert: 'Unauthorized to decline this booking.'
+    respond_to do |format|
+      format.html { redirect_to confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking) }
+      format.turbo_stream { render turbo_stream: turbo_stream.replace("booking_content", partial: "bookings/confirm_form_client", locals: { booking: @booking }) }
+    end
   end
+
+def psychologist_bookings
+  # Ensure the user is a psychologist and has a profile
+  unless current_user&.psychologist_profile
+    redirect_to root_path, alert: "You must be logged in as a psychologist to view this page."
+    return
+  end
+
+  # Fetch all bookings for the psychologist
+  all_bookings = Booking.includes(:client_profile, :internal_client_profile, :service)
+                        .where(psychologist_profile_id: current_user.psychologist_profile.id)
+
+  # Separate bookings into upcoming and past
+  @upcoming_bookings = all_bookings.where('start_time >= ?', Time.current)
+                                   .order(start_time: :asc)
+  @past_bookings = all_bookings.where('start_time < ?', Time.current)
+                               .order(start_time: :desc)
 end
-
-
-  def psychologist_bookings
-    if current_user&.psychologist_profile
-      @bookings = Booking.includes(:client_profile, :internal_client_profile, :service)
-                     .where(psychologist_profile_id: current_user.psychologist_profile.id)
-                     .order(start_time: :desc)
-    else
-      redirect_to root_path, alert: "You must be logged in as a psychologist to view this page."
-    end
-  end
 
 
   def select_service

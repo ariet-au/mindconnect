@@ -24,6 +24,7 @@ module Mindconnect
     #languages locales
     config.i18n.available_locales = [:en, :ru, :kg]
     config.i18n.default_locale = :en
+    config.autoload_paths << Rails.root.join("app/types")
 
     # Configuration for the application, engines, and railties goes here.
     #

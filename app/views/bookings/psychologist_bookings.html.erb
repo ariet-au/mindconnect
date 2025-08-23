@@ -1,40 +1,163 @@
-<h1 class="title is-4">Your Bookings</h1>
+<div class="flash-messages-container">
+  <% flash.each do |type, msg| %>
+    <% bulma_class = case type.to_sym
+                     when :notice then "is-success"
+                     when :alert  then "is-danger"
+                     when :warning then "is-warning" # Added for consistency, though not in original
+                     else "is-info"
+                     end %>
+    <div class="notification <%= bulma_class %>">
+      <%# The 'delete' class provides the visual 'x' for closing. %>
+      <%# The 'data-action' attribute assumes your existing JS handles closing this notification. %>
+      <button class="delete" aria-label="delete" data-action="click->flash-messages#close"></button>
+      <%= msg %>
+    </div>
+  <% end %>
+</div>
 
-<table class="table is-striped is-fullwidth">
-  <thead>
-    <tr>
-      <th>Client</th>
-      <th>Start Time</th>
-      <th>End Time</th>
-      <th>Duration</th>
-      <th>Type</th>
-      <th>Status</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @bookings.each do |booking| %>
+<h1 class="title is-2">Upcoming Bookings</h1>
+
+<div class="table-container">
+  <table class="table is-striped is-hoverable is-fullwidth">
+    <thead>
       <tr>
-        <td>
-          <% if booking.internal_client_profile.present? %>
-            <%= booking.internal_client_profile.first_name %> <%= booking.internal_client_profile.last_name %> (Internal)
-          <% elsif booking.client_profile.present? %>
-            <%= booking.client_profile.full_name %> (Client)
-          <% else %>
-            Unknown
-          <% end %>
-        </td>
-        <td><%= booking.start_time.strftime('%Y-%m-%d %H:%M') %></td>
-        <td><%= booking.end_time.strftime('%Y-%m-%d %H:%M') %></td>
-        <td>
-          <% if booking.start_time && booking.end_time %>
-            <%= distance_of_time_in_words(booking.start_time, booking.end_time) %>
-          <% else %>
-            N/A
-          <% end %>
-        </td>
-        <td><%= booking.service&.name || 'N/A' %></td>
-        <td><%= booking.status || 'N/A' %></td>
+        <th>Service</th>
+        <th>Created By</th>
+        <th>Client</th>
+        <th>Start Time</th>
+        <th>Status</th>
+        <th>Duration</th>
+        <th>Booking Actions</th>
+        <th>Edit Actions</th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      <% if @upcoming_bookings.any? %>
+        <% @upcoming_bookings.each do |booking| %>
+          <tr>
+            <td><%= booking.service&.name %></td>
+            <td><%= booking.created_by %></td>
+            <td><%= booking.client_profile&.first_name || booking.internal_client_profile&.first_name || 'N/A' %></td>
+            <td>
+              <span
+                class="utc-date-time-range"
+                data-start-utc="<%= booking.start_time.utc.iso8601 %>"
+                data-end-utc="<%= booking.end_time&.utc&.iso8601 %>">
+                Loading time...
+              </span>
+            </td>
+            <td>
+              <% case booking.status&.to_sym
+                when :confirmed then %><span class="tag is-success">Confirmed</span><%
+                when :pending then %><span class="tag is-warning">Pending</span><%
+                when :cancelled then %><span class="tag is-danger">Cancelled</span><%
+                else %><span class="tag is-info"><%= booking.status.present? ? booking.status.humanize : 'Unknown' %></span><% end %>
+            </td>
+            <td><%= booking.service.duration_minutes %> minutes</td>
+            <td>
+              <% if booking.created_by == 'client' && booking.pending? %>
+                <%= button_to 'Confirm', confirm_booking_path(booking), method: :post %>
+                <%= button_to 'Decline', decline_booking_path(booking), method: :post, class: 'btn btn-danger' %>
+              <% end %>
+            </td>
+            <td>
+              <%= link_to 'Edit', edit_psychologist_profile_booking_path(current_user.psychologist_profile, booking), class: 'button is-small is-info is-light mr-2' %>
+              <%= link_to 'Delete', psychologist_profile_booking_path(current_user.psychologist_profile, booking), data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' }, class: 'button is-small is-danger is-light' %>
+            </td>
+          </tr>
+        <% end %>
+      <% else %>
+        <tr>
+          <td colspan="8" class="has-text-centered">No upcoming bookings found.</td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<hr>
+
+<h1 class="title is-2" id="past-bookings-toggle">
+  Past Bookings 
+  <span class="icon is-small">
+    <i class="fas fa-angle-down" aria-hidden="true"></i>
+  </span>
+</h1>
+
+<div id="past-bookings-content" class="is-hidden">
+  <div class="table-container">
+    <table class="table is-striped is-hoverable is-fullwidth">
+      <thead>
+        <tr>
+          <th>Service</th>
+          <th>Created By</th>
+          <th>Client</th>
+          <th>Start Time</th>
+          <th>Status</th>
+          <th>Duration</th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if @past_bookings.any? %>
+          <% @past_bookings.each do |booking| %>
+            <tr>
+              <td><%= booking.service&.name %></td>
+              <td><%= booking.created_by %></td>
+              <td><%= booking.client_profile&.first_name || booking.internal_client_profile&.first_name || 'N/A' %></td>
+              <td>
+                <span
+                  class="utc-date-time-range"
+                  data-start-utc="<%= booking.start_time.utc.iso8601 %>"
+                  data-end-utc="<%= booking.end_time&.utc&.iso8601 %>">
+                  Loading time...
+                </span>
+              </td>
+              <td>
+                <% case booking.status&.to_sym
+                   when :confirmed then %><span class="tag is-success">Confirmed</span><%
+                   when :pending then %><span class="tag is-warning">Pending</span><%
+                   when :cancelled then %><span class="tag is-danger">Cancelled</span><%
+                   else %><span class="tag is-info"><%= booking.status.present? ? booking.status.humanize : 'Unknown' %></span><% end %>
+              </td>
+              <td><%= booking.service.duration_minutes %> minutes</td>
+              <td></td>
+              <td></td>
+            </tr>
+          <% end %>
+        <% else %>
+          <tr>
+            <td colspan="8" class="has-text-centered">No past bookings found.</td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const toggle = document.getElementById('past-bookings-toggle');
+  const content = document.getElementById('past-bookings-content');
+  const icon = toggle.querySelector('.icon i');
+
+  if (toggle && content) {
+    toggle.style.cursor = 'pointer'; // Make it look clickable
+    
+    toggle.addEventListener('click', () => {
+      content.classList.toggle('is-hidden');
+      
+      // Rotate the icon to show the state
+      if (content.classList.contains('is-hidden')) {
+        icon.classList.remove('fa-angle-up');
+        icon.classList.add('fa-angle-down');
+      } else {
+        icon.classList.remove('fa-angle-down');
+        icon.classList.add('fa-angle-up');
+      }
+    });
+  }
+});
+</script>

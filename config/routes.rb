@@ -89,8 +89,8 @@ Rails.application.routes.draw do
         end
         member do
           get 'confirm', to: 'bookings#confirm_form'
-          post 'confirm'
-          post 'decline'
+          patch 'confirm'
+          patch 'decline'
           patch :update_json
           delete :destroy_json
           get :download_ics

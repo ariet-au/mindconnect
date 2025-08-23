@@ -12,12 +12,7 @@ class ApplicationController < ActionController::Base
   helper_method :current_currency
   before_action :set_locale
 
-  # def set_locale
-  #   I18n.locale = params[:locale] ||
-  #                 session[:locale] ||
-  #                 extract_locale_from_accept_language_header ||
-  #                 I18n.default_locale
-  # end
+
 
 
 
