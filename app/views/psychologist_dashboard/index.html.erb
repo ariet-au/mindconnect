@@ -60,21 +60,16 @@
       </div>
 
       <!-- Main Content -->
-      <div class="column" style="margin-left: 200px; padding: 20px;">
+      <div class="column" >
         <h1 class="title">Welcome, <%= @psychologist_profile.full_name || 'Psychologist' %></h1>
 
         <!-- Calendar Section -->
         <div class="box calendar">
           <div class="level">
             <div class="level-left">
-              <h2 class="subtitle">Your Schedule</h2>
+              
             </div>
-            <div class="level-right">
-              <button class="button is-primary" onclick="openCreateBookingModal()">
-                <span class="icon"><i class="fas fa-plus"></i></span>
-                <span>New Booking</span>
-              </button>
-            </div>
+            
 
             <div class="level-right">
               <%= link_to "Book a Session", select_service_path(psychologist_id: current_user.psychologist_profile.id), class: "button is-primary" %>
@@ -124,6 +119,12 @@
               </div>
             </div>
             <div class="field">
+              <label class="label">Duration</label>
+              <div class="control">
+                <input class="input" type="text" id="bookingDuration" readonly>
+              </div>
+            </div>
+            <div class="field">
               <label class="label">Date</label>
               <div class="control">
                 <input class="input" type="date" id="bookingDate" required>
@@ -142,8 +143,9 @@
                   <select id="bookingStatus">
                     <option value="pending">Pending</option>
                     <option value="confirmed">Confirmed</option>
+                    <option value="declined">Declined</option>
                     <option value="cancelled">Cancelled</option>
-                    <option value="completed">Completed</option>
+                   
                   </select>
                 </div>
               </div>
@@ -170,91 +172,6 @@
 
     
 
-    <!-- Create New Booking Modal -->
-    <div class="modal" id="createBookingModal">
-      <div class="modal-background"></div>
-      <div class="modal-card">
-        <header class="modal-card-head">
-          <p class="modal-card-title">Create New Booking</p>
-          <button class="delete" aria-label="close" onclick="closeModal('createBookingModal')"></button>
-        </header>
-        <section class="modal-card-body">
-          <p class="help">Times are shown in your local timezone (<span id="browserTimezone"></span>).</p>
-          <form id="createBookingForm">
-            <div class="field">
-              <label class="label">Client</label>
-              <div class="control">
-                <div class="select is-fullwidth">
-                  <select id="newBookingClient" required>
-                    <option value="">Select a client...</option>
-                    <% current_user.psychologist_profile.internal_client_profiles.each do |client| %>
-                      <option value="<%= client.id %>" data-client-type="internal"><%= client.first_name %> (Internal)</option>
-                    <% end %>
-                    <% current_user.psychologist_profile.bookings.where.not(client_profile_id: nil).distinct.pluck(:client_profile_id).each do |client_id| %>
-                      <% client = ClientProfile.find(client_id) %>
-                      <option value="<%= client.id %>" data-client-type="external"><%= client.first_name %> (External)</option>
-                    <% end %>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div class="field">
-              <label class="label">Service</label>
-              <div class="control">
-                <div class="select is-fullwidth">
-                  <select id="newBookingService" required>
-                    <option value="">Select a service...</option>
-                    <% current_user.psychologist_profile.user.services.each do |service| %>
-                      <option value="<%= service.id %>" data-duration-minutes="<%= service.duration_minutes %>"><%= service.name %> (<%= service.duration_minutes %> min)</option>
-                    <% end %>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div class="field">
-              <label class="label">Date</label>
-              <div class="control">
-                <input class="input" type="date" id="newBookingDate" required>
-              </div>
-            </div>
-            <div class="field">
-              <label class="label">Start Time</label>
-              <div class="control">
-                <input class="input" type="time" id="newBookingStartTime" step="900" list="timeOptions" required>
-                <datalist id="timeOptions">
-                  <% (6..21).each do |hour| %>
-                    <option value="<%= sprintf('%02d:00', hour) %>"></option>
-                    <option value="<%= sprintf('%02d:30', hour) %>"></option>
-                  <% end %>
-                  <option value="22:00"></option>
-                </datalist>
-              </div>
-            </div>
-            <div class="field">
-              <label class="label">Status</label>
-              <div class="control">
-                <div class="select">
-                  <select id="newBookingStatus">
-                    <option value="pending">Pending</option>
-                    <option value="confirmed">Confirmed</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div class="field">
-              <label class="label">Notes</label>
-              <div class="control">
-                <textarea class="textarea" id="newBookingNotes" rows="3" placeholder="Optional notes for this booking"></textarea>
-              </div>
-            </div>
-          </form>
-        </section>
-        <footer class="modal-card-foot">
-          <button class="button is-success" onclick="createBooking()">Create Booking</button>
-          <button class="button" onclick="closeModal('createBookingModal')">Cancel</button>
-        </footer>
-      </div>
-    </div>
 
     <!-- Create New Unavailability Modal -->
     <div class="modal" id="createUnavailabilityModal">
@@ -712,20 +629,7 @@
     });
 }
 
-    function openEditUnavailabilityModal(event) {
-      const tz = luxon.DateTime.local().zoneName; // Or use event.timezone if stored per entry
 
-      // event.start is assumed to be UTC from backend
-      const start = luxon.DateTime.fromISO(event.start, { zone: 'utc' }).setZone(tz);
-      const end = luxon.DateTime.fromISO(event.end, { zone: 'utc' }).setZone(tz);
-
-      document.getElementById('unavailabilityDate').value = start.toISODate();
-      document.getElementById('unavailabilityStartTime').value = start.toFormat('HH:mm');
-      document.getElementById('unavailabilityEndTime').value = end.toFormat('HH:mm');
-      document.getElementById('unavailabilityReason').value = event.reason || "";
-
-      openModal('editUnavailabilityModal');
-    }
 
     function saveUnavailabilityChanges() {
       const tz = luxon.DateTime.local().zoneName;
@@ -929,33 +833,50 @@
     function openEditBookingModal(event) {
       console.log("Edit booking");
       currentEditingBookingId = event.extendedProps.bookingId || event.id;
+
       const clientName = event.extendedProps.clientName || 'Unknown Client';
-      const serviceName = event.extendedProps.service_name || '';
-
-      console.log(`[DEBUG] Opening Edit Booking Modal for ID: ${currentEditingBookingId}`);
-      console.log(`[DEBUG] Event Start (UTC): ${event.start.toISOString()}`);
-
-      const eventStart = moment.tz(event.start.toISOString(), calendar.getOption('timeZone'));
-      const dateString = eventStart.format('YYYY-MM-DD');
-      const startTimeString = eventStart.format('HH:mm');
-
-      console.log(`[DEBUG] Converted to Psychologist Timezone for form: ${dateString} ${startTimeString}`);
-
       const status = event.extendedProps.status || 'pending';
       const notes = event.extendedProps.notes || '';
       const createdBy = event.extendedProps.created_by || '';
       const confirmationToken = event.extendedProps.confirmation_token || '';
+
+      console.log(`[DEBUG] Opening Edit Booking Modal for ID: ${currentEditingBookingId}`);
       console.log('[DEBUG] service_id:', event.extendedProps.service_id, 'Type:', typeof event.extendedProps.service_id);
+
+      // Time conversion
+      const eventStart = moment(event.start).tz(calendar.getOption('timeZone'));
+      const dateString = eventStart.format('YYYY-MM-DD');
+      const startTimeString = eventStart.format('HH:mm');
+
+      // Fill form fields
       document.getElementById('bookingClient').value = clientName;
-      document.getElementById('bookingService').value = event.extendedProps.service_id || '';
+      document.getElementById('bookingService').value = String(event.extendedProps.service_id || '');
       document.getElementById('bookingDate').value = dateString;
       document.getElementById('bookingStartTime').value = startTimeString;
-      document.getElementById('bookingStatus').value = status;
+
+      const normalizedStatus = (status || '').toLowerCase();
+      document.getElementById('bookingStatus').value = normalizedStatus;
       document.getElementById('bookingNotes').value = notes;
 
+      // Duration handling
+      const serviceSelect = document.getElementById('bookingService');
+      let durationMinutes = event.extendedProps.duration_minutes;
+
+      if (!durationMinutes) {
+        const selectedOption = serviceSelect.querySelector(`option[value="${serviceSelect.value}"]`);
+        if (selectedOption) {
+          durationMinutes = selectedOption.dataset.durationMinutes;
+        }
+      }
+      const durationField = document.getElementById('bookingDuration');
+      if (durationField) {
+        durationField.value = durationMinutes || '';
+      }
+
+      // Confirmation link
       const confirmationLinkSection = document.getElementById('confirmationLinkSection');
       const confirmationLink = document.getElementById('confirmationLink');
-      if (status === 'pending' && createdBy === 'psychologist' && confirmationToken) {
+      if (normalizedStatus === 'pending' && createdBy === 'psychologist' && confirmationToken) {
         const link = `/bookings/${currentEditingBookingId}/confirm?token=${confirmationToken}`;
         confirmationLink.href = link;
         confirmationLink.textContent = link;
@@ -964,6 +885,7 @@
         confirmationLinkSection.style.display = 'none';
       }
 
+      // Show modal
       document.getElementById('editBookingModal').classList.add('is-active');
     }
 
@@ -1052,26 +974,37 @@
     }
 
 
+  function openEditUnavailabilityModal(event) {
+    if (!event) return;
+
+    const tz = event.extendedProps.timezone || luxon.DateTime.local().zoneName;
+
+    // Convert JS Date to Luxon DateTime in the event timezone
+    const start = luxon.DateTime.fromJSDate(event.start).setZone(tz);
+    const end = luxon.DateTime.fromJSDate(event.end).setZone(tz);
+
+    // Fill modal fields
+    document.getElementById('unavailabilityDate').value = start.toFormat('yyyy-MM-dd');
+    document.getElementById('unavailabilityStartTime').value = start.toFormat('HH:mm');
+    document.getElementById('unavailabilityEndTime').value = end.toFormat('HH:mm');
+    document.getElementById('unavailabilityReason').value = event.extendedProps.reason || '';
+
+    // Track which unavailability is being edited
+    window.currentEditingUnavailabilityId = event.id;
+
+    // Show timezone in modal
+    const tzSpan = document.getElementById('browserTimezone');
+    if (tzSpan) tzSpan.textContent = tz;
+
+    // Open modal
+    const modal = document.getElementById('editUnavailabilityModal');
+    if (modal) modal.classList.add('is-active');
+}
 
 
  
 
-    function openEditUnavailabilityModal(event) {
-      const psychologistTimezone = document.getElementById('calendar-container').dataset.psychologistTimezone;
 
-      // Convert UTC event times to psychologist's local time
-      const startInLocal = luxon.DateTime.fromJSDate(event.start, { zone: 'utc' }).setZone(psychologistTimezone);
-      const endInLocal = luxon.DateTime.fromJSDate(event.end, { zone: 'utc' }).setZone(psychologistTimezone);
-
-      document.getElementById('editUnavailabilityDate').value = startInLocal.toFormat('yyyy-MM-dd');
-      document.getElementById('editUnavailabilityStartTime').value = startInLocal.toFormat('HH:mm');
-      document.getElementById('editUnavailabilityEndTime').value = endInLocal.toFormat('HH:mm');
-
-      document.getElementById('editUnavailabilityReason').value = event.extendedProps.reason || '';
-      
-      currentEditingUnavailabilityId = event.id;
-      openModal('editUnavailabilityModal');
-    }
 
 
     function saveUnavailability() {

@@ -570,6 +570,7 @@ end
 
   def booking_to_event(booking)
     client_name = booking.client_profile&.full_name || booking.internal_client_profile&.label || "N/A"
+
     {
       id: booking.id,
       title: "#{booking.service&.name || 'Session'} - #{client_name} (#{booking.created_by})",
@@ -578,10 +579,12 @@ end
       extendedProps: {
         bookingId: booking.id,
         clientName: client_name,
+        service_id: booking.service_id,                        # ✅ include service_id
+        service_name: booking.service&.name,
+        duration_minutes: booking.service&.duration_minutes,   # ✅ include duration
         status: booking.status,
         notes: booking.notes,
         created_by: booking.created_by,
-        service_name: booking.service&.name,
         confirmation_token: booking.confirmation_token
       },
       color: booking.internal_client_profile_id.present? ? '#6f42c1' : '#0d6efd',

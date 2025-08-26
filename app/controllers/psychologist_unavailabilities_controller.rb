@@ -12,107 +12,82 @@ class PsychologistUnavailabilitiesController < ApplicationController
     end
   end
 
-  # def calendar_bookings
-  #   psychologist_profile_id = params[:psychologist_profile_id]
-
-  #   bookings = Booking.includes(:service, :client_profile, :internal_client_profile)
-  #                     .where(psychologist_profile_id: psychologist_profile_id)
-
-  #   events = bookings.map do |booking|
-  #     {
-  #       id: booking.id,
-  #       title: booking.service&.name || "Session",
-  #       start: booking.start_time.iso8601,
-  #       end: booking.end_time.iso8601,
-  #       extendedProps: {
-  #         client_name: booking.client_profile&.full_name || booking.internal_client_profile&.label || "N/A",
-  #         status: booking.status,
-  #         notes: booking.notes
-  #       },
-  #       color: booking.internal_client_profile_id.present? ? '#6f42c1' : '#0d6efd',
-  #       textColor: 'white'
-  #     }
-  #   end
-
-  #   render json: events
-  # end
 
 
+  def index
+    from_time = 1.week.ago.beginning_of_day
 
+    unavailabilities = PsychologistUnavailability
+      .where(psychologist_profile_id: @psychologist_profile.id)
+      .where("end_time >= ?", from_time)
 
+    non_recurring_events = unavailabilities.where(recurring: false).map do |u|
+      {
+        id: u.id,
+        title: u.reason || "Unavailable",
+        start: u.start_time.iso8601,
+        end: u.end_time.iso8601,
+        extendedProps: {       # ← include custom data here
+          reason: u.reason,
+          recurring: false,
+          timezone: u.timezone || 'Australia/Sydney'
+        },
+        color: '#d9534f',
+        textColor: 'white'
+      }
+    end
 
-def index
-  # define the time window: from 1 week ago until the future
-  from_time = 1.week.ago.beginning_of_day
+    recurring_events = generate_recurring_events(unavailabilities.where(recurring: true))
 
-  unavailabilities = PsychologistUnavailability
-    .where(psychologist_profile_id: @psychologist_profile.id)
-    .where("end_time >= ?", from_time) # ignore unavailabilities that ended before last week
-
-  non_recurring_events = unavailabilities.where(recurring: false).map do |unavailability|
-    {
-      id: unavailability.id,
-      title: unavailability.reason || "Unavailable",
-      start: unavailability.start_time.iso8601,
-      end: unavailability.end_time.iso8601,
-      recurring: false,
-      timezone: unavailability.timezone,
-      color: '#d9534f',
-      textColor: 'white'
-    }
+    render json: non_recurring_events + recurring_events
   end
 
-  recurring_unavailabilities = unavailabilities.where(recurring: true)
-  all_events = non_recurring_events + generate_recurring_events(recurring_unavailabilities)
-
-  render json: all_events
-end
 
   def create
-  psychologist_timezone = @psychologist_profile.timezone
-  params = psychologist_unavailability_params
+    psychologist_timezone = @psychologist_profile.timezone
+    params = psychologist_unavailability_params
 
-  if params[:recurring] == 'true'
-    # For recurring events
-    start_time = Time.find_zone(psychologist_timezone).parse(params[:start_time])
-    end_time = Time.find_zone(psychologist_timezone).parse(params[:end_time])
+    if params[:recurring] == 'true'
+      # For recurring events
+      start_time = Time.find_zone(psychologist_timezone).parse(params[:start_time])
+      end_time = Time.find_zone(psychologist_timezone).parse(params[:end_time])
 
-    processed_params = params.to_h.merge(
-      psychologist_profile_id: @psychologist_profile.id,
-      start_time: start_time.utc,
-      end_time: end_time.utc,
-      timezone: psychologist_timezone
-    )
-    @psychologist_unavailability = PsychologistUnavailability.build_for_recurring(processed_params)
-  else
-    # For one-off events
-    start_time = Time.find_zone(psychologist_timezone).parse(params[:start_time])
-    end_time = Time.find_zone(psychologist_timezone).parse(params[:end_time])
+      processed_params = params.to_h.merge(
+        psychologist_profile_id: @psychologist_profile.id,
+        start_time: start_time.utc,
+        end_time: end_time.utc,
+        timezone: psychologist_timezone
+      )
+      @psychologist_unavailability = PsychologistUnavailability.build_for_recurring(processed_params)
+    else
+      # For one-off events
+      start_time = Time.find_zone(psychologist_timezone).parse(params[:start_time])
+      end_time = Time.find_zone(psychologist_timezone).parse(params[:end_time])
 
-    processed_params = params.to_h.merge(
-      psychologist_profile_id: @psychologist_profile.id,
-      start_time: start_time.utc,
-      end_time: end_time.utc,
-      timezone: psychologist_timezone
-    )
-    @psychologist_unavailability = @psychologist_profile.psychologist_unavailabilities.new(processed_params)
+      processed_params = params.to_h.merge(
+        psychologist_profile_id: @psychologist_profile.id,
+        start_time: start_time.utc,
+        end_time: end_time.utc,
+        timezone: psychologist_timezone
+      )
+      @psychologist_unavailability = @psychologist_profile.psychologist_unavailabilities.new(processed_params)
+    end
+
+    if @psychologist_unavailability.save
+      render json: {
+        success: true,
+        id: @psychologist_unavailability.id,
+        title: @psychologist_unavailability.reason,
+        start: @psychologist_unavailability.start_time.iso8601,
+        end: @psychologist_unavailability.end_time.iso8601,
+        recurring: @psychologist_unavailability.recurring,
+        timezone: @psychologist_unavailability.timezone,
+        extendedProps: { recurring: @psychologist_unavailability.recurring }
+      }, status: :created
+    else
+      render json: { success: false, error: @psychologist_unavailability.errors.full_messages.join(', ') }, status: :unprocessable_entity
+    end
   end
-
-  if @psychologist_unavailability.save
-    render json: {
-      success: true,
-      id: @psychologist_unavailability.id,
-      title: @psychologist_unavailability.reason,
-      start: @psychologist_unavailability.start_time.iso8601,
-      end: @psychologist_unavailability.end_time.iso8601,
-      recurring: @psychologist_unavailability.recurring,
-      timezone: @psychologist_unavailability.timezone,
-      extendedProps: { recurring: @psychologist_unavailability.recurring }
-    }, status: :created
-  else
-    render json: { success: false, error: @psychologist_unavailability.errors.full_messages.join(', ') }, status: :unprocessable_entity
-  end
-end
 
    # app/controllers/psychologist_unavailabilities_controller.rb
   def create_json
@@ -124,6 +99,7 @@ end
       render json: { success: false, error: @unavailability.errors.full_messages.join(', ') }, status: :unprocessable_entity
     end
   end
+
   def update_json
     @psychologist_unavailability = PsychologistUnavailability.find(params[:id]) # Changed to params[:id]
     unless @psychologist_unavailability.psychologist_profile_id == current_user.psychologist_profile.id
