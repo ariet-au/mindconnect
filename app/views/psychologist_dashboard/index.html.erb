@@ -530,104 +530,104 @@
     });
 
 
-    function openCreateUnavailabilityModal(start, end) {
-      const psychologistTimezone = calendar.getOption('timeZone'); // e.g., "Australia/Sydney"
+  function openCreateUnavailabilityModal(start, end) {
+        const psychologistTimezone = calendar.getOption('timeZone'); // e.g., "Australia/Sydney"
 
-      console.log("openCreateUnavailabilityModal");
+        console.log("openCreateUnavailabilityModal");
 
-      console.log(`[DEBUG] Opening Create Unavailability Modal from calendar selection`);
-      console.log(`[DEBUG] Selected Start (UTC): ${start.toISOString()}, End (UTC): ${end.toISOString()}`);
+        console.log(`[DEBUG] Opening Create Unavailability Modal from calendar selection`);
+        console.log(`[DEBUG] Selected Start (UTC): ${start.toISOString()}, End (UTC): ${end.toISOString()}`);
 
-      // Convert from UTC to the psychologist's timezone
-      const startZoned = luxon.DateTime.fromJSDate(start, { zone: 'utc' }).setZone(psychologistTimezone);
-      const endZoned = luxon.DateTime.fromJSDate(end, { zone: 'utc' }).setZone(psychologistTimezone);
+        // Convert from UTC to the psychologist's timezone
+        const startZoned = luxon.DateTime.fromJSDate(start, { zone: 'utc' }).setZone(psychologistTimezone);
+        const endZoned = luxon.DateTime.fromJSDate(end, { zone: 'utc' }).setZone(psychologistTimezone);
 
-      const dateString = startZoned.toFormat('yyyy-MM-dd');
-      const startTimeString = startZoned.toFormat('HH:mm');
-      const endTimeString = endZoned.toFormat('HH:mm');
+        const dateString = startZoned.toFormat('yyyy-MM-dd');
+        const startTimeString = startZoned.toFormat('HH:mm');
+        const endTimeString = endZoned.toFormat('HH:mm');
 
-      console.log(`[DEBUG] Converted to Psychologist Timezone for form: ${dateString} ${startTimeString} to ${endTimeString}`);
+        console.log(`[DEBUG] Converted to Psychologist Timezone for form: ${dateString} ${startTimeString} to ${endTimeString}`);
 
-      document.getElementById('newUnavailabilityDate').value = dateString;
-      document.getElementById('newUnavailabilityStartTime').value = startTimeString;
-      document.getElementById('newUnavailabilityEndTime').value = endTimeString;
-      document.getElementById('newUnavailabilityReason').value = '';
+        document.getElementById('newUnavailabilityDate').value = dateString;
+        document.getElementById('newUnavailabilityStartTime').value = startTimeString;
+        document.getElementById('newUnavailabilityEndTime').value = endTimeString;
+        document.getElementById('newUnavailabilityReason').value = '';
 
-      document.getElementById('createUnavailabilityModal').classList.add('is-active');
-    }
-
-    function createUnavailability() {
-  const container = document.getElementById('calendar-container');
-  const psychologistProfileId = container ? container.dataset.psychologistProfileId : null;
-  const psychologistTimezone = container ? container.dataset.psychologistTimezone : 'UTC';
-
-  if (!psychologistProfileId) {
-    showCustomAlert('Error: Missing psychologist profile ID');
-    return;
-  }
-
-  const date = document.getElementById('newUnavailabilityDate').value;
-  const startTime = document.getElementById('newUnavailabilityStartTime').value;
-  const endTime = document.getElementById('newUnavailabilityEndTime').value;
-  const reason = document.getElementById('newUnavailabilityReason').value;
-
-  if (!date || !startTime || !endTime) {
-    showCustomAlert('Please fill in all required fields (date, start time, end time).');
-    return;
-  }
-
-  // Parse date and time in the psychologist's timezone
-  const startDateTime = luxon.DateTime.fromISO(`${date}T${startTime}`, { zone: psychologistTimezone }).toUTC();
-  const endDateTime = luxon.DateTime.fromISO(`${date}T${endTime}`, { zone: psychologistTimezone }).toUTC();
-
-  // Validate that end time is after start time
-  if (endDateTime <= startDateTime) {
-    showCustomAlert('End time must be after start time.');
-    return;
-  }
-
-  console.log(`[DEBUG] Creating unavailability.`);
-  console.log(`[DEBUG] Form Input (Psychologist TZ): ${date} ${startTime} - ${endTime}`);
-  console.log(`[DEBUG] Converted to UTC for backend: Start: ${startDateTime.toISO()}, End: ${endDateTime.toISO()}`);
-  console.log(`[DEBUG] Timezone being sent to backend: ${psychologistTimezone}`);
-
-  const formData = {
-    psychologist_unavailability: {
-      psychologist_profile_id: psychologistProfileId,
-      start_time: startDateTime.toISO(),
-      end_time: endDateTime.toISO(),
-      reason: reason || 'Unavailable', // Provide default reason to satisfy validation
-      recurring: false, // Assume non-recurring for one-off unavailability
-      timezone: psychologistTimezone
-    }
-  };
-
-  fetch(`/psychologist_profiles/${psychologistProfileId}/psychologist_unavailabilities`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-CSRF-Token': document.querySelector("[name='csrf-token']").content
-    },
-    body: JSON.stringify(formData)
-  })
-    .then(response => {
-      if (!response.ok) {
-        return response.json().then(errorData => {
-          throw new Error(errorData.error || JSON.stringify(errorData) || 'Unknown error');
-        });
+        document.getElementById('createUnavailabilityModal').classList.add('is-active');
       }
-      return response.json();
+
+      function createUnavailability() {
+    const container = document.getElementById('calendar-container');
+    const psychologistProfileId = container ? container.dataset.psychologistProfileId : null;
+    const psychologistTimezone = container ? container.dataset.psychologistTimezone : 'UTC';
+
+    if (!psychologistProfileId) {
+      showCustomAlert('Error: Missing psychologist profile ID');
+      return;
+    }
+
+    const date = document.getElementById('newUnavailabilityDate').value;
+    const startTime = document.getElementById('newUnavailabilityStartTime').value;
+    const endTime = document.getElementById('newUnavailabilityEndTime').value;
+    const reason = document.getElementById('newUnavailabilityReason').value;
+
+    if (!date || !startTime || !endTime) {
+      showCustomAlert('Please fill in all required fields (date, start time, end time).');
+      return;
+    }
+
+    // Parse date and time in the psychologist's timezone
+    const startDateTime = luxon.DateTime.fromISO(`${date}T${startTime}`, { zone: psychologistTimezone }).toUTC();
+    const endDateTime = luxon.DateTime.fromISO(`${date}T${endTime}`, { zone: psychologistTimezone }).toUTC();
+
+    // Validate that end time is after start time
+    if (endDateTime <= startDateTime) {
+      showCustomAlert('End time must be after start time.');
+      return;
+    }
+
+    console.log(`[DEBUG] Creating unavailability.`);
+    console.log(`[DEBUG] Form Input (Psychologist TZ): ${date} ${startTime} - ${endTime}`);
+    console.log(`[DEBUG] Converted to UTC for backend: Start: ${startDateTime.toISO()}, End: ${endDateTime.toISO()}`);
+    console.log(`[DEBUG] Timezone being sent to backend: ${psychologistTimezone}`);
+
+    const formData = {
+      psychologist_unavailability: {
+        psychologist_profile_id: psychologistProfileId,
+        start_time: startDateTime.toISO(),
+        end_time: endDateTime.toISO(),
+        reason: reason || 'Unavailable', // Provide default reason to satisfy validation
+        recurring: false, // Assume non-recurring for one-off unavailability
+        timezone: psychologistTimezone
+      }
+    };
+
+    fetch(`/psychologist_profiles/${psychologistProfileId}/psychologist_unavailabilities`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector("[name='csrf-token']").content
+      },
+      body: JSON.stringify(formData)
     })
-    .then(data => {
-      calendar.refetchEvents();
-      closeModal('createUnavailabilityModal');
-      showCustomAlert('Unavailability created successfully!');
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      showCustomAlert('Error creating unavailability: ' + error.message);
-    });
-}
+      .then(response => {
+        if (!response.ok) {
+          return response.json().then(errorData => {
+            throw new Error(errorData.error || JSON.stringify(errorData) || 'Unknown error');
+          });
+        }
+        return response.json();
+      })
+      .then(data => {
+        calendar.refetchEvents();
+        closeModal('createUnavailabilityModal');
+        showCustomAlert('Unavailability created successfully!');
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        showCustomAlert('Error creating unavailability: ' + error.message);
+      });
+  }
 
 
 
@@ -932,79 +932,101 @@
 
 
 
-    function deleteUnavailability() {
-                        console.log("delete unavailability");
 
-      if (!currentEditingUnavailabilityId) return;
 
-      const container = document.getElementById('calendar-container');
-      const psychologistProfileId = container ? container.dataset.psychologistProfileId : null;
-
-      if (!psychologistProfileId) {
-        showCustomAlert('Error: Missing psychologist profile ID');
-        return;
-      }
-
-      showCustomConfirm('Are you sure you want to delete this unavailability?', () => {
-        console.log(`[DEBUG] Deleting unavailability with ID: ${currentEditingUnavailabilityId}`);
-        fetch(`/psychologist_profiles/${psychologistProfileId}/psychologist_unavailabilities/${currentEditingUnavailabilityId}/destroy_json.json`, {
-          method: 'DELETE',
-          headers: {
-            'X-CSRF-Token': document.querySelector("[name='csrf-token']").content
-          }
-        })
-        .then(response => {
-          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-          return response.json();
-        })
-        .then(data => {
-          if (data.success) {
-            calendar.refetchEvents();
-            closeModal('editUnavailabilityModal');
-            showCustomAlert('Unavailability deleted successfully!');
-          } else {
-            showCustomAlert('Error deleting unavailability: ' + (data.error || 'Unknown error'));
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          showCustomAlert('Error deleting unavailability: ' + error.message);
-        });
-      });
-    }
 
 
   function openEditUnavailabilityModal(event) {
-    if (!event) return;
+      if (!event) {
+        console.warn("[DEBUG] openEditUnavailabilityModal called with no event");
+        return;
+      }
 
-    const tz = event.extendedProps.timezone || luxon.DateTime.local().zoneName;
+      console.log("[DEBUG] Opening modal for event:", event);
+      console.log("[DEBUG] Event ID:", event.id, "ExtendedProps ID:", event.extendedProps?.id);
 
-    // Convert JS Date to Luxon DateTime in the event timezone
-    const start = luxon.DateTime.fromJSDate(event.start).setZone(tz);
-    const end = luxon.DateTime.fromJSDate(event.end).setZone(tz);
+      // Store the ID globally
+      window.currentEditingUnavailabilityId = event.id || event.extendedProps.id;
+      console.log("[DEBUG] Set window.currentEditingUnavailabilityId =", window.currentEditingUnavailabilityId);
 
-    // Fill modal fields
-    document.getElementById('unavailabilityDate').value = start.toFormat('yyyy-MM-dd');
-    document.getElementById('unavailabilityStartTime').value = start.toFormat('HH:mm');
-    document.getElementById('unavailabilityEndTime').value = end.toFormat('HH:mm');
-    document.getElementById('unavailabilityReason').value = event.extendedProps.reason || '';
+      const tz = event.extendedProps.timezone || luxon.DateTime.local().zoneName;
 
-    // Track which unavailability is being edited
-    window.currentEditingUnavailabilityId = event.id;
+      // Convert JS Date to Luxon DateTime in the event timezone
+      const start = luxon.DateTime.fromJSDate(event.start).setZone(tz);
+      const end = luxon.DateTime.fromJSDate(event.end).setZone(tz);
 
-    // Show timezone in modal
-    const tzSpan = document.getElementById('browserTimezone');
-    if (tzSpan) tzSpan.textContent = tz;
+      // Fill modal fields
+      document.getElementById('unavailabilityDate').value = start.toFormat('yyyy-MM-dd');
+      document.getElementById('unavailabilityStartTime').value = start.toFormat('HH:mm');
+      document.getElementById('unavailabilityEndTime').value = end.toFormat('HH:mm');
+      document.getElementById('unavailabilityReason').value = event.extendedProps.reason || '';
 
-    // Open modal
-    const modal = document.getElementById('editUnavailabilityModal');
-    if (modal) modal.classList.add('is-active');
-}
+      // Show timezone in modal
+      const tzSpan = document.getElementById('browserTimezone');
+      if (tzSpan) tzSpan.textContent = tz;
 
+      // Open modal
+      const modal = document.getElementById('editUnavailabilityModal');
+      if (modal) modal.classList.add('is-active');
+  }
 
- 
+  function deleteUnavailability() {
+    console.log("[DEBUG] deleteUnavailability() called");
 
+    const id = window.currentEditingUnavailabilityId;
+    console.log("[DEBUG] window.currentEditingUnavailabilityId =", id);
 
+    if (!id) {
+      console.warn("[DEBUG] No currentEditingUnavailabilityId found, aborting.");
+      return;
+    }
+
+    const container = document.getElementById('calendar-container');
+    console.log("[DEBUG] Container element:", container);
+
+    const psychologistProfileId = container ? container.dataset.psychologistProfileId : null;
+    console.log("[DEBUG] Psychologist Profile ID:", psychologistProfileId);
+
+    if (!psychologistProfileId) {
+      showCustomAlert('Error: Missing psychologist profile ID');
+      return;
+    }
+
+    showCustomConfirm('Are you sure you want to delete this unavailability?', () => {
+      console.log(`[DEBUG] Confirmed deletion for unavailability ID: ${id}`);
+
+      const url = `/psychologist_profiles/${psychologistProfileId}/psychologist_unavailabilities/${id}.json`;
+      console.log("[DEBUG] Fetch URL:", url);
+
+      fetch(url, {
+        method: 'DELETE',
+        headers: {
+          'X-CSRF-Token': document.querySelector("[name='csrf-token']").content
+        }
+      })
+      .then(response => {
+        console.log("[DEBUG] Raw response:", response);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return response.json();
+      })
+      .then(data => {
+        console.log("[DEBUG] Parsed response JSON:", data);
+        if (data.success) {
+          console.log("[DEBUG] Delete success → refetching events & closing modal");
+          calendar.refetchEvents();
+          closeModal('editUnavailabilityModal');
+          showCustomAlert('Unavailability deleted successfully!');
+        } else {
+          console.warn("[DEBUG] Delete failed:", data.error || "Unknown error");
+          showCustomAlert('Error deleting unavailability: ' + (data.error || 'Unknown error'));
+        }
+      })
+      .catch(error => {
+        console.error("[DEBUG] Fetch error caught:", error);
+        showCustomAlert('Error deleting unavailability: ' + error.message);
+      });
+    });
+  }
 
 
     function saveUnavailability() {

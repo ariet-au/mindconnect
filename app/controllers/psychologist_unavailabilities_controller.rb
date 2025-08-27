@@ -122,30 +122,27 @@ class PsychologistUnavailabilitiesController < ApplicationController
     end
   end
 
-  def destroy_json
+  def destroy
     @psychologist_unavailability = PsychologistUnavailability.find(params[:id])
+
     if @psychologist_unavailability.psychologist_profile != @psychologist_profile
-      render json: { error: "Unauthorized" }, status: :unauthorized
+      respond_to do |format|
+        format.html { redirect_to psychologist_profile_path(@psychologist_profile), alert: "Unauthorized" }
+        format.json { render json: { error: "Unauthorized" }, status: :unauthorized }
+      end
       return
     end
 
     if @psychologist_unavailability.destroy
-      render json: { success: true }, status: :ok
+      respond_to do |format|
+        format.html { redirect_to psychologist_profile_path(@psychologist_profile), notice: "Unavailability deleted successfully." }
+        format.json { render json: { success: true }, status: :ok }
+      end
     else
-      render json: { success: false, error: @psychologist_unavailability.errors.full_messages.join(', ') }, status: :unprocessable_entity
-    end
-  end
-
-  def destroy
-    @psychologist_unavailability = PsychologistUnavailability.find(params[:id])
-    if @psychologist_unavailability.psychologist_profile != @psychologist_profile
-      render json: { error: "Unauthorized" }, status: :unauthorized and return
-    end
-
-    if @psychologist_unavailability.destroy
-      head :no_content
-    else
-      render json: @psychologist_unavailability.errors, status: :unprocessable_entity
+      respond_to do |format|
+        format.html { redirect_to psychologist_profile_path(@psychologist_profile), alert: @psychologist_unavailability.errors.full_messages.join(', ') }
+        format.json { render json: { success: false, error: @psychologist_unavailability.errors.full_messages.join(', ') }, status: :unprocessable_entity }
+      end
     end
   end
 
