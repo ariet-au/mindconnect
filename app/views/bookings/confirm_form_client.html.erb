@@ -1,86 +1,270 @@
-<div class="section">
-  <div class="container">
-    <div class="box has-text-centered">
-      <h1 class="title is-3 has-text-primary">Booking Request</h1>
-      <p>Debug Status: <%= @booking.status %></p>
+<style>
+  :root {
+    --primary-color: #3b82f6; /* Blue */
+    --secondary-color: #60a5fa;
+    --text-color: #1f2937;
+    --bg-color: #f3f4f6;
+    --card-bg: #ffffff;
+    --border-color: #e5e7eb;
+    --shadow-color: rgba(0, 0, 0, 0.05);
+    --success-color: #10b981;
+    --danger-color: #ef4444;
+  }
 
-      <% if flash[:notice] %>
-        <div class="notification is-success" id="flash-notice">
-          <%= flash[:notice] %>
-        </div>
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+  }
+
+  .booking-container {
+    max-width: 600px;
+    width: 100%;
+    background-color: var(--card-bg);
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 20px -5px var(--shadow-color);
+    padding: 2.5rem;
+    text-align: center;
+    border: 1px solid var(--border-color);
+  }
+
+  .booking-container .main-title {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+  }
+
+  .booking-container .subtitle-text {
+    font-size: 1.25rem;
+    color: var(--text-color);
+    margin-bottom: 2rem;
+  }
+
+  .details-box {
+    background-color: var(--bg-color);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border-color);
+  }
+
+  .details-box .details-item {
+    font-size: 1.125rem;
+    line-height: 1.75;
+    color: var(--text-color);
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .details-box .details-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .details-box strong {
+    font-weight: 600;
+    color: var(--primary-color);
+  }
+
+  .countdown-display {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-top: 1rem;
+  }
+
+  .button {
+    border-radius: 0.75rem;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 0.75rem 1.5rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow-color);
+  }
+
+  .is-success {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+    color: white;
+  }
+
+  .is-danger {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+    color: white;
+  }
+
+  .notification {
+    border-radius: 0.75rem;
+    font-size: 1.125rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  /* Responsive styling for mobile */
+  @media (max-width: 600px) {
+    .booking-container {
+      padding: 1.5rem;
+    }
+
+    .booking-container .main-title {
+      font-size: 1.75rem;
+    }
+
+    .details-box .details-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .details-box .details-item strong {
+      margin-bottom: 0.25rem;
+    }
+  }
+</style>
+
+<div class="booking-container">
+  <h1 class="main-title">Booking Request for <%= @booking.internal_client_profile.full_name %></h1>
+  <p class="subtitle-text">Please confirm or decline the following booking:</p>
+
+  <p class="is-size-7 has-text-grey mb-4">Debug Status: <%= @booking.status %></p>
+
+  <% if flash[:notice] %>
+    <div class="notification is-success mb-5" id="flash-notice">
+      <%= flash[:notice] %>
+    </div>
+  <% end %>
+
+  <% if flash[:alert] %>
+    <div class="notification is-danger mb-5" id="flash-alert">
+      <%= flash[:alert] %>
+    </div>
+  <% end %>
+
+  <div class="details-box">
+    <p class="details-item">
+      <strong>Psychologist:</strong>
+      <span><%= @booking.psychologist_profile.full_name %></span>
+    </p>
+    
+    <p class="details-item">
+      <strong>Date:</strong>
+      <span id="bookingDate" data-start="<%= @booking.start_time.iso8601 %>"></span>
+    </p>
+    
+    <p class="details-item">
+      <strong>Time:</strong>
+      <span id="bookingTime"
+            data-start="<%= @booking.start_time.iso8601 %>"
+            data-end="<%= @booking.end_time.iso8601 %>"></span>
+    </p>
+
+    <p class="details-item">
+      <strong>Starts in:</strong>
+      <span id="countdown" class="countdown-display"></span>
+    </p>
+
+    <% if @booking.service.present? %>
+      <p class="details-item">
+        <strong>Service:</strong>
+        <span><%= @booking.service.name %></span>
+      </p>
+    <% end %>
+  </div>
+
+  <% if @booking.pending? %>
+    <div class="buttons is-centered mt-0 mb-4" id="booking-actions">
+      <%= form_with url: confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking, token: params[:token]), method: :patch, data: { turbo: true, "turbo-frame": "_top" } do %>
+        <%= submit_tag "✅ Confirm Booking", class: "button is-success is-medium mr-2", data: { "disable-with": "Processing..." } %>
       <% end %>
-
-      <% if flash[:alert] %>
-        <div class="notification is-danger" id="flash-alert">
-          <%= flash[:alert] %>
-        </div>
-      <% end %>
-
-      <p class="subtitle is-5">Please confirm or decline the following booking:</p>
-
-      <div class="box has-background-light mt-5">
-        <p><strong>Psychologist:</strong> <%= @booking.psychologist_profile.full_name %></p>
-        
-        <p>
-          <strong>Date:</strong>
-          <span id="bookingDate" data-start="<%= @booking.start_time.iso8601 %>"></span>
-        </p>
-        
-        <p>
-          <strong>Time:</strong>
-          <span id="bookingTime"
-                data-start="<%= @booking.start_time.iso8601 %>"
-                data-end="<%= @booking.end_time.iso8601 %>"></span>
-        </p>
-
-        <% if @booking.service.present? %>
-          <p><strong>Service:</strong> <%= @booking.service.name %></p>
-        <% end %>
-      </div>
-
-      <% if @booking.pending? %>
-        <div class="buttons is-centered mt-5" id="booking-actions">
-          <%= form_with url: confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking, token: params[:token]), method: :patch, data: { turbo: true, "turbo-frame": "_top" } do %>
-            <%= submit_tag "✅ Confirm Booking", class: "button is-success is-medium", data: { "disable-with": "Processing..." } %>
-          <% end %>
-          <%= form_with url: decline_psychologist_profile_booking_path(@booking.psychologist_profile, @booking, token: params[:token]), method: :patch, data: { turbo: true, "turbo-frame": "_top" } do %>
-            <%= submit_tag "❌ Decline Booking", class: "button is-danger is-medium", data: { "disable-with": "Processing..." } %>
-          <% end %>
-        </div>
-      <% elsif @booking.confirmed? %>
-        <div class="notification is-success mt-5" id="booking-status">
-          <p class="title is-5">This booking has been <strong>confirmed</strong>.</p>
-          <p>You can add it to your calendar using the options below.</p>
-        </div>
-        <div class="buttons is-centered mt-5">
-          <%= link_to "Add to Calendar (ICS)", download_ics_psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "button is-link" %>
-          <%= link_to "Google Calendar", "https://calendar.google.com/calendar/render?action=TEMPLATE&text=#{CGI.escape(@booking.service&.name || 'Therapy Session')}&dates=#{@booking.start_time.utc.strftime('%Y%m%dT%H%M%SZ')}/#{@booking.end_time.utc.strftime('%Y%m%dT%H%M%SZ')}&details=#{CGI.escape("Session with #{@booking.psychologist_profile&.full_name}")}", target: "_blank", class: "button is-success" %>
-        </div>
-      <% elsif @booking.declined? %>
-        <div class="notification is-danger mt-5" id="booking-status">
-          <p class="title is-5">This booking has been <strong>permanently declined</strong>.</p>
-          <p>If you would like to rebook, please contact the psychologist.</p>
-        </div>
-      <% else %>
-        <div class="notification is-info mt-5" id="booking-status">
-          <p>This booking has already been <strong><%= @booking.status.capitalize %></strong>.</p>
-        </div>
+      <%= form_with url: decline_psychologist_profile_booking_path(@booking.psychologist_profile, @booking, token: params[:token]), method: :patch, data: { turbo: true, "turbo-frame": "_top" } do %>
+        <%= submit_tag "❌ Decline Booking", class: "button is-danger is-medium", data: { "disable-with": "Processing..." } %>
       <% end %>
     </div>
-  </div>
+  <% elsif @booking.confirmed? %>
+    <div class="notification is-success mt-0 mb-5 px-4 py-4" id="booking-status">
+      <p class="title is-5 mb-3">This booking has been <strong>confirmed</strong>.</p>
+      <p>You can add it to your calendar using the options below.</p>
+    </div>
+    <div class="buttons is-centered mt-0">
+      <%= link_to "Add to Calendar (ICS)", download_ics_psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "button is-link mr-2 mb-2" %>
+      <%= link_to "Google Calendar", "https://calendar.google.com/calendar/render?action=TEMPLATE&text=#{CGI.escape(@booking.service&.name || 'Therapy Session')}&dates=#{@booking.start_time.utc.strftime('%Y%m%dT%H%M%SZ')}/#{@booking.end_time.utc.strftime('%Y%m%dT%H%M%SZ')}&details=#{CGI.escape("Session with #{@booking.psychologist_profile&.full_name}")}", target: "_blank", class: "button is-success mb-2" %>
+    </div>
+  <% elsif @booking.declined? %>
+    <div class="notification is-danger mt-0 mb-5 px-4 py-4" id="booking-status">
+      <p class="title is-5 mb-3">This booking has been <strong>permanently declined</strong>.</p>
+      <p>If you would like to rebook, please contact the psychologist.</p>
+    </div>
+  <% else %>
+    <div class="notification is-info mt-0 mb-5 px-4 py-4" id="booking-status">
+      <p>This booking has already been <strong><%= @booking.status.capitalize %></strong>.</p>
+    </div>
+  <% end %>
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-  const dateEl = document.getElementById("bookingDate");
-  const timeEl = document.getElementById("bookingTime");
+  // Luxon library from CDN
+  const luxonScript = document.createElement('script');
+  luxonScript.src = "https://cdn.jsdelivr.net/npm/luxon@3.4.3/build/global/luxon.min.js";
+  document.head.appendChild(luxonScript);
 
-  if (dateEl && timeEl) {
-    const start = luxon.DateTime.fromISO(dateEl.dataset.start).toLocal();
-    const end = luxon.DateTime.fromISO(timeEl.dataset.end).toLocal();
+  document.addEventListener("DOMContentLoaded", () => {
+    const dateEl = document.getElementById("bookingDate");
+    const timeEl = document.getElementById("bookingTime");
+    const countdownEl = document.getElementById("countdown");
 
-    dateEl.textContent = start.toFormat("cccc, dd LLLL yyyy");
-    timeEl.textContent = `${start.toFormat("hh:mm a")} - ${end.toFormat("hh:mm a")}`;
-  }
-});
+    if (typeof luxon === 'undefined') {
+      luxonScript.onload = () => initCountdown();
+    } else {
+      initCountdown();
+    }
+
+    function initCountdown() {
+      if (dateEl && timeEl && countdownEl) {
+        const start = luxon.DateTime.fromISO(dateEl.dataset.start).toLocal();
+        const end = luxon.DateTime.fromISO(timeEl.dataset.end).toLocal();
+
+        dateEl.textContent = start.toFormat("cccc, dd LLLL yyyy");
+        timeEl.textContent = `${start.toFormat("hh:mm a")} - ${end.toFormat("hh:mm a")}`;
+
+        function updateCountdown() {
+          const now = luxon.DateTime.local();
+          const diff = start.diff(now, ['days', 'hours', 'minutes', 'seconds']);
+
+          if (diff.as('seconds') <= 0) {
+            countdownEl.textContent = "Started";
+            return;
+          }
+
+          const formattedDiff = diff.toObject();
+          let countdownText = '';
+          
+          if (formattedDiff.days > 0) {
+            countdownText += `${Math.floor(formattedDiff.days)}d `;
+          }
+          if (formattedDiff.hours > 0) {
+            countdownText += `${Math.floor(formattedDiff.hours)}h `;
+          }
+          if (formattedDiff.minutes > 0) {
+            countdownText += `${Math.floor(formattedDiff.minutes)}m `;
+          }
+          countdownText += `${Math.floor(formattedDiff.seconds)}s`;
+          
+          countdownEl.textContent = countdownText.trim();
+        }
+
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+      }
+    }
+  });
 </script>
