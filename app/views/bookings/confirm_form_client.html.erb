@@ -20,8 +20,19 @@
 
       <div class="box has-background-light mt-5">
         <p><strong>Psychologist:</strong> <%= @booking.psychologist_profile.full_name %></p>
-        <p><strong>Date:</strong> <%= @booking.start_time.strftime("%A, %d %B %Y") %></p>
-        <p><strong>Time:</strong> <%= @booking.start_time.strftime("%I:%M %p") %> - <%= @booking.end_time.strftime("%I:%M %p") %></p>
+        
+        <p>
+          <strong>Date:</strong>
+          <span id="bookingDate" data-start="<%= @booking.start_time.iso8601 %>"></span>
+        </p>
+        
+        <p>
+          <strong>Time:</strong>
+          <span id="bookingTime"
+                data-start="<%= @booking.start_time.iso8601 %>"
+                data-end="<%= @booking.end_time.iso8601 %>"></span>
+        </p>
+
         <% if @booking.service.present? %>
           <p><strong>Service:</strong> <%= @booking.service.name %></p>
         <% end %>
@@ -58,3 +69,18 @@
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const dateEl = document.getElementById("bookingDate");
+  const timeEl = document.getElementById("bookingTime");
+
+  if (dateEl && timeEl) {
+    const start = luxon.DateTime.fromISO(dateEl.dataset.start).toLocal();
+    const end = luxon.DateTime.fromISO(timeEl.dataset.end).toLocal();
+
+    dateEl.textContent = start.toFormat("cccc, dd LLLL yyyy");
+    timeEl.textContent = `${start.toFormat("hh:mm a")} - ${end.toFormat("hh:mm a")}`;
+  }
+});
+</script>
