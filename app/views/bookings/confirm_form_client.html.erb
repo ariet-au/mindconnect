@@ -1,270 +1,496 @@
 <style>
   :root {
-    --primary-color: #3b82f6; /* Blue */
-    --secondary-color: #60a5fa;
-    --text-color: #1f2937;
-    --bg-color: #f3f4f6;
-    --card-bg: #ffffff;
+    --primary-color: #4f46e5;
+    --primary-light: #6366f1;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --text-muted: #9ca3af;
     --border-color: #e5e7eb;
-    --shadow-color: rgba(0, 0, 0, 0.05);
-    --success-color: #10b981;
-    --danger-color: #ef4444;
+    --border-light: #f3f4f6;
+    --success-color: #059669;
+    --success-light: #10b981;
+    --danger-color: #dc2626;
+    --danger-light: #ef4444;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
 
   body {
-    font-family: 'Inter', sans-serif;
-    background-color: var(--bg-color);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background-color: #ffffff;
+    color: var(--text-primary);
+    line-height: 1.6;
     min-height: 100vh;
-    padding: 2rem;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .booking-container {
-    max-width: 600px;
+    max-width: 480px;
     width: 100%;
-    background-color: var(--card-bg);
-    border-radius: 1.5rem;
-    box-shadow: 0 10px 20px -5px var(--shadow-color);
-    padding: 2.5rem;
+    background-color: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 32px 24px;
+    box-shadow: var(--shadow-sm);
+    margin: 0 auto;
+  }
+
+  .header {
     text-align: center;
-    border: 1px solid var(--border-color);
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border-light);
   }
 
-  .booking-container .main-title {
-    font-size: 2.25rem;
-    font-weight: 700;
-    color: var(--primary-color);
-    margin-bottom: 0.5rem;
-  }
-
-  .booking-container .subtitle-text {
-    font-size: 1.25rem;
-    color: var(--text-color);
-    margin-bottom: 2rem;
-  }
-
-  .details-box {
-    background-color: var(--bg-color);
-    border-radius: 1rem;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-    border: 1px solid var(--border-color);
-  }
-
-  .details-box .details-item {
-    font-size: 1.125rem;
-    line-height: 1.75;
-    color: var(--text-color);
-    margin-bottom: 1rem;
+  .logo {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+    border-radius: 12px;
+    margin: 0 auto 16px;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-  }
-
-  .details-box .details-item:last-child {
-    margin-bottom: 0;
-  }
-
-  .details-box strong {
+    justify-content: center;
+    color: white;
     font-weight: 600;
-    color: var(--primary-color);
+    font-size: 18px;
   }
 
-  .countdown-display {
-    font-size: 1.5rem;
+  .main-title {
+    font-size: 24px;
     font-weight: 700;
-    color: var(--primary-color);
-    margin-top: 1rem;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+    line-height: 1.3;
   }
 
-  .button {
-    border-radius: 0.75rem;
-    font-weight: 600;
-    font-size: 1rem;
-    padding: 0.75rem 1.5rem;
-    transition: transform 0.2s, box-shadow 0.2s;
+  .subtitle-text {
+    font-size: 16px;
+    color: var(--text-secondary);
+    font-weight: 400;
   }
 
-  .button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px var(--shadow-color);
-  }
-
-  .is-success {
-    background-color: var(--success-color);
-    border-color: var(--success-color);
-    color: white;
-  }
-
-  .is-danger {
-    background-color: var(--danger-color);
-    border-color: var(--danger-color);
-    color: white;
+  .debug-status {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 6px 12px;
+    background: var(--border-light);
+    border-radius: 6px;
+    display: inline-block;
+    width: 100%;
   }
 
   .notification {
-    border-radius: 0.75rem;
-    font-size: 1.125rem;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    font-size: 14px;
     font-weight: 500;
-    line-height: 1.5;
   }
 
-  /* Responsive styling for mobile */
-  @media (max-width: 600px) {
+  .notification.is-success {
+    background: #f0fdf4;
+    color: var(--success-color);
+    border: 1px solid #bbf7d0;
+  }
+
+  .notification.is-danger {
+    background: #fef2f2;
+    color: var(--danger-color);
+    border: 1px solid #fecaca;
+  }
+
+  .details-box {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 32px;
+  }
+
+  .session-info {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .session-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+
+  .session-subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  .details-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  .details-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .details-item strong {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    min-width: 80px;
+  }
+
+  .details-item span:not(.countdown-display) {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: right;
+    flex: 1;
+  }
+
+  .countdown-display {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: var(--primary-color) !important;
+    text-align: right;
+  }
+
+  .buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .buttons.is-centered {
+    justify-content: center;
+  }
+
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 48px;
+    width: 100%;
+    max-width: 200px;
+  }
+
+  .button.is-success {
+    background: var(--success-color);
+    color: white;
+    border: 1px solid var(--success-color);
+  }
+
+  .button.is-success:hover {
+    background: var(--success-light);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .button.is-danger {
+    background: transparent;
+    color: var(--danger-color);
+    border: 1.5px solid var(--danger-color);
+  }
+
+  .button.is-danger:hover {
+    background: var(--danger-color);
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .button.is-link {
+    background: #ffffff;
+    color: var(--primary-color);
+    border: 1px solid var(--border-color);
+    font-size: 14px;
+    padding: 12px 16px;
+    min-height: 44px;
+  }
+
+  .button.is-link:hover {
+    background: var(--border-light);
+    border-color: var(--primary-color);
+  }
+
+  .status-notification {
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    border: 1px solid #bae6fd;
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .status-notification.is-success {
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border-color: #bbf7d0;
+  }
+
+  .status-notification.is-danger {
+    background: linear-gradient(135deg, #fef2f2, #fee2e2);
+    border-color: #fecaca;
+  }
+
+  .status-notification.is-info {
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    border-color: #bae6fd;
+  }
+
+  .status-notification .title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .status-notification.is-success .title {
+    color: var(--success-color);
+  }
+
+  .status-notification.is-danger .title {
+    color: var(--danger-color);
+  }
+
+  .status-notification.is-info .title {
+    color: var(--primary-color);
+  }
+
+  .status-notification p:not(.title) {
+    font-size: 14px;
+    color: var(--text-secondary);
+  }
+
+  @media (min-width: 480px) {
+    body {
+      padding: 40px 24px;
+    }
+    
     .booking-container {
-      padding: 1.5rem;
+      padding: 40px 32px;
     }
-
-    .booking-container .main-title {
-      font-size: 1.75rem;
+    
+    .buttons {
+      flex-direction: row;
+      gap: 16px;
     }
+  }
 
-    .details-box .details-item {
+  @media (max-width: 380px) {
+    .details-item {
       flex-direction: column;
-      align-items: flex-start;
+      gap: 4px;
     }
-
-    .details-box .details-item strong {
-      margin-bottom: 0.25rem;
+    
+    .details-item span:not(.countdown-display) {
+      text-align: left;
+    }
+    
+    .countdown-display {
+      text-align: left !important;
     }
   }
 </style>
 
 <div class="booking-container">
-  <h1 class="main-title">Booking Request for <%= @booking.internal_client_profile.full_name %></h1>
-  <p class="subtitle-text">Please confirm or decline the following booking:</p>
+  <div class="header">
+    <div class="logo">📅</div>
+    <h1 class="main-title">Session Confirmation</h1>
+    <p class="subtitle-text">Please review and confirm your appointment</p>
+  </div>
 
-  <p class="is-size-7 has-text-grey mb-4">Debug Status: <%= @booking.status %></p>
+  <p class="debug-status">Status: <%= @booking.status %></p>
 
   <% if flash[:notice] %>
-    <div class="notification is-success mb-5" id="flash-notice">
+    <div class="notification is-success" id="flash-notice">
       <%= flash[:notice] %>
     </div>
   <% end %>
 
   <% if flash[:alert] %>
-    <div class="notification is-danger mb-5" id="flash-alert">
+    <div class="notification is-danger" id="flash-alert">
       <%= flash[:alert] %>
     </div>
   <% end %>
 
   <div class="details-box">
-    <p class="details-item">
-      <strong>Psychologist:</strong>
-      <span><%= @booking.psychologist_profile.full_name %></span>
-    </p>
-    
-    <p class="details-item">
+    <div class="session-info">
+      <h2 class="session-title">Therapy Session</h2>
+      <p class="session-subtitle">with <%= @booking.psychologist_profile.full_name %></p>
+    </div>
+
+    <div class="details-item">
       <strong>Date:</strong>
       <span id="bookingDate" data-start="<%= @booking.start_time.iso8601 %>"></span>
-    </p>
+    </div>
     
-    <p class="details-item">
+    <div class="details-item">
       <strong>Time:</strong>
       <span id="bookingTime"
             data-start="<%= @booking.start_time.iso8601 %>"
             data-end="<%= @booking.end_time.iso8601 %>"></span>
-    </p>
+    </div>
 
-    <p class="details-item">
+    <div class="details-item">
       <strong>Starts in:</strong>
       <span id="countdown" class="countdown-display"></span>
-    </p>
+    </div>
 
     <% if @booking.service.present? %>
-      <p class="details-item">
+      <div class="details-item">
         <strong>Service:</strong>
         <span><%= @booking.service.name %></span>
-      </p>
+      </div>
     <% end %>
+
+    <div class="details-item">
+      <strong>Client:</strong>
+      <span><%= @booking.internal_client_profile.full_name %></span>
+    </div>
   </div>
 
   <% if @booking.pending? %>
-    <div class="buttons is-centered mt-0 mb-4" id="booking-actions">
+    <div class="buttons is-centered" id="booking-actions">
       <%= form_with url: confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking, token: params[:token]), method: :patch, data: { turbo: true, "turbo-frame": "_top" } do %>
-        <%= submit_tag "✅ Confirm Booking", class: "button is-success is-medium mr-2", data: { "disable-with": "Processing..." } %>
+        <%= submit_tag "✓ Confirm Session", class: "button is-success", data: { "disable-with": "Processing..." } %>
       <% end %>
       <%= form_with url: decline_psychologist_profile_booking_path(@booking.psychologist_profile, @booking, token: params[:token]), method: :patch, data: { turbo: true, "turbo-frame": "_top" } do %>
-        <%= submit_tag "❌ Decline Booking", class: "button is-danger is-medium", data: { "disable-with": "Processing..." } %>
+        <%= submit_tag "Decline Session", class: "button is-danger", data: { "disable-with": "Processing..." } %>
       <% end %>
     </div>
   <% elsif @booking.confirmed? %>
-    <div class="notification is-success mt-0 mb-5 px-4 py-4" id="booking-status">
-      <p class="title is-5 mb-3">This booking has been <strong>confirmed</strong>.</p>
-      <p>You can add it to your calendar using the options below.</p>
+    <div class="status-notification is-success" id="booking-status">
+      <p class="title">Session Confirmed</p>
+      <p>Your appointment has been confirmed. Add it to your calendar below.</p>
     </div>
-    <div class="buttons is-centered mt-0">
-      <%= link_to "Add to Calendar (ICS)", download_ics_psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "button is-link mr-2 mb-2" %>
-      <%= link_to "Google Calendar", "https://calendar.google.com/calendar/render?action=TEMPLATE&text=#{CGI.escape(@booking.service&.name || 'Therapy Session')}&dates=#{@booking.start_time.utc.strftime('%Y%m%dT%H%M%SZ')}/#{@booking.end_time.utc.strftime('%Y%m%dT%H%M%SZ')}&details=#{CGI.escape("Session with #{@booking.psychologist_profile&.full_name}")}", target: "_blank", class: "button is-success mb-2" %>
+    <div class="buttons is-centered">
+      <%= link_to "📅 Download Calendar Event", download_ics_psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "button is-link" %>
+      <%= link_to "📱 Add to Google Calendar", "https://calendar.google.com/calendar/render?action=TEMPLATE&text=#{CGI.escape(@booking.service&.name || 'Therapy Session')}&dates=#{@booking.start_time.utc.strftime('%Y%m%dT%H%M%SZ')}/#{@booking.end_time.utc.strftime('%Y%m%dT%H%M%SZ')}&details=#{CGI.escape("Session with #{@booking.psychologist_profile&.full_name}")}", target: "_blank", class: "button is-link" %>
     </div>
   <% elsif @booking.declined? %>
-    <div class="notification is-danger mt-0 mb-5 px-4 py-4" id="booking-status">
-      <p class="title is-5 mb-3">This booking has been <strong>permanently declined</strong>.</p>
-      <p>If you would like to rebook, please contact the psychologist.</p>
+    <div class="status-notification is-danger" id="booking-status">
+      <p class="title">Session Declined</p>
+      <p>This appointment has been permanently declined. Please contact your therapist to reschedule.</p>
     </div>
   <% else %>
-    <div class="notification is-info mt-0 mb-5 px-4 py-4" id="booking-status">
-      <p>This booking has already been <strong><%= @booking.status.capitalize %></strong>.</p>
+    <div class="status-notification is-info" id="booking-status">
+      <p class="title">Status: <%= @booking.status.capitalize %></p>
+      <p>This booking has already been processed.</p>
     </div>
   <% end %>
 </div>
 
 <script>
-  // Luxon library from CDN
-  const luxonScript = document.createElement('script');
-  luxonScript.src = "https://cdn.jsdelivr.net/npm/luxon@3.4.3/build/global/luxon.min.js";
-  document.head.appendChild(luxonScript);
-
-  document.addEventListener("DOMContentLoaded", () => {
-    const dateEl = document.getElementById("bookingDate");
-    const timeEl = document.getElementById("bookingTime");
-    const countdownEl = document.getElementById("countdown");
-
-    if (typeof luxon === 'undefined') {
-      luxonScript.onload = () => initCountdown();
-    } else {
-      initCountdown();
-    }
-
-    function initCountdown() {
-      if (dateEl && timeEl && countdownEl) {
-        const start = luxon.DateTime.fromISO(dateEl.dataset.start).toLocal();
-        const end = luxon.DateTime.fromISO(timeEl.dataset.end).toLocal();
-
-        dateEl.textContent = start.toFormat("cccc, dd LLLL yyyy");
-        timeEl.textContent = `${start.toFormat("hh:mm a")} - ${end.toFormat("hh:mm a")}`;
-
-        function updateCountdown() {
-          const now = luxon.DateTime.local();
-          const diff = start.diff(now, ['days', 'hours', 'minutes', 'seconds']);
-
-          if (diff.as('seconds') <= 0) {
-            countdownEl.textContent = "Started";
-            return;
-          }
-
-          const formattedDiff = diff.toObject();
-          let countdownText = '';
-          
-          if (formattedDiff.days > 0) {
-            countdownText += `${Math.floor(formattedDiff.days)}d `;
-          }
-          if (formattedDiff.hours > 0) {
-            countdownText += `${Math.floor(formattedDiff.hours)}h `;
-          }
-          if (formattedDiff.minutes > 0) {
-            countdownText += `${Math.floor(formattedDiff.minutes)}m `;
-          }
-          countdownText += `${Math.floor(formattedDiff.seconds)}s`;
-          
-          countdownEl.textContent = countdownText.trim();
-        }
-
-        updateCountdown();
-        setInterval(updateCountdown, 1000);
-      }
-    }
+// Format date display
+function formatDate(isoString) {
+  const date = new Date(isoString);
+  return date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
   });
+}
+
+// Format time display
+function formatTime(startIso, endIso) {
+  const start = new Date(startIso);
+  const end = new Date(endIso);
+  return `${start.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  })} - ${end.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true
+  })}`;
+}
+
+// Update countdown
+function updateCountdown() {
+  const countdownEl = document.getElementById('countdown');
+  const dateEl = document.getElementById('bookingDate');
+  
+  if (!countdownEl || !dateEl) return;
+  
+  const startTime = dateEl.getAttribute('data-start');
+  if (!startTime) return;
+  
+  const now = new Date();
+  const sessionTime = new Date(startTime);
+  const diff = sessionTime - now;
+  
+  if (diff <= 0) {
+    countdownEl.textContent = 'Session has started';
+    return;
+  }
+  
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  
+  if (days > 0) {
+    countdownEl.textContent = `${days} day${days > 1 ? 's' : ''}, ${hours} hour${hours !== 1 ? 's' : ''}`;
+  } else if (hours > 0) {
+    countdownEl.textContent = `${hours} hour${hours !== 1 ? 's' : ''}, ${minutes} minute${minutes !== 1 ? 's' : ''}`;
+  } else {
+    countdownEl.textContent = `${minutes} minute${minutes !== 1 ? 's' : ''}`;
+  }
+}
+
+// Initialize page
+document.addEventListener('turbo:render', function() {
+  // Format date and time displays
+  const dateEl = document.getElementById('bookingDate');
+  const timeEl = document.getElementById('bookingTime');
+  
+  if (dateEl && dateEl.getAttribute('data-start')) {
+    dateEl.textContent = formatDate(dateEl.getAttribute('data-start'));
+  }
+  
+  if (timeEl && timeEl.getAttribute('data-start') && timeEl.getAttribute('data-end')) {
+    timeEl.textContent = formatTime(
+      timeEl.getAttribute('data-start'),
+      timeEl.getAttribute('data-end')
+    );
+  }
+  
+  // Update countdown
+  updateCountdown();
+  setInterval(updateCountdown, 60000);
+  
+  // Auto-hide flash messages after 5 seconds
+  setTimeout(() => {
+    const notice = document.getElementById('flash-notice');
+    const alert = document.getElementById('flash-alert');
+    if (notice) notice.style.display = 'none';
+    if (alert) alert.style.display = 'none';
+  }, 5000);
+});
 </script>

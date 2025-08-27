@@ -8,7 +8,8 @@ require 'icalendar/tzinfo'
 class BookingsController < ApplicationController
   #skip_before_action :set_psychologist_profile, only: [:dynamic_select]
   before_action :authenticate_user!, except: [:confirm_form, :confirm]
-  before_action :set_booking, only: [:show, :edit, :update, :destroy]
+  before_action :set_booking, only: [:show, :edit, :update, :destroy, :confirm, :decline, :confirm_form]
+
   #before_action :set_psychologist_profile, only: [:create_json, :update_json, :destroy_json, :new]
 
 
@@ -290,9 +291,10 @@ class BookingsController < ApplicationController
     else
       flash[:alert] = "Booking cannot be confirmed as its status is #{@booking.status}."
     end
+
     respond_to do |format|
       format.html { redirect_to confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking) }
-      format.turbo_stream { render turbo_stream: turbo_stream.replace("booking_content", partial: "bookings/confirm_form_client", locals: { booking: @booking }) }
+      format.turbo_stream { redirect_to confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking) }
     end
   end
 
@@ -306,29 +308,31 @@ class BookingsController < ApplicationController
     else
       flash[:alert] = "Booking cannot be declined as its status is #{@booking.status}."
     end
+
     respond_to do |format|
       format.html { redirect_to confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking) }
-      format.turbo_stream { render turbo_stream: turbo_stream.replace("booking_content", partial: "bookings/confirm_form_client", locals: { booking: @booking }) }
+      format.turbo_stream { redirect_to confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking) }
     end
   end
 
-def psychologist_bookings
-  # Ensure the user is a psychologist and has a profile
-  unless current_user&.psychologist_profile
-    redirect_to root_path, alert: "You must be logged in as a psychologist to view this page."
-    return
+
+  def psychologist_bookings
+    # Ensure the user is a psychologist and has a profile
+    unless current_user&.psychologist_profile
+      redirect_to root_path, alert: "You must be logged in as a psychologist to view this page."
+      return
+    end
+
+    # Fetch all bookings for the psychologist
+    all_bookings = Booking.includes(:client_profile, :internal_client_profile, :service)
+                          .where(psychologist_profile_id: current_user.psychologist_profile.id)
+
+    # Separate bookings into upcoming and past
+    @upcoming_bookings = all_bookings.where('start_time >= ?', Time.current)
+                                    .order(start_time: :asc)
+    @past_bookings = all_bookings.where('start_time < ?', Time.current)
+                                .order(start_time: :desc)
   end
-
-  # Fetch all bookings for the psychologist
-  all_bookings = Booking.includes(:client_profile, :internal_client_profile, :service)
-                        .where(psychologist_profile_id: current_user.psychologist_profile.id)
-
-  # Separate bookings into upcoming and past
-  @upcoming_bookings = all_bookings.where('start_time >= ?', Time.current)
-                                   .order(start_time: :asc)
-  @past_bookings = all_bookings.where('start_time < ?', Time.current)
-                               .order(start_time: :desc)
-end
 
 
   def select_service
@@ -617,10 +621,16 @@ end
   end
 
   def set_booking
-    @booking = Booking.find(params[:id])
-  rescue ActiveRecord::RecordNotFound
-    render json: { success: false, error: "Booking not found" }, status: :not_found
-    false # This ensures the action stops if the booking isn't found
+    @booking = Booking.find_by(id: params[:id], psychologist_profile_id: params[:psychologist_profile_id])
+
+    if @booking.nil?
+      redirect_to root_path, alert: "Booking not found." and return
+    end
+
+    # Make sure token is valid for confirm/decline too
+    if params[:token].present? && @booking.confirmation_token != params[:token] && @booking.pending?
+      redirect_to root_path, alert: "Invalid or expired link." and return
+    end
   end
 
   def set_psychologist_profile

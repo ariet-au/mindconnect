@@ -878,7 +878,7 @@
       const confirmationLinkSection = document.getElementById('confirmationLinkSection');
       const confirmationLink = document.getElementById('confirmationLink');
 
-      if (normalizedStatus === 'pending' && createdBy === 'psychologist' && confirmationToken && psychologistProfileId) {
+      if (createdBy === 'psychologist' && confirmationToken && psychologistProfileId) {
         const link = `/psychologist_profiles/${psychologistProfileId}/bookings/${currentEditingBookingId}/confirm?token=${confirmationToken}`;
         confirmationLink.href = link;
         confirmationLink.textContent = link;
