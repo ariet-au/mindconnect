@@ -839,6 +839,7 @@
       const notes = event.extendedProps.notes || '';
       const createdBy = event.extendedProps.created_by || '';
       const confirmationToken = event.extendedProps.confirmation_token || '';
+      const psychologistProfileId = event.extendedProps.psychologist_profile_id;
 
       console.log(`[DEBUG] Opening Edit Booking Modal for ID: ${currentEditingBookingId}`);
       console.log('[DEBUG] service_id:', event.extendedProps.service_id, 'Type:', typeof event.extendedProps.service_id);
@@ -876,8 +877,9 @@
       // Confirmation link
       const confirmationLinkSection = document.getElementById('confirmationLinkSection');
       const confirmationLink = document.getElementById('confirmationLink');
-      if (normalizedStatus === 'pending' && createdBy === 'psychologist' && confirmationToken) {
-        const link = `/bookings/${currentEditingBookingId}/confirm?token=${confirmationToken}`;
+
+      if (normalizedStatus === 'pending' && createdBy === 'psychologist' && confirmationToken && psychologistProfileId) {
+        const link = `/psychologist_profiles/${psychologistProfileId}/bookings/${currentEditingBookingId}/confirm?token=${confirmationToken}`;
         confirmationLink.href = link;
         confirmationLink.textContent = link;
         confirmationLinkSection.style.display = 'block';
