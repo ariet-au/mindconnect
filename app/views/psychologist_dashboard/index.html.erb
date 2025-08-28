@@ -165,6 +165,9 @@
         <footer class="modal-card-foot">
           <button class="button is-success" onclick="saveBookingChanges()">Save Changes</button>
           <button class="button is-danger" onclick="deleteBooking()">Delete Booking</button>
+          <%= link_to "Edit in Full Form", "#", 
+                class: "button is-link", 
+                id: "editBookingFullFormButton" %>
           <button class="button" onclick="closeModal('editBookingModal')">Cancel</button>
         </footer>
       </div>
@@ -874,12 +877,26 @@
         durationField.value = durationMinutes || '';
       }
 
+
+      //edit 
+      const editFormButton = document.getElementById('editBookingFullFormButton');
+        if (editFormButton) {
+          editFormButton.href = `/psychologist_profiles/${psychologistProfileId}/bookings/${currentEditingBookingId}/edit`;
+        }
       // Confirmation link
       const confirmationLinkSection = document.getElementById('confirmationLinkSection');
       const confirmationLink = document.getElementById('confirmationLink');
 
-      if (createdBy === 'psychologist' && confirmationToken && psychologistProfileId) {
-        const link = `/psychologist_profiles/${psychologistProfileId}/bookings/${currentEditingBookingId}/confirm?token=${confirmationToken}`;
+      let link;
+      if (confirmationToken && psychologistProfileId) {
+        // Normal confirm link with token
+        link = `/psychologist_profiles/${psychologistProfileId}/bookings/${currentEditingBookingId}/confirm?token=${confirmationToken}`;
+      } else if (psychologistProfileId) {
+        // Read-only link without token
+        link = `/psychologist_profiles/${psychologistProfileId}/bookings/${currentEditingBookingId}/confirm`;
+      }
+
+      if (link) {
         confirmationLink.href = link;
         confirmationLink.textContent = link;
         confirmationLinkSection.style.display = 'block';

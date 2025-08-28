@@ -316,181 +316,20 @@
     }
   }
 </style>
+<div class="section">
+  <div class="container">
+    <div class="box has-text-centered">
+      <h1 class="title is-3 has-text-primary">Booking Status</h1>
 
-<div class="booking-container">
-  <div class="header">
-    <div class="logo">📅</div>
-    <h1 class="main-title">Session Confirmation</h1>
-    <p class="subtitle-text">Please review and confirm your appointment</p>
-  </div>
+      <p>
+        This booking is already <strong><%= @booking.status.capitalize %></strong>.
+      </p>
 
-  <p class="debug-status">Status: <%= @booking.status %></p>
-
-  <% if flash[:notice] %>
-    <div class="notification is-success" id="flash-notice">
-      <%= flash[:notice] %>
-    </div>
-  <% end %>
-
-  <% if flash[:alert] %>
-    <div class="notification is-danger" id="flash-alert">
-      <%= flash[:alert] %>
-    </div>
-  <% end %>
-
-  <div class="details-box">
-    <div class="session-info">
-      <h2 class="session-title">Therapy Session</h2>
-      <p class="session-subtitle">with <%= @booking.psychologist_profile.full_name %></p>
-    </div>
-
-    <div class="details-item">
-      <strong>Date:</strong>
-      <span id="bookingDate" data-start="<%= @booking.start_time.iso8601 %>"></span>
-    </div>
-    
-    <div class="details-item">
-      <strong>Time:</strong>
-      <span id="bookingTime"
-            data-start="<%= @booking.start_time.iso8601 %>"
-            data-end="<%= @booking.end_time.iso8601 %>"></span>
-    </div>
-
-    <div class="details-item">
-      <strong>Starts in:</strong>
-      <span id="countdown" class="countdown-display"></span>
-    </div>
-
-    <% if @booking.service.present? %>
-      <div class="details-item">
-        <strong>Service:</strong>
-        <span><%= @booking.service.name %></span>
-      </div>
-    <% end %>
-
-    <div class="details-item">
-      <strong>Client:</strong>
-      <span><%= @booking.internal_client_profile.full_name %></span>
+      <p>
+        <strong>Client:</strong> <%= @booking.client_profile&.full_name || @booking.internal_client_profile&.label %><br>
+        <strong>Date:</strong> <%= l(@booking.start_time, format: :long) %><br>
+        <strong>Service:</strong> <%= @booking.service&.name %>
+      </p>
     </div>
   </div>
-
-  <% if @booking.pending? %>
-    <div class="buttons is-centered" id="booking-actions">
-      <%= form_with url: confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking, token: params[:token]), method: :patch, data: { turbo: true, "turbo-frame": "_top" } do %>
-        <%= submit_tag "✓ Confirm Session", class: "button is-success", data: { "disable-with": "Processing..." } %>
-      <% end %>
-      <%= form_with url: decline_psychologist_profile_booking_path(@booking.psychologist_profile, @booking, token: params[:token]), method: :patch, data: { turbo: true, "turbo-frame": "_top" } do %>
-        <%= submit_tag "Decline Session", class: "button is-danger", data: { "disable-with": "Processing..." } %>
-      <% end %>
-    </div>
-  <% elsif @booking.confirmed? %>
-    <div class="status-notification is-success" id="booking-status">
-      <p class="title">Session Confirmed</p>
-      <p>Your appointment has been confirmed. Add it to your calendar below.</p>
-    </div>
-    <div class="buttons is-centered">
-      <%= link_to "📅 Download Calendar Event", download_ics_psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "button is-link" %>
-      <%= link_to "📱 Add to Google Calendar", "https://calendar.google.com/calendar/render?action=TEMPLATE&text=#{CGI.escape(@booking.service&.name || 'Therapy Session')}&dates=#{@booking.start_time.utc.strftime('%Y%m%dT%H%M%SZ')}/#{@booking.end_time.utc.strftime('%Y%m%dT%H%M%SZ')}&details=#{CGI.escape("Session with #{@booking.psychologist_profile&.full_name}")}", target: "_blank", class: "button is-link" %>
-    </div>
-  <% elsif @booking.declined? %>
-    <div class="status-notification is-danger" id="booking-status">
-      <p class="title">Session Declined</p>
-      <p>This appointment has been permanently declined. Please contact your therapist to reschedule.</p>
-    </div>
-  <% else %>
-    <div class="status-notification is-info" id="booking-status">
-      <p class="title">Status: <%= @booking.status.capitalize %></p>
-      <p>This booking has already been processed.</p>
-    </div>
-  <% end %>
 </div>
-
-<script>
-  // Format date display
-  function formatDate(isoString) {
-    const date = new Date(isoString);
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
-  }
-
-// Format time display
-  function formatTime(startIso, endIso) {
-    const start = new Date(startIso);
-    const end = new Date(endIso);
-    return `${start.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    })} - ${end.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true
-    })}`;
-  }
-
-// Update countdown
-  function updateCountdown() {
-    const countdownEl = document.getElementById('countdown');
-    const dateEl = document.getElementById('bookingDate');
-    
-    if (!countdownEl || !dateEl) return;
-    
-    const startTime = dateEl.getAttribute('data-start');
-    if (!startTime) return;
-    
-    const now = new Date();
-    const sessionTime = new Date(startTime);
-    const diff = sessionTime - now;
-    
-    if (diff <= 0) {
-      countdownEl.textContent = 'Session has started';
-      return;
-    }
-    
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    
-    if (days > 0) {
-      countdownEl.textContent = `${days} day${days > 1 ? 's' : ''}, ${hours} hour${hours !== 1 ? 's' : ''}`;
-    } else if (hours > 0) {
-      countdownEl.textContent = `${hours} hour${hours !== 1 ? 's' : ''}, ${minutes} minute${minutes !== 1 ? 's' : ''}`;
-    } else {
-      countdownEl.textContent = `${minutes} minute${minutes !== 1 ? 's' : ''}`;
-    }
-  }
-
-// Initialize page
-document.addEventListener('turbo:render', function() {
-  // Format date and time displays
-  const dateEl = document.getElementById('bookingDate');
-  const timeEl = document.getElementById('bookingTime');
-  
-  if (dateEl && dateEl.getAttribute('data-start')) {
-    dateEl.textContent = formatDate(dateEl.getAttribute('data-start'));
-  }
-  
-  if (timeEl && timeEl.getAttribute('data-start') && timeEl.getAttribute('data-end')) {
-    timeEl.textContent = formatTime(
-      timeEl.getAttribute('data-start'),
-      timeEl.getAttribute('data-end')
-    );
-  }
-  
-  // Update countdown
-  updateCountdown();
-  setInterval(updateCountdown, 60000);
-  
-  // Auto-hide flash messages after 5 seconds
-  setTimeout(() => {
-    const notice = document.getElementById('flash-notice');
-    const alert = document.getElementById('flash-alert');
-    if (notice) notice.style.display = 'none';
-    if (alert) alert.style.display = 'none';
-  }, 5000);
-});
-</script>

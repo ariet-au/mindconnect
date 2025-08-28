@@ -274,10 +274,15 @@ class BookingsController < ApplicationController
     @booking = Booking.find_by(id: params[:id])
     if @booking.nil?
       redirect_to root_path, alert: "Booking not found."
-    elsif @booking.pending? && params[:token] != @booking.confirmation_token
-      redirect_to root_path, alert: "Invalid or expired link."
+    elsif @booking.pending?
+      if params[:token] == @booking.confirmation_token
+        render :confirm_form_client
+      else
+        redirect_to root_path, alert: "Invalid or expired link."
+      end
     else
-      render :confirm_form_client
+      # Any status other than pending (confirmed, declined, cancelled…)
+      render :confirm_readonly
     end
   end
 
@@ -596,8 +601,8 @@ class BookingsController < ApplicationController
   #   }
   # end
   def booking_to_event(booking)
-    client_name = booking.client_profile&.full_name || booking.internal_client_profile&.label || "N/A"
-
+      names = [booking.internal_client_profile&.full_name, booking.client_profile&.full_name]
+      client_name = names.compact.max_by { |n| [n.length, names.index(n) * -1] } || "N/A"
     {
       id: booking.id,
       title: "#{booking.service&.name || 'Session'} - #{client_name} (#{booking.created_by})",
