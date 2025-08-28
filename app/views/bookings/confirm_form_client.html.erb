@@ -464,8 +464,7 @@
     }
   }
 
-// Initialize page
-document.addEventListener('turbo:render', function() {
+function initializePage() {
   // Format date and time displays
   const dateEl = document.getElementById('bookingDate');
   const timeEl = document.getElementById('bookingTime');
@@ -492,5 +491,8 @@ document.addEventListener('turbo:render', function() {
     if (notice) notice.style.display = 'none';
     if (alert) alert.style.display = 'none';
   }, 5000);
-});
+}
+
+// Initialize on Turbo load (covers both initial loads and Turbo navigations)
+document.addEventListener('turbo:load', initializePage);
 </script>
