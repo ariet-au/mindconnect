@@ -1,712 +1,650 @@
-    <style>
-        @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+<!-- 
+  Redesigned Psychologist Profile Page
+  New Color Scheme: Lavender and Dark Teal/Green
+  Layout: Two-column on desktop, single-column on mobile
+  Goal: Professional, welcoming, and calming aesthetic
+-->
 
-        :root {
-            --primary-blue: #2A7CCC;
-            --dark-charcoal: #2C3E50;
-            --accent-pink: #D62878;
-            --telegram-blue: #0088CC;
-            --whatsapp-green: #25D366;
-            --background-white: #FFFFFF;
-            --background-light: #F8FAFC;
-            --card-background: #FFFFFF;
-            --border-color: #E5E7EB;
-            --text-primary: #374151;
-            --text-secondary: #6B7280;
-            --text-light: #9CA3AF;
-            --success-muted: #10B981;
-            --warning-muted: #F59E0B;
-            --radius: 0.75rem;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        }
+<style>
+/* FONT IMPORTS */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--background-light);
-            color: var(--text-primary);
-            line-height: 1.6;
-        }
+/* COLOR & DESIGN TOKENS */
+:root {
+    --primary-purple: #755589; /* A deep amethyst purple */
+    --primary-purple-light: #ECE5F0;
+    --secondary-teal-dark: #2F4D4A; /* A very deep, calming teal */
+    --accent-peach: #E99D8B;
+    --accent-peach-dark: #D48472;
+    --text-primary: #2F4D4A; /* Deep teal */
+    --text-secondary: #6A7978;
+    --background-main: #F8FBFB; /* A very light, cool off-white */
+    --background-card: #FFFFFF;
+    --border-color: #DDE5E5;
+    --success: #3E9C75;
+    --success-bg: #E6F5EE;
+    --warning-bg: #FEF7EC;
 
-        .container2 {
-            max-width: 1200px;
-            margin: 3rem auto;
-            padding: 0 1.5rem;
-        }
+    --radius-sm: 0.5rem;
+    --radius-md: 0.75rem;
+    --radius-lg: 1rem;
+    --shadow-soft: 0 4px 12px rgba(47, 77, 74, 0.08);
+    --shadow-medium: 0 8px 24px rgba(47, 77, 74, 0.1);
+}
 
-        .card {
-            background-color: var(--card-background);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            padding: 3rem;
-            margin-bottom: 2.5rem;
-            border: 1px solid var(--border-color);
-        }
+/* BASE STYLES */
+.psychologist-profile-body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--background-main);
+    color: var(--text-primary);
+    line-height: 1.6;
+}
 
-        /* Redesigned Profile Header */
-        .profile-header {
-            text-align: center;
-            position: relative;
-        }
+/* LAYOUT CONTAINER */
+.profile-container {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 2.5rem;
+    max-width: 1200px;
+    margin: 3rem auto;
+    padding: 0 1.5rem;
+}
 
-        .profile-avatar {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid var(--background-white);
-            box-shadow: var(--shadow-lg);
-            margin-bottom: 1.5rem;
-        }
+/* SIDEBAR (LEFT COLUMN) */
+.profile-sidebar {
+    position: sticky;
+    top: 2rem;
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
 
-        .profile-name-section {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-        }
+.sidebar-card {
+    background-color: var(--background-card);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    padding: 2rem;
+    text-align: center;
+    box-shadow: var(--shadow-soft);
+}
 
-        .profile-name-with-badges {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-        }
+.profile-avatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid var(--background-card);
+    box-shadow: 0 5px 15px rgba(47, 72, 88, 0.15);
+    margin: -5rem auto 1rem;
+}
 
-        .profile-name {
-            font-size: 2.25rem;
-            font-weight: 700;
-            color: var(--dark-charcoal);
-            margin: 0;
-            letter-spacing: -0.025em;
-        }
+.profile-name {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0;
+}
 
-        .profile-location {
-            color: var(--text-secondary);
-            font-size: 1rem;
-            margin-bottom: 1.25rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.4rem;
-        }
+.name-badges-container {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+    flex-wrap: wrap;
+}
 
-        .profile-location i {
-            color: var(--primary-blue);
-            font-size: 0.875rem;
-        }
+.name-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.6rem;
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    gap: 0.3rem;
+}
 
-        /* Minimalistic Availability Widget */
-        .availability-widget-top {
-            display: inline-flex;
-            align-items: center;
-            background-color: var(--background-white);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 0.5rem 0.875rem;
-            margin-bottom: 1.5rem;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            gap: 0.5rem;
-        }
+.name-badge.is-doctor {
+    background-color: var(--primary-purple-light);
+    color: var(--primary-purple);
+}
 
-        .availability-widget-top.available {
-            border-color: #D1FAE5;
-            background-color: #F0FDF4;
-            color: var(--success-muted);
-        }
+.name-badge.certified {
+    background-color: var(--success-bg);
+    color: var(--success);
+}
 
-        .availability-widget-top.unavailable {
-            border-color: #FED7AA;
-            background-color: #FFFBEB;
-            color: var(--warning-muted);
-        }
+.profile-location {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin: 0.75rem 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+.profile-location i {
+    color: var(--primary-purple);
+}
 
-        .widget-icon-top {
-            font-size: 0.75rem;
-        }
+.profile-experience {
+    background-color: var(--primary-purple-light);
+    color: var(--text-secondary);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+.profile-experience i {
+    color: var(--primary-purple);
+}
 
-        .widget-time-top {
-            font-weight: 600;
-        }
+.availability-widget-top {
+    font-size: 0.875rem;
+    padding: 0.6rem 1rem;
+    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    border: 1px solid;
+}
 
-        /* Small Badge Design */
-        .name-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            gap: 0.25rem;
-        }
-        
-        .name-badge.is-doctor {
-            background-color: #FEF2F2;
-            color: var(--accent-pink);
-            border: 1px solid #FECACA;
-        }
+.availability-widget-top.available {
+    background-color: var(--success-bg);
+    color: var(--success);
+    border-color: #CEE4DB;
+}
 
-        .name-badge.is-doctor i {
-            color: var(--accent-pink);
-            font-size: 0.6rem;
-        }
+.availability-widget-top.unavailable {
+    background-color: var(--warning-bg);
+    color: #D9822B;
+    border-color: #F7E5C9;
+}
 
-        .name-badge.certified {
-            background-color: #F0FDF4;
-            color: var(--success-muted);
-            border: 1px solid #D1FAE5;
-        }
+.button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
 
-        .name-badge.certified i {
-            color: var(--success-muted);
-            font-size: 0.6rem;
-        }
+.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.875rem 1.5rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+    font-size: 0.95rem;
+}
 
-        /* Regular badges for experience */
-        .profile-badges {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 0.75rem;
-            margin-top: 1.25rem;
-        }
+.button.is-primary {
+    background-color: var(--accent-peach);
+    color: var(--background-card);
+}
+.button.is-primary:hover {
+    background-color: var(--accent-peach-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(217, 140, 124, 0.3);
+}
 
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 0.5rem 1rem;
-            background-color: var(--background-light);
-            color: var(--text-secondary);
-            border-radius: 9999px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            border: 1px solid var(--border-color);
-        }
+.button.is-secondary {
+    background-color: transparent;
+    color: var(--text-primary);
+    border-color: var(--border-color);
+}
+.button.is-secondary:hover {
+    background-color: var(--primary-purple-light);
+    border-color: var(--primary-purple);
+}
 
-        .badge i {
-            margin-right: 0.5rem;
-            color: var(--primary-blue);
-            font-size: 0.75rem;
-        }
+/* MAIN CONTENT (RIGHT COLUMN) */
+.profile-main {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
 
-        /* Original Button Colors */
-        .button-group {
-            display: flex;
-            gap: 1.5rem;
-            justify-content: center;
-            margin-top: 2.5rem;
-            flex-wrap: wrap;
-        }
+.content-card {
+    background-color: var(--background-card);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border-color);
+    padding: 2.5rem;
+    box-shadow: var(--shadow-soft);
+}
 
-        @media (max-width: 768px) {
-            .button-group {
-                flex-direction: column;
-                align-items: center;
-            }
-            .profile-name-with-badges {
-                flex-direction: column;
-            }
-            .profile-name {
-                font-size: 1.875rem;
-            }
-        }
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.section-title i {
+    color: var(--primary-purple);
+    font-size: 1.2rem;
+}
 
-        .button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            font-size: 1rem;
-            min-width: 200px;
-        }
+.section-content p, .section-content ul {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.7;
+}
+.section-content p:last-child {
+    margin-bottom: 0;
+}
 
-        .button.is-primary {
-            background-color: var(--primary-blue);
-            color: white;
-        }
-        .button.is-primary:hover {
-            background-color: #1E6091;
-            transform: translateY(-3px);
-            box-shadow: 0 4px 15px rgba(42, 124, 204, 0.4);
-        }
-        
-        .button.is-secondary {
-            background-color: transparent;
-            color: var(--primary-blue);
-            border-color: var(--primary-blue);
-        }
-        .button.is-secondary:hover {
-            background-color: var(--primary-blue);
-            color: white;
-            transform: translateY(-3px);
-        }
+/* Service Card */
+.service-card-new {
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background-color: #FDFDFD;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.service-card-new:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-medium);
+}
 
-        /* Sections */
-        .profile-section {
-            padding: 2.5rem 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .profile-section:last-of-type {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-        
-        .section-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--dark-charcoal);
-            margin-bottom: 1.8rem;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        .section-title i {
-            color: var(--primary-blue);
-        }
-        
-        .section-content p, .section-content ul {
-            color: var(--text-secondary);
-            font-size: 1.05rem;
-        }
+.service-card-new h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 0.5rem 0;
+}
+.service-card-new h3 a {
+    color: var(--text-primary);
+    text-decoration: none;
+}
+.service-card-new h3 a:hover {
+    color: var(--accent-peach-dark);
+}
+.service-card-new .service-description {
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-secondary);
+}
+.service-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--border-color);
+}
+.service-detail-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+.service-detail-icon {
+    font-size: 1.2rem;
+    color: var(--primary-purple);
+    width: 25px;
+    text-align: center;
+}
+.service-detail-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+.service-detail-value {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+.service-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: flex-end;
+}
+.service-actions .button {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.9rem;
+}
 
-        /* Services Section Availability */
-        .availability-status {
-            padding: 1.8rem;
-            border-radius: var(--radius);
-            text-align: center;
-        }
-        .availability-status.available {
-            background-color: #E8F6F3;
-            border: 1px solid #A3E4D7;
-        }
-        .availability-status.unavailable {
-            background-color: #FDF2E9;
-            border: 1px solid #F5CBA7;
-        }
-        .availability-label {
-            font-size: 1.1rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.6rem;
-        }
-        .availability-time {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--dark-charcoal);
-            margin-top: 0.6rem;
-        }
+/* Education Section */
+.education-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+.education-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.2rem;
+}
+.education-icon-wrapper {
+    background-color: var(--primary-purple-light);
+    color: var(--primary-purple);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+.education-details h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 0.25rem 0;
+}
+.education-details p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
 
-        /* --- START: Redesigned Service Card --- */
-        .service-card-new {
-            background-color: var(--background-white);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            margin-top: 2rem;
-            padding: 2rem;
-            box-shadow: var(--shadow-sm);
-            transition: box-shadow 0.3s ease, transform 0.3s ease;
-        }
+/* Contact / Video Toggle Buttons */
+.toggle-button {
+    width: 100%;
+    text-align: center;
+    background: var(--primary-purple-light);
+    border: 1px solid var(--border-color);
+    padding: 0.875rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    color: var(--text-primary);
+    font-weight: 500;
+    transition: all 0.3s ease;
+    margin-top: 1.5rem;
+}
+.toggle-button:hover {
+    border-color: var(--primary-purple);
+    background-color: #EFEBF3;
+}
+.toggle-button i {
+    transition: transform 0.3s ease;
+}
+.toggle-button[aria-expanded="true"] i {
+    transform: rotate(180deg);
+}
 
-        .service-card-new:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-        }
+.collapsible-content {
+    margin-top: 1.5rem;
+    display: none;
+    flex-direction: column;
+    gap: 0.75rem;
+}
 
-        .service-card-new h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin: 0 0 0.75rem 0;
-        }
+.contact-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    background-color: var(--background-main);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+}
+.contact-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+.contact-info i {
+    width: 20px;
+    text-align: center;
+    font-size: 1.1rem;
+    color: var(--primary-purple);
+}
+.contact-item[data-method="telegram"] .contact-info i { color: #0088CC; }
+.contact-item[data-method="whatsapp"] .contact-info i { color: #25D366; }
 
-        .service-card-new h3 a {
-            color: var(--dark-charcoal);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
+.contact-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.contact-input {
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-align: right;
+}
+.copy-button, .contact-link {
+    color: var(--text-secondary);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.copy-button:hover, .contact-link:hover {
+    color: var(--accent-peach-dark);
+    background-color: var(--primary-purple-light);
+}
 
-        .service-card-new h3 a:hover {
-            color: var(--primary-blue);
-        }
+.video-wrapper {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+}
+.video-wrapper iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
 
-        .service-card-new .service-description {
-            color: var(--text-secondary);
-            font-size: 1rem;
-            margin-bottom: 2rem;
-        }
+/* UTILITIES */
+.mr-2 { margin-right: 0.5rem; }
 
-        .service-details-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 1.5rem;
-            padding: 1.5rem 0;
-            border-top: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 2rem;
-        }
+/* RESPONSIVE DESIGN */
+@media (max-width: 992px) {
+    .profile-container {
+    grid-template-columns: 280px 1fr;
+    gap: 1.5rem;
+    }
+    .profile-avatar {
+    width: 120px;
+    height: 120px;
+    margin-top: -4rem;
+    }
+    .profile-name {
+    font-size: 1.5rem;
+    }
+}
 
-        .service-detail-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
+@media (max-width: 768px) {
+    .psychologist-profile-body {
+    background-color: var(--background-card);
+    }
+    .profile-container {
+    grid-template-columns: 1fr;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+    }
+    .profile-sidebar {
+    position: static;
+    border-radius: 0;
+    }
+    .sidebar-card {
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.5rem 1rem;
+    }
+    .profile-avatar {
+    width: 120px;
+    height: 120px;
+    margin-top: 0;
+    }
+    .content-card {
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.5rem 1rem;
+    }
+    .profile-main {
+    gap: 0;
+    }
+}
+</style>
 
-        .service-detail-icon {
-            font-size: 1.5rem;
-            color: var(--primary-blue);
-            width: 30px;
-            text-align: center;
-        }
-
-        .service-detail-label {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            display: block;
-            margin-bottom: 0.1rem;
-        }
-
-        .service-detail-value {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .service-actions {
-            display: flex;
-            justify-content: flex-end;
-        }
-
-        @media (max-width: 768px) {
-            .service-card-new {
-                padding: 1.5rem;
-            }
-            .service-details-grid {
-                grid-template-columns: 1fr;
-                gap: 1.25rem;
-            }
-            .service-actions {
-                justify-content: center;
-            }
-            .service-actions .button {
-                width: 100%;
-            }
-        }
-        /* --- END: Redesigned Service Card --- */
-
-        /* Education Section */
-        .education-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-        .education-item {
-            background-color: #F9FAFB;
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            padding: 1.8rem;
-            display: flex;
-            align-items: flex-start;
-            gap: 1.2rem;
-        }
-        .education-item .education-icon {
-            color: var(--primary-blue);
-            font-size: 1.6rem;
-            margin-top: 0.3rem;
-        }
-        .education-item .education-details h3 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--dark-charcoal);
-            margin: 0 0 0.3rem 0;
-        }
-        .education-item .education-details p {
-            margin: 0;
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-        }
-
-        /* Contact Section */
-        .toggle-contacts, .toggle-video {
-            width: 100%;
-            text-align: center;
-            background: none;
-            border: 1px dashed var(--border-color);
-            padding: 1rem;
-            border-radius: var(--radius);
-            cursor: pointer;
-            color: var(--text-secondary);
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        .toggle-contacts:hover, .toggle-video:hover {
-            border-color: var(--primary-blue);
-            color: var(--primary-blue);
-        }
-        .contact-list, .video-content {
-            margin-top: 2rem;
-            display: none;
-            flex-direction: column;
-            gap: 1rem;
-        }
-        .contact-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 1.5rem;
-            background-color: #F9FAFB;
-            border-radius: var(--radius);
-            border: 1px solid var(--border-color);
-        }
-        .contact-info i {
-            width: 20px;
-            text-align: center;
-        }
-        .contact-item[data-method="telegram"] .contact-info i { color: var(--telegram-blue); }
-        .contact-item[data-method="whatsapp"] .contact-info i { color: var(--whatsapp-green); }
-        
-        .contact-input {
-            border: none;
-            background: none;
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-        }
-        .copy-button, .contact-link {
-            color: var(--text-light);
-            background: none;
-            border: none;
-            cursor: pointer;
-        }
-        .copy-button:hover, .contact-link:hover {
-            color: var(--primary-blue);
-        }
-        
-        /* Video Wrapper */
-        .video-wrapper {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            max-width: 100%;
-            background: #f0f0f0;
-            border-radius: var(--radius);
-        }
-        .video-wrapper iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        /* Utility */
-        .text-center { text-align: center; }
-        .mb-4 { margin-bottom: 1.5rem; }
-        .mr-2 { margin-right: 0.5rem; }
-    </style>
-
-    <div class="container2">
-    <div class="card">
-        <div class="profile-header">
+<div class="psychologist-profile-body">
+<div class="profile-container">
+    <aside class="profile-sidebar">
+        <div class="sidebar-card">
             <% if @psychologist_profile.profile_img.attached? %>
                 <%= image_tag url_for(@psychologist_profile.profile_img.variant(resize_to_limit: [200, 200])), class: "profile-avatar" %>
             <% else %>
-                <img src="https://placehold.co/200x200/2A7CCC/FFFFFF?text=Dr.+S" alt="Default Profile" class="profile-avatar">
+                <img src="https://placehold.co/200x200/A09ABC/FFFFFF?text=Dr" alt="Default Profile" class="profile-avatar">
             <% end %>
             
-            <div class="profile-name-section">
-                <div class="profile-name-with-badges">
-                    <h1 class="profile-name"><%= "#{@psychologist_profile.first_name} #{@psychologist_profile.last_name}" %></h1>
-                    <% if @psychologist_profile.is_doctor %>
-                        <span class="name-badge is-doctor"><i class="fas fa-user-md"></i><%= t('psychologist_profiles.show.doctor') %></span>
-                    <% end %>
-                    <% if @psychologist_profile.is_degree_boolean %>
-                        <span class="name-badge certified"><i class="fas fa-certificate"></i><%= t('psychologist_profiles.show.certified') %></span>
-                    <% end %>
-                </div>
+            <h1 class="profile-name"><%= "#{@psychologist_profile.first_name} #{@psychologist_profile.last_name}" %></h1>
+            
+            <div class="name-badges-container">
+                <% if @psychologist_profile.is_doctor %>
+                    <span class="name-badge is-doctor"><i class="fas fa-user-md"></i><%= t('psychologist_profiles.show.doctor') %></span>
+                <% end %>
+                <% if @psychologist_profile.is_degree_boolean %>
+                    <span class="name-badge certified"><i class="fas fa-certificate"></i><%= t('psychologist_profiles.show.certified') %></span>
+                <% end %>
             </div>
             
             <p class="profile-location">
                 <% if @psychologist_profile.country.present? %>
                     <i class="fas fa-map-marker-alt"></i>
-                    <% if @psychologist_profile.city.present? %>
-                        <%= t("cities.#{@psychologist_profile.city.downcase.gsub(' ', '_').gsub('-', '_')}", default: @psychologist_profile.city) %>,
-                    <% end %>
-                    <%= t("countries.#{@psychologist_profile.country.downcase.gsub(' ', '_').gsub('-', '_')}", default: @psychologist_profile.country) %>
+                    <span>
+                        <% if @psychologist_profile.city.present? %>
+                            <%= t("cities.#{@psychologist_profile.city.downcase.gsub(' ', '_').gsub('-', '_')}", default: @psychologist_profile.city) %>,
+                        <% end %>
+                        <%= t("countries.#{@psychologist_profile.country.downcase.gsub(' ', '_').gsub('-', '_')}", default: @psychologist_profile.country) %>
+                    </span>
                 <% end %>
             </p>
 
-            <%# Minimalistic Availability Widget %>
+            <% if @psychologist_profile.years_of_experience.present? %>
+                <div class="profile-experience">
+                    <i class="fas fa-briefcase"></i>
+                    <span><%= t('psychologist_profiles.show.years_experience', count: @psychologist_profile.years_of_experience) %></span>
+                </div>
+            <% end %>
+        </div>
+        
+        <div class="sidebar-card">
             <% if @next_available_slot %>
                 <div class="availability-widget-top available">
-                    <i class="fas fa-calendar-check widget-icon-top"></i>
-                    <span class="widget-time-top">
-                        <%= l(@next_available_slot, format: "%a %-d %b - %-l:%M%P") %>
-                    </span>
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Next slot: <%= l(@next_available_slot, format: "%a, %b %-d") %></span>
                 </div>
             <% else %>
                 <div class="availability-widget-top unavailable">
-                    <i class="fas fa-calendar-times widget-icon-top"></i>
+                    <i class="fas fa-calendar-times"></i>
                     <span>No availability</span>
                 </div>
             <% end %>
 
-            <div class="profile-badges">
-                <% if @psychologist_profile.years_of_experience.present? %>
-                    <span class="badge"><i class="fas fa-clock"></i><%= t('psychologist_profiles.show.years_experience', count: @psychologist_profile.years_of_experience) %></span>
+            <%# ---- Main CTA Buttons ---- %>
+            <% primary_contact_method = @psychologist_profile.primary_contact_method %>
+            <% contact_keys = { email: 'fas fa-envelope', telegram: 'fab fa-telegram', whatsapp: 'fab fa-whatsapp', primary_phone: 'fas fa-phone' } %>
+            <% contact_link = case primary_contact_method
+                                  when 'email' then "mailto:#{@psychologist_profile.user.email}"
+                                  when 'telegram' then "https://t.me/#{@psychologist_profile.telegram}"
+                                  when 'whatsapp' then "https://wa.me/#{@psychologist_profile.whatsapp}"
+                                  when 'primary_phone' then "tel:#{@psychologist_profile.contact_phone}"
+                                  else nil
+                              end %>
+            <div class="button-group">
+                <% if @psychologist_profile.featured_service.present? %>
+                    <%= link_to select_service_path(psychologist_id: @psychologist_profile.id), class: "button is-primary" do %>
+                        <i class="fas fa-calendar-check mr-2"></i>
+                        <span><%= t('psychologist_profiles.show.book_a_session') %></span>
+                    <% end %>
+                <% end %>
+                <% if contact_link %>
+                    <a href="<%= contact_link %>" class="button is-secondary">
+                        <i class="<%= contact_keys[primary_contact_method.to_sym] %> mr-2"></i>
+                        <span><%= t('psychologist_profiles.show.contact_me') %></span>
+                    </a>
                 <% end %>
             </div>
         </div>
+    </aside>
 
-        <%# ---- Main CTA Buttons ---- %>
-        <% primary_contact_method = @psychologist_profile.primary_contact_method %>
-        <% contact_keys = { email: 'fas fa-envelope', telegram: 'fab fa-telegram', whatsapp: 'fab fa-whatsapp', primary_phone: 'fas fa-phone' } %>
-        <% contact_link = case primary_contact_method
-                                when 'email' then "mailto:#{@psychologist_profile.user.email}"
-                                when 'telegram' then "https://t.me/#{@psychologist_profile.telegram}"
-                                when 'whatsapp' then "https://wa.me/#{@psychologist_profile.whatsapp}"
-                                when 'primary_phone' then "tel:#{@psychologist_profile.contact_phone}"
-                                else nil
-                                end %>
-        <div class="button-group">
-            <% if @psychologist_profile.featured_service.present? %>
-                <% service = @psychologist_profile.featured_service %>
-                <%= link_to select_service_path(psychologist_id: @psychologist_profile.id), class: "button is-primary flex-1" do %>
-                    <i class="fas fa-calendar-check mr-2"></i>
-                    <span><%= t('psychologist_profiles.show.book_a_session') %></span>
-                <% end %>
-            <% end %>
-            <% if contact_link %>
-                <a href="<%= contact_link %>" class="button is-secondary flex-1">
-                    <i class="<%= contact_keys[primary_contact_method.to_sym] %> mr-2"></i>
-                    <span><%= t('psychologist_profiles.show.contact_me') %></span>
-                </a>
-            <% end %>
-        </div>
-    </div>
-
-    <div class="card">
-        <%# ---- About Me ---- %>
-        <div class="profile-section">
+    <main class="profile-main">
+        <div class="content-card">
             <h2 class="section-title"><i class="fas fa-user-circle"></i> <%= t('psychologist_profiles.show.about_me') %></h2>
             <div class="section-content">
                 <p><%= simple_format(@psychologist_profile.about_me) %></p>
             </div>
-        </div>
-
-        <%# ---- Video Section (Expandable) ---- %>
-        <% if @psychologist_profile.youtube_video_url.present? %>
-            <% video_id = youtube_embed_url(@psychologist_profile.youtube_video_url) %>
-            <% if video_id %>
-                <div class="profile-section">
-                    <button class="toggle-video" aria-expanded="false" data-show-text="Watch a video about me" data-hide-text="Hide video">
-                        <span class="toggle-text">Watch a video about me</span> <i class="fas fa-chevron-down"></i>
+             <%# ---- Video Section (Expandable) ---- %>
+            <% if @psychologist_profile.youtube_video_url.present? %>
+                <% video_id = youtube_embed_url(@psychologist_profile.youtube_video_url) %>
+                <% if video_id %>
+                    <button class="toggle-button toggle-video" aria-expanded="false" data-show-text="Watch My Introduction" data-hide-text="Hide Video">
+                        <span class="toggle-text">Watch My Introduction</span> <i class="fas fa-chevron-down"></i>
                     </button>
-                    <div class="video-content">
+                    <div class="collapsible-content video-content">
                         <div class="video-wrapper">
                             <iframe src="https://www.youtube.com/embed/<%= video_id %>" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                         </div>
                     </div>
-                </div>
-            <% else %>
-                <p class="has-text-danger"><%= t('psychologist_profiles.show.invalid_youtube_link') %></p>
+                <% else %>
+                    <p class="has-text-danger"><%= t('psychologist_profiles.show.invalid_youtube_link') %></p>
+                <% end %>
             <% end %>
-        <% end %>
+        </div>
 
-        <%# ---- Areas of Focus ---- %>
         <% if @psychologist_profile.about_issues.present? %>
-            <div class="profile-section">
-                <h2 class="section-title"><i class="fas fa-heartbeat"></i> <%= t('psychologist_profiles.show.areas_of_focus') %></h2>
-                <div class="section-content">
-                    <p><%= simple_format(@psychologist_profile.about_issues) %></p>
-                </div>
+        <div class="content-card">
+            <h2 class="section-title"><i class="fas fa-heartbeat"></i> <%= t('psychologist_profiles.show.areas_of_focus') %></h2>
+            <div class="section-content">
+                <p><%= simple_format(@psychologist_profile.about_issues) %></p>
             </div>
-        <% end %>
-
-        <%# ---- Education ---- %>
-        <% if @psychologist_profile.educations.any? %>
-            <div class="profile-section">
-                <h2 class="section-title"><i class="fas fa-graduation-cap"></i> <%= t('psychologist_profiles.show.education') %></h2>
-                <div class="education-list">
-                    <% @psychologist_profile.educations.each do |education| %>
-                        <div class="education-item">
-                            <i class="fas fa-university education-icon"></i>
-                            <div class="education-details">
-                                <h3>
-                                    <%= t('psychologist_profiles.show.degree_of_study',
-                                        degree: t("education_degrees.#{education.degree}", default: education.degree),
-                                        field: t("education_fields.#{education.field_of_study}", default: education.field_of_study)) %>
-                                    <% if education.institution.present? %>
-                                        <%= t('psychologist_profiles.show.at_institution', institution: education.institution) %>
-                                    <% end %>
-                                </h3>
-                                <p>
-                                    <% if education.graduation_year.present? %>
-                                        <%= t('psychologist_profiles.show.graduated_in', year: education.graduation_year) %>
-                                    <% else %>
-                                        <%= t('psychologist_profiles.show.professional_qualification') %>
-                                    <% end %>
-                                </p>
-                            </div>
-                        </div>
-                    <% end %>
-                </div>
-            </div>
+        </div>
         <% end %>
 
         <%# ---- Services Offered ---- %>
-        <div class="profile-section">
+        <div class="content-card">
             <h2 class="section-title"><i class="fas fa-concierge-bell"></i> <%= t('psychologist_profiles.show.services_offered') %></h2>
-            <% if @next_available_slot %>
-                <div class="availability-status available">
-                    <span class="availability-label"><i class="fas fa-check-circle"></i><%= t('psychologist_profiles.show.next_available_appointment') %></span>
-                    <div class="availability-details">
-                        <strong class="availability-time"><%= l(@next_available_slot, format: :long) %></strong>
-                        <span class="availability-timezone"><%= @display_timezone %></span>
-                    </div>
-                </div>
-            <% else %>
-                <div class="availability-status unavailable">
-                    <span class="availability-label"><i class="fas fa-calendar-times"></i><%= t('psychologist_profiles.show.no_availability') %></span>
-                </div>
-            <% end %>
-            
             <% if @psychologist_profile.featured_service.present? %>
                 <% service = @psychologist_profile.featured_service %>
-                <!-- START: Redesigned Service Card -->
                 <div class="service-card-new">
                     <h3><%= link_to t("services.#{service.name}", default: service.name), service_path(service) %></h3>
                     <div class="service-description">
                         <%= simple_format(service.description) %>
                     </div>
-                
+                    
                     <div class="service-details-grid">
-                        <!-- Duration -->
                         <div class="service-detail-item">
                             <i class="fas fa-hourglass-half service-detail-icon"></i>
                             <div>
-                                <span class="service-detail-label">Duration</span>
-                                <span class="service-detail-value"><%= t('psychologist_profiles.show.duration_minutes', count: service.duration_minutes) %></span>
+                                <div class="service-detail-label">Duration</div>
+                                <div class="service-detail-value"><%= t('psychologist_profiles.show.duration_minutes', count: service.duration_minutes) %></div>
                             </div>
                         </div>
-                
-                        <!-- Rate -->
                         <div class="service-detail-item">
                             <i class="fas fa-dollar-sign service-detail-icon"></i>
                             <div>
-                                <span class="service-detail-label">Rate</span>
-                                <span class="service-detail-value">
+                                <div class="service-detail-label">Rate</div>
+                                <div class="service-detail-value">
                                     <% if service.price == 0 %>
                                         <%= t('psychologist_profiles.show.free') %>
                                     <% else %>
@@ -715,159 +653,183 @@
                                             <%= humanized_money_with_symbol(converted) if converted %>
                                         <% end %>
                                     <% end %>
-                                </span>
+                                </div>
                             </div>
                         </div>
-                
-                        <!-- Delivery Method -->
                         <div class="service-detail-item">
-                            <% if service.delivery_method.to_s.downcase.include?("online") %>
-                                <i class="fas fa-laptop service-detail-icon"></i>
-                            <% else %>
-                                <i class="fas fa-user-friends service-detail-icon"></i>
-                            <% end %>
+                            <i class="fas fa-<%= service.delivery_method.to_s.downcase.include?("online") ? 'laptop' : 'user-friends' %> service-detail-icon"></i>
                             <div>
-                                <span class="service-detail-label">Method</span>
-                                <span class="service-detail-value">
-                                    <% if service.delivery_method.to_s.downcase.include?("online") %>
-                                        <%= t('psychologist_search.online') %>
-                                    <% else %>
-                                        <%= t('psychologist_search.in_person') %>
-                                    <% end %>
-                                </span>
+                                <div class="service-detail-label">Method</div>
+                                <div class="service-detail-value">
+                                    <%= service.delivery_method.to_s.downcase.include?("online") ? t('psychologist_search.online') : t('psychologist_search.in_person') %>
+                                </div>
                             </div>
                         </div>
                     </div>
-                
                     <div class="service-actions">
                         <%= link_to t('psychologist_profiles.show.book_this_service'), choose_time_path(psychologist_id: @psychologist_profile.id, service_id: @psychologist_profile.featured_service), class: "button is-primary" %>
                     </div>
                 </div>
-                <!-- END: Redesigned Service Card -->
+            <% else %>
+                <p>No featured service available at this time.</p>
             <% end %>
         </div>
-
-        <%# ---- Contact Me Button ---- %>
-        <% if contact_link %>
-            <div class="profile-section text-center">
-                <h2 class="section-title" style="justify-content: center;"><i class="fas fa-paper-plane"></i> Ready to Talk?</h2>
-                <p class="text-light mb-4">Reach out directly for any questions or to get started.</p>
-                <a href="<%= contact_link %>" class="button is-primary">
-                    <i class="<%= contact_keys[primary_contact_method.to_sym] %> mr-2"></i>
-                    <span><%= t('psychologist_profiles.show.contact_me') %></span>
-                </a>
-            </div>
-        <% end %>
-
-        <%# ---- Other Contacts Toggle ---- %>
-        <div class="other-contacts">
-            <button class="toggle-contacts" aria-expanded="false" data-show-text="<%= t('psychologist_profiles.show.show_all_contacts') %>" data-hide-text="<%= t('psychologist_profiles.show.hide_all_contacts') %>">
-                <span class="toggle-text"><%= t('psychologist_profiles.show.show_all_contacts') %></span> <i class="fas fa-chevron-down"></i>
-            </button>
-            <div class="contact-list" style="display: none;">
-                <% other_methods = contact_keys.reject { |k, _| k.to_s == primary_contact_method } %>
-                <% other_methods.each do |method, icon| %>
-                    <% value = case method
-                                    when :email then @psychologist_profile.user.email
-                                    when :telegram then @psychologist_profile.telegram
-                                    when :whatsapp then @psychologist_profile.whatsapp
-                                    when :primary_phone then @psychologist_profile.contact_phone
-                                    else nil
-                                    end %>
-                    <% link = case method
-                                    when :email then "mailto:#{value}"
-                                    when :telegram then "https://t.me/#{value}"
-                                    when :whatsapp then "https://wa.me/#{value}"
-                                    when :primary_phone then "tel:#{value}"
-                                    else nil
-                                    end %>
-                    <% if value.present? %>
-                        <div class="contact-item" data-method="<%= method %>">
-                            <div class="contact-info">
-                                <i class="<%= icon %>"></i>
-                                <span class="contact-label"><%= method.to_s.capitalize %></span>
-                            </div>
-                            <div class="contact-actions">
-                                <input class="contact-input" readonly value="<%= value %>">
-                                <button class="copy-button" data-value="<%= value %>" title="<%= t('psychologist_profiles.show.copy') %>">
-                                    <i class="fas fa-copy"></i>
-                                </button>
-                                <a href="<%= link %>" class="contact-link" target="_blank" title="<%= t('psychologist_profiles.show.open_link') %>">
-                                    <i class="fas fa-external-link-alt"></i>
-                                </a>
-                            </div>
+        
+        <% if @psychologist_profile.educations.any? %>
+        <div class="content-card">
+            <h2 class="section-title"><i class="fas fa-graduation-cap"></i> <%= t('psychologist_profiles.show.education') %></h2>
+            <div class="education-list">
+                <% @psychologist_profile.educations.each do |education| %>
+                    <div class="education-item">
+                        <div class="education-icon-wrapper">
+                            <i class="fas fa-university"></i>
                         </div>
-                    <% end %>
+                        <div class="education-details">
+                            <h3>
+                                <%= t('psychologist_profiles.show.degree_of_study',
+                                    degree: t("education_degrees.#{education.degree}", default: education.degree),
+                                    field: t("education_fields.#{education.field_of_study}", default: education.field_of_study)) %>
+                                <% if education.institution.present? %>
+                                    <%= t('psychologist_profiles.show.at_institution', institution: education.institution) %>
+                                <% end %>
+                            </h3>
+                            <p>
+                                <% if education.graduation_year.present? %>
+                                    <%= t('psychologist_profiles.show.graduated_in', year: education.graduation_year) %>
+                                <% else %>
+                                    <%= t('psychologist_profiles.show.professional_qualification') %>
+                                <% end %>
+                            </p>
+                        </div>
+                    </div>
                 <% end %>
             </div>
         </div>
-    </div>
+        <% end %>
+
+        <div class="content-card">
+             <h2 class="section-title"><i class="fas fa-address-book"></i> Contact Information</h2>
+            <%# ---- Main CTA Buttons ---- %>
+            <div class="button-group">
+                <% if contact_link %>
+                    <a href="<%= contact_link %>" class="button is-secondary">
+                        <i class="<%= contact_keys[primary_contact_method.to_sym] %> mr-2"></i>
+                        <span><%= t('psychologist_profiles.show.contact_me') %></span>
+                    </a>
+                <% end %>
+            </div>             <button class="toggle-button toggle-contacts" aria-expanded="false" data-show-text="<%= t('psychologist_profiles.show.show_all_contacts') %>" data-hide-text="<%= t('psychologist_profiles.show.hide_all_contacts') %>">
+                <span class="toggle-text"><%= t('psychologist_profiles.show.show_all_contacts') %></span> <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="collapsible-content contact-list">
+                <% other_methods = contact_keys.reject { |k, _| k.to_s == primary_contact_method } %>
+                <% other_methods.each do |method, icon| %>
+                  <% value = case method
+                              when :email then @psychologist_profile.user.email
+                              when :telegram then @psychologist_profile.telegram
+                              when :whatsapp then @psychologist_profile.whatsapp
+                              when :primary_phone then @psychologist_profile.contact_phone
+                              else nil
+                              end %>
+                  <% link = case method
+                             when :email then "mailto:#{value}"
+                             when :telegram then "https://t.me/#{value}"
+                             when :whatsapp then "https://wa.me/#{value}"
+                             when :primary_phone then "tel:#{value}"
+                             else nil
+                             end %>
+                  <% if value.present? %>
+                      <div class="contact-item" data-method="<%= method %>">
+                          <div class="contact-info">
+                              <i class="<%= icon %>"></i>
+                              <span><%= method.to_s.capitalize %></span>
+                          </div>
+                          <div class="contact-actions">
+                              <input class="contact-input" readonly value="<%= value %>">
+                              <button class="copy-button" data-value="<%= value %>" title="<%= t('psychologist_profiles.show.copy') %>">
+                                  <i class="fas fa-copy"></i>
+                              </button>
+                              <a href="<%= link %>" class="contact-link" target="_blank" title="<%= t('psychologist_profiles.show.open_link') %>">
+                                  <i class="fas fa-external-link-alt"></i>
+                              </a>
+                          </div>
+                      </div>
+                  <% end %>
+                <% end %>
+            </div>
+        </div>
+
+    </main>
+</div>
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Toggle for contact list
-        const contactToggle = document.querySelector('.toggle-contacts');
-        if(contactToggle) {
-            contactToggle.addEventListener('click', function() {
-                const contactList = document.querySelector('.contact-list');
-                const isExpanded = this.getAttribute('aria-expanded') === 'true';
-                this.setAttribute('aria-expanded', !isExpanded);
-                contactList.style.display = isExpanded ? 'none' : 'flex'; // Use flex for column layout
-                this.querySelector('.toggle-text').textContent = isExpanded ? 
-                    this.getAttribute('data-show-text') : 
-                    this.getAttribute('data-hide-text');
-                this.querySelector('i').classList.toggle('fa-chevron-down');
-                this.querySelector('i').classList.toggle('fa-chevron-up');
-            });
-        }
+    // This script is for reference and should be included in your application's asset pipeline.
+// The HTML and CSS will work with your existing script, but this is a vanilla JS implementation for reference.
 
-        // Copy to clipboard functionality
-        document.querySelectorAll('.copy-button').forEach(button => {
-            button.addEventListener('click', function(event) {
-                event.preventDefault();
-                const value = this.getAttribute('data-value');
-                const textArea = document.createElement("textarea");
-                textArea.value = value;
-                // Avoid scrolling to bottom
-                textArea.style.top = "0";
-                textArea.style.left = "0";
-                textArea.style.position = "fixed";
-                
-                document.body.appendChild(textArea);
-                textArea.focus();
-                textArea.select();
-                
-                try {
-                    document.execCommand('copy');
-                    // Optional: Add feedback to the user
-                    const originalIcon = this.innerHTML;
-                    this.innerHTML = '<i class="fas fa-check" style="color: var(--success-muted);"></i>';
-                    setTimeout(() => {
-                        this.innerHTML = originalIcon;
-                    }, 1500);
-                } catch (err) {
-                    console.error('Fallback: Oops, unable to copy', err);
-                }
-                
-                document.body.removeChild(textArea);
-            });
-        });
+document.addEventListener('DOMContentLoaded', () => {
 
-        // Video toggle functionality
-        const videoToggle = document.querySelector('.toggle-video');
-        if (videoToggle) {
-            videoToggle.addEventListener('click', function() {
-                const videoContent = document.querySelector('.video-content');
-                const isExpanded = this.getAttribute('aria-expanded') === 'true';
-                this.setAttribute('aria-expanded', !isExpanded);
-                videoContent.style.display = isExpanded ? 'none' : 'block';
-                this.querySelector('.toggle-text').textContent = isExpanded ? 
-                    this.getAttribute('data-show-text') : 
-                    this.getAttribute('data-hide-text');
-                this.querySelector('i').classList.toggle('fa-chevron-down');
-                this.querySelector('i').classList.toggle('fa-chevron-up');
-            });
+  // --- TOGGLE FUNCTIONALITY FOR VIDEO AND CONTACTS ---
+  const setupToggleButton = (buttonSelector, contentSelector) => {
+    const toggleButton = document.querySelector(buttonSelector);
+    const content = document.querySelector(contentSelector);
+
+    if (toggleButton && content) {
+      toggleButton.addEventListener('click', () => {
+        const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
+        toggleButton.setAttribute('aria-expanded', !isExpanded);
+        
+        const toggleText = toggleButton.querySelector('.toggle-text');
+        const showText = toggleButton.dataset.showText;
+        const hideText = toggleButton.dataset.hideText;
+
+        if (!isExpanded) {
+          // Open
+          content.style.display = 'flex'; // Use flex for consistency with CSS
+          if (toggleText) toggleText.textContent = hideText;
+        } else {
+          // Close
+          content.style.display = 'none';
+          if (toggleText) toggleText.textContent = showText;
         }
+      });
+    }
+  };
+
+  setupToggleButton('.toggle-video', '.video-content');
+  setupToggleButton('.toggle-contacts', '.contact-list');
+
+
+  // --- COPY BUTTON FUNCTIONALITY ---
+  const copyButtons = document.querySelectorAll('.copy-button');
+  copyButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      const valueToCopy = button.dataset.value;
+      const icon = button.querySelector('i');
+      
+      if (valueToCopy) {
+        // Use a temporary textarea to copy
+        const tempTextArea = document.createElement('textarea');
+        tempTextArea.value = valueToCopy;
+        document.body.appendChild(tempTextArea);
+        tempTextArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(tempTextArea);
+
+        // Visual feedback
+        if (icon) {
+          const originalIcon = icon.className;
+          icon.className = 'fas fa-check';
+          button.style.color = 'var(--success)';
+          
+          setTimeout(() => {
+            icon.className = originalIcon;
+            button.style.color = ''; // Revert to original color
+          }, 1500);
+        }
+      }
     });
+  });
+
+});
+
 </script>
