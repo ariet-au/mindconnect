@@ -202,7 +202,7 @@ body {
     display: flex;
     gap: 1.5rem;
     justify-content: center;
-    margin-top: 2.5rem;
+    
     flex-wrap: wrap;
 }
 
@@ -753,6 +753,8 @@ body {
                     <% end %>
                 </div>
             </div>
+
+         
             
             <p class="profile-location">
                 <% if @psychologist_profile.country.present? %>
@@ -763,8 +765,14 @@ body {
                     <%= t("countries.#{@psychologist_profile.country.downcase.gsub(' ', '_').gsub('-', '_')}", default: @psychologist_profile.country) %>
                 <% end %>
             </p>
+            <div class="profile-badges">
+                <% if @psychologist_profile.years_of_experience.present? %>
+                    <span class="badge"><i class="fas fa-clock"></i><%= t('psychologist_profiles.show.years_experience', count: @psychologist_profile.years_of_experience) %></span>
+                <% end %>
+            </div>
 
-            <%# Minimalistic Availability Widget %>
+            <div class="profile-badges">
+              <%# Minimalistic Availability Widget %>
             <% if @next_available_slot %>
                 <div class="availability-widget-top available">
                     <i class="fas fa-calendar-check widget-icon-top"></i>
@@ -779,12 +787,13 @@ body {
                 </div>
             <% end %>
 
-            <div class="profile-badges">
-                <% if @psychologist_profile.years_of_experience.present? %>
-                    <span class="badge"><i class="fas fa-clock"></i><%= t('psychologist_profiles.show.years_experience', count: @psychologist_profile.years_of_experience) %></span>
-                <% end %>
             </div>
         </div>
+
+          
+
+         
+        
 
         <%# ---- Main CTA Buttons ---- %>
         <% primary_contact_method = @psychologist_profile.primary_contact_method %>
