@@ -733,7 +733,17 @@ body {
 }
     </style>
 
-    <div class="container2">
+
+
+
+
+<div class="has-text-right">
+  <%= link_to edit_psychologist_profile_path(@psychologist_profile), class: "button is-secondary" do %>
+    <i class="fas fa-edit mr-2"></i>
+    <span>Edit Profile</span>
+  <% end %>
+</div>
+
     <div class="card">
         <div class="profile-header">
             <% if @psychologist_profile.profile_img.attached? %>
