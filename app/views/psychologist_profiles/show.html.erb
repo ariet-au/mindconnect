@@ -737,14 +737,17 @@ body {
 
 
 
-<div class="has-text-right">
-  <%= link_to edit_psychologist_profile_path(@psychologist_profile), class: "button is-secondary" do %>
-    <i class="fas fa-edit mr-2"></i>
-    <span>Edit Profile</span>
-  <% end %>
-</div>
+
 
     <div class="card">
+    <% if user_signed_in? && current_user.psychologist? && current_user == @psychologist_profile.user %>
+        <div style="position: absolute; right: 0; top: 0;">
+            <%= link_to edit_psychologist_profile_path(@psychologist_profile), class: "button is-small is-secondary" do %>
+            <i class="fas fa-edit"></i>
+            <span>Edit Profile</span>
+            <% end %>
+        </div>
+    <% end %>
         <div class="profile-header">
             <% if @psychologist_profile.profile_img.attached? %>
                 <%= image_tag url_for(@psychologist_profile.profile_img.variant(resize_to_limit: [200, 200])), class: "profile-avatar" %>
