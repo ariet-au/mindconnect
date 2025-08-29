@@ -69,6 +69,7 @@ Rails.application.routes.draw do
       member do 
          get 'show_mob'
          get 'show_mob2'
+         get 'show_mob3'
       end
       get :available_slots, on: :member
 

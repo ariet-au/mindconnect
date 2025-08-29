@@ -232,6 +232,28 @@ def show_mob2
   end
 end
 
+def show_mob3
+  @psychologist_profile = PsychologistProfile.find(params[:id])
+
+  # Determine display timezone (similar to your booking controller)
+  @display_timezone =
+    params[:browser_timezone] ||
+    session[:browser_timezone] ||
+    cookies[:browser_timezone] ||
+    @psychologist_profile.timezone.presence ||
+    'UTC'
+
+  Time.zone = @display_timezone
+  next_slot_utc = @psychologist_profile.next_available_slot
+  @next_available_slot = next_slot_utc&.in_time_zone(@display_timezone)
+  # For timezone conversion in JavaScript
+  if @display_timezone
+    @display_timezone_offset_seconds = ActiveSupport::TimeZone.new(@display_timezone).utc_offset
+  else
+    Rails.logger.warn "[TIMEZONE DEBUG] No display timezone set, skipping offset calculation"
+  end
+end
+
   # GET /psychologist_profiles/new
   def new
     @psychologist_profile = PsychologistProfile.new
