@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_17_133913) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_30_183938) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -85,6 +85,29 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_17_133913) do
     t.index ["internal_client_profile_id"], name: "index_bookings_on_internal_client_profile_id"
     t.index ["psychologist_profile_id"], name: "index_bookings_on_psychologist_profile_id"
     t.index ["service_id"], name: "index_bookings_on_service_id"
+  end
+
+  create_table "client_contacts", force: :cascade do |t|
+    t.bigint "client_info_id", null: false
+    t.string "method"
+    t.string "value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_info_id"], name: "index_client_contacts_on_client_info_id"
+  end
+
+  create_table "client_infos", force: :cascade do |t|
+    t.string "first_name"
+    t.string "last_name"
+    t.integer "year_of_birth"
+    t.string "city"
+    t.string "timezone"
+    t.text "reason_for_therapy"
+    t.bigint "psychologist_profile_id", null: false
+    t.string "submitted_by", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["psychologist_profile_id"], name: "index_client_infos_on_psychologist_profile_id"
   end
 
   create_table "client_profiles", force: :cascade do |t|
@@ -411,6 +434,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_17_133913) do
   add_foreign_key "bookings", "internal_client_profiles"
   add_foreign_key "bookings", "psychologist_profiles"
   add_foreign_key "bookings", "services"
+  add_foreign_key "client_contacts", "client_infos"
+  add_foreign_key "client_infos", "psychologist_profiles"
   add_foreign_key "client_profiles", "users"
   add_foreign_key "client_types_issues", "client_types"
   add_foreign_key "client_types_issues", "issues"

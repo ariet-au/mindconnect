@@ -114,14 +114,7 @@
           </div>
         </div>
       </div>
-      <div class="column is-one-third">
-        <div class="field">
-          <%= form.label :address, class: "label" %>
-          <div class="control">
-            <%= form.text_area :address, class: "textarea is-rounded", placeholder: "Full Address", rows: 1 %>
-          </div>
-        </div>
-      </div>
+
     </div>
 
     <div class="field">
@@ -133,34 +126,6 @@
       </div>
     </div>
 
-    <hr> <p class="title is-6 has-text-grey-darker mb-4">Emergency Contact Information</p>
-
-    <div class="columns is-multiline">
-      <div class="column is-one-third">
-        <div class="field">
-          <%= form.label :emergency_contact_name, class: "label" %>
-          <div class="control">
-            <%= form.text_field :emergency_contact_name, class: "input is-rounded", placeholder: "Name" %>
-          </div>
-        </div>
-      </div>
-      <div class="column is-one-third">
-        <div class="field">
-          <%= form.label :emergency_contact_phone, class: "label" %>
-          <div class="control">
-            <%= form.text_field :emergency_contact_phone, class: "input is-rounded", placeholder: "Phone Number" %>
-          </div>
-        </div>
-      </div>
-      <div class="column is-one-third">
-        <div class="field">
-          <%= form.label :emergency_contact_relationship, class: "label" %>
-          <div class="control">
-            <%= form.text_field :emergency_contact_relationship, class: "input is-rounded", placeholder: "Relationship (e.g., Parent, Sibling)" %>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <hr> <p class="title is-6 has-text-grey-darker mb-4">Clinical Information</p>
 
@@ -168,46 +133,6 @@
       <%= form.label :reason_for_referral, class: "label" %>
       <div class="control">
         <%= form.text_area :reason_for_referral, class: "textarea is-rounded", placeholder: "Reason for referral", rows: 3 %>
-      </div>
-    </div>
-
-    <div class="columns">
-      <div class="column is-half">
-        <div class="field">
-          <%= form.label :gp_name, class: "label" %>
-          <div class="control">
-            <%= form.text_field :gp_name, class: "input is-rounded", placeholder: "GP's Name" %>
-          </div>
-        </div>
-      </div>
-      <div class="column is-half">
-        <div class="field">
-          <%= form.label :gp_contact_info, class: "label" %>
-          <div class="control">
-            <%= form.text_area :gp_contact_info, class: "textarea is-rounded", placeholder: "GP's Contact Info", rows: 1 %>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="field">
-      <%= form.label :initial_assessment_summary, class: "label" %>
-      <div class="control">
-        <%= form.text_area :initial_assessment_summary, class: "textarea is-rounded", placeholder: "Summary of initial assessment", rows: 3 %>
-      </div>
-    </div>
-
-    <div class="field">
-      <%= form.label :risk_assessment_summary, class: "label" %>
-      <div class="control">
-        <%= form.text_area :risk_assessment_summary, class: "textarea is-rounded", placeholder: "Summary of risk assessment", rows: 3 %>
-      </div>
-    </div>
-
-    <div class="field">
-      <%= form.label :treatment_plan_summary, class: "label" %>
-      <div class="control">
-        <%= form.text_area :treatment_plan_summary, class: "textarea is-rounded", placeholder: "Summary of treatment plan", rows: 3 %>
       </div>
     </div>
 
@@ -226,16 +151,6 @@
         <div class="select is-rounded is-fullwidth">
           <%= form.select :status, options_for_select([['Active', 1], ['Inactive', 0], ['On Hold', 2]], internal_client_profile.status), { include_blank: 'Select Status' }, class: "input" %>
         </div>
-      </div>
-    </div>
-
-    <%# The client_profile_id field is likely for linking to an external client profile. %>
-    <%# If this is meant to be automatically set or not editable by the psychologist, %>
-    <%# consider making it a hidden field or removing it from the form. %>
-    <div class="field">
-      <%= form.label :client_profile_id, class: "label" %>
-      <div class="control">
-        <%= form.text_field :client_profile_id, class: "input is-rounded", placeholder: "Associated Client Profile ID (Optional)" %>
       </div>
     </div>
 

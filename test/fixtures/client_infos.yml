@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  first_name: MyString
+  last_name: MyString
+  year_of_birth: 1
+  city: MyString
+  timezone: MyString
+  reason_for_therapy: MyText
+  psychologist_profile: one
+
+two:
+  first_name: MyString
+  last_name: MyString
+  year_of_birth: 1
+  city: MyString
+  timezone: MyString
+  reason_for_therapy: MyText
+  psychologist_profile: two

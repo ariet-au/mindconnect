@@ -80,7 +80,7 @@ kg:
       manage_availability: "Жеткиликтүүлүктү башкаруу"
       block_unavailability: "Жеткиликтүү эместикти бөгөттөө"
       view_my_bookings: "Менин жазууларым"
-      notes: "Эскертмелер"
+      client_info: "Кардар жөнүндө маалымат"
       doctor: "Доктор"
       certified: "Тастыкталган"
       religion: "Дин: %{religion}"

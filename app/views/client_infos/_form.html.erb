@@ -1,0 +1,157 @@
+<%= form_with(model: client_info, local: true) do |f| %>
+  <% if client_info.errors.any? %>
+    <div class="notification is-danger">
+      <ul>
+        <% client_info.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <!-- Regular fields -->
+  <div class="field">
+    <%= f.label :first_name %>
+    <%= f.text_field :first_name %>
+  </div>
+
+  <div class="field">
+    <%= f.label :last_name %>
+    <%= f.text_field :last_name %>
+  </div>
+
+<% max_year = Time.current.year - 16 %>
+<% min_year = 1930 %>
+
+<div class="field">
+  <%= f.label :year_of_birth %>
+  <%= f.select :year_of_birth, 
+        (max_year).downto(min_year).to_a,
+        { prompt: "Select year" },
+        { class: "input" } %>
+</div>
+
+<div class="field">
+  <%= f.label :city %>
+  <%= f.text_field :city, list: "cities", id: "city_input", class: "input" %>
+
+  <datalist id="cities">
+    <%# You can seed this with popular cities, or load dynamically %>
+    <option value="Bishkek, Kyrgyzstan">
+    <option value="Osh, Kyrgyzstan">
+    <option value="Almaty, Kazakhstan">
+    <option value="Astana, Kazakhstan">
+    <option value="Kiev, Ukraine">
+  </datalist>
+</div>
+
+
+
+
+<div class="field">
+  <%= f.label :timezone %>
+  <%= f.select :timezone,
+        TZInfo::Timezone.all_identifiers.map { |id|
+          begin
+            tz = TZInfo::Timezone.get(id)
+            offset = tz.current_period.offset.utc_total_offset / 3600.0
+            formatted_offset = "GMT#{offset >= 0 ? '+' : ''}#{offset.to_i}"
+            ["(#{formatted_offset}) #{id}", id]
+          rescue TZInfo::InvalidTimezoneIdentifier
+            nil
+          end
+        }.compact,
+        { prompt: "Select your timezone" },
+        { id: "timezone_select", class: "input" }
+  %>
+</div>
+
+
+  <div class="field">
+    <%= f.label :reason_for_therapy %>
+    <%= f.text_area :reason_for_therapy %>
+  </div>
+
+  <!-- Contacts Section -->
+  <h3>Contact Info</h3>
+  <div id="contacts-list">
+    <%= f.fields_for :client_contacts do |contact_form| %>
+      <%= render "client_contact_fields", f: contact_form %>
+    <% end %>
+  </div>
+
+  <!-- Hidden template -->
+  <template id="contact-template">
+    <%= f.fields_for(:client_contacts, ClientContact.new, child_index: "NEW_RECORD") do |cf| %>
+        <%= render "client_contact_fields", f: cf %>
+    <% end %>
+    </template>
+
+  <button type="button" id="add-contact" class="button is-small is-link">
+    + Add another contact
+  </button>
+
+  <div class="actions">
+    <%= f.submit "Save", class: "button is-primary" %>
+  </div>
+<% end %>
+
+<script>
+  document.addEventListener("turbo:load", function () {
+    // ----- City auto-fill -----
+    const cityInput = document.getElementById("city_input");
+    if (cityInput && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function (position) {
+        fetch(`https://nominatim.openstreetmap.org/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}&format=json`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.address) {
+              const city = data.address.city || data.address.town || data.address.village || "";
+              const country = data.address.country || "";
+              if (city && country && !cityInput.value) {
+                cityInput.value = `${city}, ${country}`;
+              }
+            }
+          }).catch(err => console.error("Location lookup failed", err));
+      });
+    }
+
+    // ----- Timezone auto-select -----
+    const tzSelect = document.getElementById("timezone_select");
+    if (tzSelect && !tzSelect.value) {
+      const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (browserTz) {
+        const option = tzSelect.querySelector(`option[value="${browserTz}"]`);
+        if (option) tzSelect.value = browserTz;
+      }
+    }
+
+    // ----- Dynamic contacts -----
+    const addBtn = document.getElementById("add-contact");
+    const template = document.getElementById("contact-template")?.innerHTML;
+    const list = document.getElementById("contacts-list");
+
+    if (addBtn && template && list) {
+      addBtn.addEventListener("click", function () {
+        const newId = new Date().getTime();
+        const content = template.replace(/NEW_RECORD/g, newId);
+        list.insertAdjacentHTML("beforeend", content);
+      });
+
+      // Event delegation for remove buttons
+      list.addEventListener("click", function (e) {
+        if (e.target.classList.contains("remove-contact")) {
+          e.preventDefault();
+          const row = e.target.closest(".contact-row");
+          const destroyField = row.querySelector("input[name*='_destroy']");
+          if (destroyField) {
+            destroyField.value = 1;  // mark for deletion
+            row.style.display = "none";
+          } else {
+            row.remove();
+          }
+        }
+      });
+    }
+  });
+</script>

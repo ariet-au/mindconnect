@@ -33,6 +33,8 @@ Rails.application.routes.draw do
     get '/book/assign_client', to: 'bookings#assign_client', as: :assign_client
     post '/book/confirm', to: 'bookings#confirm_booking', as: :confirm_booking
 
+
+    resources :client_infos, only: [:index, :new, :create, :edit, :update, :destroy]
     resources :articles
     resources :internal_client_profiles
     resources :client_profiles

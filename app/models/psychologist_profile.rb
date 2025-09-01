@@ -20,6 +20,7 @@ class PsychologistProfile < ApplicationRecord
   has_one_attached :profile_img
   has_many :internal_client_profiles, dependent: :destroy # Add this line
 
+  has_many :client_infos, dependent: :destroy
 
   #specialities 
   has_many :psychologist_specialties, dependent: :destroy
@@ -59,7 +60,7 @@ class PsychologistProfile < ApplicationRecord
 
   # Scopes for filtering profiles
   scope :confirmed, -> { where(user_id: User.where.not(confirmed_at: nil).select(:id)) }  
-  scope :active, -> { where(user_id: User.where('updated_at >= ?', 2.months.ago).select(:id)) }
+  scope :active, -> { where(user_id: User.where('last_sign_in_at >= ?', 1.month.ago).select(:id)) }
   scope :filled, -> { where.not(first_name: [nil, ''], last_name: [nil, ''], about_me: [nil, ''], standard_rate: [nil, 0]) }
   
   monetize :standard_rate, as: :standard_rate_money, 

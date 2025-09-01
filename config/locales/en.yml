@@ -80,7 +80,7 @@ en:
       manage_availability: "Manage Availability"
       block_unavailability: "Block Unavailability"
       view_my_bookings: "My Bookings"
-      notes: "Notes"
+      client_info: "Client Info"
       doctor: "Doctor"
       certified: "Certified"
       religion: "Religion: %{religion}"

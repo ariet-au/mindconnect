@@ -80,7 +80,7 @@ ru:
       manage_availability: "Управление доступностью"
       block_unavailability: "Заблокировать недоступность"
       view_my_bookings: "Мои записи"
-      notes: "Заметки"
+      client_info: "Клиенты"
       doctor: "Доктор"
       certified: "Сертифицирован"
       religion: "Религия: %{religion}"

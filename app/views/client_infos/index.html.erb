@@ -1,0 +1,44 @@
+<div class="section">
+  <div class="container">
+    <h1 class="title is-3">My Clients</h1>
+
+    <%= link_to "➕ Add New Client", new_client_info_path, class: "button is-primary mb-4" %>
+
+    <% if @client_infos.any? %>
+      <table class="table is-fullwidth is-striped">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Year of Birth</th>
+            <th>City</th>
+            <th>Contacts</th>
+            <th>Actions</th> <!-- Add a column for edit -->
+          </tr>
+        </thead>
+        <tbody>
+          <% @client_infos.each do |client| %>
+            <tr>
+              <td><%= "#{client.first_name} #{client.last_name}" %></td>
+              <td><%= client.year_of_birth %></td>
+              <td><%= client.city %></td>
+              <td>
+                <% client.client_contacts.each do |c| %>
+                  <p><strong><%= c.method.titleize %>:</strong> <%= c.value %></p>
+                <% end %>
+              </td>
+              <td>
+                <% if client.psychologist? && client.psychologist_profile == current_user.psychologist_profile %>
+                  <%= link_to "Edit", edit_client_info_path(client), class: "button is-small is-link" %>
+                <% else %>
+                  <span class="has-text-grey-light">—</span>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <p>No clients yet.</p>
+    <% end %>
+  </div>
+</div>
