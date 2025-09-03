@@ -744,15 +744,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <span><%= t('logout') %></span>
     <% end %>
   </div>
-</div>
-    </div>
-  <% else %>
-    <div class="auth-buttons">
-      <%= link_to t('login'), new_user_session_path, class: "auth-btn auth-btn-login" %>
-      <%= link_to t('registration'), new_user_registration_path, class: "auth-btn auth-btn-signup" , id:"registration-home-page" %>
-    </div>
-  <% end %>
-</div>
+  </div>
+      </div>
+    <% else %>
+      <div class="auth-buttons">
+        <%= link_to t('login'), new_user_session_path, class: "auth-btn auth-btn-login" %>
+        <%= link_to t('registration'), new_user_registration_path, class: "auth-btn auth-btn-signup" , id:"registration-home-page" %>
+      </div>
+    <% end %>
+  </div>
         
   <div class="navbar-item">
   <div class="currency-selector">

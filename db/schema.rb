@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_08_30_183938) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_02_143039) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -80,6 +80,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_30_183938) do
     t.datetime "updated_at", null: false
     t.string "created_by"
     t.string "confirmation_token"
+    t.bigint "client_info_id"
+    t.index ["client_info_id"], name: "index_bookings_on_client_info_id"
     t.index ["client_profile_id"], name: "index_bookings_on_client_profile_id"
     t.index ["confirmation_token"], name: "index_bookings_on_confirmation_token", unique: true
     t.index ["internal_client_profile_id"], name: "index_bookings_on_internal_client_profile_id"
@@ -422,6 +424,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_30_183938) do
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
     t.string "unconfirmed_email"
+    t.integer "sign_in_count", default: 0, null: false
+    t.datetime "current_sign_in_at"
+    t.datetime "last_sign_in_at"
+    t.string "current_sign_in_ip"
+    t.string "last_sign_in_ip"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
@@ -430,6 +437,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_08_30_183938) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "articles", "psychologist_profiles"
+  add_foreign_key "bookings", "client_infos"
   add_foreign_key "bookings", "client_profiles"
   add_foreign_key "bookings", "internal_client_profiles"
   add_foreign_key "bookings", "psychologist_profiles"

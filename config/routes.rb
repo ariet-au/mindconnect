@@ -31,6 +31,7 @@ Rails.application.routes.draw do
     get '/book/select_service', to: 'bookings#select_service', as: :select_service
     get '/book/choose_time', to: 'bookings#choose_time', as: :choose_time
     get '/book/assign_client', to: 'bookings#assign_client', as: :assign_client
+    post '/book/assign_client', to: 'bookings#assign_client'
     post '/book/confirm', to: 'bookings#confirm_booking', as: :confirm_booking
 
 

@@ -1,0 +1,371 @@
+<!-- client_infos/_client_info_fields.html.erb -->
+<div class="container3">
+  <div class="columns is-centered">
+    <div class="column is-12-mobile is-10-tablet is-8-desktop is-6-widescreen">
+      <div class="box2 has-background-white">
+          <!-- Personal Information Section -->
+          <div class="mb-4">
+            <div class="columns is-multiline">
+              <div class="column is-12-mobile is-6-tablet">
+                <div class="field">
+                  <div class="control has-icons-left">
+                    <%= f.text_field :first_name, class: "input", placeholder: "First name" %>
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-user"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="column is-12-mobile is-6-tablet">
+                <div class="field">
+                  <div class="control has-icons-left">
+                    <%= f.text_field :last_name, class: "input", placeholder: "Last name" %>
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-user"></i>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <% max_year = Time.current.year - 16 %>
+            <% min_year = 1930 %>
+
+            <div class="field">
+              <div class="control has-icons-left">
+                <%= f.select :year_of_birth, 
+                      (max_year).downto(min_year).to_a,
+                      { prompt: "Year of birth" },
+                      { class: "input" } %>
+                <span class="icon is-small is-left">
+                  <i class="fas fa-calendar-alt"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Location Information Section -->
+          <div class="mb-4">
+            <div class="field">
+              <div class="control has-icons-left">
+                <%= f.text_field :city, list: "cities", id: "city_input", class: "input", placeholder: "City, Country" %>
+                <span class="icon is-small is-left">
+                  <i class="fas fa-city"></i>
+                </span>
+              </div>
+              <p class="help">We'll try to detect your location automatically</p>
+
+              <datalist id="cities">
+                <option value="Bishkek, Kyrgyzstan">
+                <option value="Osh, Kyrgyzstan">
+                <option value="Almaty, Kazakhstan">
+                <option value="Astana, Kazakhstan">
+                <option value="Kiev, Ukraine">
+              </datalist>
+            </div>
+
+            <div class="field">
+              <div class="control has-icons-left">
+                <%= f.select :timezone,
+                      TZInfo::Timezone.all_identifiers.map { |id|
+                        begin
+                          tz = TZInfo::Timezone.get(id)
+                          offset = tz.current_period.offset.utc_total_offset / 3600.0
+                          formatted_offset = "GMT#{offset >= 0 ? '+' : ''}#{offset.to_i}"
+                          ["(#{formatted_offset}) #{id}", id]
+                        rescue TZInfo::InvalidTimezoneIdentifier
+                          nil
+                        end
+                      }.compact,
+                      { prompt: "Select timezone" },
+                      { id: "timezone_select", class: "input" }
+                %>
+                <span class="icon is-small is-left">
+                  <i class="fas fa-clock"></i>
+                </span>
+              </div>
+              <p class="help">We'll try to detect your timezone automatically</p>
+            </div>
+          </div>
+
+          <!-- Therapy Information Section -->
+          <div class="mb-4">
+
+            <div class="field">
+              <div class="control">
+                <%= f.text_area :reason_for_therapy, class: "textarea", rows: "3", placeholder: "What brings you to therapy today?" %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contact Information Section -->
+          <div class="mb-4">
+
+
+            <div id="contacts-list" class="mb-3">
+              <%= f.fields_for :client_contacts do |contact_form| %>
+                <%= render "client_infos/client_contact_fields", f: contact_form %>
+              <% end %>
+            </div>
+
+            <!-- Hidden template -->
+            <template id="contact-template">
+              <%= f.fields_for(:client_contacts, ClientContact.new, child_index: "NEW_RECORD") do |cf| %>
+                <%= render "client_infos/client_contact_fields", f: cf %>
+              <% end %>
+            </template>
+
+            <button type="button" id="add-contact" class="button is-light is-fullwidth-mobile">
+              <span class="icon">
+                <i class="fas fa-plus"></i>
+              </span>
+              <span>Add another contact method</span>
+            </button>
+          </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Mobile-first custom styles */
+.container3.container3 {
+  padding: 1rem;
+}
+
+.container3 .box2 {
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+}
+
+.container3 .title {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.container3 .subtitle {
+  font-weight: 600;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 0.5rem;
+}
+
+.container3 .label {
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.container3 .input, 
+.container3 .textarea, 
+.container3 .select select {
+  border-radius: 8px;
+  border: 2px solid #e5e7eb;
+  transition: border-color 0.2s ease;
+  font-size: 1rem;
+}
+
+.container3 .input:focus, 
+.container3 .textarea:focus, 
+.container3 .select select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.container3 .textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.container3 .help {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+.container3 .button.is-primary {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+  font-weight: 600;
+  border-radius: 8px;
+  padding: 0.75rem 2rem;
+}
+
+.container3 .button.is-primary:hover {
+  background-color: #2563eb;
+  border-color: #2563eb;
+}
+
+.container3 .button.is-light {
+  border-radius: 8px;
+  border: 2px dashed #d1d5db;
+  background-color: #f9fafb;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.container3 .button.is-light:hover {
+  border-color: #9ca3af;
+  background-color: #f3f4f6;
+}
+
+.container3 .notification.is-danger {
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.container3 .has-text-primary {
+  color: #3b82f6 !important;
+}
+
+/* Mobile optimizations */
+@media screen and (max-width: 768px) {
+  .container3.container3 {
+    padding: 0.5rem;
+  }
+  
+  .container3 .box2 {
+    margin: 0;
+    border-radius: 8px;
+  }
+  
+  .container3 .title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .container3 .subtitle {
+    font-size: 1.125rem;
+  }
+  
+  .container3 .field:not(:last-child) {
+    margin-bottom: 1.5rem;
+  }
+  
+  .container3 .button.is-large {
+    padding: 1rem 2rem;
+    font-size: 1.125rem;
+  }
+  
+  .container3 .columns.is-multiline .column {
+    padding: 0.5rem;
+  }
+}
+
+/* Tablet and up */
+@media screen and (min-width: 769px) {
+  .container3 .container {
+    padding: 2rem;
+  }
+  
+  .container3 .columns.is-multiline .column {
+    padding: 0.75rem;
+  }
+}
+
+/* Desktop and up */
+@media screen and (min-width: 1024px) {
+  .container3 .field:not(:last-child) {
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* Contact row styles (assuming you need these) */
+.container3 .contact-row {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.container3 .contact-row:last-child {
+  margin-bottom: 0;
+}
+
+.container3 .remove-contact {
+  background-color: #ef4444;
+  border-color: #ef4444;
+  border-radius: 6px;
+}
+
+.container3 .remove-contact:hover {
+  background-color: #dc2626;
+  border-color: #dc2626;
+}
+
+/* Icon spacing */
+.container3 .icon-text .icon {
+  margin-right: 0.5rem;
+}
+</style>
+
+<script>
+  document.addEventListener("turbo:load", function () {
+    // ----- City auto-fill -----
+    const cityInput = document.getElementById("city_input");
+    if (cityInput && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function (position) {
+        fetch(`https://nominatim.openstreetmap.org/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}&format=json`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.address) {
+              const city = data.address.city || data.address.town || data.address.village || "";
+              const country = data.address.country || "";
+              if (city && country && !cityInput.value) {
+                cityInput.value = `${city}, ${country}`;
+              }
+            }
+          }).catch(err => console.error("Location lookup failed", err));
+      });
+    }
+
+    // ----- Timezone auto-select -----
+    const tzSelect = document.getElementById("timezone_select");
+    if (tzSelect && !tzSelect.value) {
+      const browserTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      if (browserTz) {
+        const option = tzSelect.querySelector(`option[value="${browserTz}"]`);
+        if (option) tzSelect.value = browserTz;
+      }
+    }
+
+    // ----- Dynamic contacts -----
+    const addBtn = document.getElementById("add-contact");
+    const template = document.getElementById("contact-template")?.innerHTML;
+    const list = document.getElementById("contacts-list");
+
+    if (addBtn && template && list) {
+      addBtn.addEventListener("click", function () {
+        const newId = new Date().getTime();
+        const content = template.replace(/NEW_RECORD/g, newId);
+        list.insertAdjacentHTML("beforeend", content);
+      });
+
+      // Event delegation for remove buttons
+      list.addEventListener("click", function (e) {
+        if (e.target.classList.contains("remove-contact")) {
+          e.preventDefault();
+          const row = e.target.closest(".contact-row");
+          const destroyField = row.querySelector("input[name*='_destroy']");
+          if (destroyField) {
+            destroyField.value = 1;  // mark for deletion
+            row.style.display = "none";
+          } else {
+            row.remove();
+          }
+        }
+      });
+    }
+
+    // ----- Error notification close functionality -----
+    const deleteButtons = document.querySelectorAll('.notification .delete');
+    deleteButtons.forEach(function(button) {
+      button.addEventListener('click', function() {
+        button.parentNode.style.display = 'none';
+      });
+    });
+  });
+</script>

@@ -7,7 +7,7 @@ require 'icalendar/tzinfo'
 
 class BookingsController < ApplicationController
   #skip_before_action :set_psychologist_profile, only: [:dynamic_select]
-  before_action :authenticate_user!, except: [:confirm_form, :confirm]
+  before_action :authenticate_user!, except: [:select_service, :choose_time, :assign_client, :confirm_form, :confirm]
   before_action :set_booking, only: [:show, :edit, :update, :destroy, :confirm, :decline, :confirm_form]
 
   #before_action :set_psychologist_profile, only: [:create_json, :update_json, :destroy_json, :new]
@@ -358,7 +358,7 @@ class BookingsController < ApplicationController
     @service = Service.find(params[:service_id])
 
     slot_finder = SlotFinder.new(@psychologist.id, @service.duration_minutes, Time.zone.name)
-    @time_slots = slot_finder.all_available_slots_by_day(Time.current, 14)
+    @time_slots = slot_finder.all_available_slots_by_day(Time.current, 21)
 
     # Optional debug
     @time_slots.each do |date, slots|
@@ -367,19 +367,59 @@ class BookingsController < ApplicationController
     end
   end
 
-
-
   def assign_client
-    @booking = Booking.new
-    @psychologist = PsychologistProfile.find(params[:psychologist_id])
-    @service = Service.find(params[:service_id])
-    #@selected_time = Time.zone.parse(params[:selected_time])
-    @selected_time = Time.zone.parse("#{params[:date]} #{params[:selected_time]}")
+    booking_params = params[:booking] || {}
 
-    if current_user.role == "psychologist"
-      @clients = current_user.psychologist_profile.internal_client_profiles
-    else
-      @client = current_user.internal_client_profile # Assuming a single profile per client user
+    # Find psychologist and service safely
+    psychologist_id = booking_params[:psychologist_id] || params[:psychologist_id]
+    service_id      = booking_params[:service_id] || params[:service_id]
+    @selected_time  = booking_params[:start_time].presence || booking_params[:selected_time]
+
+    @psychologist = PsychologistProfile.find_by(id: psychologist_id)
+    @service      = Service.find_by(id: service_id)
+
+    load_clients_for_form
+
+    # Always build @booking for the form
+    @booking ||= Booking.new
+    @booking.build_client_info if @booking.client_info.nil?
+
+    # Handle POST submission
+    if request.post? && @psychologist && @service
+      @booking.assign_attributes(
+        psychologist_profile: @psychologist,
+        service: @service,
+        start_time: @selected_time,
+        end_time: @selected_time.present? ? Time.parse(@selected_time) + @service.duration_minutes.minutes : nil,
+        status: "pending",
+        created_by: current_user&.role == "psychologist" ? "psychologist" : "client"
+      )
+
+      # Assign or build client_info
+      if booking_params[:client_info_id].present?
+        client_info = ClientInfo.find(booking_params[:client_info_id])
+        @booking.client_info = client_info
+      elsif booking_params[:client_info_attributes].present?
+        @booking.build_client_info(
+          booking_params[:client_info_attributes].permit(
+            :first_name, :last_name, :year_of_birth, :city, :timezone, :reason_for_therapy,
+            client_contacts_attributes: [:id, :method, :value, :_destroy]
+          ).merge(psychologist_profile_id: @psychologist.id ,submitted_by: current_user&.role == "psychologist" ? "psychologist" : "client")
+        )
+      end
+
+      # Only link client_profile if the current user is a client
+      if current_user&.client? && current_user.client_profile.present?
+        @booking.client_profile = current_user.client_profile
+      end
+
+
+      if @booking.save
+        redirect_to psychologist_profile_booking_path(@booking.psychologist_profile, @booking), notice: "Booking confirmed!"
+      else
+        Rails.logger.debug "Booking save failed: #{@booking.errors.full_messages.join(', ')}"
+        flash.now[:alert] = "Failed to save booking. Please check the form."
+      end
     end
   end
 
@@ -485,7 +525,16 @@ class BookingsController < ApplicationController
               filename: "booking-#{booking.id}.ics"
   end
 
-  private
+ 
+
+  
+private
+
+
+def load_clients_for_form
+  @clients = @psychologist.present? ? @psychologist.client_infos.order(:last_name, :first_name) : []
+end
+  
 
   def calculate_available_times(psychologist, date, service_duration)
     available_times = []
@@ -577,29 +626,6 @@ class BookingsController < ApplicationController
   end
 
 
-  # def booking_to_event(booking)
-  #   client_name = booking.client_profile&.full_name || booking.internal_client_profile&.label || "N/A"
-
-  #   {
-  #     id: booking.id,
-  #     title: "#{booking.service&.name || 'Session'} - #{client_name} (#{booking.created_by})",
-  #     start: booking.start_time.iso8601,
-  #     end: booking.end_time.iso8601,
-  #     extendedProps: {
-  #       bookingId: booking.id,
-  #       clientName: client_name,
-  #       service_id: booking.service_id,                        # ✅ include service_id
-  #       service_name: booking.service&.name,
-  #       duration_minutes: booking.service&.duration_minutes,   # ✅ include duration
-  #       status: booking.status,
-  #       notes: booking.notes,
-  #       created_by: booking.created_by,
-  #       confirmation_token: booking.confirmation_token
-  #     },
-  #     color: booking.internal_client_profile_id.present? ? '#6f42c1' : '#0d6efd',
-  #     textColor: 'white'
-  #   }
-  # end
   def booking_to_event(booking)
       names = [booking.internal_client_profile&.full_name, booking.client_profile&.full_name]
       client_name = names.compact.max_by { |n| [n.length, names.index(n) * -1] } || "N/A"
@@ -645,18 +671,35 @@ class BookingsController < ApplicationController
     end
   end
 
+  def client_info_params
+    params.dig(:booking, :client_info_attributes)&.permit(
+      :first_name,
+      :last_name,
+      :year_of_birth,
+      :city,
+      :timezone,
+      :reason_for_therapy,
+      client_contacts_attributes: [:id, :method, :value, :_destroy]
+    ) || {}
+  end
+
   def booking_params
     params.require(:booking).permit(
-      :psychologist_profile_id,
-      :client_profile_id,
-      :internal_client_profile_id,
-      :notes,
+      :psychologist_id,
       :service_id,
       :start_time,
-      :end_time,
-      :status,
-      :created_by,
-      :confirmation_token
+      :client_info_id,
+      client_info_attributes: [
+        :first_name,
+        :last_name,
+        :year_of_birth,
+        :city,
+        :timezone,
+        :reason_for_therapy,
+        client_contacts_attributes: [:id, :method, :value, :_destroy]
+      ]
     )
   end
+
+
 end

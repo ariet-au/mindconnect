@@ -11,7 +11,7 @@ class User < ApplicationRecord
 
 
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable,:confirmable # Add this line
+         :recoverable, :rememberable, :validatable,:confirmable, :trackable # Add this line
 
      
   def remember_me

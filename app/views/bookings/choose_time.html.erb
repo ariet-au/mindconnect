@@ -1,5 +1,3 @@
-<!-- app/views/bookings/choose_time.html.erb -->
- 
 <div class="container is-max-desktop mt-6">
   <h1 class="title has-text-centered mb-4">Choose a Time</h1>
 
@@ -8,33 +6,26 @@
       Select a date to see available times. Dates with availability are marked.
     </p>
 
-    <!-- Calendar container -->
-    <div class="columns is-multiline is-mobile is-centered calendar-container">
-      <%# Iterate through the dates in @time_slots to build the calendar %>
-      <% (@time_slots.keys.min..@time_slots.keys.max).each do |date| %>
-        <div class="column is-one-fifth-mobile is-one-sixth-tablet is-one-seventh-desktop has-text-centered">
-          <%# Check if the date has any available slots %>
-          <% has_availability = @time_slots[date].present? %>
-          <div 
-            class="is-flex is-flex-direction-column is-align-items-center is-justify-content-center py-2 px-1 calendar-day <%= 'has-availability' if has_availability %>" 
-            data-date="<%= date.iso8601 %>"
-          >
-            <strong class="is-size-7"><%= date.strftime("%a") %></strong>
-            <span class="title is-4"><%= date.day %></span>
-            <% if has_availability %>
-              <div class="availability-dot"></div>
-            <% end %>
-          </div>
-        </div>
-      <% end %>
-    </div>
-
-    <!-- Container for dynamic time slots -->
+   <div class="calendar-container">
+    <% (@time_slots.keys.min..@time_slots.keys.min + 20).each do |date| %>
+      <% has_availability = @time_slots[date].present? %>
+      <div 
+        class="calendar-day py-2 px-1 is-flex is-flex-direction-column is-align-items-center is-justify-content-center
+        <%= 'has-availability' if has_availability %>" 
+        data-date="<%= date.iso8601 %>"
+      >
+        <strong class="is-size-7"><%= date.strftime("%a") %></strong>
+        <span class="title is-4"><%= date.day %></span>
+        <% if has_availability %>
+          <div class="availability-dot"></div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
     <div id="time-slots-container" class="mt-5">
       <h2 class="title is-5" id="selected-date-title" style="display: none;"></h2>
       <div class="columns is-multiline is-mobile" id="slots-display">
-        <!-- Time slots will be injected here by JavaScript -->
-      </div>
+        </div>
     </div>
 
     <% if @time_slots.empty? %>
@@ -44,6 +35,16 @@
 </div>
 
 <style>
+  .calendar-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 8px;
+    padding-bottom: 8px;
+  }
+  .calendar-container .column {
+    flex: 0 0 auto; /* prevent shrinking */
+    width: 80px;    /* fixed width per day */
+  }
   .calendar-day {
     cursor: pointer;
     border-radius: 8px;
@@ -76,30 +77,23 @@
 </style>
 
 <script>
-  // Store the available slots data from the server
   const timeSlotsData = JSON.parse('<%= @time_slots.to_json.html_safe %>');
-  console.log("Full two-week availability data:", timeSlotsData);
-
-  // Function to format the date for display
+  
   function formatDate(dateString) {
     const date = new Date(dateString);
     return date.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' });
   }
 
-  // Function to create and inject the time slot buttons
   function renderTimeSlots(dateString) {
     const slotsDisplay = document.getElementById('slots-display');
     const selectedDateTitle = document.getElementById('selected-date-title');
-    slotsDisplay.innerHTML = ''; // Clear previous slots
+    slotsDisplay.innerHTML = '';
     
     selectedDateTitle.textContent = formatDate(dateString);
     selectedDateTitle.style.display = 'block';
 
     const slotsForDay = timeSlotsData[dateString] || [];
     
-    // DEBUG: Log the slots for the selected day
-    console.log(`Time slots for selected date (${dateString}):`, slotsForDay);
-
     if (slotsForDay.length === 0) {
       slotsDisplay.innerHTML = `<div class="column is-full"><p class="has-text-centered has-text-grey-light">No available slots for this day.</p></div>`;
       return;
@@ -109,45 +103,64 @@
       const column = document.createElement('div');
       column.className = 'column is-one-third-desktop is-half-tablet is-full-mobile';
 
-      const link = document.createElement('a');
-      // Construct the URL with all necessary parameters
-      const urlParams = new URLSearchParams({
-        psychologist_id: '<%= @psychologist.id %>',
-        service_id: '<%= @service.id %>',
-        selected_time: utcTime,
-        date: dateString
-      });
-      link.href = `assign_client?${urlParams.toString()}`;
-      link.className = 'button is-success is-fullwidth utc-date-time-range';
-      link.dataset.utc = utcTime;
+      // Create a form to submit the booking details
+      const form = document.createElement('form');
+      form.method = 'post';
+      form.action = '<%= assign_client_path %>';
+      form.setAttribute('data-turbo', 'false');
+
+      // Add hidden input for authenticity token
+      const tokenInput = document.createElement('input');
+      tokenInput.type = 'hidden';
+      tokenInput.name = 'authenticity_token';
+      tokenInput.value = '<%= form_authenticity_token %>';
+      form.appendChild(tokenInput);
+
+      // Add hidden inputs for all booking parameters
+      const psychologistInput = document.createElement('input');
+      psychologistInput.type = 'hidden';
+      psychologistInput.name = 'booking[psychologist_id]';
+      psychologistInput.value = '<%= @psychologist.id %>';
+      form.appendChild(psychologistInput);
+
+      const serviceInput = document.createElement('input');
+      serviceInput.type = 'hidden';
+      serviceInput.name = 'booking[service_id]';
+      serviceInput.value = '<%= @service.id %>';
+      form.appendChild(serviceInput);
+      
+      const timeInput = document.createElement('input');
+      timeInput.type = 'hidden';
+      timeInput.name = 'booking[start_time]';
+      timeInput.value = utcTime;
+      form.appendChild(timeInput);
+
+      // Create the button that submits the form
+      const button = document.createElement('button');
+      button.type = 'submit';
+      button.className = 'button is-success is-fullwidth utc-date-time-range';
+      button.dataset.utc = utcTime;
       
       const span = document.createElement('span');
       span.className = 'local-time';
       span.textContent = 'Loading...';
 
-      link.appendChild(span);
-      column.appendChild(link);
+      button.appendChild(span);
+      form.appendChild(button);
+      column.appendChild(form);
       slotsDisplay.appendChild(column);
     });
 
-    // Run the timezone conversion for the newly rendered slots
     updateLocalTimes();
   }
 
-  // This is the original function to convert UTC times to local times
   function updateLocalTimes() {
     document.querySelectorAll(".utc-date-time-range").forEach(function (el) {
       const utcString = el.dataset.utc;
       if (!utcString) return;
 
       const utcDate = new Date(utcString);
-
-      // Format to local time instead of using getHours/getMinutes
-      const localTimeStr = utcDate.toLocaleTimeString([], { 
-        hour: '2-digit', 
-        minute: '2-digit' 
-      });
-
+      const localTimeStr = utcDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const tzShort = utcDate.toLocaleTimeString([], { timeZoneName: "short" }).split(' ').pop();
 
       const localTimeSpan = el.querySelector(".local-time");
@@ -157,26 +170,18 @@
     });
   }
 
-  // Attach event listeners to the calendar days
   document.addEventListener("turbo:load", function () {
     const calendarDays = document.querySelectorAll('.calendar-day');
 
-    // Add a click listener to each calendar day
     calendarDays.forEach(day => {
       day.addEventListener('click', () => {
         const date = day.dataset.date;
-        
-        // Remove active class from all other days
         calendarDays.forEach(d => d.classList.remove('is-active'));
-        // Add active class to the clicked day
         day.classList.add('is-active');
-
-        // Render the slots for the selected date
         renderTimeSlots(date);
       });
     });
 
-    // Automatically select the first day with availability on page load
     const firstAvailableDay = document.querySelector('.calendar-day.has-availability');
     if (firstAvailableDay) {
       firstAvailableDay.click();
