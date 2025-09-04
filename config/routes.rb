@@ -35,7 +35,7 @@ Rails.application.routes.draw do
     post '/book/confirm', to: 'bookings#confirm_booking', as: :confirm_booking
 
 
-    resources :client_infos, only: [:index, :new, :create, :edit, :update, :destroy]
+    resources :client_infos, only: [:index, :new, :show, :create, :edit, :update, :destroy]
     resources :articles
     resources :internal_client_profiles
     resources :client_profiles

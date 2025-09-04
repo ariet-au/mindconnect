@@ -29,6 +29,7 @@
                 </td>
                 <td data-label="Actions">
                   <% if client.psychologist? && client.psychologist_profile == current_user.psychologist_profile %>
+                    <%= link_to "Show", client_info_path(client), class: "button is-small " %>
                     <%= link_to "Edit", edit_client_info_path(client), class: "button is-small is-link" %>
                   <% else %>
                     <span class="has-text-grey-light">—</span>

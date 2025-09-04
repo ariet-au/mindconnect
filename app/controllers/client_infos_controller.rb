@@ -63,10 +63,7 @@ class ClientInfosController < ApplicationController
 
   # Optional: show a client info page
   def show
-    # Only show if psychologist owns it or client submitted
-    unless @client_info.psychologist_profile == @psychologist_profile || @client_info.client?
-      redirect_to client_infos_path, alert: "You do not have access to this client."
-    end
+    @client_info = ClientInfo.find(params[:id])
   end
 
   def destroy
