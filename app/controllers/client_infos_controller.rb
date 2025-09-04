@@ -6,7 +6,7 @@ class ClientInfosController < ApplicationController
   # GET /client_infos
   def index
     # Only show clients belonging to this psychologist
-    @client_infos = @psychologist_profile.client_infos.includes(:client_contacts)
+    @client_infos = @psychologist_profile.client_infos.includes(:client_contacts).order(created_at: :desc)
   end
 
   # GET /client_infos/new
