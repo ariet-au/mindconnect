@@ -1,79 +1,247 @@
 <div class="container is-max-desktop mt-6">
-  <h1 class="title has-text-centered mb-4">Choose a Time</h1>
+  <h1 class="title has-text-centered mb-4"><%= t('.page_title') %></h1>
 
   <div class="box p-5 has-shadow">
     <p class="has-text-centered has-text-grey-light mb-4">
-      Select a date to see available times. Dates with availability are marked.
+      <%= t('.date_selection_instruction') %>
     </p>
 
-   <div class="calendar-container">
-    <% (@time_slots.keys.min..@time_slots.keys.min + 20).each do |date| %>
-      <% has_availability = @time_slots[date].present? %>
-      <div 
-        class="calendar-day py-2 px-1 is-flex is-flex-direction-column is-align-items-center is-justify-content-center
-        <%= 'has-availability' if has_availability %>" 
-        data-date="<%= date.iso8601 %>"
-      >
-        <strong class="is-size-7"><%= date.strftime("%a") %></strong>
-        <span class="title is-4"><%= date.day %></span>
-        <% if has_availability %>
-          <div class="availability-dot"></div>
+    <div class="calendar-container">
+      <div class="calendar-header">
+        <% I18n.t('date.abbr_day_names').each do |day_name| %>
+          <div class="calendar-header-day"><%= day_name %></div>
         <% end %>
       </div>
-    <% end %>
-  </div>
+
+      <div class="calendar-grid">
+        <% start_date = @time_slots.keys.min.beginning_of_week(:sunday) %>
+        <% end_date = (start_date + 20.days).end_of_week(:sunday) %>
+
+        <% (start_date..end_date).each do |date| %>
+          <% has_availability = @time_slots[date].present? %>
+          <div 
+            class="calendar-day <%= 'has-availability' if has_availability %> <%= 'is-outside-month' unless date.month == Date.current.month %>"
+            data-date="<%= date.iso8601 %>"
+          >
+            <span class="day-number"><%= date.day %></span>
+            <% if has_availability %>
+              <div class="availability-indicator"></div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
     <div id="time-slots-container" class="mt-5">
       <h2 class="title is-5" id="selected-date-title" style="display: none;"></h2>
-      <div class="columns is-multiline is-mobile" id="slots-display">
-        </div>
+      <div class="time-slots-list" id="slots-display">
+      </div>
     </div>
 
     <% if @time_slots.empty? %>
-      <p class="has-text-centered has-text-grey-light">No available slots in the next two weeks.</p>
+      <p class="has-text-centered has-text-grey-light"><%= t('.no_slots_available') %></p>
     <% end %>
   </div>
 </div>
 
 <style>
+/* Calendar Container */
+.calendar-container {
+  max-width: 600px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Calendar Header */
+.calendar-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  background: #043467ea;
+  color: white;
+}
+
+.calendar-header-day {
+  padding: 16px 8px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.5px;
+}
+
+/* Calendar Grid */
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background: #e5e7eb;
+}
+
+/* Calendar Day */
+.calendar-day {
+  background: white;
+  min-height: 60px;
+  padding: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  border: 2px solid transparent;
+}
+
+.calendar-day:hover {
+  background: #f8fafc;
+  transform: translateY(-1px);
+}
+
+.calendar-day.is-active {
+  background: #3273dc;
+  color: white;
+  border-color: #2366d1;
+}
+
+.calendar-day.is-outside-month {
+  background: #f9fafb;
+  color: #9ca3af;
+}
+
+.calendar-day.is-outside-month:hover {
+  background: #f3f4f6;
+}
+
+/* Day Number */
+.day-number {
+  font-weight: 600;
+  font-size: 1.1rem;
+  z-index: 2;
+  position: relative;
+}
+
+/* Availability Indicator */
+.availability-indicator {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border: 3px solid #10b981;
+  border-radius: 50%;
+  z-index: 1;
+  opacity: 0.8;
+}
+
+.calendar-day.is-active .availability-indicator {
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
+.calendar-day.has-availability .day-number {
+  color: #065f46;
+  font-weight: 700;
+}
+
+.calendar-day.has-availability.is-active .day-number {
+  color: white;
+}
+
+/* Time Slots */
+.time-slots-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.time-slot-item {
+  width: 100%;
+}
+
+.time-slot-button {
+  width: 100% !important;
+  padding: 16px 24px !important;
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+  background: transparent !important;
+  border: 2px solid #1e40af !important;
+  color: #1e40af !important;
+  box-shadow: none !important;
+}
+
+.time-slot-button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(30, 64, 175, 0.15) !important;
+  background: rgba(30, 64, 175, 0.05) !important;
+  border-color: #1d4ed8 !important;
+  color: #1d4ed8 !important;
+}
+
+.time-slot-button:active {
+  transform: translateY(0) !important;
+}
+
+/* Selected Date Title */
+#selected-date-title {
+  text-align: center;
+  color: #374151;
+  margin-bottom: 24px;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
   .calendar-container {
-    display: flex;
-    overflow-x: auto;
-    gap: 8px;
-    padding-bottom: 8px;
+    margin: 0 -10px;
   }
-  .calendar-container .column {
-    flex: 0 0 auto; /* prevent shrinking */
-    width: 80px;    /* fixed width per day */
-  }
+  
   .calendar-day {
-    cursor: pointer;
-    border-radius: 8px;
-    transition: background-color 0.2s ease;
-    position: relative;
-    border: 1px solid transparent;
+    min-height: 50px;
+    padding: 6px;
   }
-  .calendar-day:hover {
-    background-color: #f5f5f5;
+  
+  .availability-indicator {
+    width: 35px;
+    height: 35px;
+    border-width: 2px;
   }
-  .calendar-day.is-active {
-    background-color: #3273dc;
-    color: white;
-    border: 1px solid #3273dc;
+  
+  .day-number {
+    font-size: 1rem;
   }
-  .calendar-day.is-active strong, .calendar-day.is-active span {
-    color: white;
+  
+  .time-slot-button {
+    padding: 14px 20px !important;
+    font-size: 1rem !important;
   }
-  .availability-dot {
-    position: absolute;
-    bottom: 5px;
-    width: 6px;
-    height: 6px;
-    background-color: #3273dc;
-    border-radius: 50%;
+}
+
+@media (max-width: 480px) {
+  .calendar-header-day {
+    padding: 12px 4px;
+    font-size: 0.8rem;
   }
-  .calendar-day.is-active .availability-dot {
-    background-color: white;
+  
+  .calendar-day {
+    min-height: 45px;
+    padding: 4px;
   }
+  
+  .availability-indicator {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .day-number {
+    font-size: 0.9rem;
+  }
+}
 </style>
 
 <script>
@@ -95,13 +263,13 @@
     const slotsForDay = timeSlotsData[dateString] || [];
     
     if (slotsForDay.length === 0) {
-      slotsDisplay.innerHTML = `<div class="column is-full"><p class="has-text-centered has-text-grey-light">No available slots for this day.</p></div>`;
+      slotsDisplay.innerHTML = `<div class="time-slot-item"><p class="has-text-centered has-text-grey-light">No available slots for this day.</p></div>`;
       return;
     }
 
     slotsForDay.forEach(utcTime => {
-      const column = document.createElement('div');
-      column.className = 'column is-one-third-desktop is-half-tablet is-full-mobile';
+      const slotItem = document.createElement('div');
+      slotItem.className = 'time-slot-item';
 
       // Create a form to submit the booking details
       const form = document.createElement('form');
@@ -138,7 +306,7 @@
       // Create the button that submits the form
       const button = document.createElement('button');
       button.type = 'submit';
-      button.className = 'button is-success is-fullwidth utc-date-time-range';
+      button.className = 'button time-slot-button utc-date-time-range';
       button.dataset.utc = utcTime;
       
       const span = document.createElement('span');
@@ -147,8 +315,8 @@
 
       button.appendChild(span);
       form.appendChild(button);
-      column.appendChild(form);
-      slotsDisplay.appendChild(column);
+      slotItem.appendChild(form);
+      slotsDisplay.appendChild(slotItem);
     });
 
     updateLocalTimes();

@@ -286,3 +286,133 @@ ru:
       close_button_aria: "Закрыть"
       confirm_button: "Подтвердить"
       cancel_button: "Отмена"
+
+  bookings:
+    select_service:
+      select_service_title: Выберите услугу
+      duration_minutes: "%{minutes} минут"
+    choose_time:
+      page_title: Выберите время
+      date_selection_instruction: Выберите дату, чтобы увидеть доступное время. Даты с доступными часами выделены.
+      no_slots_available: Нет доступных слотов в ближайшие две недели.
+    assign_client:
+      select_existing_client_label: Выберите существующего клиента
+      or_create_new_client_title: Или создайте нового клиента
+      confirm_booking_button: Подтвердить бронирование
+      missing_psychologist_or_service_error: Психолог или услуга отсутствуют. Пожалуйста, выберите оба, чтобы продолжить.
+    psychologist_bookings:
+      upcoming_bookings_title: "Предстоящие записи"
+      past_bookings_title: "Прошлые записи"
+      service_header: "Услуга"
+      created_by_header: "Создано"
+      client_header: "Клиент"
+      start_time_header: "Время начала"
+      status_header: "Статус"
+      duration_header: "Продолжительность"
+      booking_actions_header: "Действия"
+      edit_actions_header: "Изменить"
+      loading_time: "Загрузка времени..."
+      confirm_button: "Подтвердить"
+      decline_button: "Отклонить"
+      edit_button: "Изменить"
+      delete_button: "Удалить"
+      delete_confirm: "Вы уверены?"
+      no_upcoming_bookings: "Предстоящих записей не найдено."
+      no_past_bookings: "Прошлых записей не найдено."
+      duration_minutes:
+        one: "%{count} минута"
+        few: "%{count} минуты"
+        many: "%{count} минут"
+        other: "%{count} минуты"
+      status_tags:
+        confirmed: "Подтверждено"
+        pending: "Ожидает"
+        cancelled: "Отменено"
+        unknown: "Неизвестно"
+      created_by_options:
+        client: "Клиент"
+        psychologist: "Психолог"
+        na: "Н/Д"
+    show:
+      page_title: "Детали записи"
+      service_label: "Услуга"
+      psychologist_label: "Психолог"
+      client_label: "Клиент"
+      booking_time_label: "Время записи"
+      duration_label: "Продолжительность"
+      status_label: "Статус"
+      created_by_label: "Создано"
+      notes_label: "Заметки"
+      no_notes: "Нет заметок"
+      loading_time: "Загрузка времени..."
+      share_link_label: "Поделитесь этой ссылкой с клиентом для подтверждения"
+      share_via_label: "Поделиться через"
+      telegram_share_text: "Пожалуйста, подтвердите вашу запись на %{service} с %{psychologist}"
+      whatsapp_share_text: "Пожалуйста, подтвердите вашу запись на %{service} с %{psychologist}: %{url}"
+      edit_button: "Изменить запись"
+      back_button: "Назад к записям"
+      add_to_calendar_label: "Добавить в календарь"
+      download_ics_button: "Скачать ICS"
+      google_calendar_button: "Google Календарь"
+      calendar_title: "Сеанс %{service}"
+      calendar_details: "Сеанс с %{psychologist}"
+      duration_minutes:
+        one: "%{count} минута"
+        few: "%{count} минуты"
+        many: "%{count} минут"
+        other: "%{count} минуты"
+      status_tags:
+        confirmed: "Подтверждено"
+        pending: "Ожидает"
+        cancelled: "Отменено"
+        unknown: "Неизвестно"
+      created_by_options:
+        client: "Клиент"
+        psychologist: "Психолог"
+        na: "Н/Д"
+    confirm_form_client:
+      main_title: "Подтверждение сеанса"
+      subtitle_text: "Пожалуйста, просмотрите и подтвердите вашу запись"
+      status_debug: "Статус: %{status}"
+      session_title: "Терапевтический сеанс"
+      with_psychologist: "с %{name}"
+      date_label: "Дата"
+      time_label: "Время"
+      starts_in_label: "Начнется через"
+      service_label: "Услуга"
+      client_label: "Клиент"
+      confirm_button: "✓ Подтвердить сеанс"
+      decline_button: "Отклонить сеанс"
+      processing: "Обработка..."
+      confirmed_title: "Сеанс подтвержден"
+      confirmed_text: "Ваша запись подтверждена. Добавьте ее в свой календарь ниже."
+      download_ics_button: "📅 Скачать событие календаря"
+      google_calendar_button: "📱 Добавить в Google Календарь"
+      declined_title: "Сеанс отклонен"
+      declined_text: "Эта запись была окончательно отклонена. Пожалуйста, свяжитесь с вашим терапевтом, чтобы перенести."
+      status_display: "Статус: %{status}"
+      already_processed: "Эта запись уже была обработана."
+      calendar_title: "Сеанс %{service}"
+      calendar_details: "Сеанс с %{psychologist}"
+    confirm_readonly:
+      main_title: "Статус записи"
+      subtitle_text: "Просмотрите детали вашей записи ниже"
+      status_title: "Запись %{status}"
+      status_text: "Эта запись уже %{status}."
+      service_default: "Услуга"
+      scheduled_appointment: "Запланированная встреча"
+      client_label: "Клиент"
+      date_label: "Дата"
+      service_label: "Услуга"
+      download_ics_button: "📅 Скачать бронь для календаря"
+      google_calendar_button: "📱 Добавить в Google Календарь"
+  
+  psychologist_availabilities:
+    index:
+      psychologist_name_availability: "Доступность %{name}"
+      timezone_info: "Все время указано в местном часовом поясе психолога (%{timezone})."
+      select_start_time: "Выберите начало"
+      select_end_time: "Выберите конец"
+      delete_slot_button: "Удалить"
+      add_slot_button: "Добавить слот"
+      save_all_button: "Сохранить все"

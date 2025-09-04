@@ -4,22 +4,20 @@
     <%= f.hidden_field :service_id, value: @service.id %>
     <%= f.hidden_field :start_time, value: @selected_time %>
 
-    <!-- Pick an existing client -->
     <div class="field">
-      <%= f.label :client_info_id, "Select Existing Client" %>
+      <%= f.label :client_info_id, t('.select_existing_client_label') %>
       <%= f.collection_select :client_info_id, @clients, :id, :full_name, include_blank: true, class: "select" %>
     </div>
 
-    <!-- Or create a new client -->
-    <h3>Or create a new client</h3>
+    <h3><%= t('.or_create_new_client_title') %></h3>
     <%= f.fields_for :client_info do |client_f| %>
       <%= render "client_infos/client_info_fields", f: client_f %>
     <% end %>
 
     <div class="field">
-      <%= f.submit "Confirm Booking", class: "button is-primary" %>
+      <%= f.submit t('.confirm_booking_button'), class: "button is-primary" %>
     </div>
   <% else %>
-    <p class="has-text-danger">Psychologist or Service is missing. Please select both to continue.</p>
+    <p class="has-text-danger"><%= t('.missing_psychologist_or_service_error') %></p>
   <% end %>
 <% end %>

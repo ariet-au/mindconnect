@@ -320,11 +320,11 @@
 <div class="booking-container">
   <div class="header">
     <div class="logo">📅</div>
-    <h1 class="main-title">Session Confirmation</h1>
-    <p class="subtitle-text">Please review and confirm your appointment</p>
+    <h1 class="main-title"><%= t('.main_title') %></h1>
+    <p class="subtitle-text"><%= t('.subtitle_text') %></p>
   </div>
 
-  <p class="debug-status">Status: <%= @booking.status %></p>
+  <p class="debug-status"><%= t('.status_debug', status: @booking.status.capitalize) %></p>
 
   <% if flash[:notice] %>
     <div class="notification is-success" id="flash-notice">
@@ -340,36 +340,36 @@
 
   <div class="details-box">
     <div class="session-info">
-      <h2 class="session-title">Therapy Session</h2>
-      <p class="session-subtitle">with <%= @booking.psychologist_profile.full_name %></p>
+      <h2 class="session-title"><%= t('.session_title') %></h2>
+      <p class="session-subtitle"><%= t('.with_psychologist', name: @booking.psychologist_profile.full_name) %></p>
     </div>
 
     <div class="details-item">
-      <strong>Date:</strong>
+      <strong><%= t('.date_label') %>:</strong>
       <span id="bookingDate" data-start="<%= @booking.start_time.iso8601 %>"></span>
     </div>
-    
+
     <div class="details-item">
-      <strong>Time:</strong>
+      <strong><%= t('.time_label') %>:</strong>
       <span id="bookingTime"
             data-start="<%= @booking.start_time.iso8601 %>"
             data-end="<%= @booking.end_time.iso8601 %>"></span>
     </div>
 
     <div class="details-item">
-      <strong>Starts in:</strong>
+      <strong><%= t('.starts_in_label') %>:</strong>
       <span id="countdown" class="countdown-display"></span>
     </div>
 
     <% if @booking.service.present? %>
       <div class="details-item">
-        <strong>Service:</strong>
+        <strong><%= t('.service_label') %>:</strong>
         <span><%= @booking.service.name %></span>
       </div>
     <% end %>
 
     <div class="details-item">
-      <strong>Client:</strong>
+      <strong><%= t('.client_label') %>:</strong>
       <span><%= @booking.client_info.full_name %></span>
     </div>
   </div>
@@ -377,30 +377,30 @@
   <% if @booking.pending? %>
     <div class="buttons is-centered" id="booking-actions">
       <%= form_with url: confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking, token: params[:token]), method: :patch, data: { turbo: true, "turbo-frame": "_top" } do %>
-        <%= submit_tag "✓ Confirm Session", class: "button is-success", data: { "disable-with": "Processing..." } %>
+        <%= submit_tag t('.confirm_button'), class: "button is-success", data: { "disable-with": t('.processing') } %>
       <% end %>
       <%= form_with url: decline_psychologist_profile_booking_path(@booking.psychologist_profile, @booking, token: params[:token]), method: :patch, data: { turbo: true, "turbo-frame": "_top" } do %>
-        <%= submit_tag "Decline Session", class: "button is-danger", data: { "disable-with": "Processing..." } %>
+        <%= submit_tag t('.decline_button'), class: "button is-danger", data: { "disable-with": t('.processing') } %>
       <% end %>
     </div>
   <% elsif @booking.confirmed? %>
     <div class="status-notification is-success" id="booking-status">
-      <p class="title">Session Confirmed</p>
-      <p>Your appointment has been confirmed. Add it to your calendar below.</p>
+      <p class="title"><%= t('.confirmed_title') %></p>
+      <p><%= t('.confirmed_text') %></p>
     </div>
     <div class="buttons is-centered">
-      <%= link_to "📅 Download Calendar Event", download_ics_psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "button is-link" %>
-      <%= link_to "📱 Add to Google Calendar", "https://calendar.google.com/calendar/render?action=TEMPLATE&text=#{CGI.escape(@booking.service&.name || 'Therapy Session')}&dates=#{@booking.start_time.utc.strftime('%Y%m%dT%H%M%SZ')}/#{@booking.end_time.utc.strftime('%Y%m%dT%H%M%SZ')}&details=#{CGI.escape("Session with #{@booking.psychologist_profile&.full_name}")}", target: "_blank", class: "button is-link" %>
+      <%= link_to t('.download_ics_button'), download_ics_psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "button is-link" %>
+      <%= link_to t('.google_calendar_button'), "https://calendar.google.com/calendar/render?action=TEMPLATE&text=#{CGI.escape(t('.calendar_title', service: @booking.service&.name || 'Therapy Session'))}&dates=#{@booking.start_time.utc.strftime('%Y%m%dT%H%M%SZ')}/#{@booking.end_time.utc.strftime('%Y%m%dT%H%M%SZ')}&details=#{CGI.escape(t('.calendar_details', psychologist: @booking.psychologist_profile&.full_name))}", target: "_blank", class: "button is-link" %>
     </div>
   <% elsif @booking.declined? %>
     <div class="status-notification is-danger" id="booking-status">
-      <p class="title">Session Declined</p>
-      <p>This appointment has been permanently declined. Please contact your therapist to reschedule.</p>
+      <p class="title"><%= t('.declined_title') %></p>
+      <p><%= t('.declined_text') %></p>
     </div>
   <% else %>
     <div class="status-notification is-info" id="booking-status">
-      <p class="title">Status: <%= @booking.status.capitalize %></p>
-      <p>This booking has already been processed.</p>
+      <p class="title"><%= t('.status_display', status: @booking.status.capitalize) %></p>
+      <p><%= t('.already_processed') %></p>
     </div>
   <% end %>
 </div>

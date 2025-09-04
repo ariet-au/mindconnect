@@ -287,3 +287,126 @@ kg:
       close_button_aria: "Жабуу"
       confirm_button: "Ырастоо"
       cancel_button: "Жокко чыгаруу"
+
+  bookings:
+    select_service:
+      select_service_title: Кызматты тандаңыз
+      duration_minutes: "%{minutes} мүнөт"
+    choose_time:
+      page_title: Убакытты тандаңыз
+      date_selection_instruction: Бош убакыттарды көрүү үчүн күндү тандаңыз. Бош орундары бар күндөр белгиленген.
+      no_slots_available: Жакынкы эки жумада бош убакыт жок.
+    assign_client:
+      select_existing_client_label: Учурдагы кардарды тандаңыз
+      or_create_new_client_title: Же жаңы кардар түзүңүз
+      confirm_booking_button: Брондоону ырастоо
+      missing_psychologist_or_service_error: Психолог же кызмат жок. Улантуу үчүн экөөнү тең тандаңыз.
+    psychologist_bookings:
+      upcoming_bookings_title: "Алдыдагы жазуулар"
+      past_bookings_title: "Өткөн жазуулар"
+      service_header: "Кызмат"
+      created_by_header: "Түзгөн"
+      client_header: "Кардар"
+      start_time_header: "Башталышы"
+      status_header: "Статус"
+      duration_header: "Узактыгы"
+      booking_actions_header: "Аракеттер"
+      edit_actions_header: "Өзгөртүү"
+      loading_time: "Убакытты жүктөө..."
+      confirm_button: "Ырастоо"
+      decline_button: "Баш тартуу"
+      edit_button: "Өзгөртүү"
+      delete_button: "Өчүрүү"
+      delete_confirm: "Ырастайсызбы?"
+      no_upcoming_bookings: "Алдыдагы жазуулар табылган жок."
+      no_past_bookings: "Өткөн жазуулар табылган жок."
+      duration_minutes: "%{count} мүнөт"
+      status_tags:
+        confirmed: "Ырасталды"
+        pending: "Күтүүдө"
+        cancelled: "Жокко чыгарылды"
+        unknown: "Белгисиз"
+      created_by_options:
+        client: "Кардар"
+        psychologist: "Психолог"
+        na: "Ж/А"
+    show:
+      page_title: "Жазуунун чоо-жайы"
+      service_label: "Кызмат"
+      psychologist_label: "Психолог"
+      client_label: "Кардар"
+      booking_time_label: "Жазуунун убактысы"
+      duration_label: "Узактыгы"
+      status_label: "Статус"
+      created_by_label: "Түзгөн"
+      notes_label: "Эскертүүлөр"
+      no_notes: "Эскертүүлөр жок"
+      loading_time: "Убакытты жүктөө..."
+      share_link_label: "Жазууну ырастоо үчүн бул шилтемени кардар менен бөлүшүңүз"
+      share_via_label: "Бөлүшүү"
+      telegram_share_text: "Сураныч, %{psychologist} менен %{service} жазууну ырастаңыз"
+      whatsapp_share_text: "Сураныч, %{psychologist} менен %{service} жазууну ырастаңыз: %{url}"
+      edit_button: "Жазууну өзгөртүү"
+      back_button: "Жазууларга кайтуу"
+      add_to_calendar_label: "Календарга кошуу"
+      download_ics_button: "ICS жүктөп алуу"
+      google_calendar_button: "Google Календарь"
+      calendar_title: "%{service} сеансы"
+      calendar_details: "%{psychologist} менен сеанс"
+      duration_minutes: "%{count} мүнөт"
+      status_tags:
+        confirmed: "Ырасталды"
+        pending: "Күтүүдө"
+        cancelled: "Жокко чыгарылды"
+        unknown: "Белгисиз"
+      created_by_options:
+        client: "Кардар"
+        psychologist: "Психолог"
+        na: "Ж/А"
+    confirm_form_client:
+      main_title: "Сеансты ырастоо"
+      subtitle_text: "Сураныч, жолугушууну карап чыгып, ырастаңыз"
+      status_debug: "Статус: %{status}"
+      session_title: "Терапия сеансы"
+      with_psychologist: "%{name} менен"
+      date_label: "Дата"
+      time_label: "Убакыт"
+      starts_in_label: "Башталышына"
+      service_label: "Кызмат"
+      client_label: "Кардар"
+      confirm_button: "✓ Сеансты ырастоо"
+      decline_button: "Сеанстан баш тартуу"
+      processing: "Иштетүүдө..."
+      confirmed_title: "Сеанс ырасталды"
+      confirmed_text: "Жолугушууңуз ырасталды. Аны төмөндө календарыңызга кошуңуз."
+      download_ics_button: "📅 Календардык окуяны жүктөп алуу"
+      google_calendar_button: "📱 Google Календарга кошуу"
+      declined_title: "Сеанстан баш тартылды"
+      declined_text: "Бул жолугушуу биротоло жокко чыгарылды. Кайра жазылуу үчүн терапевт менен байланышыңыз."
+      status_display: "Статус: %{status}"
+      already_processed: "Бул жазуу мурда иштетилген."
+      calendar_title: "%{service} сеансы"
+      calendar_details: "%{psychologist} менен сеанс"
+    confirm_readonly:
+      main_title: "Жазуунун статусу"
+      subtitle_text: "Жазуунун чоо-жайын төмөндө караңыз"
+      status_title: "Жазуу %{status}"
+      status_text: "Бул жазуу мурунтан эле %{status}."
+      service_default: "Кызмат"
+      scheduled_appointment: "Пландаштырылган жолугушуу"
+      client_label: "Кардар"
+      date_label: "Дата"
+      service_label: "Кызмат"
+      download_ics_button: "📅 Календардык окуяны жүктөп алуу"
+      google_calendar_button: "📱 Google Календарга кошуу"
+
+  psychologist_availabilities:
+    index:
+      psychologist_name_availability: "%{name}нын бош убактысы"
+      timezone_info: "Бардык убакыттар психологдун жергиликтүү убакыт алкагында (%{timezone}) көрсөтүлгөн."
+      select_start_time: "Башталышын тандоо"
+      select_end_time: "Аягын тандоо"
+      delete_slot_button: "Жок кылуу"
+      add_slot_button: "Слот кошуу"
+      save_all_button: "Баарын сактоо"
+    

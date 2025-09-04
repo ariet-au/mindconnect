@@ -287,3 +287,130 @@ en:
       close_button_aria: "Close"
       confirm_button: "Confirm"
       cancel_button: "Cancel"
+
+  bookings:
+    select_service:
+      select_service_title: Select a Service
+      duration_minutes: "%{minutes} minutes"
+    choose_time:
+      page_title: Choose a Time
+      date_selection_instruction: Select a date to see available times. Dates with availability are highlighted.
+      no_slots_available: No available slots in the next two weeks.
+    assign_client:
+      select_existing_client_label: Select Existing Client
+      or_create_new_client_title: Or create a new client
+      confirm_booking_button: Confirm Booking
+      missing_psychologist_or_service_error: Psychologist or Service is missing. Please select both to continue.
+    psychologist_bookings:
+      upcoming_bookings_title: "Upcoming Bookings"
+      past_bookings_title: "Past Bookings"
+      service_header: "Service"
+      created_by_header: "Created By"
+      client_header: "Client"
+      start_time_header: "Start Time"
+      status_header: "Status"
+      duration_header: "Duration"
+      booking_actions_header: "Booking Actions"
+      edit_actions_header: "Edit Actions"
+      loading_time: "Loading time..."
+      confirm_button: "Confirm"
+      decline_button: "Decline"
+      edit_button: "Edit"
+      delete_button: "Delete"
+      delete_confirm: "Are you sure?"
+      no_upcoming_bookings: "No upcoming bookings found."
+      no_past_bookings: "No past bookings found."
+      duration_minutes:
+        one: "1 minute"
+        other: "%{count} minutes"
+      status_tags:
+        confirmed: "Confirmed"
+        pending: "Pending"
+        cancelled: "Cancelled"
+        unknown: "Unknown"
+      created_by_options:
+        client: "Client"
+        psychologist: "Psychologist"
+        na: "N/A"
+    show:
+      page_title: "Booking Details"
+      service_label: "Service"
+      psychologist_label: "Psychologist"
+      client_label: "Client"
+      booking_time_label: "Booking Time"
+      duration_label: "Duration"
+      status_label: "Status"
+      created_by_label: "Created By"
+      notes_label: "Notes"
+      no_notes: "No notes"
+      loading_time: "Loading time..."
+      share_link_label: "Share this link with the client to confirm the booking"
+      share_via_label: "Share via"
+      telegram_share_text: "Please confirm your booking for %{service} with %{psychologist}"
+      whatsapp_share_text: "Please confirm your booking for %{service} with %{psychologist}: %{url}"
+      edit_button: "Edit Booking"
+      back_button: "Back to Bookings"
+      add_to_calendar_label: "Add to Calendar"
+      download_ics_button: "Download ICS"
+      google_calendar_button: "Google Calendar"
+      calendar_title: "%{service} Session"
+      calendar_details: "Session with %{psychologist}"
+      duration_minutes:
+        one: "1 minute"
+        other: "%{count} minutes"
+      status_tags:
+        confirmed: "Confirmed"
+        pending: "Pending"
+        cancelled: "Cancelled"
+        unknown: "Unknown"
+      created_by_options:
+        client: "Client"
+        psychologist: "Psychologist"
+        na: "N/A"
+    confirm_form_client:
+      main_title: "Session Confirmation"
+      subtitle_text: "Please review and confirm your appointment"
+      status_debug: "Status: %{status}"
+      session_title: "Therapy Session"
+      with_psychologist: "with %{name}"
+      date_label: "Date"
+      time_label: "Time"
+      starts_in_label: "Starts in"
+      service_label: "Service"
+      client_label: "Client"
+      confirm_button: "✓ Confirm Session"
+      decline_button: "Decline Session"
+      processing: "Processing..."
+      confirmed_title: "Session Confirmed"
+      confirmed_text: "Your appointment has been confirmed. Add it to your calendar below."
+      download_ics_button: "📅 Download Calendar Event"
+      google_calendar_button: "📱 Add to Google Calendar"
+      declined_title: "Session Declined"
+      declined_text: "This appointment has been permanently declined. Please contact your therapist to reschedule."
+      status_display: "Status: %{status}"
+      already_processed: "This booking has already been processed."
+      calendar_title: "%{service} Session"
+      calendar_details: "Session with %{psychologist}"
+    confirm_readonly:
+      main_title: "Booking Status"
+      subtitle_text: "View your booking details below"
+      status_title: "Booking %{status}"
+      status_text: "This booking is already %{status}."
+      service_default: "Service"
+      scheduled_appointment: "Scheduled Appointment"
+      client_label: "Client"
+      date_label: "Date"
+      service_label: "Service"
+      download_ics_button: "📅 Download Calendar Event"
+      google_calendar_button: "📱 Add to Google Calendar"
+  
+  
+  psychologist_availabilities:
+    index:
+      psychologist_name_availability: "%{name}'s Availability"
+      timezone_info: "All times are in the psychologist's local timezone (%{timezone})."
+      select_start_time: "Select Start"
+      select_end_time: "Select End"
+      delete_slot_button: "Delete"
+      add_slot_button: "Add Slot"
+      save_all_button: "Save All"

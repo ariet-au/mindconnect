@@ -320,11 +320,11 @@
 <div class="booking-container">
   <div class="header">
     <div class="logo">B</div>
-    <h1 class="main-title">Booking Status</h1>
-    <p class="subtitle-text">View your booking details below</p>
+    <h1 class="main-title"><%= t('.main_title') %></h1>
+    <p class="subtitle-text"><%= t('.subtitle_text') %></p>
   </div>
 
-  <% 
+  <%
     status_class = case @booking.status.downcase
                    when 'confirmed', 'active', 'booked'
                      'is-success'
@@ -336,37 +336,37 @@
   %>
 
   <div class="status-notification <%= status_class %>">
-    <p class="title">Booking <%= @booking.status.capitalize %></p>
-    <p>This booking is already <%= @booking.status.capitalize %>.</p>
+    <p class="title"><%= t('.status_title', status: @booking.status.capitalize) %></p>
+    <p><%= t('.status_text', status: @booking.status.capitalize) %></p>
   </div>
 
   <div class="details-box">
     <div class="session-info">
-      <h2 class="session-title"><%= @booking.service&.name || 'Service' %></h2>
-      <p class="session-subtitle">Scheduled Appointment</p>
+      <h2 class="session-title"><%= @booking.service&.name || t('.service_default') %></h2>
+      <p class="session-subtitle"><%= t('.scheduled_appointment') %></p>
     </div>
 
     <div class="details-item">
-      <strong>Client:</strong>
-      <span><%=  @booking.internal_client_profile&.label ||  @booking.client_profile&.full_name || 'N/A' %></span>
+      <strong><%= t('.client_label') %>:</strong>
+      <span><%= @booking.internal_client_profile&.label || @booking.client_profile&.full_name || 'N/A' %></span>
     </div>
 
     <div class="details-item">
-      <strong>Date:</strong>
+      <strong><%= t('.date_label') %>:</strong>
       <span id="local-time"></span>
     </div>
 
     <div class="details-item">
-      <strong>Service:</strong>
+      <strong><%= t('.service_label') %>:</strong>
       <span><%= @booking.service&.name || 'N/A' %></span>
     </div>
   </div>
-   <div class="details-item">
-   <div class="buttons is-centered">
-      <%= link_to "📅 Download Calendar Event", download_ics_psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "button is-link" %>
-      <%= link_to "📱 Add to Google Calendar", "https://calendar.google.com/calendar/render?action=TEMPLATE&text=#{CGI.escape(@booking.service&.name || 'Therapy Session')}&dates=#{@booking.start_time.utc.strftime('%Y%m%dT%H%M%SZ')}/#{@booking.end_time.utc.strftime('%Y%m%dT%H%M%SZ')}&details=#{CGI.escape("Session with #{@booking.psychologist_profile&.full_name}")}", target: "_blank", class: "button is-link" %>
+  <div class="details-item">
+    <div class="buttons is-centered">
+      <%= link_to t('.download_ics_button'), download_ics_psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "button is-link" %>
+      <%= link_to t('.google_calendar_button'), "https://calendar.google.com/calendar/render?action=TEMPLATE&text=#{CGI.escape(@booking.service&.name || 'Therapy Session')}&dates=#{@booking.start_time.utc.strftime('%Y%m%dT%H%M%SZ')}/#{@booking.end_time.utc.strftime('%Y%m%dT%H%M%SZ')}&details=#{CGI.escape("Session with #{@booking.psychologist_profile&.full_name}")}", target: "_blank", class: "button is-link" %>
     </div>
-    </div>
+  </div>
 </div>
 
 <script>

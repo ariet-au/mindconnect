@@ -1,6 +1,6 @@
 # app/services/slot_finder.rb
 class SlotFinder
-  SLOT_INTERVAL = 15.minutes
+  SLOT_INTERVAL = 30.minutes
 
   def initialize(psychologist_profile_id, duration_minutes, user_timezone = 'UTC')
     @psychologist = PsychologistProfile.find(psychologist_profile_id)
@@ -10,7 +10,7 @@ class SlotFinder
     @psych_tz = ActiveSupport::TimeZone[@psychologist_timezone_name] || ActiveSupport::TimeZone['UTC']
   end
 
-  def all_available_slots_by_day(from_time = Time.current, days_to_search = 14)
+  def all_available_slots_by_day(from_time = Time.current, days_to_search = 21)
     available_slots_by_day = {}
     search_start_time = from_time.in_time_zone(@psych_tz) rescue Time.current.in_time_zone(@psych_tz)
 
@@ -39,8 +39,8 @@ class SlotFinder
   def next_available_slot(from_time = Time.current)
     from_time_in_psych_tz = from_time.in_time_zone(@psych_tz) rescue Time.current.in_time_zone(@psych_tz)
     
-    # Round to next 15-minute interval
-    rounded_min = (from_time_in_psych_tz.min / 15.0).ceil * 15
+    # Round to next 30-minute interval
+    rounded_min = (from_time_in_psych_tz.min / 30.0).ceil * 30
 
     if rounded_min >= 60
       initial_check_time_psych_tz = from_time_in_psych_tz.change(min: 0, sec: 0) + 1.hour
@@ -75,9 +75,9 @@ class SlotFinder
     found_slots = []
     slot_start_utc = [period_start_utc, search_start_utc].max.beginning_of_minute
 
-    # Round to next 15-minute interval
-    if slot_start_utc.min % 15 != 0
-      rounded_min = (slot_start_utc.min / 15.0).ceil * 15
+    # Round to next 30-minute interval
+    if slot_start_utc.min % 30 != 0
+      rounded_min = (slot_start_utc.min / 30.0).ceil * 30
       if rounded_min >= 60
         slot_start_utc = (slot_start_utc + 1.hour).beginning_of_hour
       else
@@ -85,13 +85,13 @@ class SlotFinder
       end
     end
 
-    # Generate slots at 15-minute intervals
+    # Generate slots at 30-minute intervals
     while slot_start_utc + @duration <= period_end_utc
       slot_end_utc = slot_start_utc + @duration
       unless time_slot_unavailable?(slot_start_utc, slot_end_utc) || booking_overlaps?(slot_start_utc, slot_end_utc)
         found_slots << slot_start_utc
       end
-      slot_start_utc += SLOT_INTERVAL # Move to next 15-minute interval
+      slot_start_utc += SLOT_INTERVAL # Move to next 30-minute interval
     end
     found_slots
   end
@@ -99,9 +99,9 @@ class SlotFinder
   def find_first_valid_slot_in_period(period_start_utc, period_end_utc)
     slot_start_utc = period_start_utc.beginning_of_minute
 
-    # Round to next 15-minute interval
-    if slot_start_utc.min % 15 != 0
-      rounded_min = (slot_start_utc.min / 15.0).ceil * 15
+    # Round to next 30-minute interval
+    if slot_start_utc.min % 30 != 0
+      rounded_min = (slot_start_utc.min / 30.0).ceil * 30
       if rounded_min >= 60
         slot_start_utc = (slot_start_utc + 1.hour).beginning_of_hour
       else
@@ -114,7 +114,7 @@ class SlotFinder
       unless time_slot_unavailable?(slot_start_utc, slot_end_utc) || booking_overlaps?(slot_start_utc, slot_end_utc)
         return slot_start_utc
       end
-      slot_start_utc += SLOT_INTERVAL # Move to next 15-minute interval
+      slot_start_utc += SLOT_INTERVAL # Move to next 30-minute interval
     end
     nil
   end

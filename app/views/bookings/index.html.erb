@@ -3,73 +3,70 @@
     <% bulma_class = case type.to_sym
                      when :notice then "is-success"
                      when :alert  then "is-danger"
-                     when :warning then "is-warning" # Added for consistency, though not in original
+                     when :warning then "is-warning"
                      else "is-info"
                      end %>
     <div class="notification <%= bulma_class %>">
-      <%# The 'delete' class provides the visual 'x' for closing. %>
-      <%# The 'data-action' attribute assumes your existing JS handles closing this notification. %>
       <button class="delete" aria-label="delete" data-action="click->flash-messages#close"></button>
       <%= msg %>
     </div>
   <% end %>
 </div>
 
-<h1 class="title is-2">All Bookings</h1>
+<h1 class="title is-2"><%= t('.page_title') %></h1>
 
 <div class="table-container">
   <table class="table is-striped is-hoverable is-fullwidth">
     <thead>
       <tr>
-        <th>Service</th>
-        <th>Created By</th>
-        <th>Psychologist</th>
-        <th>Client</th>
-        <th>Start Time</th>
-        <th>Status</th>
-        <th>Duration</th>
-        <th>Booking Actions</th>
-        <th>Edit Actions</th>
+        <th><%= t('.service_header') %></th>
+        <th><%= t('.created_by_header') %></th>
+        <th><%= t('.psychologist_header') %></th>
+        <th><%= t('.client_header') %></th>
+        <th><%= t('.start_time_header') %></th>
+        <th><%= t('.status_header') %></th>
+        <th><%= t('.duration_header') %></th>
+        <th><%= t('.booking_actions_header') %></th>
+        <th><%= t('.edit_actions_header') %></th>
       </tr>
     </thead>
     <tbody>
       <% @bookings.each do |booking| %>
         <tr>
           <td><%= booking.service.name %></td>
-          <td><%= booking.created_by %></td>
+          <td><%= t(".created_by_options.#{booking.created_by.presence || 'na'}") %></td>
           <td><%= booking.psychologist_profile&.first_name || 'N/A' %></td>
           <td><%= booking.client_profile&.first_name || booking.internal_client_profile&.first_name || 'N/A' %></td>
           <td>
-            <%# This span is processed by your existing JavaScript timezone handler %>
             <span
               class="utc-date-time-range"
               data-start-utc="<%= booking.start_time.utc.iso8601 %>"
               data-end-utc="<%= booking.end_time&.utc&.iso8601 %>">
-              Loading time...
+              <%= t('.loading_time') %>
             </span>
           </td>
           <td>
             <% case booking.status&.to_sym
                when :confirmed %>
-                 <span class="tag is-success">Confirmed</span>
+                 <span class="tag is-success"><%= t('.status_tags.confirmed') %></span>
                <% when :pending %>
-                 <span class="tag is-warning">Pending</span>
+                 <span class="tag is-warning"><%= t('.status_tags.pending') %></span>
                <% when :cancelled %>
-                 <span class="tag is-danger">Cancelled</span>
+                 <span class="tag is-danger"><%= t('.status_tags.cancelled') %></span>
                <% else %>
-                 <span class="tag is-info"><%= booking.status.present? ? booking.status.humanize : 'Unknown' %></span>
+                 <span class="tag is-info"><%= booking.status.present? ? t(".status_tags.#{booking.status.underscore}") : t('.status_tags.unknown') %></span>
                <% end %>
           </td>
-          <td><%= booking.service.duration_minutes %> minutes</td>
+          <td><%= t('.duration_minutes', count: booking.service.duration_minutes) %></td>
           <td>
           <% if current_user.psychologist? && booking.created_by == 'client' && booking.pending? %>
-            <%= button_to 'Confirm', confirm_booking_path(booking), method: :post %>
-            <%= button_to 'Decline', decline_booking_path(booking), method: :post, class: 'btn btn-danger' %>
+            <%= button_to t('.confirm_button'), confirm_booking_path(booking), method: :post %>
+            <%= button_to t('.decline_button'), decline_booking_path(booking), method: :post, class: 'btn btn-danger' %>
           <% end %>
           </td>
           <td>
-            <%= link_to 'Edit', edit_booking_path(booking), class: 'button is-small is-info is-light mr-2' %>
-            <%= link_to 'Delete', booking_path(booking), data: { turbo_method: :delete, turbo_confirm: 'Are you sure?' }, class: 'button is-small is-danger is-light' %>
+            <%= link_to t('.edit_button'), edit_booking_path(booking), class: 'button is-small is-info is-light mr-2' %>
+            <%= link_to t('.delete_button'), booking_path(booking), data: { turbo_method: :delete, turbo_confirm: t('.delete_confirm') }, class: 'button is-small is-danger is-light' %>
           </td>
         </tr>
       <% end %>

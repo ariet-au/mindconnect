@@ -69,50 +69,48 @@
 </style>
 
 <div class="booking-details-container">
-  <h2 class="title is-4">Booking Details</h2>
+  <h2 class="title is-4"><%= t('.page_title') %></h2>
 
   <div class="booking-details-item">
-    <p><span class="booking-details-label">Service:</span> <%= @booking.service&.name || 'N/A' %></p>
+    <p><span class="booking-details-label"><%= t('.service_label') %>:</span> <%= @booking.service&.name || 'N/A' %></p>
   </div>
   <div class="booking-details-item">
-    <p><span class="booking-details-label">Psychologist:</span> <%= @booking.psychologist_profile&.full_name || 'N/A' %></p>
+    <p><span class="booking-details-label"><%= t('.psychologist_label') %>:</span> <%= @booking.psychologist_profile&.full_name || 'N/A' %></p>
   </div>
   <div class="booking-details-item">
-    <p><span class="booking-details-label">Client:</span> <%= @booking.client_profile&.full_name || @booking.internal_client_profile&.full_name || 'N/A' %></p>
+    <p><span class="booking-details-label"><%= t('.client_label') %>:</span> <%= @booking.client_profile&.full_name || @booking.internal_client_profile&.full_name || 'N/A' %></p>
   </div>
 
   <div class="booking-details-item">
-    <p><span class="booking-details-label">Booking Time:</span>
+    <p><span class="booking-details-label"><%= t('.booking_time_label') %>:</span>
       <span class="utc-date-time-range booking-details-time-display"
             data-start-utc="<%= @booking.start_time.utc.iso8601 if @booking.start_time.present? %>"
             data-end-utc="<%= @booking.end_time.utc.iso8601 if @booking.start_time.present? %>">
-        Loading time...
+        <%= t('.loading_time') %>
       </span>
     </p>
   </div>
-  
+
   <div class="booking-details-item">
-    <p><span class="booking-details-label">Duration:</span> <%= @booking.service&.duration_minutes ? "#{@booking.service.duration_minutes} minutes" : number_with_precision((@booking.end_time - @booking.start_time) / 60, precision: 0) + ' minutes' %></p>
+    <p><span class="booking-details-label"><%= t('.duration_label') %>:</span> <%= @booking.service&.duration_minutes ? t('.duration_minutes', count: @booking.service.duration_minutes) : t('.duration_minutes', count: number_with_precision((@booking.end_time - @booking.start_time) / 60, precision: 0)) %></p>
   </div>
   <div class="booking-details-item">
-    <p><span class="booking-details-label">Status:</span> <%= @booking.status.humanize %></p>
+    <p><span class="booking-details-label"><%= t('.status_label') %>:</span> <%= t(".status_tags.#{@booking.status&.underscore || 'unknown'}") %></p>
   </div>
   <div class="booking-details-item">
-    <p><span class="booking-details-label">Created By:</span> <%= @booking.created_by&.humanize || 'N/A' %></p>
+    <p><span class="booking-details-label"><%= t('.created_by_label') %>:</span> <%= t(".created_by_options.#{@booking.created_by&.underscore || 'na'}") %></p>
   </div>
   <div class="booking-details-item">
-    <p><span class="booking-details-label">Notes:</span> <%= @booking.notes.presence || 'No notes' %></p>
+    <p><span class="booking-details-label"><%= t('.notes_label') %>:</span> <%= @booking.notes.presence || t('.no_notes') %></p>
   </div>
 
   <% if @booking.pending? && @booking.created_by == 'psychologist' %>
-    <% 
-      # Set the parent object for the nested route helpers
+    <%
       psychologist_profile = @booking.psychologist_profile
-      # Correctly generate the confirmation URL
-      confirmation_url = confirm_psychologist_profile_booking_url(psychologist_profile, @booking, token: @booking.confirmation_token) 
+      confirmation_url = confirm_psychologist_profile_booking_url(psychologist_profile, @booking, token: @booking.confirmation_token)
     %>
     <div class="booking-details-item">
-      <p><span class="booking-details-label">Share this link with the client to confirm the booking:</span>
+      <p><span class="booking-details-label"><%= t('.share_link_label') %>:</span>
         <span class="booking-details-time-display">
           <a href="<%= confirmation_url %>">
             <%= confirmation_url %>
@@ -121,17 +119,17 @@
       </p>
     </div>
     <div class="booking-details-item">
-      <p><span class="booking-details-label">Share via:</span></p>
+      <p><span class="booking-details-label"><%= t('.share_via_label') %>:</span></p>
       <div class="field is-grouped booking-details-actions">
         <p class="control">
-          <a href="https://t.me/share/url?url=<%= CGI.escape(confirmation_url) %>&text=Please%20confirm%20your%20booking%20for%20<%= CGI.escape(@booking.service&.name || 'N/A') %>%20with%20<%= CGI.escape(@booking.psychologist_profile&.full_name || 'N/A') %>"
-            class="button is-info" target="_blank">
+          <a href="https://t.me/share/url?url=<%= CGI.escape(confirmation_url) %>&text=<%= CGI.escape(t('.telegram_share_text', service: @booking.service&.name || 'N/A', psychologist: @booking.psychologist_profile&.full_name || 'N/A')) %>"
+             class="button is-info" target="_blank">
             Share to Telegram
           </a>
         </p>
         <p class="control">
-          <a href="https://api.whatsapp.com/send?text=Please%20confirm%20your%20booking%20for%20<%= CGI.escape(@booking.service&.name || 'N/A') %>%20with%20<%= CGI.escape(@booking.psychologist_profile&.full_name || 'N/A') %>:%20<%= CGI.escape(confirmation_url) %>"
-            class="button is-success" target="_blank">
+          <a href="https://api.whatsapp.com/send?text=<%= CGI.escape(t('.whatsapp_share_text', service: @booking.service&.name || 'N/A', psychologist: @booking.psychologist_profile&.full_name || 'N/A', url: confirmation_url)) %>"
+             class="button is-success" target="_blank">
             Share to WhatsApp
           </a>
         </p>
@@ -141,20 +139,18 @@
 
   <div class="field is-grouped booking-details-actions">
     <p class="control">
-      <%= link_to "Edit Booking", edit_psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "button is-primary-blue" %>
+      <%= link_to t('.edit_button'), edit_psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "button is-primary-blue" %>
     </p>
     <p class="control">
-      <%= link_to "Back to Bookings", psychologist_profile_bookings_path(@booking.psychologist_profile), class: "button is-light" %>
+      <%= link_to t('.back_button'), psychologist_profile_bookings_path(@booking.psychologist_profile), class: "button is-light" %>
     </p>
   </div>
 
-
-
-    <div class="booking-details-item">
-    <p><span class="booking-details-label">Add to Calendar:</span></p>
+  <div class="booking-details-item">
+    <p><span class="booking-details-label"><%= t('.add_to_calendar_label') %>:</span></p>
     <div class="buttons">
-      <%= link_to "Add to Calendar", download_ics_psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "button is-link" %>
-      <%= link_to "Google Calendar", "https://calendar.google.com/calendar/render?action=TEMPLATE&text=#{CGI.escape(@booking.service&.name || 'Therapy Session')}&dates=#{@booking.start_time.utc.strftime('%Y%m%dT%H%M%SZ')}/#{@booking.end_time.utc.strftime('%Y%m%dT%H%M%SZ')}&details=#{CGI.escape("Session with #{@booking.psychologist_profile&.full_name}")}", target: "_blank", class: "button is-success" %>
+      <%= link_to t('.download_ics_button'), download_ics_psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "button is-link" %>
+      <%= link_to t('.google_calendar_button'), "https://calendar.google.com/calendar/render?action=TEMPLATE&text=#{CGI.escape(t('.calendar_title', service: @booking.service&.name || 'N/A'))}&dates=#{@booking.start_time.utc.strftime('%Y%m%dT%H%M%SZ')}/#{@booking.end_time.utc.strftime('%Y%m%dT%H%M%SZ')}&details=#{CGI.escape(t('.calendar_details', psychologist: @booking.psychologist_profile&.full_name))}", target: "_blank", class: "button is-success" %>
     </div>
   </div>
 </div>

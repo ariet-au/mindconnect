@@ -5,7 +5,7 @@
     </div>
   <% end %>
 
-  <h1 class="title has-text-centered mb-4">Select a Service</h1>
+  <h1 class="title has-text-centered mb-4"><%= t('.select_service_title') %></h1>
 
   <div class="box p-5 has-shadow">
     <% @services.each do |service| %>
@@ -16,7 +16,7 @@
           ),
           class: "button is-primary is-fullwidth mb-3" do %>
         <span class="has-text-weight-semibold"><%= service.name %></span>
-        <span class="has-text-grey ml-2">(<%= service.duration_minutes %> minutes)</span>
+        <span class="has-text-grey ml-2">(<%= t('.duration_minutes', minutes: service.duration_minutes) %>)</span>
       <% end %>
     <% end %>
   </div>
