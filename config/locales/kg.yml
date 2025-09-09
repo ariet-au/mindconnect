@@ -10,6 +10,9 @@ kg:
   registration: "Катталуу"
   online: "Онлайн"
   in_person: "Жеке"
+  og:
+    title: "AkSanaa"
+    description: "Терапевтти оңой табыңыз жана жазылыңыз."
 
   filters:
     clear: "Баарын тазалоо"
@@ -76,6 +79,14 @@ kg:
         
   psychologist_profiles:
     show:
+      contact_me: "Байланышуу"
+      book_a_session: "Сеанска жазылуу"
+      duration: "Убакыт"
+      format: "Откоруу Формат"
+      rate: "Баа"
+      edit_profile: "Профилди оңдоо"
+      ready_to_talk: "Терапияга даярсызбы?" 
+      reach_out: "Суроолоруңуз болсо, мен жардам берүүгө даярмын."
       dashboard: "Башкаруу панели"
       manage_availability: "Жеткиликтүүлүктү башкаруу"
       block_unavailability: "Жеткиликтүү эместикти бөгөттөө"

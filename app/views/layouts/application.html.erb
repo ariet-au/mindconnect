@@ -19,8 +19,17 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="turbo-cache-control" content="no-cache">
+
+
+  <meta property="og:title" content="<%= content_for?(:og_title) ? yield(:og_title) : 'AkSanaa' %>" />
+  <meta property="og:description" content="<%= t('og.description') %>" />
+  <meta property="og:image" content="<%= content_for?(:og_image) ? yield(:og_image) : image_url('default-og-image.png') %>" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="<%= request.original_url %>" />
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
+
+
 
   <%= yield :head %>
   <script src="https://cdn.jsdelivr.net/npm/luxon@3.4.4/build/global/luxon.min.js" defer></script>
@@ -710,7 +719,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
       <div class="menu" id="user-menu" role="menu">
   <div class="menu-content">
-    <% if current_user.psychologist? && current_user.psychologist_profile.present? %>
+    <% if current_user&.psychologist? && current_user.psychologist_profile.present? %>
       <%= link_to psychologist_dashboard_path, class: "menu-item" do %>
         <span class="icon">
           <i class="fas fa-calendar"></i>
@@ -725,7 +734,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <span><%= t('my_profile') %></span>
       <% end %>
     <% end %>
-    <% if current_user.client? && current_user.client_profile.present? %>
+    <% if current_user&.client? && current_user.client_profile.present? %>
       <%= link_to client_profile_path(current_user.client_profile), 
         class: "menu-item" do %>
         <span class="icon">

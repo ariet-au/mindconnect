@@ -270,6 +270,11 @@
 
 
     <style>
+    #calendar {
+      font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
+      font-size: 14px; /* optional */
+      color: #333333;
+    }
       .menu-list a:hover {
         background-color: #34495E !important;
       }
@@ -444,18 +449,32 @@
         {
           url: `/psychologist_profiles/${psychologistProfileId}/bookings/calendar_bookings.json`,
           method: 'GET',
-          color: '#0d6efd',
-          textColor: 'white',
+          eventDataTransform: function(eventData) {
+            // Define color mapping for booking statuses
+            const statusColorMap = {
+              'pending': '#ffc107', // Yellow for pending
+              'confirmed': '#288ad9ff', // Green for confirmed
+              'cancelled': '#dc3545', // Red for cancelled
+              'completed': '#6c757d' // Gray for completed
+              // Add more statuses as needed
+            };
+
+            // Set event color based on status, default to blue if status is unknown
+            eventData.color = statusColorMap[eventData.extendedProps.status] || '#0df1fdff';
+            eventData.textColor = 'white'; // Ensure readable text color
+
+            return eventData;
+          },
           failure: error => {
             console.error('Error loading bookings:', error);
             showCustomAlert('Error loading bookings.');
           }
         },
-        {
+                {
           url: `/psychologist_profiles/${psychologistProfileId}/psychologist_availabilities/calendar_blocks.json`,
           method: 'GET',
           display: 'background',
-          color: '#008000',
+          color: '#7ee7aaf9',
           failure: error => {
             console.error('Error fetching availability blocks:', error);
             showCustomAlert('Error fetching availability blocks.');

@@ -13,17 +13,69 @@
   <% end %>
 </div>
 
+<h1 class="title is-2"><%= t('.bookings_overview_title') %></h1>
+
+<!-- Timeline Section for Today's and Upcoming Bookings -->
+<div class="timeline-container">
+  <div class="level">
+    <div class="level-left">
+      <h2 class="title is-4"><%= t('.timeline_view') %></h2>
+    </div>
+    <div class="level-right">
+      <div class="select">
+        <select id="timeline-status-filter">
+          <option value="all"><%= t('.filter_all_statuses') %></option>
+          <option value="confirmed"><%= t('.status_tags.confirmed') %></option>
+          <option value="pending"><%= t('.status_tags.pending') %></option>
+          <option value="cancelled"><%= t('.status_tags.cancelled') %></option>
+          <option value="unknown"><%= t('.status_tags.unknown') %></option>
+        </select>
+      </div>
+      <div class="select ml-2">
+        <select id="timeline-range">
+          <option value="today"><%= t('.range_today') %></option>
+          <option value="week"><%= t('.range_week') %></option>
+          <option value="month"><%= t('.range_month') %></option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <div class="timeline-wrapper">
+    <div id="timeline"></div>
+  </div>
+</div>
+
+<hr>
+
+<!-- Table for Today's and Upcoming Bookings -->
 <h1 class="title is-2"><%= t('.upcoming_bookings_title') %></h1>
 
+<div class="level">
+  <div class="level-left">
+    <h2 class="title is-4"><%= t('.table_view') %></h2>
+  </div>
+  <div class="level-right">
+    <div class="select">
+      <select id="table-status-filter">
+        <option value="all"><%= t('.filter_all_statuses') %></option>
+        <option value="confirmed"><%= t('.status_tags.confirmed') %></option>
+        <option value="pending"><%= t('.status_tags.pending') %></option>
+        <option value="cancelled"><%= t('.status_tags.cancelled') %></option>
+        <option value="unknown"><%= t('.status_tags.unknown') %></option>
+      </select>
+    </div>
+  </div>
+</div>
+
 <div class="table-container">
-  <table class="table is-striped is-hoverable is-fullwidth">
+  <table class="table is-striped is-hoverable is-fullwidth" id="bookings-table">
     <thead>
       <tr>
         <th><%= t('.service_header') %></th>
         <th><%= t('.created_by_header') %></th>
         <th><%= t('.client_header') %></th>
-        <th><%= t('.start_time_header') %></th>
-        <th><%= t('.status_header') %></th>
+        <th data-sort="asc"><%= t('.start_time_header') %></th>
+        <th data-sort="none"><%= t('.status_header') %></th>
         <th><%= t('.duration_header') %></th>
         <th><%= t('.booking_actions_header') %></th>
         <th><%= t('.edit_actions_header') %></th>
@@ -32,10 +84,10 @@
     <tbody>
       <% if @upcoming_bookings.any? %>
         <% @upcoming_bookings.each do |booking| %>
-          <tr>
-            <td><%= booking.service&.name %></td>
+          <tr data-status="<%= booking.status || 'unknown' %>">
+            <td><%= booking.service&.name || 'N/A' %></td>
             <td><%= t(".created_by_options.#{booking.created_by.presence || 'na'}") %></td>
-            <td><%= booking.client_profile&.first_name || booking.internal_client_profile&.first_name || 'N/A' %></td>
+          <td><%= booking.client_info&.full_name || 'N/A' %></td>
             <td>
               <span
                 class="utc-date-time-range"
@@ -51,14 +103,15 @@
                  when :cancelled then %><span class="tag is-danger"><%= t('.status_tags.cancelled') %></span><%
                  else %><span class="tag is-info"><%= booking.status.present? ? t(".status_tags.#{booking.status.underscore}") : t('.status_tags.unknown') %></span><% end %>
             </td>
-            <td><%= t('psychologist_bookings.duration_minutes', count: booking.service.duration_minutes) %></td>
+            <td><%= t('bookings.psychologist_bookings.duration_minutes', count: booking.service&.duration_minutes || 0) %></td>
             <td>
-              <% if booking.created_by == 'client' && booking.pending? %>
-                <%= button_to t('.confirm_button'), confirm_booking_path(booking), method: :post %>
-                <%= button_to t('.decline_button'), decline_booking_path(booking), method: :post, class: 'btn btn-danger' %>
+              <% if booking.created_by == 'client' && booking.status == 'pending' %>
+                <%= button_to t('.confirm_button'), confirm_booking_path(booking), method: :post, class: 'button is-small is-success' %>
+                <%= button_to t('.decline_button'), decline_booking_path(booking), method: :post, class: 'button is-small is-danger' %>
               <% end %>
             </td>
             <td>
+              <%= link_to t('.view_button'), psychologist_profile_booking_path(current_user.psychologist_profile, booking), class: 'button is-small is-primary is-light mr-2' %>
               <%= link_to t('.edit_button'), edit_psychologist_profile_booking_path(current_user.psychologist_profile, booking), class: 'button is-small is-info is-light mr-2' %>
               <%= link_to t('.delete_button'), psychologist_profile_booking_path(current_user.psychologist_profile, booking), data: { turbo_method: :delete, turbo_confirm: t('.delete_confirm') }, class: 'button is-small is-danger is-light' %>
             </td>
@@ -66,95 +119,220 @@
         <% end %>
       <% else %>
         <tr>
-          <td colspan="8" class="has-text-centered"><%= t('.no_upcoming_bookings') %></td>
+          <td colspan="8" class="has-text-centered"><%= t('.no_bookings') %></td>
         </tr>
       <% end %>
     </tbody>
   </table>
 </div>
 
-<hr>
-
-<h1 class="title is-2" id="past-bookings-toggle">
-  <%= t('.past_bookings_title') %>
-  <span class="icon is-small">
-    <i class="fas fa-angle-down" aria-hidden="true"></i>
-  </span>
-</h1>
-
-<div id="past-bookings-content" class="is-hidden">
-  <div class="table-container">
-    <table class="table is-striped is-hoverable is-fullwidth">
-      <thead>
-        <tr>
-          <th><%= t('.service_header') %></th>
-          <th><%= t('.created_by_header') %></th>
-          <th><%= t('.client_header') %></th>
-          <th><%= t('.start_time_header') %></th>
-          <th><%= t('.status_header') %></th>
-          <th><%= t('.duration_header') %></th>
-          <th></th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        <% if @past_bookings.any? %>
-          <% @past_bookings.each do |booking| %>
-            <tr>
-              <td><%= booking.service&.name %></td>
-              <td><%= t(".created_by_options.#{booking.created_by.presence || 'na'}") %></td>
-              <td><%= booking.client_profile&.first_name || booking.internal_client_profile&.first_name || 'N/A' %></td>
-              <td>
-                <span
-                  class="utc-date-time-range"
-                  data-start-utc="<%= booking.start_time.utc.iso8601 %>"
-                  data-end-utc="<%= booking.end_time&.utc&.iso8601 %>">
-                  <%= t('.loading_time') %>
-                </span>
-              </td>
-              <td>
-                <% case booking.status&.to_sym
-                   when :confirmed then %><span class="tag is-success"><%= t('.status_tags.confirmed') %></span><%
-                   when :pending then %><span class="tag is-warning"><%= t('.status_tags.pending') %></span><%
-                   when :cancelled then %><span class="tag is-danger"><%= t('.status_tags.cancelled') %></span><%
-                   else %><span class="tag is-info"><%= booking.status.present? ? t(".status_tags.#{booking.status.underscore}") : t('.status_tags.unknown') %></span><% end %>
-              </td>
-              <td><%= t('psychologist_bookings.duration_minutes', count: booking.service.duration_minutes) %></td>
-              <td></td>
-              <td></td>
-            </tr>
-          <% end %>
-        <% else %>
-          <tr>
-            <td colspan="8" class="has-text-centered"><%= t('.no_past_bookings') %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
+<!-- Modal for Booking Details -->
+<div class="modal" id="booking-modal">
+  <div class="modal-background"></div>
+  <div class="modal-content">
+    <div class="box" id="booking-modal-content"></div>
   </div>
+  <button class="modal-close is-large" aria-label="close" onclick="document.getElementById('booking-modal').classList.remove('is-active')"></button>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  const toggle = document.getElementById('past-bookings-toggle');
-  const content = document.getElementById('past-bookings-content');
-  const icon = toggle.querySelector('.icon i');
+  document.addEventListener('DOMContentLoaded', () => {
+    // Timeline Setup
+    const timeline = document.getElementById('timeline');
+    const bookings = [
+      <% @upcoming_bookings.each do |booking| %>
+        {
+          id: <%= booking.id %>,
+          start: '<%= booking.start_time.utc.iso8601 %>',
+          end: '<%= booking.end_time&.utc&.iso8601 || booking.start_time.utc.iso8601 %>',
+          status: '<%= booking.status || 'unknown' %>',
+          clientName: '<%= (booking.client_info&.first_name || 'N/A').to_json %>',
+          service: '<%= booking.service&.name&.to_json || 'N/A' %>',
+          notes: '<%= booking.notes&.to_json || '' %>',
+          createdBy: '<%= booking.created_by || 'na' %>',
+          psychologistProfileId: <%= current_user.psychologist_profile.id %>
+        },
+      <% end %>
+    ];
 
-  if (toggle && content) {
-    toggle.style.cursor = 'pointer'; // Make it look clickable
-    
-    toggle.addEventListener('click', () => {
-      content.classList.toggle('is-hidden');
-      
-      // Rotate the icon to show the state
-      if (content.classList.contains('is-hidden')) {
-        icon.classList.remove('fa-angle-up');
-        icon.classList.add('fa-angle-down');
-      } else {
-        icon.classList.remove('fa-angle-down');
-        icon.classList.add('fa-angle-up');
+    function renderTimeline(range = 'today') {
+      timeline.innerHTML = '';
+      const now = new Date();
+      let startDate, endDate;
+      if (range === 'today') {
+        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      } else if (range === 'week') {
+        startDate = new Date(now.setDate(now.getDate() - now.getDay()));
+        endDate = new Date(now.setDate(now.getDate() + 6));
+      } else if (range === 'month') {
+        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
       }
+
+      const totalDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) || 1;
+      timeline.style.width = `${totalDays * 100}px`; // 100px per day
+
+      const dateLabels = document.createElement('div');
+      dateLabels.className = 'timeline-dates';
+      for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+        const label = document.createElement('div');
+        label.textContent = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        label.style.width = '100px';
+        dateLabels.appendChild(label);
+      }
+      timeline.appendChild(dateLabels);
+
+      const statusFilter = document.getElementById('timeline-status-filter').value;
+      bookings.forEach(booking => {
+        if (statusFilter !== 'all' && booking.status !== statusFilter) return;
+        const start = new Date(booking.start);
+        if (start < startDate || start > endDate) return;
+
+        const offsetDays = (start - startDate) / (1000 * 60 * 60 * 24);
+        const durationMs = (new Date(booking.end) - start) || (30 * 60 * 1000); // Default 30min
+        const width = (durationMs / (1000 * 60 * 60 * 24)) * 100; // Scale to pixels
+
+        const bar = document.createElement('div');
+        bar.className = `timeline-bar status-${booking.status || 'unknown'}`;
+        bar.style.left = `${offsetDays * 100}px`;
+        bar.style.width = `${Math.max(width, 10)}px`; // Min width for visibility
+        bar.title = `${booking.clientName} (${booking.status})`;
+        bar.dataset.bookingId = booking.id;
+        bar.addEventListener('click', () => openBookingModal(booking));
+        timeline.appendChild(bar);
+      });
+    }
+
+    // Initial render
+    renderTimeline();
+
+    // Timeline Filters
+    document.getElementById('timeline-status-filter').addEventListener('change', () => renderTimeline(document.getElementById('timeline-range').value));
+    document.getElementById('timeline-range').addEventListener('change', (e) => renderTimeline(e.target.value));
+
+    // Table Filter and Sort
+    const table = document.getElementById('bookings-table');
+    document.getElementById('table-status-filter').addEventListener('change', (e) => {
+      const status = e.target.value;
+      table.tBodies[0].querySelectorAll('tr').forEach(row => {
+        row.style.display = (status === 'all' || row.dataset.status === status) ? '' : 'none';
+      });
     });
-  }
-});
+
+    table.querySelectorAll('th[data-sort]').forEach(header => {
+      header.addEventListener('click', () => {
+        const sortDir = header.dataset.sort === 'asc' ? 'desc' : 'asc';
+        header.dataset.sort = sortDir;
+        const isTimeSort = header.textContent.includes('<%= t('.start_time_header') %>');
+        const rows = Array.from(table.tBodies[0].rows).filter(row => !row.querySelector('td[colspan]'));
+        rows.sort((a, b) => {
+          if (isTimeSort) {
+            const aDate = new Date(a.querySelector('.utc-date-time-range').dataset.startUtc);
+            const bDate = new Date(b.querySelector('.utc-date-time-range').dataset.startUtc);
+            return sortDir === 'asc' ? aDate - bDate : bDate - aDate;
+          } else {
+            const aStatus = a.dataset.status || 'unknown';
+            const bStatus = b.dataset.status || 'unknown';
+            return sortDir === 'asc' ? aStatus.localeCompare(bStatus) : bStatus.localeCompare(aStatus);
+          }
+        });
+        rows.forEach(row => table.tBodies[0].appendChild(row));
+      });
+    });
+
+    // Modal Function
+    function openBookingModal(booking) {
+      const modalContent = `
+        <p><strong><%= t('.client_header') %>:</strong> ${booking.clientName}</p>
+        <p><strong><%= t('.service_header') %>:</strong> ${booking.service}</p>
+        <p><strong><%= t('.status_header') %>:</strong> ${booking.status}</p>
+        <p><strong><%= t('.start_time_header') %>:</strong> ${new Date(booking.start).toLocaleString()}</p>
+        <p><strong><%= t('.end_time_header') %>:</strong> ${new Date(booking.end).toLocaleString()}</p>
+        <p><strong><%= t('.notes') %>:</strong> ${booking.notes || 'None'}</p>
+        <div class="buttons">
+          ${booking.status === 'pending' && booking.createdBy === 'client' ? `
+            <form action="/psychologist_profiles/${booking.psychologistProfileId}/bookings/${booking.id}/confirm" method="post">
+              <input type="hidden" name="_method" value="post">
+              <button type="submit" class="button is-success is-small"><%= t('.confirm_button') %></button>
+            </form>
+            <form action="/psychologist_profiles/${booking.psychologistProfileId}/bookings/${booking.id}/decline" method="post">
+              <input type="hidden" name="_method" value="post">
+              <button type="submit" class="button is-danger is-small"><%= t('.decline_button') %></button>
+            </form>
+          ` : ''}
+          <a href="/psychologist_profiles/${booking.psychologistProfileId}/bookings/${booking.id}" class="button is-primary is-small"><%= t('.view_button') %></a>
+          <a href="/psychologist_profiles/${booking.psychologistProfileId}/bookings/${booking.id}/edit" class="button is-info is-small"><%= t('.edit_button') %></a>
+          <form action="/psychologist_profiles/${booking.psychologistProfileId}/bookings/${booking.id}" method="post" data-turbo-confirm="<%= t('.delete_confirm') %>">
+            <input type="hidden" name="_method" value="delete">
+            <button type="submit" class="button is-danger is-small"><%= t('.delete_button') %></button>
+          </form>
+        </div>
+      `;
+      document.getElementById('booking-modal-content').innerHTML = modalContent;
+      document.getElementById('booking-modal').classList.add('is-active');
+    }
+  });
 </script>
+
+<style>
+  .timeline-container {
+    margin-bottom: 2rem;
+  }
+  .timeline-wrapper {
+    overflow-x: auto;
+    padding: 1rem;
+    background: #f5f5f5;
+    border-radius: 8px;
+  }
+  #timeline {
+    position: relative;
+    height: 200px;
+    min-width: 100%;
+  }
+  .timeline-dates {
+    display: flex;
+    border-bottom: 1px solid #dbdbdb;
+    margin-bottom: 10px;
+  }
+  .timeline-dates div {
+    text-align: center;
+    font-size: 0.9em;
+    color: #333;
+  }
+  .timeline-bar {
+    position: absolute;
+    height: 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .timeline-bar:hover {
+    transform: scale(1.05);
+  }
+  .timeline-bar.status-confirmed { background-color: #28a745; }
+  .timeline-bar.status-pending { background-color: #ffc107; }
+  .timeline-bar.status-cancelled { background-color: #dc3545; }
+  .timeline-bar.status-unknown { background-color: #6c757d; }
+  @media (max-width: 768px) {
+    #timeline {
+      height: auto;
+      min-height: 400px;
+    }
+    .timeline-dates {
+      flex-direction: column;
+    }
+    .timeline-dates div {
+      width: 100%;
+      text-align: left;
+      padding: 5px;
+      border-bottom: 1px solid #dbdbdb;
+    }
+    .timeline-bar {
+      width: 80% !important;
+      left: 10% !important;
+      top: calc(var(--day-index) * 30px);
+      height: 20px;
+    }
+  }
+</style>

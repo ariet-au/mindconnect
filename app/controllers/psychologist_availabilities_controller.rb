@@ -130,8 +130,7 @@ def calendar_blocks
       json_data << {
         start: start_local.iso8601,
         end:   end_local.iso8601,
-        display: 'background',
-        color: '#008000'
+        display: 'background'
       }
     end
   end

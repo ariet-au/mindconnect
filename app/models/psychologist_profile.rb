@@ -117,15 +117,16 @@ class PsychologistProfile < ApplicationRecord
 
 pg_search_scope :search_full_text,
   against: [:first_name, :last_name, :about_me, :religion, :about_clients, :about_issues, :about_specialties],
-  associated_against: { # <-- Use the new association name here
+  associated_against: {
     services: [:name, :description],
     issues: [:name],
     specialties: [:name]
   },
   using: {
-    tsearch: { prefix: true }
-  }
-
+    tsearch: { prefix: true }, # finds partial words
+    trigram: { threshold: 0.2 } # finds fuzzy matches (typos, similar words)
+  },
+  ranked_by: ":tsearch + :trigram" # rank by combined score
     def full_name
       "#{first_name} #{last_name}" # or however you want it displayed
     end

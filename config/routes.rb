@@ -90,6 +90,7 @@ Rails.application.routes.draw do
           get 'psychologist_bookings'
           post :create_json
           get :new_with_service_selection
+          get :show_all
         end
         member do
           get 'confirm', to: 'bookings#confirm_form'

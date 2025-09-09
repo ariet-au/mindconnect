@@ -1,5 +1,6 @@
 en:
   hello: "Hello"
+  description: "Найдите и забронируйте терапевта легко."
   contact: "Contact"
   my_profile: "My profile"
   edit_profile: "Edit profile"
@@ -10,6 +11,9 @@ en:
   registration: "Registration"
   online: "Online"
   in_person: "In person"
+  og:
+    title: "AkSanaa"
+    description: "Find and book therapists easily."
 
   filters:
     clear: "Clear all"
@@ -76,6 +80,14 @@ en:
         
   psychologist_profiles:
     show:
+      contact_me: "Contact Me"
+      book_a_session: "Book a session"
+      duration: "Duration"
+      format: "Format"
+      rate: "Rate"
+      edit_profile: "Edit Profile"
+      ready_to_talk: "Thinking about starting therapy, but not sure if you are ready?"
+      reach_out: "You are welcome to contact me with any questions, whether you are ready to begin or simply want to explore your options. Together, we can find an approach that feels supportive and right for you."
       dashboard: "Dashboard"
       manage_availability: "Manage Availability"
       block_unavailability: "Block Unavailability"
@@ -291,7 +303,7 @@ en:
   bookings:
     select_service:
       select_service_title: Select a Service
-      duration_minutes: "%{minutes} minutes"
+      duration_minutes: "%{minutes} min"
     choose_time:
       page_title: Choose a Time
       date_selection_instruction: Select a date to see available times. Dates with availability are highlighted.
@@ -321,8 +333,8 @@ en:
       no_upcoming_bookings: "No upcoming bookings found."
       no_past_bookings: "No past bookings found."
       duration_minutes:
-        one: "1 minute"
-        other: "%{count} minutes"
+        one: "1 min"
+        other: "%{count} min"
       status_tags:
         confirmed: "Confirmed"
         pending: "Pending"

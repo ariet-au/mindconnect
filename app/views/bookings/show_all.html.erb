@@ -1,0 +1,38 @@
+<div class="psychologist-bookings-container">
+  <h2>Your Bookings</h2>
+  
+  <div class="booking-list-filter">
+    <p>Showing past week and upcoming bookings.</p>
+  </div>
+  
+  <div class="bookings-grid">
+    <% if @bookings.any? %>
+      <% @bookings.each do |booking| %>
+        <div class="booking-card <%= 'past-booking' if booking.start_time < Time.current %>">
+          <div class="booking-header">
+            <%# Safely access client_info and then use full_name, or display a fallback %>
+            <h3>Booking with: <%= booking.client_info&.full_name || 'Unknown Client' %></h3>
+            <span class="booking-status status-<%= booking.status.downcase %>">
+              <%= booking.status.humanize %>
+            </span>
+          </div>
+
+          <div class="booking-details">
+            <p><strong>Date:</strong> <%= booking.start_time.strftime('%A, %B %e, %Y') %></p>
+            <p><strong>Time:</strong> <%= booking.start_time.strftime('%l:%M %p') %> - <%= booking.end_time.strftime('%l:%M %p') %></p>
+            <p><strong>Service:</strong> <%= booking.service&.name || 'Not specified' %></p>
+            <% if booking.notes.present? %>
+              <p><strong>Notes:</strong> <%= booking.notes %></p>
+            <% end %>
+          </div>
+
+          <div class="booking-actions">
+           
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <p>No bookings found for the specified period.</p>
+    <% end %>
+  </div>
+</div>

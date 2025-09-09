@@ -320,7 +320,6 @@ class BookingsController < ApplicationController
     end
   end
 
-
   def psychologist_bookings
     # Ensure the user is a psychologist and has a profile
     unless current_user&.psychologist_profile
@@ -328,17 +327,44 @@ class BookingsController < ApplicationController
       return
     end
 
-    # Fetch all bookings for the psychologist
-    all_bookings = Booking.includes(:client_profile, :internal_client_profile, :service)
-                          .where(psychologist_profile_id: current_user.psychologist_profile.id)
-
-    # Separate bookings into upcoming and past
-    @upcoming_bookings = all_bookings.where('start_time >= ?', Time.current)
-                                    .order(start_time: :asc)
-    @past_bookings = all_bookings.where('start_time < ?', Time.current)
-                                .order(start_time: :desc)
+    # Fetch only today's and upcoming bookings for the psychologist
+    @upcoming_bookings = Booking.includes(:client_profile, :internal_client_profile, :service)
+                                .where(psychologist_profile_id: current_user.psychologist_profile.id)
+                                .where('start_time >= ?', Time.current.beginning_of_day )
+                                .order(start_time: :asc)
   end
 
+
+  
+  # def psychologist_bookings
+  #   # Ensure the user is a psychologist and has a profile
+  #   unless current_user&.psychologist_profile
+  #     redirect_to root_path, alert: "You must be logged in as a psychologist to view this page."
+  #     return
+  #   end
+
+  #   # Fetch all bookings for the psychologist
+  #   all_bookings = Booking.includes(:client_profile, :internal_client_profile, :service)
+  #                         .where(psychologist_profile_id: current_user.psychologist_profile.id)
+
+  #   # Separate bookings into upcoming and past
+  #   @upcoming_bookings = all_bookings.where('start_time >= ?', Time.current)
+  #                                   .order(start_time: :asc)
+  #   @past_bookings = all_bookings.where('start_time < ?', Time.current)
+  #                               .order(start_time: :desc)
+  # end
+
+  def show_all
+    # Assuming the current user is a psychologist and has a profile
+    @psychologist_profile = current_user.psychologist_profile
+    
+    # Fetch bookings for the psychologist, including those from the last week and all future bookings
+    @bookings = @psychologist_profile.bookings
+                                    .where('start_time >= ?', 1.week.ago)
+                                    .or(@psychologist_profile.bookings.where('start_time > ?', Time.current))
+                                    .includes(:service, :client_info)
+                                    .order(start_time: :asc)
+  end
 
   def select_service
     @services = current_user.services

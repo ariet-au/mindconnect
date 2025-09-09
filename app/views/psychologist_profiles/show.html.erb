@@ -743,8 +743,8 @@ body {
     <% if user_signed_in? && current_user.psychologist? && current_user == @psychologist_profile.user %>
         <div style="position: absolute; right: 0; top: 0;">
             <%= link_to edit_psychologist_profile_path(@psychologist_profile), class: "button is-small is-secondary" do %>
-            <i class="fas fa-edit"></i>
-            <span>Edit Profile</span>
+            <i class="fas fa-edit"> </i>
+            <span> <%= t('psychologist_profiles.show.edit_profile')%></span>
             <% end %>
         </div>
     <% end %>
@@ -935,7 +935,7 @@ body {
                         <div class="service-detail-item">
                             <i class="fas fa-hourglass-half service-detail-icon"></i>
                             <div>
-                                <span class="service-detail-label">Duration</span>
+                                <span class="service-detail-label"><%= t('psychologist_profiles.show.duration') %></span>
                                 <span class="service-detail-value"><%= t('psychologist_profiles.show.duration_minutes', count: service.duration_minutes) %></span>
                             </div>
                         </div>
@@ -944,7 +944,7 @@ body {
                         <div class="service-detail-item">
                             <i class="fas fa-dollar-sign service-detail-icon"></i>
                             <div>
-                                <span class="service-detail-label">Rate</span>
+                                <span class="service-detail-label"><%= t('psychologist_profiles.show.rate') %></span>
                                 <span class="service-detail-value">
                                     <% if service.price == 0 %>
                                         <%= t('psychologist_profiles.show.free') %>
@@ -966,7 +966,7 @@ body {
                                 <i class="fas fa-user-friends service-detail-icon"></i>
                             <% end %>
                             <div>
-                                <span class="service-detail-label">Method</span>
+                                <span class="service-detail-label"><%= t('psychologist_profiles.show.format') %></span>
                                 <span class="service-detail-value">
                                     <% if service.delivery_method.to_s.downcase.include?("online") %>
                                         <%= t('psychologist_search.online') %>
@@ -989,8 +989,8 @@ body {
         <%# ---- Contact Me Button ---- %>
         <% if contact_link %>
             <div class="profile-section text-center">
-                <h2 class="section-title" style="justify-content: center;"><i class="fas fa-paper-plane"></i> Ready to Talk?</h2>
-                <p class="text-light mb-4">Reach out directly for any questions or to get started.</p>
+                <h2 class="section-title" style="justify-content: center;"><i class="fas fa-paper-plane"></i> <%= t('psychologist_profiles.show.ready_to_talk') %></h2>
+                <p class="text-light mb-4"> <%= t('psychologist_profiles.show.reach_out') %></p>
                 <a href="<%= contact_link %>" class="button is-primary">
                     <i class="<%= contact_keys[primary_contact_method.to_sym] %> mr-2"></i>
                     <span><%= t('psychologist_profiles.show.contact_me') %></span>

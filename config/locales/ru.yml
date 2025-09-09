@@ -10,6 +10,9 @@ ru:
   registration: "Регистрация"
   online: "Онлайн"
   in_person: "Лично"
+  og:
+    title: "AkSanaa"
+    description: "Найдите и забронируйте терапевта легко."
   
   filters:
     clear: "Очистить все"
@@ -76,6 +79,14 @@ ru:
         
   psychologist_profiles:
     show:
+      contact_me: "Связаться со мной"
+      book_a_session: "Записаться на Сеанс"
+      duration: "Длительность"
+      format: "Формат"
+      rate: "Цена"
+      edit_profile: "Редакторовать Профиль"
+      ready_to_talk: "Задумываетесь о терапии или не уверены что готовы?"
+      reach_out: "Вы можете смело обращаться ко мне с любыми вопросами!"
       dashboard: "Панель управления"
       manage_availability: "Управление доступностью"
       block_unavailability: "Заблокировать недоступность"
@@ -109,7 +120,7 @@ ru:
       duration_minutes:
         one: "1 мин"
         other: "%{count} мин"
-      book_this_service: "Записаться на эту услугу"
+      book_this_service: "Записаться на первый сеанс"
       no_services_available: "В настоящее время нет доступных услуг."
       contact_information: "Контактная информация"
       contact_me_via: "Связаться со мной через %{label}"
