@@ -9,7 +9,9 @@
     --accent-green: #2f855a;
     --muted-grey: #a0aec0;
     --accent-purple: #805ad5;
-    --insta-white: #ffffff; /* New variable for the white Instagram icon */
+    --insta-white: #ffffff;
+    --soft-neutral: #f9fafb; /* New for minimalistic sections */
+    --light-accent: #e5e7eb; /* Subtle accent for text */
 }
 
 body {
@@ -210,27 +212,34 @@ body {
     width: 48px;
     height: 48px;
     margin: 0 0.5rem;
-    color: var(--white);
-    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888, #805ad5);
+    background: transparent;
     border-radius: 12px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.social-icon i.fab.fa-instagram {
+    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888, #805ad5);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    font-size: 24px;
 }
 
 .social-icon:hover {
-    transform: translateY(-4px) scale(1.1);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    transform: scale(1.1);
 }
 
 .how-it-works-section {
-    background-color: var(--light-grey);
+    background-color: var(--soft-neutral); /* Softer background */
+    padding: 4rem 0; /* Reduced padding for minimalism */
 }
 
 .columns {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    margin-top: 4rem;
+    gap: 1.5rem; /* Tighter gap for cleaner look */
+    margin-top: 3rem;
 }
 
 .column {
@@ -241,121 +250,105 @@ body {
 }
 
 .step-card {
-    padding: 2.5rem;
+    padding: 2rem;
     background-color: var(--white);
-    border-radius: 15px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-    border-top: 4px solid var(--primary-blue);
-    transition: transform 0.3s ease, box-shadow 0.3s ease, border-top-color 0.3s ease;
+    border-radius: 10px; /* Softer corners */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Lighter shadow */
+    border-top: 3px solid var(--primary-blue); /* Thinner border */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
     height: 100%;
 }
 
 .step-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-    border-top-color: var(--secondary-blue);
+    transform: translateY(-5px); /* Subtler lift */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .card-icon {
-    width: 60px;
-    height: 60px;
+    width: 50px; /* Slightly smaller icon */
+    height: 50px;
     color: var(--primary-blue);
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     transition: transform 0.3s ease;
 }
 
 .step-card:hover .card-icon {
-    transform: scale(1.2);
+    transform: scale(1.1); /* Subtler scale */
 }
 
 .card-title {
-    font-size: 1.75rem;
-    font-weight: 700;
-    margin-bottom: 0.75rem;
-    color: var(--primary-blue);
+    font-size: 1.5rem; /* Smaller, cleaner title */
+    font-weight: 600; /* Lighter weight */
+    margin-bottom: 0.5rem;
+    color: var(--charcoal); /* Darker for contrast */
 }
 
 .card-text {
-    font-size: 1rem;
-    color: var(--charcoal);
+    font-size: 0.95rem; /* Smaller text */
+    color: var(--muted-grey); /* Softer text color */
 }
 
 .cta-section {
-    background: linear-gradient(135deg, var(--primary-blue) 0%, #3d72b4 100%);
-    color: var(--white);
+    background: var(--white); /* Clean white background */
+    color: var(--charcoal);
     text-align: center;
-    position: relative;
-    padding: 6rem 0;
-}
-
-.cta-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at 70% 30%, rgba(255, 255, 255, 0.1), transparent 70%);
-    z-index: 1;
+    padding: 4rem 0; /* Reduced padding */
+    border-top: 1px solid var(--light-grey); /* Subtle divider */
 }
 
 .cta-content {
-    position: relative;
-    z-index: 2;
-    max-width: 800px;
+    max-width: 700px;
     margin: 0 auto;
 }
 
 .social-links {
-    margin-top: 1.5rem;
-    font-size: 1rem;
-    color: #e5e7eb;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    color: var(--muted-grey);
 }
 
 .social-links a {
-    color: #ffffff;
+    color: var(--primary-blue);
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 500;
 }
 
 .social-links a:hover {
     text-decoration: underline;
 }
 
-/* Updated styles for CTA section buttons to improve readability on dark background */
-
 .cta-section .button-outline-success {
-    border-color: var(--white);
-    color: var(--white);
-    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+    box-shadow: none;
 }
 
 .cta-section .button-outline-success:hover {
-    background-color: var(--white);
-    color: var(--primary-blue);
+    background-color: var(--accent-green);
+    color: var(--white);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .cta-section .button-outline {
-    border-color: var(--white);
-    color: var(--white);
-    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+    border-color: var(--telegram-blue);
+    color: var(--telegram-blue);
+    box-shadow: none;
 }
 
 .cta-section .button-outline:hover {
-    background-color: var(--white);
-    color: var(--telegram-blue);
+    background-color: var(--telegram-blue);
+    color: var(--white);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .cta-section .social-icon {
-    background: var(--insta-white);
+    background: transparent;
     color: var(--accent-purple);
-    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
 }
 
 .cta-section .social-icon:hover {
-    transform: translateY(-4px) scale(1.1);
+    transform: scale(1.1);
     background: var(--light-grey);
-    box-shadow: 0 6px 12px rgba(255, 255, 255, 0.15);
 }
 
 @media (max-width: 1024px) {
@@ -404,10 +397,10 @@ body {
         max-width: 150px;
     }
     .card-title {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
     }
     .card-text {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
     }
     .social-icon {
         width: 44px;
@@ -451,23 +444,19 @@ body {
     <div class="container hero-content fade-in-up">
         <%= image_tag "logo-dark.png", alt: "AkSanaa Logo", class: "logo" %>
         <h1 class="title text-gradient">
-            Растите свою практику с легкостью
+            Упрощаем управление практикой.
         </h1>
         <ul class="feature-list">
-            <li>Платформа для психологов, упрощающая управление бронированиями</li>
-            <li>Продвигайте свой бизнес с персонализированным профилем</li>
-            <li>Делитесь уникальной ссылкой <span class="highlight">aksanaa.com/p/ваш-выбор</span></li>
-            <li>Привлекайте новых клиентов без лишних усилий</li>
+            <li>Красивый профиль — как ваша визитка в интернете</li>
+            <li>Ссылка, которую легко отправить клиенту</li>
+            <li>Делитесь уникальной ссылкой &nbsp;<span class="highlight"> aksanaa.com/p/ваше-имя</span></li>
+            <li>Клиенты сами находят вас и записываются онлайн</li>
         </ul>
         <div class="buttons-group">
             <%= link_to "Присоединиться к платформе", new_user_registration_path, class: "button button-primary" %>
             <%= link_to "Напиши нам в Telegram", "https://t.me/arietd", class: "button button-outline" %>
             <a href="https://instagram.com/aksanaa_com" class="social-icon" target="_blank" rel="noopener noreferrer">
-                <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
-                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.326 3.608 1.301.975.975 1.24 2.242 1.301 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.326 2.633-1.301 3.608-.975.975-2.242 1.24-3.608 1.301-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.326-3.608-1.301-.975-.975-1.24-2.242-1.301-3.608-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.062-1.366.326-2.633 1.301-3.608.975-.975 2.242-1.24 3.608-1.301 1.266-.058 1.646-.07 4.85-.07zm0-2.163c-3.259 0-3.667.014-4.947.072-1.627.074-3.073.394-4.243 1.564C1.64 2.806 1.32 4.252 1.246 5.879c-.058 1.28-.072 1.688-.072 4.947s.014 3.667.072 4.947c.074 1.627.394 3.073 1.564 4.243 1.17 1.17 2.616 1.49 4.243 1.564 1.28.058 1.688.072 4.947.072s3.667-.014 4.947-.072c1.627-.074 3.073-.394 4.243-1.564 1.17-1.17 1.49-2.616 1.564-4.243.058-1.28.072-1.688.072-4.947s-.014-3.667-.072-4.947c-.074-1.627-.394-3.073-1.564-4.243-1.17-1.17-2.616-1.49-4.243-1.564-1.28-.058-1.688-.072-4.947-.072z"/>
-                    <path d="M12 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zm0 10.162a3.999 3.999 0 110-7.998 3.999 3.999 0 010 7.998z"/>
-                    <circle cx="18.406" cy="5.594" r="1.44"/>
-                </svg>
+                <i class="fa-brands fa-instagram"></i>
             </a>
         </div>
     </div>
@@ -477,12 +466,11 @@ body {
 <section class="section how-it-works-section">
     <div class="container">
         <h2 class="title fade-in-up" style="text-align: center;">
-            Как это работает: От профиля до записи
+            Всё для вашей практики
         </h2>
-        <p class="subtitle fade-in-up" style="text-align: center; max-width: 600px; margin-left: auto; margin-right: auto;">
-            AkSanaa упрощает каждый шаг взаимодействия с клиентом. Вот как это происходит.
+        <p class="subtitle fade-in-up" style="text-align: center; max-width: 600px; margin: 0 auto;">
+            Профиль, расписание и бронирования в одном месте.
         </p>
-
         <div class="columns">
             <!-- Step 1 -->
             <div class="column fade-in-up">
@@ -494,11 +482,11 @@ body {
                     </figure>
                     <h3 class="card-title">1. Создайте профессиональный профиль</h3>
                     <p class="card-text">
-                        Создайте страницу, которая подчеркнет вашу квалификацию и специализацию. Клиенты могут легко найти вас, ориентируясь на свои потребности.
+                        Добавьте контакты, подчеркните свои специализации и направления работы. 
+                        Загрузите фото или видео-приветствие и получите персональную ссылку <span class="highlight">aksanaa.com/p/ваше-имя</span>.
                     </p>
                 </div>
             </div>
-
             <!-- Step 2 -->
             <div class="column fade-in-up" style="animation-delay: 0.2s;">
                 <div class="step-card">
@@ -509,11 +497,10 @@ body {
                     </figure>
                     <h3 class="card-title">2. Управляйте расписанием</h3>
                     <p class="card-text">
-                        Наша встроенная система позволяет вам указывать свободные часы. Клиенты могут видеть ваше расписание и бронировать удобное для них время.
+                        Укажите доступные часы и дни. Клиенты видят свободные слоты и выбирают удобное для них время.
                     </p>
                 </div>
             </div>
-
             <!-- Step 3 -->
             <div class="column fade-in-up" style="animation-delay: 0.4s;">
                 <div class="step-card">
@@ -522,9 +509,10 @@ body {
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </figure>
-                    <h3 class="card-title">3. Получайте записи</h3>
+                    <h3 class="card-title">3. Получайте запросы и бронирования</h3>
                     <p class="card-text">
-                        Клиенты могут мгновенно записываться на прием. Вы также можете отправить им прямую ссылку-приглашение для подтверждения удобного времени.
+                        Клиенты могут мгновенно отправить вам запрос или забронировать время. 
+                        Вы также можете сами предложить слот — клиент подтвердит, и встреча сразу появится в его календаре.
                     </p>
                 </div>
             </div>
@@ -535,21 +523,19 @@ body {
 <!-- Final CTA Section -->
 <section class="section cta-section">
     <div class="container cta-content fade-in-up">
-        <h2 class="title" style="color: var(--white);">
-            Начните расти уже сегодня
+        <h2 class="title">
+            Попробуйте бесплатно
         </h2>
-        <p class="subtitle" style="color: #e5e7eb;">
-            Присоединяйтесь к AkSanaa и сделайте управление практикой простым и эффективным. Есть вопросы? Свяжитесь с нами через Telegram или посетите наш Instagram <a href="https://instagram.com/aksanaa_com" class="social-links">@aksanaa_com</a>.
+        <br>
+        <p class="subtitle" style="max-width: 650px; margin: 0 auto;">
+            AkSanaa создана вместе с практикующими психологами, чтобы упростить вашу работу. 
+            Регистрация бесплатна и займёт всего пару минут.
         </p>
         <div class="buttons-group">
-            <%= link_to "Создать аккаунт на платформе", new_user_registration_path, class: "button button-outline-success" %>
-            <%= link_to "Напиши нам в Telegram", "https://t.me/arietd", class: "button button-outline" %>
+            <%= link_to "Создать профиль бесплатно", new_user_registration_path, class: "button button-outline-success" %>
+            <%= link_to "Связаться в Telegram", "https://t.me/arietd", class: "button button-outline" %>
             <a href="https://instagram.com/aksanaa_com" class="social-icon" target="_blank" rel="noopener noreferrer">
-                <svg fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24">
-                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.326 3.608 1.301.975.975 1.24 2.242 1.301 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.326 2.633-1.301 3.608-.975.975-2.242 1.24-3.608 1.301-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.326-3.608-1.301-.975-.975-1.24-2.242-1.301-3.608-.058-1.266-.07-1.646-.07-4.85s.012-3.584.07-4.85c.062-1.366.326-2.633 1.301-3.608.975-.975 2.242-1.24 3.608-1.301 1.266-.058 1.646-.07 4.85-.07zm0-2.163c-3.259 0-3.667.014-4.947.072-1.627.074-3.073.394-4.243 1.564C1.64 2.806 1.32 4.252 1.246 5.879c-.058 1.28-.072 1.688-.072 4.947s.014 3.667.072 4.947c.074 1.627.394 3.073 1.564 4.243 1.17 1.17 2.616 1.49 4.243 1.564 1.28.058 1.688.072 4.947.072s3.667-.014 4.947-.072c1.627-.074 3.073-.394 4.243-1.564 1.17-1.17 1.49-2.616 1.564-4.243.058-1.28.072-1.688.072-4.947s-.014-3.667-.072-4.947c-.074-1.627-.394-3.073-1.564-4.243-1.17-1.17-2.616-1.49-4.243-1.564-1.28-.058-1.688-.072-4.947-.072z"/>
-                    <path d="M12 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zm0 10.162a3.999 3.999 0 110-7.998 3.999 3.999 0 010 7.998z"/>
-                    <circle cx="18.406" cy="5.594" r="1.44"/>
-                </svg>
+                <i class="fa-brands fa-instagram"></i>
             </a>
         </div>
     </div>
