@@ -73,3 +73,4 @@ gem 'i18n', '~> 1.14'
 gem 'mailgun-ruby'
 
 gem 'icalendar'
+gem 'geocoder'
