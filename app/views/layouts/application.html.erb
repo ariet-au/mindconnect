@@ -710,7 +710,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <span class="icon">
               <i class="fas fa-user-circle"></i>
             </span>
-            <span class="user-email"><%= current_user.email %></span>
+            <span class="user-email"><%= current_user&.email %></span>
             <span class="icon">
               <i class="fas fa-chevron-down"></i>
             </span>
@@ -719,14 +719,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
       <div class="menu" id="user-menu" role="menu">
   <div class="menu-content">
-    <% if current_user&.psychologist? && current_user.psychologist_profile.present? %>
+    <% if current_user&.psychologist? && current_user&.psychologist_profile.present? %>
       <%= link_to psychologist_dashboard_path, class: "menu-item" do %>
         <span class="icon">
           <i class="fas fa-calendar"></i>
         </span>
         <span><%= t('psychologist_profiles.show.dashboard') %></span>
       <% end %>
-      <%= link_to psychologist_profile_path(current_user.psychologist_profile), 
+      <%= link_to psychologist_profile_path(current_user&.psychologist_profile), 
         class: "menu-item" do %>
         <span class="icon">
           <i class="fas fa-user-edit"></i>
@@ -734,8 +734,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <span><%= t('my_profile') %></span>
       <% end %>
     <% end %>
-    <% if current_user&.client? && current_user.client_profile.present? %>
-      <%= link_to client_profile_path(current_user.client_profile), 
+    <% if current_user&.client? && current_user&.client_profile.present? %>
+      <%= link_to client_profile_path(current_user&.client_profile), 
         class: "menu-item" do %>
         <span class="icon">
           <i class="fas fa-user-edit"></i>
