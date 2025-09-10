@@ -1,50 +1,40 @@
-<div id="<%= dom_id service %>" class="card mb-4">
-  <div class="card-content">
-    <div class="media">
+<div id="<%= dom_id service %>" class="card mb-4 is-shadowless">
+  <div class="card-content p-5">
+    <div class="media is-align-items-center mb-3">
       <div class="media-content">
-        <p class="title is-4">
-          <%= service.name %>
-          <span class="tag is-primary is-light ml-2"><%= service.delivery_method %></span>
+        <p class="title is-4 mb-1">
+          <%= link_to service.name, service_path(service), class: "has-text-link has-text-weight-bold" %>
+          <span class="tag is-primary is-light ml-2"><%= t(service.delivery_method, scope: "services.delivery_methods") %></span>
         </p>
       </div>
     </div>
 
-    <div class="content">
+    <div class="content has-text-grey-dark">
       <p class="mb-4">
         <%= service.description %>
       </p>
 
-      <div class="columns is-mobile is-vcentered">
-        <div class="column">
-          <p class="has-text-weight-semibold">
-            <span class="icon-text">
-              <span class="icon">
-                <i class="fas fa-money-bill-wave"></i>
-              </span>
-              <span><%= number_to_currency(service.price) %></span>
-            </span>
-          </p>
-        </div>
-        
-        <div class="column">
-          <p class="has-text-weight-semibold">
-            <span class="icon-text">
-              <span class="icon">
-                <i class="fas fa-clock"></i>
-              </span>
-              <span><%= service.duration_minutes %> minutes</span>
-            </span>
-          </p>
-        </div>
+      <div class="is-flex is-justify-content-space-between is-align-items-center mb-4">
+        <p class="has-text-weight-semibold is-flex is-align-items-center">
+          <span class="icon has-text-success mr-2">
+            <i class="fas fa-money-bill-wave"></i>
+          </span>
+          <span><%= number_to_currency(service.price, unit: service.currency) %></span>
+        </p>
+
+        <p class="has-text-weight-semibold is-flex is-align-items-center">
+          <span class="icon has-text-info mr-2">
+            <i class="fas fa-clock"></i>
+          </span>
+          <span><%= service.duration_minutes %> <%= t('minutes') %></span>
+        </p>
       </div>
 
- <div class="buttons is-left">
-
-  <%= link_to "Book This Service", new_service_booking_path(service), class: "button btn-success" %>
-    </div> 
- <div class="buttons is-right">
-  <%= link_to "Edit", edit_service_path(service), class: "button is-light is-small" %>
-</div>
+      <div class="buttons is-right">
+        <%= link_to t('services.show.edit'), edit_service_path(service), class: "button is-light is-small" %>
+        <%= link_to t('services.show.destroy'), service, method: :delete, data: { confirm: 'Are you sure?' }, class: "button is-danger is-light is-small" %>
+        <%= link_to t('services.show.back'), service_path(service), class: "button is-link is-light is-small" %>
+      </div>
     </div>
   </div>
 </div>

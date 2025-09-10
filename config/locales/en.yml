@@ -81,6 +81,7 @@ en:
   psychologist_profiles:
     show:
       contact_me: "Contact Me"
+      my_services: "My services"
       book_a_session: "Book a session"
       duration: "Duration"
       format: "Format"
@@ -532,3 +533,41 @@ en:
         whatsapp: "WhatsApp"
         telegram: "Telegram"
         other: "Other"
+
+  services:
+    index:
+      title: "Services"
+      new_service: "New Service"
+    show:
+      title: "Service Details"
+      edit: "Edit Service"
+      destroy: "Destroy Service"
+      back: "Back to Services"
+    form:
+      name: "Service Name"
+      description: "Description"
+      price: "Price"
+      currency: "Currency"
+      duration: "Duration (minutes)"
+      delivery_method: "Delivery Method"
+      select_currency: "Select Currency"
+      save: "Save Service"
+      errors:
+        header: "%{count} error(s) prohibited this service from being saved:"
+    attributes:
+      delivery_method:
+        online: "Online"
+        in_person: "In Person"
+        phone: "Phone"
+        unspecified: "Unspecified"
+    delivery_methods:
+      online: "Online"
+      in_person: "In Person"
+      phone: "Phone"
+      unspecified: "Unspecified"
+    service_destroyed: "Service was successfully destroyed."
+    service_created: "Service was successfully created."
+    service_updated: "Service was successfully updated."
+
+  button_to:
+    destroy: "Destroy this service"

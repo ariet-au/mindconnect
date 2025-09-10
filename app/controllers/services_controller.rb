@@ -10,11 +10,14 @@ class ServicesController < ApplicationController
   end
   # GET /services or /services.json
   def index
-    @services = Service.all
+    @psychologist_profile = PsychologistProfile.find(params[:psychologist_profile_id])
+    @services = @psychologist_profile.services
   end
 
   # GET /services/1 or /services/1.json
   def show
+    @service = Service.find(params[:id])
+    @psychologist_profile = @service.user.psychologist_profile
   end
 
   # GET /services/new

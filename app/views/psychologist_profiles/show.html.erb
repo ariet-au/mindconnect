@@ -741,13 +741,20 @@ body {
 
     <div class="card">
     <% if user_signed_in? && current_user.psychologist? && current_user == @psychologist_profile.user %>
-        <div style="position: absolute; right: 0; top: 0;">
-            <%= link_to edit_psychologist_profile_path(@psychologist_profile), class: "button is-small is-secondary" do %>
-            <i class="fas fa-edit"> </i>
-            <span> <%= t('psychologist_profiles.show.edit_profile')%></span>
-            <% end %>
-        </div>
-    <% end %>
+    <div style="position: absolute; top: 0; right: 0; display: flex; gap: 0.5rem; padding: 0.5rem;">
+      
+      <%= link_to edit_psychologist_profile_path(@psychologist_profile), class: "button is-small is-secondary" do %>
+        <i class="fas fa-edit"></i>
+        <span><%= t('psychologist_profiles.show.edit_profile') %></span>
+      <% end %>
+
+      <%= link_to psychologist_profile_services_path(@psychologist_profile), class: "button is-small is-secondary" do %>
+        <i class="fas fa-list"></i>
+        <span><%= t('psychologist_profiles.show.my_services') %></span>
+      <% end %>
+
+    </div>
+  <% end %>
         <div class="profile-header">
             <% if @psychologist_profile.profile_img.attached? %>
                 <%= image_tag url_for(@psychologist_profile.profile_img.variant(resize_to_limit: [200, 200])), class: "profile-avatar" %>

@@ -80,6 +80,7 @@ kg:
   psychologist_profiles:
     show:
       contact_me: "Байланышуу"
+      my_services: "Менин кызматтарым"
       book_a_session: "Сеанска жазылуу"
       duration: "Убакыт"
       format: "Откоруу Формат"
@@ -526,4 +527,42 @@ kg:
         whatsapp: "WhatsApp"
         telegram: "Telegram"
         other: "Башка"
+
+  services:
+    index:
+      title: "Кызматтар"
+      new_service: "Жаңы кызмат"
+    show:
+      title: "Кызматтын чоо-жайы"
+      edit: "Кызматты өзгөртүү"
+      destroy: "Кызматты жок кылуу"
+      back: "Кызматтарга кайтуу"
+    form:
+      name: "Кызматтын аты"
+      description: "Сүрөттөө"
+      price: "Баасы"
+      currency: "Валюта"
+      duration: "Узактыгы (мүнөт)"
+      delivery_method: "Жеткирүү ыкмасы"
+      select_currency: "Валютаны тандоо"
+      save: "Кызматты сактоо"
+      errors:
+        header: "%{count} ката ушул кызматты сактоого тоскоолдук кылды:"
+    attributes:
+      delivery_method:
+        online: "Онлайн"
+        in_person: "Жеке"
+        phone: "Телефон"
+        unspecified: "Такталган эмес"
+    delivery_methods:
+      online: "Онлайн"
+      in_person: "Жеке"
+      phone: "Телефон"
+      unspecified: "Такталган эмес"
+    service_destroyed: "Кызмат ийгиликтүү жок кылынды."
+    service_created: "Кызмат ийгиликтүү түзүлдү."
+    service_updated: "Кызмат ийгиликтүү жаңыртылды."
+
+  button_to:
+    destroy: "Бул кызматты жок кылуу"
     

@@ -80,6 +80,7 @@ ru:
   psychologist_profiles:
     show:
       contact_me: "Связаться со мной"
+      my_services: "Мои услуги"
       book_a_session: "Записаться на Сеанс"
       duration: "Длительность"
       format: "Формат"
@@ -533,3 +534,41 @@ ru:
         whatsapp: "WhatsApp"
         telegram: "Telegram"
         other: "Другое"
+
+  services:
+    index:
+      title: "Услуги"
+      new_service: "Новая услуга"
+    show:
+      title: "Детали услуги"
+      edit: "Редактировать услугу"
+      destroy: "Удалить услугу"
+      back: "Вернуться к услугам"
+    form:
+      name: "Название услуги"
+      description: "Описание"
+      price: "Цена"
+      currency: "Валюта"
+      duration: "Продолжительность (минут)"
+      delivery_method: "Способ предоставления"
+      select_currency: "Выберите валюту"
+      save: "Сохранить услугу"
+      errors:
+        header: "%{count} ошибок(и) не позволили сохранить услугу:"
+    attributes:
+      delivery_method:
+        online: "Онлайн"
+        in_person: "Лично"
+        phone: "По телефону"
+        unspecified: "Не указано"
+    delivery_methods:
+      online: "Онлайн"
+      in_person: "Лично"
+      phone: "По телефону"
+      unspecified: "Не указано"
+    service_destroyed: "Услуга была успешно удалена."
+    service_created: "Услуга была успешно создана."
+    service_updated: "Услуга была успешно обновлена."
+
+  button_to:
+    destroy: "Удалить эту услугу"

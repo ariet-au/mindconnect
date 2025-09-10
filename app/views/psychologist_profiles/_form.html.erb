@@ -204,26 +204,9 @@
       <h3 class="title is-4"><%= t('psychologist_profile.sections.contact_service_details') %></h3>
       <hr>
     </div>
-<div class="column is-quarter">
-  <div class="field">
-    <%= form.label :religion, t('psychologist_profile.labels.religion'), class: "label" %>
-    <div class="control">
-      <div class="select is-fullwidth">
-        <%= form.select :religion,
-          options_for_select([
-            [t('psychologist_profile.religion_options.non_religious'), 'Non-religious'],
-            [t('psychologist_profile.religion_options.muslim'), 'Muslim'],
-            [t('psychologist_profile.religion_options.christian'), 'Christian'],
-            [t('psychologist_profile.religion_options.other_religions'), 'Other religions']
-          ], selected: form.object.religion),
-          {},
-          class: "input" %>
-      </div>
-    </div>
-  </div>
-</div>
 
-    <div class="column is-quarter">
+
+    <div class="column is-half">
       <div class="field">
         <%= form.label :gender, t('psychologist_profile.labels.gender'), class: "label" %>
         <div class="control">

@@ -1,44 +1,43 @@
-<%= form_with(model: service, html: { class: 'box' }) do |form| %>
+<%= form_with(model: service, html: { class: 'box has-background-white p-5' }) do |form| %>
   <% if service.errors.any? %>
-    <div class="notification is-danger">
-      <h2 class="subtitle"><%= pluralize(service.errors.count, "error") %> prohibited this service from being saved:</h2>
-      <ul>
+    <div class="notification is-danger mb-4">
+      <h2 class="subtitle is-6 mb-2"><%= t('services.form.errors.header', count: service.errors.count) %></h2>
+      <ul class="ml-4">
         <% service.errors.each do |error| %>
           <li><%= error.full_message %></li>
         <% end %>
+        <%# Alternatively, for simpler error display: %>
+        <%# service.errors.full_messages.each do |message| %>
+        <%#   <li><%= message %></li> %>
+        <%# end %>
       </ul>
     </div>
   <% end %>
 
-  <div class="columns is-multiline">
-    <!-- Name -->
+  <div class="columns is-multiline is-mobile">
     <div class="column is-full">
       <div class="field">
-        <%= form.label :name, class: "label" %>
+        <%= form.label :name, t('services.form.name'), class: "label" %>
         <div class="control">
-          <%= form.text_field :name, class: "input" %>
+          <%= form.text_field :name, class: "input is-rounded" %>
         </div>
       </div>
     </div>
 
-    <!-- Description -->
     <div class="column is-full">
       <div class="field">
-        <%= form.label :description, class: "label" %>
+        <%= form.label :description, t('services.form.description'), class: "label" %>
         <div class="control">
-          <%= form.text_area :description, class: "textarea" %>
+          <%= form.text_area :description, class: "textarea is-rounded" %>
         </div>
       </div>
     </div>
 
-
-    <!-- Price and Duration -->
-    <div class="column is-one-quarter">
+    <div class="column is-half-tablet is-full-mobile">
       <div class="field">
-        <%= form.label :price, class: "label" %>
+        <%= form.label :price, t('services.form.price'), class: "label" %>
         <div class="control has-icons-left">
-          <%= form.number_field :price, step: 0.01, min: 0, class: "input", placeholder: "e.g. 100.00" %>
-
+          <%= form.number_field :price, step: 0.01, min: 0, class: "input is-rounded", placeholder: "e.g. 100.00" %>
           <span class="icon is-small is-left">
             <i class="fas fa-dollar-sign"></i>
           </span>
@@ -46,25 +45,25 @@
       </div>
     </div>
 
-<div class="column is-one-quarter">
-  <div class="field">
-    <%= form.label :currency, class: "label" %>
-    <div class="control has-icons-left">
-      <div class="select is-fullwidth">
-        <%= form.select :currency, options_for_select(['KGS', 'KZT', 'UZS', 'USD', 'RUB'], selected: form.object.currency), { include_blank: 'Select Currency' } %>
-      </div>
-      <span class="icon is-small is-left">
-        <i class="fas fa-dollar-sign"></i>
-      </span>
-    </div>
-  </div>
-</div>
-
-    <div class="column is-half">
+    <div class="column is-half-tablet is-full-mobile">
       <div class="field">
-        <%= form.label :duration_minutes, class: "label" %>
+        <%= form.label :currency, t('services.form.currency'), class: "label" %>
         <div class="control has-icons-left">
-          <%= form.number_field :duration_minutes, class: "input", placeholder: "Minutes" %>
+          <div class="select is-fullwidth is-rounded">
+            <%= form.select :currency, options_for_select(['KGS', 'KZT', 'UZS', 'USD', 'RUB'], selected: form.object.currency), { include_blank: t('services.form.select_currency') } %>
+          </div>
+          <span class="icon is-small is-left">
+            <i class="fas fa-dollar-sign"></i>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="column is-full-tablet is-half-mobile">
+      <div class="field">
+        <%= form.label :duration_minutes, t('services.form.duration'), class: "label" %>
+        <div class="control has-icons-left">
+          <%= form.number_field :duration_minutes, class: "input is-rounded", placeholder: "Minutes" %>
           <span class="icon is-small is-left">
             <i class="fas fa-clock"></i>
           </span>
@@ -72,31 +71,28 @@
       </div>
     </div>
 
-    <!-- Delivery Method -->
     <div class="column is-full">
       <div class="field">
-        <%= form.label :delivery_method, class: "label" %>
+        <%= form.label :delivery_method, t('services.form.delivery_method'), class: "label" %>
         <div class="control">
-          <div class="select is-fullwidth">
-            <%= form.select :delivery_method, 
-                Service.delivery_methods.map { |key, value| [key.humanize, key] },
-                { selected: 'unspecified' },
+          <div class="select is-fullwidth is-rounded">
+            <%= form.select :delivery_method,
+                Service.delivery_methods.map { |key, value| [t(key.to_s, scope: "services.attributes.delivery_method"), key] },
+                { include_blank: t('services.form.select_currency') }, # Reusing select_currency for consistency
                 class: "input" %>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Submit Button -->
-    <div class="column is-full">
+    <div class="column is-full mt-4">
       <div class="field">
         <div class="control">
-          <%= form.submit class: "button is-primary is-fullwidth" %>
+          <%= form.submit t('services.form.save'), class: "button is-primary is-fullwidth is-large is-rounded" %>
         </div>
       </div>
     </div>
   </div>
 <% end %>
 
-
-  <%= button_to "Destroy this service", @service, method: :delete %>
+<%= button_to t('button_to.destroy'), @service, method: :delete, class: "button is-danger is-outlined mt-3" %>
