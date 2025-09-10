@@ -176,14 +176,19 @@
 
 <div class="client-container">
   <div class="profile-card">
-    <div class="client-name"><%= @client_info.full_name %>, <%= Date.current.year - @client_info.year_of_birth %></div>
+    <div class="client-name">
+      <%= @client_info.full_name %>
+      <% if @client_info.year_of_birth.present? %>
+        , <%= Date.current.year - @client_info.year_of_birth %>
+      <% end %>
+    </div>    
     <div class="client-location">📍 <%= @client_info.city %>  <%= ActiveSupport::TimeZone[@client_info.timezone].formatted_offset %> GMT</div>
     
 
     
     <div class="reason-section">
       <div class="reason-text"><%= @client_info.reason_for_therapy %></div>
-      <div class="submitted-by">Submitted by <%= @client_info.submitted_by %></div>
+      <div class="submitted-by"><%= t('client_infos.show.submitted_by', name: @client_info.submitted_by) %></div>
     </div>
   </div>
 
@@ -201,7 +206,7 @@
               end %>
         </div>
         <div class="contact-info">
-          <div class="contact-method"><%= contact.method %></div>
+          <div class="contact-method"><%= t("client_infos.show.contact_methods.#{contact.method.downcase}") %></div>
           <div class="contact-value">
             <% case contact.method.downcase %>
             <% when 'email' %>

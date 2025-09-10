@@ -1,11 +1,10 @@
-<!-- client_infos/_client_contact_fields.html.erb -->
 <div class="contact-row">
   <%= f.select :method,
-        ClientContact::CONTACT_METHODS.map { |m| [m.titleize, m] },
-        { prompt: "Select method" } %>
+        ClientContact::CONTACT_METHODS.map { |m| [t("client_infos.form.contact_methods.#{m.downcase}"), m] },
+        { prompt: t('client_infos.form.contact_methods.select_method') } %>
 
-  <%= f.text_field :value, placeholder: "e.g. +61412345678 or @username" %>
+  <%= f.text_field :value, placeholder: t('client_infos.form.contact_methods.placeholder') %>
 
-  <button type="button" class="button is-small is-danger remove-contact">Remove</button>
+  <button type="button" class="button is-small is-danger remove-contact"><%= t('client_infos.form.contact_methods.remove') %></button>
   <%= f.hidden_field :_destroy %>
 </div>

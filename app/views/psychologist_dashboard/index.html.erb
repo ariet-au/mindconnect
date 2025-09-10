@@ -1,22 +1,22 @@
-  <% if @psychologist_profile %>
+<% if @psychologist_profile %>
   <div class="psychologist-nav">
           <div class="nav-content">
             <h3 class="nav-title">
               <i class="fas fa-user-cog"></i>
-              <%= t('psychologist_profiles.show.dashboard') %>
+              <%= t('psychologist_dashboard.page_title') %>
             </h3>
             <div class="nav-actions">
               <%= link_to psychologist_profile_psychologist_availabilities_path(@psychologist_profile.id), class: "button is-primary-blue is-small" do %>
                 <span class="icon"><i class="fas fa-calendar-alt"></i></span>
-                <span><%= t('psychologist_profiles.show.manage_availability') %></span>
+                <span><%= t('psychologist_dashboard.manage_availability') %></span>
               <% end %>
               <%= link_to psychologist_bookings_psychologist_profile_bookings_path(@psychologist_profile.id), class: "button is-info is-small" do %>
                 <span class="icon"><i class="fas fa-calendar-alt"></i></span>
-                <span><%= t('psychologist_profiles.show.view_my_bookings') %></span>
+                <span><%= t('psychologist_dashboard.view_my_bookings') %></span>
               <% end %>
               <%= link_to client_infos_path, class: "button is-primary-blue is-small" do %>
                 <span class="icon"><i class="fas fa-book"></i></span>
-                <span><%= t('psychologist_profiles.show.client_info') %></span>
+                <span><%= t('psychologist_dashboard.client_info') %></span>
               <% end %>
             </div>
           </div>
@@ -25,45 +25,42 @@
 
 
     <div class="columns is-mobile is-multiline">
-      <!-- Sidebar -->
       <div class="column is-narrow">
         <aside class="menu" style="background-color: #2C3E50; padding: 20px; height: 100vh; width: 200px; position: fixed; z-index: 100;">
-          <p class="menu-label has-text-white">Menu</p>
+          <p class="menu-label has-text-white"><%= t('psychologist_dashboard.menu.menu_label') %></p>
           <ul class="menu-list">
             <li>
               <a href="<%= psychologist_dashboard_path %>" class="has-text-white <%= 'is-active' if current_page?(psychologist_dashboard_path) %>" style="<%= 'background-color: #34495E;' if current_page?(psychologist_dashboard_path) %>">
-                <span class="icon"><i class="fas fa-home"></i></span> Dashboard
+                <span class="icon"><i class="fas fa-home"></i></span> <%= t('psychologist_dashboard.menu.dashboard') %>
               </a>
             </li>
             <li>
               <a href="<%= psychologist_profile_psychologist_availabilities_path(@psychologist_profile) %>" class="has-text-white <%= 'is-active' if current_page?(psychologist_profile_psychologist_availabilities_path(@psychologist_profile)) %>" style="<%= 'background-color: #34495E;' if current_page?(psychologist_profile_psychologist_availabilities_path(@psychologist_profile)) %>">
-                <span class="icon"><i class="fas fa-calendar-check"></i></span> Availability
+                <span class="icon"><i class="fas fa-calendar-check"></i></span> <%= t('psychologist_dashboard.menu.availability') %>
               </a>
             </li>
             <li>
               <a href="<%= psychologist_profile_bookings_path(@psychologist_profile) %>" class="has-text-white <%= 'is-active' if current_page?(psychologist_profile_bookings_path(@psychologist_profile)) %>" style="<%= 'background-color: #34495E;' if current_page?(psychologist_profile_bookings_path(@psychologist_profile)) %>">
-                <span class="icon"><i class="fas fa-book"></i></span> Bookings
+                <span class="icon"><i class="fas fa-book"></i></span> <%= t('psychologist_dashboard.menu.bookings') %>
               </a>
             </li>
             <li>
               <a href="<%= internal_client_profiles_path %>" class="has-text-white <%= 'is-active' if current_page?(internal_client_profiles_path) %>" style="<%= 'background-color: #34495E;' if current_page?(internal_client_profiles_path) %>">
-                <span class="icon"><i class="fas fa-users"></i></span> Client Profiles
+                <span class="icon"><i class="fas fa-users"></i></span> <%= t('psychologist_dashboard.menu.client_profiles') %>
               </a>
             </li>
             <li>
               <a href="<%= edit_psychologist_profile_path(@psychologist_profile) %>" class="has-text-white <%= 'is-active' if current_page?(edit_psychologist_profile_path(@psychologist_profile)) %>" style="<%= 'background-color: #34495E;' if current_page?(edit_psychologist_profile_path(@psychologist_profile)) %>">
-                <span class="icon"><i class="fas fa-user-edit"></i></span> Edit Profile
+                <span class="icon"><i class="fas fa-user-edit"></i></span> <%= t('psychologist_dashboard.menu.edit_profile') %>
               </a>
             </li>
           </ul>
         </aside>
       </div>
 
-      <!-- Main Content -->
       <div class="column" >
-        <h1 class="title">Welcome, <%= @psychologist_profile.full_name || 'Psychologist' %></h1>
+        <h1 class="title"><%= t('psychologist_dashboard.welcome', name: @psychologist_profile.full_name || 'Psychologist') %></h1>
 
-        <!-- Calendar Section -->
         <div class="box calendar">
           <div class="level">
             <div class="level-left">
@@ -72,7 +69,7 @@
             
 
             <div class="level-right">
-              <%= link_to "Book a Session", select_service_path(psychologist_id: current_user.psychologist_profile.id), class: "button is-primary" %>
+              <%= link_to t('psychologist_dashboard.book_session'), select_service_path(psychologist_id: current_user.psychologist_profile.id), class: "button is-primary" %>
             </div>
           </div>
           <div id="calendar-container"
@@ -80,7 +77,7 @@
               data-psychologist-timezone="<%= @psychologist_profile.timezone %>"
               data-display-timezone="<%= @display_timezone %>">
             <div class="timezone-info mb-2">
-              <small class="text-muted">Calendar displayed in: <span id="displayedTimezone"></span></small>
+              <small class="text-muted"><%= t('psychologist_dashboard.calendar_displayed_in') %> <span id="displayedTimezone"></span></small>
             </div>
             <div id="calendar"></div>
           </div>
@@ -88,29 +85,28 @@
       </div>
     </div>
 
-    <!-- Edit Booking Modal -->
     <div class="modal" id="editBookingModal">
       <div class="modal-background"></div>
       <div class="modal-card">
         <header class="modal-card-head">
-          <p class="modal-card-title">Edit Booking</p>
+          <p class="modal-card-title"><%= t('psychologist_dashboard.edit_booking.title') %></p>
           <button class="delete" aria-label="close" onclick="closeModal('editBookingModal')"></button>
         </header>
         <section class="modal-card-body">
-          <p class="help">Times are shown in your local timezone (<span id="browserTimezone"></span>).</p>
+          <p class="help"><%= t('psychologist_dashboard.edit_booking.help_text', timezone: '<span id="browserTimezone"></span>').html_safe %></p>
           <form id="editBookingForm">
             <div class="field">
-              <label class="label">Client</label>
+              <label class="label"><%= t('psychologist_dashboard.edit_booking.client') %></label>
               <div class="control">
                 <input class="input" type="text" id="bookingClient" readonly>
               </div>
             </div>
             <div class="field">
-              <label class="label">Service</label>
+              <label class="label"><%= t('psychologist_dashboard.edit_booking.service') %></label>
               <div class="control">
                 <div class="select is-fullwidth">
                   <select id="bookingService" required>
-                    <option value="">Select a service...</option>
+                    <option value=""><%= t('psychologist_dashboard.edit_booking.select_service') %></option>
                     <% current_user.psychologist_profile.user.services.each do |service| %>
                       <option value="<%= service.id %>" data-duration-minutes="<%= service.duration_minutes %>"><%= service.name %> (<%= service.duration_minutes %> min)</option>
                     <% end %>
@@ -119,56 +115,56 @@
               </div>
             </div>
             <div class="field">
-              <label class="label">Duration</label>
+              <label class="label"><%= t('psychologist_dashboard.edit_booking.duration') %></label>
               <div class="control">
                 <input class="input" type="text" id="bookingDuration" readonly>
               </div>
             </div>
             <div class="field">
-              <label class="label">Date</label>
+              <label class="label"><%= t('psychologist_dashboard.edit_booking.date') %></label>
               <div class="control">
                 <input class="input" type="date" id="bookingDate" required>
               </div>
             </div>
             <div class="field">
-              <label class="label">Start Time</label>
+              <label class="label"><%= t('psychologist_dashboard.edit_booking.start_time') %></label>
               <div class="control">
                 <input class="input" type="time" id="bookingStartTime" required>
               </div>
             </div>
             <div class="field">
-              <label class="label">Status</label>
+              <label class="label"><%= t('psychologist_dashboard.edit_booking.status') %></label>
               <div class="control">
                 <div class="select">
                   <select id="bookingStatus">
-                    <option value="pending">Pending</option>
-                    <option value="confirmed">Confirmed</option>
-                    <option value="declined">Declined</option>
-                    <option value="cancelled">Cancelled</option>
+                    <option value="pending"><%= t('psychologist_dashboard.edit_booking.pending') %></option>
+                    <option value="confirmed"><%= t('psychologist_dashboard.edit_booking.confirmed') %></option>
+                    <option value="declined"><%= t('psychologist_dashboard.edit_booking.declined') %></option>
+                    <option value="cancelled"><%= t('psychologist_dashboard.edit_booking.cancelled') %></option>
                    
                   </select>
                 </div>
               </div>
             </div>
             <div class="field">
-              <label class="label">Notes</label>
+              <label class="label"><%= t('psychologist_dashboard.edit_booking.notes') %></label>
               <div class="control">
                 <textarea class="textarea" id="bookingNotes" rows="3"></textarea>
               </div>
             </div>
             <div id="confirmationLinkSection" style="display: none;">
-              <p><strong>Share this link with the client to confirm the booking:</strong></p>
+              <p><strong><%= t('psychologist_dashboard.edit_booking.confirmation_link_header') %></strong></p>
               <p><a id="confirmationLink" href=""></a></p>
             </div>
           </form>
         </section>
         <footer class="modal-card-foot">
-          <button class="button is-success" onclick="saveBookingChanges()">Save Changes</button>
-          <button class="button is-danger" onclick="deleteBooking()">Delete Booking</button>
-          <%= link_to "Edit in Full Form", "#", 
+          <button class="button is-success" onclick="saveBookingChanges()"><%= t('psychologist_dashboard.edit_booking.save_changes') %></button>
+          <button class="button is-danger" onclick="deleteBooking()"><%= t('psychologist_dashboard.edit_booking.delete_booking') %></button>
+          <%= link_to t('psychologist_dashboard.edit_booking.edit_full_form'), "#", 
                 class: "button is-link", 
                 id: "editBookingFullFormButton" %>
-          <button class="button" onclick="closeModal('editBookingModal')">Cancel</button>
+          <button class="button" onclick="closeModal('editBookingModal')"><%= t('psychologist_dashboard.edit_booking.cancel') %></button>
         </footer>
       </div>
     </div>
@@ -176,100 +172,97 @@
     
 
 
-    <!-- Create New Unavailability Modal -->
     <div class="modal" id="createUnavailabilityModal">
       <div class="modal-background"></div>
       <div class="modal-card">
         <header class="modal-card-head">
-          <p class="modal-card-title">Create Unavailability</p>
+          <p class="modal-card-title"><%= t('psychologist_dashboard.create_unavailability.title') %></p>
           <button class="delete" aria-label="close" onclick="closeModal('createUnavailabilityModal')"></button>
         </header>
         <section class="modal-card-body">
-          <p class="help">Times are shown in your local timezone (<span id="browserTimezone"></span>).</p>
+          <p class="help"><%= t('psychologist_dashboard.create_unavailability.help_text', timezone: '<span id="browserTimezone"></span>').html_safe %></p>
           <form id="createUnavailabilityForm">
             <div class="field">
-              <label class="label">Date</label>
+              <label class="label"><%= t('psychologist_dashboard.create_unavailability.date') %></label>
               <div class="control">
                 <input class="input" type="date" id="newUnavailabilityDate" required>
               </div>
             </div>
             <div class="field">
-              <label class="label">Start Time</label>
+              <label class="label"><%= t('psychologist_dashboard.create_unavailability.start_time') %></label>
               <div class="control">
                 <input class="input" type="time" id="newUnavailabilityStartTime" step="900" required>
               </div>
             </div>
             <div class="field">
-              <label class="label">End Time</label>
+              <label class="label"><%= t('psychologist_dashboard.create_unavailability.end_time') %></label>
               <div class="control">
                 <input class="input" type="time" id="newUnavailabilityEndTime" step="900" required>
               </div>
             </div>
             <div class="field">
-              <label class="label">Reason</label>
+              <label class="label"><%= t('psychologist_dashboard.create_unavailability.reason') %></label>
               <div class="control">
-                <textarea class="textarea" id="newUnavailabilityReason" rows="3" placeholder="Optional reason for unavailability (required)" required></textarea>
+                <textarea class="textarea" id="newUnavailabilityReason" rows="3" placeholder="<%= t('psychologist_dashboard.create_unavailability.reason_placeholder') %>" required></textarea>
               </div>
             </div>
           </form>
         </section>
         <footer class="modal-card-foot">
-          <button class="button is-success" onclick="createUnavailability()">Create</button>
-          <button class="button" onclick="closeModal('createUnavailabilityModal')">Cancel</button>
+          <button class="button is-success" onclick="createUnavailability()"><%= t('psychologist_dashboard.create_unavailability.create') %></button>
+          <button class="button" onclick="closeModal('createUnavailabilityModal')"><%= t('psychologist_dashboard.create_unavailability.cancel') %></button>
         </footer>
       </div>
     </div>
 
 
-    <!-- Edit Unavailability Modal -->
     <div class="modal" id="editUnavailabilityModal">
       <div class="modal-background"></div>
       <div class="modal-card">
         <header class="modal-card-head">
-          <p class="modal-card-title">Edit Unavailability</p>
+          <p class="modal-card-title"><%= t('psychologist_dashboard.edit_unavailability.title') %></p>
           <button class="delete" aria-label="close" onclick="closeModal('editUnavailabilityModal')"></button>
         </header>
         <section class="modal-card-body">
-          <p class="help">Times are shown in your local timezone (<span id="browserTimezone"></span>).</p>
+          <p class="help"><%= t('psychologist_dashboard.edit_unavailability.help_text', timezone: '<span id="browserTimezone"></span>').html_safe %></p>
           <form id="editUnavailabilityForm">
             <div class="field">
-              <label class="label">Date</label>
+              <label class="label"><%= t('psychologist_dashboard.edit_unavailability.date') %></label>
               <div class="control">
                 <input class="input" type="date" id="unavailabilityDate" required>
               </div>
             </div>
             <div class="field">
-              <label class="label">Start Time</label>
+              <label class="label"><%= t('psychologist_dashboard.edit_unavailability.start_time') %></label>
               <div class="control">
                 <input class="input" type="time" id="unavailabilityStartTime" step="900" required>
               </div>
             </div>
             <div class="field">
-              <label class="label">End Time</label>
+              <label class="label"><%= t('psychologist_dashboard.edit_unavailability.end_time') %></label>
               <div class="control">
                 <input class="input" type="time" id="unavailabilityEndTime" step="900" required>
               </div>
             </div>
             <div class="field">
-              <label class="label">Reason</label>
+              <label class="label"><%= t('psychologist_dashboard.edit_unavailability.reason') %></label>
               <div class="control">
-                <textarea class="textarea" id="unavailabilityReason" rows="3" placeholder="Optional reason for unavailability"></textarea>
+                <textarea class="textarea" id="unavailabilityReason" rows="3" placeholder="<%= t('psychologist_dashboard.edit_unavailability.reason_placeholder') %>"></textarea>
               </div>
             </div>
           </form>
         </section>
         <footer class="modal-card-foot">
-          <button class="button is-success" onclick="saveUnavailabilityChanges()">Save Changes</button>
-          <button class="button is-danger" onclick="deleteUnavailability()">Delete</button>
-          <button class="button" onclick="closeModal('editUnavailabilityModal')">Cancel</button>
+          <button class="button is-success" onclick="saveUnavailabilityChanges()"><%= t('psychologist_dashboard.edit_unavailability.save_changes') %></button>
+          <button class="button is-danger" onclick="deleteUnavailability()"><%= t('psychologist_dashboard.edit_unavailability.delete') %></button>
+          <button class="button" onclick="closeModal('editUnavailabilityModal')"><%= t('psychologist_dashboard.edit_unavailability.cancel') %></button>
         </footer>
       </div>
     </div>
+<% end %>
 
 
-
-
-    <style>
+<style>
     #calendar {
       font-family: "Inter", "Helvetica Neue", Arial, sans-serif;
       font-size: 14px; /* optional */
@@ -299,22 +292,6 @@
         background-color: #f8f9fa;
       }
     </style>
-  <% else %>
-    <div class="container">
-      <div class="notification is-danger">
-        <p>Error: No psychologist profile found. Please contact support.</p>
-      </div>
-    </div>
-  <% end %>
-
-
-
-
-
-
-
-
-
 
 
 

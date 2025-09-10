@@ -2,7 +2,7 @@
   <div class="columns is-centered">
     <div class="column is-12-mobile is-10-tablet is-8-desktop is-6-widescreen">
       <div class="box has-background-white">
-        <h1 class="title is-4 has-text-centered mb-5">Client Information</h1>
+        <h1 class="title is-4 has-text-centered mb-5"><%= t('client_infos.form.title') %></h1>
         
         <%= form_with(model: client_info, local: true) do |f| %>
           <% if client_info.errors.any? %>
@@ -18,14 +18,14 @@
             </div>
           <% end %>
 
-          <!-- Personal Information Section -->
           <div class="mb-4">
+            <h2 class="title is-6"><%= t('client_infos.form.personal_information') %></h2>
 
             <div class="columns is-multiline">
               <div class="column is-12-mobile is-6-tablet">
                 <div class="field">
                   <div class="control has-icons-left">
-                    <%= f.text_field :first_name, class: "input", placeholder: "First name" %>
+                    <%= f.text_field :first_name, class: "input", placeholder: t('client_infos.form.placeholder.first_name') %>
                     <span class="icon is-small is-left">
                       <i class="fas fa-user"></i>
                     </span>
@@ -36,7 +36,7 @@
               <div class="column is-12-mobile is-6-tablet">
                 <div class="field">
                   <div class="control has-icons-left">
-                    <%= f.text_field :last_name, class: "input", placeholder: "Last name" %>
+                    <%= f.text_field :last_name, class: "input", placeholder: t('client_infos.form.placeholder.last_name') %>
                     <span class="icon is-small is-left">
                       <i class="fas fa-user"></i>
                     </span>
@@ -52,7 +52,7 @@
               <div class="control has-icons-left">
                 <%= f.select :year_of_birth, 
                       (max_year).downto(min_year).to_a,
-                      { prompt: "Year of birth" },
+                      { prompt: t('client_infos.form.placeholder.year_of_birth') },
                       { class: "input" } %>
                 <span class="icon is-small is-left">
                   <i class="fas fa-calendar-alt"></i>
@@ -61,16 +61,16 @@
             </div>
           </div>
 
-          <!-- Location Information Section -->
           <div class="mb-4">
+            <h2 class="title is-6"><%= t('client_infos.form.location_information') %></h2>
             <div class="field">
               <div class="control has-icons-left">
-                <%= f.text_field :city, list: "cities", id: "city_input", class: "input", placeholder: "City, Country" %>
+                <%= f.text_field :city, list: "cities", id: "city_input", class: "input", placeholder: t('client_infos.form.placeholder.city') %>
                 <span class="icon is-small is-left">
                   <i class="fas fa-city"></i>
                 </span>
               </div>
-              <p class="help">We'll try to detect your location automatically</p>
+              <p class="help"><%= t('client_infos.form.help_text.location_detection') %></p>
 
               <datalist id="cities">
                 <option value="Bishkek, Kyrgyzstan">
@@ -94,41 +94,37 @@
                           nil
                         end
                       }.compact,
-                      { prompt: "Select timezone" },
+                      { prompt: t('client_infos.form.placeholder.timezone') },
                       { id: "timezone_select", class: "input" }
                 %>
                 <span class="icon is-small is-left">
                   <i class="fas fa-clock"></i>
                 </span>
               </div>
-              <p class="help">We'll try to detect your timezone automatically</p>
+              <p class="help"><%= t('client_infos.form.help_text.timezone_detection') %></p>
             </div>
           </div>
 
-          <!-- Therapy Information Section -->
           <div class="mb-4">
-
+            <h2 class="title is-6"><%= t('client_infos.form.therapy_information') %></h2>
             <div class="field">
               <div class="control">
-                <%= f.text_area :reason_for_therapy, class: "textarea", rows: "3", placeholder: "What brings you to therapy today?" %>
+                <%= f.text_area :reason_for_therapy, class: "textarea", rows: "3", placeholder: t('client_infos.form.placeholder.reason_for_therapy') %>
               </div>
             </div>
           </div>
 
-          <!-- Contact Information Section -->
           <div class="mb-4">
-
-
+            <h2 class="title is-6"><%= t('client_infos.form.contact_information') %></h2>
             <div id="contacts-list" class="mb-3">
               <%= f.fields_for :client_contacts do |contact_form| %>
                 <%= render "client_contact_fields", f: contact_form %>
               <% end %>
             </div>
 
-            <!-- Hidden template -->
             <template id="contact-template">
               <%= f.fields_for(:client_contacts, ClientContact.new, child_index: "NEW_RECORD") do |cf| %>
-                  <%= render "client_contact_fields", f: cf %>
+                <%= render "client_contact_fields", f: cf %>
               <% end %>
             </template>
 
@@ -136,13 +132,13 @@
               <span class="icon">
                 <i class="fas fa-plus"></i>
               </span>
-              <span>Add another contact method</span>
+              <span><%= t('client_infos.form.add_contact') %></span>
             </button>
           </div>
 
           <div class="field is-grouped is-grouped-centered mt-6">
             <div class="control">
-              <%= f.submit "Save Information", class: "button is-primary is-large is-fullwidth-mobile" %>
+              <%= f.submit t('client_infos.form.submit_button'), class: "button is-primary is-large is-fullwidth-mobile" %>
             </div>
           </div>
         <% end %>

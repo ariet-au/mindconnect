@@ -1,36 +1,36 @@
 <div class="section">
   <div class="container">
-    <h1 class="title is-3">My Clients</h1>
+    <h1 class="title is-3"><%= t('client_infos.index.title') %></h1>
 
-    <%= link_to "➕ Add New Client", new_client_info_path, class: "button is-primary mb-4" %>
+    <%= link_to t('client_infos.index.add_new_client'), new_client_info_path, class: "button is-primary mb-4" %>
 
     <% if @client_infos.any? %>
       <div class="table-container">
         <table class="table is-fullwidth is-striped is-hoverable">
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Year of Birth</th>
-              <th>City</th>
-              <th>Contacts</th>
-              <th>Actions</th>
+              <th><%= t('client_infos.index.table.name') %></th>
+              <th><%= t('client_infos.index.table.year_of_birth') %></th>
+              <th><%= t('client_infos.index.table.city') %></th>
+              <th><%= t('client_infos.index.table.contacts') %></th>
+              <th><%= t('client_infos.index.table.actions') %></th>
             </tr>
           </thead>
           <tbody>
             <% @client_infos.each do |client| %>
               <tr class="client-row">
-                <td class="client-name" data-label="Name"><%= "#{client.first_name} #{client.last_name}" %></td>
-                <td data-label="Year of Birth"><%= client.year_of_birth %></td>
-                <td data-label="City"><%= client.city %></td>
-                <td data-label="Contacts">
+                <td class="client-name" data-label="<%= t('client_infos.index.table.name') %>"><%= "#{client.first_name} #{client.last_name}" %></td>
+                <td data-label="<%= t('client_infos.index.table.year_of_birth') %>"><%= client.year_of_birth %></td>
+                <td data-label="<%= t('client_infos.index.table.city') %>"><%= client.city %></td>
+                <td data-label="<%= t('client_infos.index.table.contacts') %>">
                   <% client.client_contacts.each do |c| %>
                     <p><strong><%= c.method.titleize %>:</strong> <%= c.value %></p>
                   <% end %>
                 </td>
-                <td data-label="Actions">
+                <td data-label="<%= t('client_infos.index.table.actions') %>">
                   <% if client.psychologist? && client.psychologist_profile == current_user.psychologist_profile %>
-                    <%= link_to "Show", client_info_path(client), class: "button is-small " %>
-                    <%= link_to "Edit", edit_client_info_path(client), class: "button is-small is-link" %>
+                    <%= link_to t('client_infos.index.show'), client_info_path(client), class: "button is-small " %>
+                    <%= link_to t('client_infos.index.edit'), edit_client_info_path(client), class: "button is-small is-link" %>
                   <% else %>
                     <span class="has-text-grey-light">—</span>
                   <% end %>
@@ -41,9 +41,8 @@
         </table>
       </div>
     <% else %>
-      <p>No clients yet.</p>
+      <p><%= t('client_infos.index.no_clients') %></p>
     <% end %>
   </div>
 </div>
 
-<style>
