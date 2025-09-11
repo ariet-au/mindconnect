@@ -797,7 +797,7 @@ body {
                 <div class="availability-widget-top available">
                     <i class="fas fa-calendar-check widget-icon-top"></i>
                     <span class="widget-time-top">
-                        <%= l(@next_available_slot, format: "%a %-d %b - %-l:%M%P") %>
+                        <%= l(@next_available_slot.to_time, format: :short) if @next_available_slot.present? %> 
                     </span>
                 </div>
             <% else %>
@@ -839,6 +839,9 @@ body {
                     <span><%= t('psychologist_profiles.show.contact_me') %></span>
                 </a>
             <% end %>
+
+
+
         </div>
     </div>
 
@@ -918,7 +921,7 @@ body {
                 <div class="availability-status available">
                     <span class="availability-label"><i class="fas fa-check-circle"></i><%= t('psychologist_profiles.show.next_available_appointment') %></span>
                     <div class="availability-details">
-                        <strong class="availability-time"><%= l(@next_available_slot, format: :long) %></strong>
+                        <%= l(@next_available_slot.to_time, format: :long) if @next_available_slot.present? %> 
                         <span class="availability-timezone"><%= @display_timezone %></span>
                     </div>
                 </div>
@@ -1001,6 +1004,8 @@ body {
                 <a href="<%= contact_link %>" class="button is-primary">
                     <i class="<%= contact_keys[primary_contact_method.to_sym] %> mr-2"></i>
                     <span><%= t('psychologist_profiles.show.contact_me') %></span>
+                                <%= link_to t('psychologist_profiles.show.submit_client_info') , new_psychologist_profile_client_info_path(@psychologist_profile), class: "button is-secondary" %>
+
                 </a>
             </div>
         <% end %>
@@ -1041,6 +1046,7 @@ body {
                                 <a href="<%= link %>" class="contact-link" target="_blank" title="<%= t('psychologist_profiles.show.open_link') %>">
                                     <i class="fas fa-external-link-alt"></i>
                                 </a>
+                                
                             </div>
                         </div>
                     <% end %>

@@ -62,7 +62,9 @@ ru:
     formats:
       default: "%d.%m.%Y %H:%M:%S"
       short: "%d %b %H:%M"
-      long: "%d %B %Y %H:%M"
+      long: "%d %B %Y %H:%M"   
+    am: ""
+    pm: "" 
   date:
     formats:
       default: "%Y-%m-%d"
@@ -79,6 +81,7 @@ ru:
         
   psychologist_profiles:
     show:
+      submit_client_info: "Оставить заявку"
       contact_me: "Связаться со мной"
       my_services: "Мои услуги"
       book_a_session: "Записаться на Сеанс"

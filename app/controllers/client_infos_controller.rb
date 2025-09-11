@@ -1,5 +1,5 @@
 class ClientInfosController < ApplicationController
-  before_action :authenticate_user!
+  before_action :authenticate_user!, except: [:new, :create]
   before_action :set_psychologist_profile, only: [:index, :new, :create]
   before_action :set_client_info, only: [:show, :edit, :update, :destroy]
 
@@ -12,30 +12,44 @@ class ClientInfosController < ApplicationController
   # GET /client_infos/new
   def new
     @client_info = ClientInfo.new
-    if current_user.psychologist_profile
+
+    if user_signed_in? && current_user.psychologist_profile
       @client_info.psychologist_profile = current_user.psychologist_profile
       @client_info.submitted_by = "psychologist"
+    elsif params[:psychologist_profile_id].present?
+      @client_info.psychologist_profile_id = params[:psychologist_profile_id]
+      @client_info.submitted_by = "client"
     else
       @client_info.submitted_by = "client"
     end
+
     @client_info.client_contacts.build
   end
+
+  
 
   # POST /client_infos
   def create
     @client_info = ClientInfo.new(client_info_params)
 
-    if current_user.psychologist_profile
-      # Psychologist submitting the record
+    if user_signed_in? && current_user.psychologist_profile
+      # Case 1: Psychologist logged in and creating client
       @client_info.psychologist_profile = current_user.psychologist_profile
       @client_info.submitted_by = "psychologist"
-    else
-      # Client submitting the record
+
+    elsif params[:psychologist_profile_id].present?
+      # Case 2: Guest client submitting via psychologist profile page
+      @client_info.psychologist_profile_id = params[:psychologist_profile_id]
       @client_info.submitted_by = "client"
+
+    else
+      # Case 3: Guest client submitting without choosing a psychologist
+      @client_info.submitted_by = "client"
+      # psychologist_profile stays nil (unassigned)
     end
 
     if @client_info.save
-      redirect_to client_infos_path, notice: "Client added successfully."
+      redirect_to root_path, notice: "Thank you! Your information has been submitted."
     else
       render :new, status: :unprocessable_entity
     end
@@ -78,7 +92,13 @@ class ClientInfosController < ApplicationController
   private
 
   def set_psychologist_profile
-    @psychologist_profile = current_user.psychologist_profile
+    if user_signed_in?
+      @psychologist_profile = current_user.psychologist_profile
+    elsif params[:psychologist_profile_id].present?
+      @psychologist_profile = PsychologistProfile.find(params[:psychologist_profile_id])
+    else
+      @psychologist_profile = nil
+    end
   end
 
   def set_client_info

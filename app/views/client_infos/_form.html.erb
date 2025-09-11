@@ -4,7 +4,7 @@
       <div class="box has-background-white">
         <h1 class="title is-4 has-text-centered mb-5"><%= t('client_infos.form.title') %></h1>
         
-        <%= form_with(model: client_info, local: true) do |f| %>
+<%= form_with(model: [@client_info.psychologist_profile || nil, @client_info]) do |f| %>
           <% if client_info.errors.any? %>
             <div class="notification is-danger">
               <button class="delete"></button>

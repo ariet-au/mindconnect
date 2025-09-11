@@ -80,6 +80,7 @@ en:
         
   psychologist_profiles:
     show:
+      submit_client_info: "Request a Consultation"
       contact_me: "Contact Me"
       my_services: "My services"
       book_a_session: "Book a session"

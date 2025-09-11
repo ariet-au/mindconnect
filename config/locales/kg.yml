@@ -79,6 +79,7 @@ kg:
         
   psychologist_profiles:
     show:
+      submit_client_info: "Байланыш калтыруу"
       contact_me: "Байланышуу"
       my_services: "Менин кызматтарым"
       book_a_session: "Сеанска жазылуу"
