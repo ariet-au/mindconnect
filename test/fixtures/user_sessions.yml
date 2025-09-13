@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  user: one
+  session_id: MyString
+  started_at: 2025-09-13 19:11:17
+  ended_at: 2025-09-13 19:11:17
+  duration_seconds: 1
+  device_type: MyString
+
+two:
+  user: two
+  session_id: MyString
+  started_at: 2025-09-13 19:11:17
+  ended_at: 2025-09-13 19:11:17
+  duration_seconds: 1
+  device_type: MyString

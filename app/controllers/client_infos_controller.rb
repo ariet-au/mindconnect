@@ -49,6 +49,16 @@ class ClientInfosController < ApplicationController
     end
 
     if @client_info.save
+      ActivityLog.log(
+        user: current_user,             # will be nil if guest
+        request: request,
+        action_type: "created_client_info",
+        target: @client_info,
+        metadata: {
+          submitted_by: @client_info.submitted_by,
+          psychologist_profile_id: @client_info.psychologist_profile_id
+        }
+      )
       redirect_to root_path, notice: "Thank you! Your information has been submitted."
     else
       render :new, status: :unprocessable_entity
@@ -66,6 +76,16 @@ class ClientInfosController < ApplicationController
   def update
     if editable_by_psychologist?(@client_info)
       if @client_info.update(client_info_params)
+        ActivityLog.log(
+          user: current_user,
+          request: request,
+          action_type: "updated_client_info",
+          target: @client_info,
+          metadata: {
+            submitted_by: @client_info.submitted_by,
+            changes: @client_info.previous_changes.except(:updated_at)
+          }
+        )
         redirect_to client_infos_path, notice: "Client updated successfully."
       else
         render :edit, status: :unprocessable_entity

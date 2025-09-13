@@ -7,6 +7,9 @@ class ApplicationController < ActionController::Base
   before_action do
     Thread.current[:viewer_timezone] = cookies[:viewer_timezone]
   end
+  before_action :track_page_view
+  before_action :track_user_session
+
 
 
   helper_method :current_currency
@@ -107,6 +110,38 @@ class ApplicationController < ActionController::Base
     }
 
     locale_map[country_code]
+  end
+
+  def track_page_view
+    # Skip logging for assets and AJAX calls if you want
+    return if request.path.starts_with?("/assets") || request.xhr?
+
+    PageView.create!(
+      user: current_user,
+      session_id: session.id,
+      url: request.fullpath,
+      referrer: request.referrer,
+      ip_address: request.remote_ip,
+      user_agent: request.user_agent,
+      viewed_at: Time.current
+    )
+  rescue => e
+    Rails.logger.error("PageView tracking failed: #{e.message}")
+  end
+
+  def track_user_session
+    return unless session.id.present?
+
+    session_id_str = session.id.to_s  # <-- convert to string
+
+    @user_session ||= UserSession.find_or_create_by(session_id: session_id_str) do |s|
+      s.user = current_user
+      s.started_at = Time.current
+      s.device_type = request.user_agent&.match(/Mobile|Android|iPhone/) ? "mobile" : "desktop"
+    end
+
+    # Optionally update last seen time
+    @user_session.update!(ended_at: Time.current)
   end
   
 end

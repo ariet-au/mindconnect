@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_05_180341) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_13_091129) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -51,6 +51,21 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_05_180341) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "activity_logs", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.string "action_type", null: false
+    t.string "target_type"
+    t.bigint "target_id"
+    t.jsonb "metadata", default: {}
+    t.datetime "occurred_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["occurred_at"], name: "index_activity_logs_on_occurred_at"
+    t.index ["target_type", "target_id"], name: "index_activity_logs_on_target"
+    t.index ["user_id", "action_type"], name: "index_activity_logs_on_user_id_and_action_type"
+    t.index ["user_id"], name: "index_activity_logs_on_user_id"
   end
 
   create_table "articles", force: :cascade do |t|
@@ -207,6 +222,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_05_180341) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_languages_on_name", unique: true
+  end
+
+  create_table "page_views", force: :cascade do |t|
+    t.bigint "user_id"
+    t.string "session_id"
+    t.string "url"
+    t.string "referrer"
+    t.string "ip_address"
+    t.string "user_agent"
+    t.datetime "viewed_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_page_views_on_user_id"
+    t.index ["viewed_at"], name: "index_page_views_on_viewed_at"
   end
 
   create_table "progress_notes", force: :cascade do |t|
@@ -411,6 +440,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_05_180341) do
     t.index ["specialties_id"], name: "index_therapy_plans_on_specialties_id"
   end
 
+  create_table "user_sessions", force: :cascade do |t|
+    t.bigint "user_id"
+    t.string "session_id"
+    t.datetime "started_at"
+    t.datetime "ended_at"
+    t.integer "duration_seconds"
+    t.string "device_type"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["started_at"], name: "index_user_sessions_on_started_at"
+    t.index ["user_id"], name: "index_user_sessions_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -437,6 +479,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_05_180341) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "activity_logs", "users"
   add_foreign_key "articles", "psychologist_profiles"
   add_foreign_key "bookings", "client_infos"
   add_foreign_key "bookings", "client_profiles"
@@ -451,6 +494,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_05_180341) do
   add_foreign_key "educations", "psychologist_profiles"
   add_foreign_key "internal_client_profiles", "client_profiles"
   add_foreign_key "internal_client_profiles", "psychologist_profiles"
+  add_foreign_key "page_views", "users"
   add_foreign_key "progress_notes", "bookings"
   add_foreign_key "progress_notes", "therapy_plans"
   add_foreign_key "psychologist_availabilities", "psychologist_profiles"
@@ -473,4 +517,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_05_180341) do
   add_foreign_key "therapy_plans", "internal_client_profiles"
   add_foreign_key "therapy_plans", "issues"
   add_foreign_key "therapy_plans", "specialties", column: "specialties_id"
+  add_foreign_key "user_sessions", "users"
 end

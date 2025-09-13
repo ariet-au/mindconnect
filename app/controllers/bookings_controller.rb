@@ -441,6 +441,14 @@ class BookingsController < ApplicationController
 
 
       if @booking.save
+
+        ActivityLog.log(
+          user: current_user,
+          request: request,                # automatically attach session/IP/device
+          action_type: "created_booking",
+          target: @booking,
+          metadata: { price: @booking.price, service: @booking.service.name }
+        )
         redirect_to psychologist_profile_booking_path(@booking.psychologist_profile, @booking), notice: "Booking confirmed!"
       else
         Rails.logger.debug "Booking save failed: #{@booking.errors.full_messages.join(', ')}"
