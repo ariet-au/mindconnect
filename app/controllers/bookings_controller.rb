@@ -336,23 +336,7 @@ class BookingsController < ApplicationController
 
 
   
-  # def psychologist_bookings
-  #   # Ensure the user is a psychologist and has a profile
-  #   unless current_user&.psychologist_profile
-  #     redirect_to root_path, alert: "You must be logged in as a psychologist to view this page."
-  #     return
-  #   end
 
-  #   # Fetch all bookings for the psychologist
-  #   all_bookings = Booking.includes(:client_profile, :internal_client_profile, :service)
-  #                         .where(psychologist_profile_id: current_user.psychologist_profile.id)
-
-  #   # Separate bookings into upcoming and past
-  #   @upcoming_bookings = all_bookings.where('start_time >= ?', Time.current)
-  #                                   .order(start_time: :asc)
-  #   @past_bookings = all_bookings.where('start_time < ?', Time.current)
-  #                               .order(start_time: :desc)
-  # end
 
   def show_all
     # Assuming the current user is a psychologist and has a profile
@@ -441,13 +425,21 @@ class BookingsController < ApplicationController
 
 
       if @booking.save
-
         ActivityLog.log(
-          user: current_user,
-          request: request,                # automatically attach session/IP/device
+          user: current_user,              # the user who performed the action
+          request: request,                 # for IP/session/device tracking
           action_type: "created_booking",
-          target: @booking,
-          metadata: { price: @booking.price, service: @booking.service.name }
+          target: @booking,                 # polymorphic association
+          metadata: {
+            created_by: @booking.created_by,
+            client_info_id: @booking.client_info_id,
+            client_profile_id: @booking.client_profile_id,
+            internal_client_profile_id: @booking.internal_client_profile_id,
+            service_id: @booking.service_id,
+            start_time: @booking.start_time,
+            end_time: @booking.end_time,
+            status: @booking.status
+          }
         )
         redirect_to psychologist_profile_booking_path(@booking.psychologist_profile, @booking), notice: "Booking confirmed!"
       else
