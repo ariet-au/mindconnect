@@ -1,5 +1,5 @@
-# app/mailers/application_mailer.rb
 class ApplicationMailer < ActionMailer::Base
-  default from: "noreply@#{Rails.application.credentials.mailgun.sending_domain || Rails.application.credentials.mailgun.domain}"
+  # Set a specific email address from your verified Mailgun domain
+  default from: "noreply@mail.aksanaa.com" 
   layout "mailer"
 end
