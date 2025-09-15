@@ -15,20 +15,10 @@
     <!-- Section: Basic Information -->
     <div class="column is-full">
       <div class="box">
-        <h3 class="title is-4 has-text-weight-semibold border-bottom pb-4 mb-5">
-          <span class="icon-text">
-            <span class="icon"><i class="fas fa-user-circle"></i></span>
-            <span><%= t('psychologist_profile.sections.basic_information') %></span>
-          </span>
-        </h3>
+        <h3 class="title is-4 has-text-weight-semibold border-bottom pb-4 mb-5"><%= t('psychologist_profile.sections.basic_information') %></h3>
         <div class="columns is-multiline">
           <div class="column is-half">
             <div class="field">
-            <!-- Preview container -->
-              <div id="preview-container" style="margin-top: 1rem;">
-                <img id="imagePreview" src="<%= url_for(@psychologist_profile.profile_img) if @psychologist_profile&.profile_img.attached? %>" 
-                    style="max-width: 200px; display: <%= @psychologist_profile&.profile_img&.attached? ? 'block' : 'none' %>;" />
-              </div>
               <%= form.label :profile_img, t('psychologist_profile.labels.upload_profile_image'), class: "label" %>
               <label class="button is-link is-light">
                 <span class="icon"><i class="fas fa-upload"></i></span>
@@ -101,12 +91,7 @@
     <!-- Section: Professional Details -->
     <div class="column is-full">
         <div class="box">
-            <h3 class="title is-4 has-text-weight-semibold border-bottom pb-4 mb-5">
-              <span class="icon-text">
-                <span class="icon"><i class="fas fa-briefcase"></i></span>
-                <span><%= t('psychologist_profile.sections.professional_details') %></span>
-              </span>
-            </h3>
+            <h3 class="title is-4 has-text-weight-semibold border-bottom pb-4 mb-5"><%= t('psychologist_profile.sections.professional_details') %></h3>
             <div class="columns is-multiline">
                 <div class="column is-half">
                     <div class="field">
@@ -163,12 +148,7 @@
     <!-- Section: Client & Issue Details -->
     <div class="column is-full">
       <div class="box">
-        <h3 class="title is-4 has-text-weight-semibold border-bottom pb-4 mb-5">
-          <span class="icon-text">
-            <span class="icon"><i class="fas fa-clipboard-list"></i></span>
-            <span><%= t('psychologist_profile.sections.client_issue_details') %></span>
-          </span>
-        </h3>
+        <h3 class="title is-4 has-text-weight-semibold border-bottom pb-4 mb-5"><%= t('psychologist_profile.sections.client_issue_details') %></h3>
         <div class="columns is-multiline">
           <div class="column is-full">
             <div class="field">
@@ -219,12 +199,7 @@
     <!-- Section: Contact & Service Details -->
     <div class="column is-full">
       <div class="box">
-        <h3 class="title is-4 has-text-weight-semibold border-bottom pb-4 mb-5">
-          <span class="icon-text">
-            <span class="icon"><i class="fas fa-address-book"></i></span>
-            <span><%= t('psychologist_profile.sections.contact_service_details') %></span>
-          </span>
-        </h3>
+        <h3 class="title is-4 has-text-weight-semibold border-bottom pb-4 mb-5"><%= t('psychologist_profile.sections.contact_service_details') %></h3>
         <div class="columns is-multiline">
           <div class="column is-half">
              <div class="field">
@@ -406,10 +381,6 @@
 
 <%# --- STYLES --- %>
 <style>
-  .box {
-    box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1), 0 0px 0 1px rgba(10, 10, 10, 0.02);
-    border-radius: 8px;
-  }
   .border-bottom {
     border-bottom: 1px solid #dbdbdb;
   }
@@ -418,60 +389,6 @@
   }
   .mb-5 {
     margin-bottom: 1.75rem;
-  }
-  
-  /* Styling for the education remove button.
-     This assumes the rendered partial for an education includes
-     a button with the class 'remove-education-button' inside the '.box' container. */
-  #educations-container .box {
-    position: relative;
-    padding-top: 2.5rem; /* Make space for the button at the top */
-    box-shadow: none;
-    background-color: #ebf1fdf3;
-  }
-
-  .remove-education-button {
-    /* Positioning */
-    position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
-    
-    /* Reset button styles */
-    border: none;
-    background-color: transparent;
-    padding: 0;
-    margin: 0;
-    font-family: inherit;
-    
-    /* Size and appearance */
-    width: 28px;
-    height: 28px;
-    cursor: pointer;
-    
-    /* Hide original button text if any */
-    font-size: 0;
-    color: transparent;
-    transition: background-color 0.2s ease-in-out;
-    border-radius: 50%;
-  }
-
-  /* Create the 'X' icon using a pseudo-element */
-  .remove-education-button::before {
-    content: '×';
-    font-size: 26px;
-    line-height: 28px;
-    color: #999; /* A neutral grey */
-    display: block;
-    text-align: center;
-    transition: color 0.2s ease-in-out;
-  }
-  
-  .remove-education-button:hover {
-    background-color: #f0f0f0;
-  }
-
-  .remove-education-button:hover::before {
-    color: #333; /* Darker on hover */
   }
 </style>
 
@@ -654,4 +571,3 @@ document.addEventListener('turbo:load', function() {
     }
 });
 </script>
-
