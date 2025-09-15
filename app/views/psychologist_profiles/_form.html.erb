@@ -188,7 +188,7 @@
             <div class="field">
               <%= form.label :client_type_ids, t('psychologist_profile.labels.select_client_types'), class: "label" %>
               <div class="control">
-                <%= form.collection_select :client_type_ids, ClientType.all, :id, :name, {}, { multiple: true, class: "tom-select-client-types" } %>
+<%= form.collection_select :client_type_ids, ClientType.all, :id, ->(client_type) { t("client_types.#{client_type.name}") }, {}, { multiple: true, class: "tom-select-client-types" } %>
               </div>
             </div>
              <div class="field">

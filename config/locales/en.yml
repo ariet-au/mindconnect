@@ -79,6 +79,13 @@ en:
       - :day
         
   psychologist_profiles:
+    client_types:
+      single_adult: "adult"
+      single_child: "child"
+      single_teenager: "teenager"
+      other_pair: "Other group"
+      romantic_couple: "romantic couple"
+      parent_child: "family"
     show:
       submit_client_info: "Request a Consultation"
       contact_me: "Contact Me"
