@@ -69,7 +69,7 @@ gem 'money-rails'
 gem 'redis'
 gem 'pg_search'
 gem 'i18n', '~> 1.14'
-
+gem 'devise-i18n'
 gem 'mailgun-ruby'
 
 gem 'icalendar'

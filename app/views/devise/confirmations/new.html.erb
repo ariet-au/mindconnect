@@ -59,7 +59,7 @@
 </style>
 
 <div class="confirmation-content">
-  <h2 class="title is-4 has-text-primary-main">Resend confirmation instructions</h2>
+  <h2 class="title is-4 has-text-primary-main"><%= t('devise.shared.links.resend_confirmation')%> </h2>
 
   <%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
     <%= render "devise/shared/error_messages", resource: resource %>
@@ -73,7 +73,7 @@
 
     <div class="field">
       <div class="control">
-        <%= f.submit "Resend confirmation instructions", class: "button is-primary is-fullwidth" %>
+        <%= f.submit t('devise.shared.links.resend_confirmation'), class: "button is-primary is-fullwidth" %>
       </div>
     </div>
   <% end %>

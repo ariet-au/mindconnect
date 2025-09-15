@@ -577,3 +577,21 @@ ru:
 
   button_to:
     destroy: "Удалить эту услугу"
+  
+  users:
+    sign_up:
+      sign_up_btn: "Зарегистрироваться"
+      heading: "Создайте Аккаунт"
+      description: "Пожалуйста, заполните форму ниже для регистрации."
+  devise:
+    shared:
+      remember_me: 'Запомнить меня'
+      send_me_reset_password: "Отправить ссылку для сброса пароля"
+      links:
+        sign_in: "Войти"
+        resend_confirmation: "Переслать Подтверждение"
+        sign_up: "Зарегистрироваться"
+        forgot_password: "Забыли пароль?"
+        resend_confirmation_instructions: "Не получили инструкции по подтверждению?"
+        resend_unlock_instructions: "Не получили инструкции по разблокировке?"
+        sign_in_with: "Войти через %{provider}"

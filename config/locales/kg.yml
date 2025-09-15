@@ -568,4 +568,22 @@ kg:
 
   button_to:
     destroy: "Бул кызматты жок кылуу"
+  
+  users:
+    sign_up:
+      sign_up_btn: "Катталуу"
+      heading: "Аккаунтуңузду түзүңүз"
+      description: "Сураныч, катталуу үчүн төмөнкү форманы толтуруңуз."
+  devise:
+    shared:
+      remember_me: "Мени эстеп кал"
+      send_me_reset_password: "Сырсөздү калыбына келтирүү шилтемесин жөнөтүңүз"
+      links:
+        sign_in: "Кирүү"
+        resend_confirmation: "Ырастоону кайра жөнөтүү"
+        sign_up: "Катталуу"
+        forgot_password: "Сырсөзүңүздү унутуп калдыңызбы?"
+        resend_confirmation_instructions: "Ырастоо нускамаларын алган жоксузбу?"
+        resend_unlock_instructions: "Бөгөттөн чыгаруу нускамаларын алган жоксузбу?"
+        sign_in_with: "%{provider} менен кирүү"
     

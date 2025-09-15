@@ -581,3 +581,21 @@ en:
 
   button_to:
     destroy: "Destroy this service"
+  
+  users:
+    sign_up:
+      sign_up_btn: "Sign Up"
+      heading: "Create Your Account"
+      description: "Please fill out the form below to register."
+  devise:
+    shared:
+      remember_me: 'Remember me'
+      send_me_reset_password: "Send me reset password instruction"
+      links:
+        sign_in: "Log in"
+        resend_confirmation: "Resend confirmation"
+        sign_up: "Sign up"
+        forgot_password: "Forgot your password?"
+        resend_confirmation_instructions: "Didn't receive confirmation instructions?"
+        resend_unlock_instructions: "Didn't receive unlock instructions?"
+        sign_in_with: "Sign in with %{provider}" # %{provider} will be replaced by the provider name (e.g., Google, Facebook)

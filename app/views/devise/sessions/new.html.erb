@@ -72,7 +72,7 @@
   <div class="logo-container">
     <%= image_tag("logo-dark.png", alt: "Logo") %>
   </div>
-  <h2 class="title is-4 has-text-centered has-text-primary-main">Log in</h2>
+  <h2 class="title is-4 has-text-centered has-text-primary-main"><%= t('devise.shared.links.sign_in') %> </h2>
 
   <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
     <div class="field">
@@ -94,7 +94,7 @@
         <div class="control">
           <label class="checkbox">
             <%= f.check_box :remember_me %>
-            <%= f.label :remember_me, "Remember me" %>
+            <%= f.label :remember_me, t('devise.shared.remember_me')%>
           </label>
         </div>
       </div>
@@ -102,7 +102,7 @@
 
     <div class="field">
       <div class="control">
-        <%= f.submit "Log in", class: "button is-primary is-fullwidth" %>
+        <%= f.submit t('devise.shared.links.sign_in'), class: "button is-primary is-fullwidth" %>
       </div>
     </div>
   <% end %>

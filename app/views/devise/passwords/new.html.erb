@@ -58,7 +58,7 @@
 </style>
 
 <div class="forgot-password-content">
-  <h2 class="title is-4 has-text-primary-main">Forgot your password?</h2>
+  <h2 class="title is-4 has-text-primary-main"> <%= t('devise.shared.links.forgot_password') %></h2>
 
   <%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
     <%= render "devise/shared/error_messages", resource: resource %>
@@ -72,7 +72,7 @@
 
     <div class="field">
       <div class="control">
-        <%= f.submit "Send me reset password instructions", class: "button is-primary is-fullwidth" %>
+        <%= f.submit t('devise.shared.send_me_reset_password'), class: "button is-primary is-fullwidth" %>
       </div>
     </div>
   <% end %>
