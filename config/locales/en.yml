@@ -148,6 +148,8 @@ en:
       remove_education: "Remove this education"
     
   psychologist_search:
+    hide_advanced_filters: "Hide advanced filters"
+    more_options_filters: "Advanced filters"
     placeholder: "Search by name, specialty, or keyword..."
     search_button: "Search"
     clear_all: "Clear all"

@@ -583,7 +583,7 @@
             <span class="icon">
               <i class="fas fa-sliders-h"></i>
             </span>
-            <span x-text="showAdvanced ? 'Hide Advanced Filters' : 'More Filter Options'"></span>
+            <span x-text="showAdvanced ? '<%= t("psychologist_search.hide_advanced_filters") %>' : '<%= t("psychologist_search.more_options_filters") %>'"></span>
             <span class="icon is-small">
               <i class="fas" :class="showAdvanced ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
             </span>

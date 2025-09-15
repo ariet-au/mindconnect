@@ -147,6 +147,8 @@ kg:
       remove_education: "Бул билимди өчүрүү"
     
   psychologist_search:
+    hide_advanced_filters: "Өркүндөтүлгөн чыпкаларды жашыруу"
+    more_options_filters: "Көбүрөөк чыпкалоо параметрлери"
     placeholder: "Аты, адистиги же ачкыч сөз боюнча издөө..."
     search_button: "Издөө"
     clear_all: "Баарын тазалоо"

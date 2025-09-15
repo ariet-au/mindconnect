@@ -149,6 +149,8 @@ ru:
       remove_education: "Удалить это образование"
     
   psychologist_search:
+    hide_advanced_filters: "Скрыть расширенные фильтры"
+    more_options_filters: "Больше опций фильтрации"
     placeholder: "Поиск по имени, специальности или ключевому слову..."
     search_button: "Поиск"
     clear_all: "Очистить все"
