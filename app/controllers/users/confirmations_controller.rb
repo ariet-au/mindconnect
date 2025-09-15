@@ -8,6 +8,7 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
     # Example: Redirect to the sign-in page, perhaps with a flash message
     # You could add `flash[:notice] = "Confirmation instructions sent! Check your email."`
     new_user_session_path
+    
   end
   def after_confirmation_path_for(resource_name, resource)
     # Your custom path after confirmation
