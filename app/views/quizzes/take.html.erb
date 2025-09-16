@@ -472,7 +472,7 @@
   <%= form_with url: submit_quiz_path(@quiz), method: :post, data: { turbo: false }, id: "quizForm" do %>
     <% @quiz.questions.each_with_index do |question, index| %>
       <div class="question-block <%= 'missing' if @missing_questions&.include?(question) %>" data-question-id="<%= question.id %>">
-        <span class="question-number"><%= index + 1 %></span>
+        <span class="question-number"><%= t('quizzes.take.question_number', number: index + 1) %></span>
         <p><%= question.text %></p>
         <% question.question_options.each do |option| %>
           <label class="option-label">
@@ -487,19 +487,21 @@
     <% end %>
 
     <div class="quiz-progress" id="quiz-progress">
-      <div class="progress-text" id="progressText">0 of <%= @quiz.questions.count %> answered (100% required to submit)</div>
+      <div class="progress-text" id="progressText" data-translation="<%= t('quizzes.take.progress_text', answered: '%{answered}', total: '%{total}', percent: '%{percent}') %>">
+        <%= t('quizzes.take.progress_text', answered: 0, total: @quiz.questions.count, percent: 0) %>
+      </div>
       <div class="progress-bar">
         <div class="progress-fill" id="progressFill"></div>
       </div>
       <button id="quiz-submit" class="button-primary">
-        Submit Quiz
+        <%= t('quizzes.take.submit_button') %>
       </button>
     </div>
   <% end %>
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('turbo:load', function() {
   const form = document.getElementById('quizForm');
   const progressFill = document.getElementById('progressFill');
   const progressContainer = document.getElementById('quiz-progress');
