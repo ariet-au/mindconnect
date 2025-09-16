@@ -1,17 +1,23 @@
-<p style="color: green"><%= notice %></p>
+<!-- app/views/quizzes/index.html.erb -->
+<section class="section">
+  <div class="container">
+    <h1 class="title has-text-centered"><%= t('quizzes.index.page_title') %></h1>
+    <p class="subtitle has-text-centered"><%= t('quizzes.index.subtitle') %></p>
 
-
-
-<h1 style="margin-top: 2rem;">Quizzes</h1>
-
-<div id="quizzes">
-  <% @quizzes.each do |quiz| %>
-    <%= render quiz %>
-    <p>
-      <%= link_to "Show this quiz", quiz %>
-    </p>
-  <% end %>
-  
-</div>
-
-<%= link_to "New quiz", new_quiz_path %>
+    <div class="columns is-multiline">
+      <% @quizzes.each do |quiz| %>
+        <div class="column is-one-third">
+          <div class="card quiz-card">
+            <div class="card-content">
+              <h2 class="title is-4"><%= quiz.title %></h2>
+              <p class="content"><%= truncate(quiz.description, length: 120) %></p>
+            </div>
+            <footer class="card-footer">
+              <%= link_to t('quizzes.index.take_quiz'), take_quiz_path(quiz), class: "card-footer-item button is-link is-light" %>
+            </footer>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>

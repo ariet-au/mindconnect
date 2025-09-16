@@ -1,124 +1,313 @@
 <style>
-  /* Base Styles */
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+  /* Reset and override application styles */
+  * {
+    box-sizing: border-box;
+  }
+
+  /* Force full width and remove margins from parent containers */
+  .main-content,
+  .container {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Base Styles with mobile-first approach */
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
   body {
     font-family: 'Inter', sans-serif;
-    background-color: #f0f4f8; /* Light gray background */
+    background-color: #f8fafc;
     color: #334155;
     line-height: 1.6;
     margin: 0;
     padding: 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
   }
 
-  /* Main Container */
+  /* Main Quiz Container - Mobile First */
   .quiz-container {
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 24px;
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  }
-
-  h1 {
-    font-weight: 700;
-    color: #1e293b;
-    margin-top: 0;
-    font-size: 2.5rem;
-    text-align: center;
-    margin-bottom: 8px;
-  }
-
-  p.quiz-description {
-    color: #64748b;
-    font-size: 1.125rem;
-    text-align: center;
-    margin-bottom: 24px;
-  }
-
-  /* Question Styling */
-  .question-block {
+    width: 100vw !important;
+    max-width: 100% !important;
+    min-height: 100vh;
+    margin: 0 !important;
+    padding: 16px;
+    padding-bottom: 120px; /* Added to prevent overlap with floating progress bar */
     background-color: #f8fafc;
+    position: relative;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Header Section */
+  .quiz-header {
+    background: #3b82f6;
+    color: white;
+    padding: 24px 20px;
+    margin: -16px -16px 24px -16px;
+    border-radius: 0 0 20px 20px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);
+  }
+
+  .quiz-header h1 {
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+  }
+
+  .quiz-header .quiz-description {
+    font-size: clamp(0.9rem, 3vw, 1.125rem);
+    opacity: 0.95;
+    margin: 0;
+    font-weight: 400;
+  }
+
+  /* Progress Indicator */
+  .quiz-progress {
+    background: #ffffff;
+    transition: all 0.3s ease;
+    padding: 12px 16px;
+    box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 2000;
+  }
+
+  .quiz-progress.at-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin-top: auto;
+  }
+
+  .quiz-progress .progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    transition: opacity 0.3s ease;
+  }
+
+  .quiz-progress .progress-fill {
+    height: 100%;
+    background: #3b82f6;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+
+  .quiz-progress .progress-text {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #475569;
+    margin-bottom: 8px;
+    text-align: center;
+  }
+
+  .quiz-progress.show-submit .progress-bar {
+    opacity: 0;
+    height: 0;
+  }
+
+  .quiz-progress.show-submit #quiz-submit {
+    display: flex;
+  }
+
+  #quiz-submit {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: calc(100% - 32px);
+    margin: 0 auto;
+    padding: 18px 24px;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #ffffff;
+    background: #3b82f6;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  #quiz-submit::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  #quiz-submit:hover::before {
+    left: 100%;
+  }
+
+  #quiz-submit:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+  }
+
+  #quiz-submit:active {
+    transform: translateY(0);
+  }
+
+  #quiz-submit:disabled {
+    background: #94a3b8;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .quiz-progress.scrolled {
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Question Card Styling */
+  .question-block {
+    background-color: #ffffff;
     border: 1px solid #e2e8f0;
-    padding: 24px;
-    border-radius: 8px;
+    padding: 20px;
+    border-radius: 16px;
     margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .question-block:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .question-number {
+    display: inline-block;
+    background: #3b82f6;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 12px;
   }
 
   .question-block > p {
-    font-size: 1.25rem;
+    font-size: clamp(1rem, 3vw, 1.25rem);
     font-weight: 600;
     color: #1e293b;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
+    line-height: 1.5;
   }
 
-  /* Answer Options */
+  /* Enhanced Answer Options */
   .option-label {
-    display: block;
+    display: flex;
+    align-items: center;
     cursor: pointer;
-    padding: 16px 20px;
+    padding: 16px 18px;
     margin-bottom: 12px;
     background-color: #ffffff;
     border: 2px solid #e2e8f0;
-    border-radius: 8px;
-    transition: all 0.2s ease-in-out;
-    display: flex;
-    align-items: center;
-    font-size: 1rem;
+    border-radius: 12px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: clamp(0.9rem, 2.5vw, 1rem);
     color: #475569;
+    position: relative;
+    overflow: hidden;
+    min-height: 56px;
+  }
+
+  .option-label::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 100%;
+    background: rgba(59, 130, 246, 0.1);
+    transition: width 0.3s ease;
+    z-index: 0;
+  }
+
+  .option-label:hover::before {
+    width: 100%;
   }
 
   .option-label:hover {
-    background-color: #f1f5f9;
-    border-color: #94a3b8;
+    border-color: #3b82f6;
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
   }
   
-  /* Hide the default radio button */
+  .option-label:active {
+    transform: translateX(2px) scale(0.98);
+  }
+
   .option-label input[type="radio"] {
     position: absolute;
     opacity: 0;
+    pointer-events: none;
   }
 
-  /* Custom radio button appearance */
   .option-label .custom-radio {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
     border: 2px solid #94a3b8;
     border-radius: 50%;
-    margin-right: 15px;
+    margin-right: 16px;
     position: relative;
     flex-shrink: 0;
-    transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease;
+    z-index: 1;
   }
 
-  /* Dot inside the custom radio */
   .option-label .custom-radio::after {
     content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 10px;
-    height: 10px;
-    background-color: #007bff;
+    width: 12px;
+    height: 12px;
+    background: #3b82f6;
     border-radius: 50%;
-    transform: translate(-50%, -50%) scale(0);
-    transition: transform 0.2s ease-in-out;
+    transform: scale(0);
+    transition: transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
   }
 
-  /* Checked state */
+  .option-text {
+    flex: 1;
+    z-index: 1;
+    position: relative;
+  }
+
   .option-label input[type="radio"]:checked ~ .custom-radio {
-    border-color: #007bff;
+    border-color: #3b82f6;
+    background-color: rgba(59, 130, 246, 0.1);
   }
 
   .option-label input[type="radio"]:checked ~ .custom-radio::after {
-    transform: translate(-50%, -50%) scale(1);
+    transform: scale(1);
   }
 
-  .option-label input[type="radio"]:checked + span {
+  .option-label input[type="radio"]:checked .option-text,
+  .option-label input[type="radio"]:checked + .option-text {
     color: #1e293b;
     font-weight: 600;
   }
@@ -127,59 +316,309 @@
   .question-block.missing {
     border-color: #ef4444;
     background-color: #fef2f2;
-    box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.1), 0 2px 4px -1px rgba(239, 68, 68, 0.06);
+    box-shadow: 0 4px 16px rgba(239, 68, 68, 0.2);
+    animation: shake 0.5s ease-in-out;
   }
 
-  .question-block.missing::before {
-    content: '⚠️';
-    display: inline-block;
-    margin-right: 8px;
+  .question-block.missing .question-number {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
   }
 
-  /* Submit Button */
-  .button-primary {
-    display: block;
-    width: 100%;
-    padding: 16px 24px;
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: #ffffff;
-    background-color: #007bff;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+  .question-block.missing::after {
+    content: '⚠️ Please select an answer';
+    position: absolute;
+    top: -12px;
+    right: 16px;
+    background: #ef4444;
+    color: white;
+    font-size: 0.75rem;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 500;
   }
 
-  .button-primary:hover {
-    background-color: #0056b3;
-    transform: translateY(-2px);
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
   }
 
-  .button-primary:active {
-    transform: translateY(0);
+  /* Tablet Styles */
+  @media screen and (min-width: 768px) {
+    .quiz-container {
+      padding: 24px;
+      padding-bottom: 140px; /* Increased padding for tablet */
+      max-width: 100% !important;
+      margin: 0 !important;
+      background-color: #f8fafc;
+    }
+
+    .quiz-header {
+      margin: -24px -24px 32px -24px;
+      padding: 40px 32px;
+    }
+
+    .quiz-progress {
+      padding: 16px 24px;
+    }
+
+    #quiz-submit {
+      width: calc(100% - 48px);
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .question-block {
+      padding: 28px;
+    }
+
+    .option-label {
+      padding: 20px 24px;
+    }
+  }
+
+  /* Desktop Styles */
+  @media screen and (min-width: 1024px) {
+    .quiz-container {
+      padding: 32px;
+      padding-bottom: 160px; /* Increased padding for desktop */
+      max-width: 800px !important;
+      margin: 0 auto !important;
+    }
+
+    .quiz-header {
+      margin: -32px -32px 40px -32px;
+      padding: 48px 40px;
+      border-radius: 0 0 24px 24px;
+    }
+
+    .quiz-progress {
+      padding: 20px 32px;
+      max-width: 800px;
+      margin: 0 auto;
+      border-radius: 12px;
+    }
+
+    .quiz-progress.at-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: 0 auto;
+      max-width: 800px;
+    }
+
+    #quiz-submit {
+      width: 300px;
+      max-width: none;
+      padding: 16px 32px;
+      font-size: 1.25rem;
+    }
+
+    .question-block {
+      padding: 32px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    .option-label {
+      padding: 20px 28px;
+      font-size: 1.1rem;
+    }
+
+    .question-block > p {
+      font-size: 1.4rem;
+    }
+  }
+
+  /* Accessibility improvements */
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  /* Focus styles for keyboard navigation */
+  .option-label:focus-within {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+
+  #quiz-submit:focus {
+    outline: 2px solid #3b82f6;
+    outline-offset: 2px;
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .question-block {
+      border-width: 2px;
+    }
+    
+    .option-label {
+      border-width: 2px;
+    }
   }
 </style>
 
 <div class="quiz-container">
-  <h1><%= @quiz.title %></h1>
-  <p class="quiz-description"><%= @quiz.description %></p>
+  <div class="quiz-header">
+    <h1><%= @quiz.title %></h1>
+    <p class="quiz-description"><%= @quiz.description %></p>
+  </div>
 
-  <%= form_with url: submit_quiz_path(@quiz), method: :post, data: { turbo: false } do %>
-    <% @quiz.questions.each do |question| %>
-      <div class="question-block <%= 'missing' if @missing_questions&.include?(question) %>">
+  <%= form_with url: submit_quiz_path(@quiz), method: :post, data: { turbo: false }, id: "quizForm" do %>
+    <% @quiz.questions.each_with_index do |question, index| %>
+      <div class="question-block <%= 'missing' if @missing_questions&.include?(question) %>" data-question-id="<%= question.id %>">
+        <span class="question-number"><%= index + 1 %></span>
         <p><%= question.text %></p>
         <% question.question_options.each do |option| %>
           <label class="option-label">
             <%= radio_button_tag "responses[#{question.id}]", option.score,
-                                 params.dig(:responses, question.id.to_s) == option.score.to_s %>
+                                 params.dig(:responses, question.id.to_s) == option.score.to_s,
+                                 class: "question-radio" %>
             <span class="custom-radio"></span>
-            <%= option.label %>
+            <span class="option-text"><%= option.label %></span>
           </label>
         <% end %>
       </div>
     <% end %>
 
-    <%= submit_tag "Submit Quiz", class: "button-primary" %>
+    <div class="quiz-progress" id="quiz-progress">
+      <div class="progress-text" id="progressText">0 of <%= @quiz.questions.count %> answered (100% required to submit)</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <button id="quiz-submit" class="button-primary">
+        Submit Quiz
+      </button>
+    </div>
   <% end %>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('quizForm');
+  const progressFill = document.getElementById('progressFill');
+  const progressContainer = document.getElementById('quiz-progress');
+  const submitBtn = document.getElementById('quiz-submit');
+  const questionRadios = document.querySelectorAll('.question-radio');
+  const totalQuestions = document.querySelectorAll('.question-block').length;
+  const quizContainer = document.querySelector('.quiz-container');
+  
+  let answeredQuestions = 0;
+
+  const progressText = document.getElementById('progressText');
+
+  // Update question progress
+  function updateProgress() {
+    const answered = new Set();
+    questionRadios.forEach(radio => {
+      if (radio.checked) {
+        const questionId = radio.name.match(/\[(\d+)\]/)[1];
+        answered.add(questionId);
+      }
+    });
+
+    answeredQuestions = answered.size;
+    const percentage = (answeredQuestions / totalQuestions) * 100;
+
+    // Update progress bar width
+    progressFill.style.width = percentage + '%';
+
+    // Update textual progress
+    progressText.textContent = `${answeredQuestions} of ${totalQuestions} answered (100% required to submit)`;
+
+    // Show submit button at 100%
+    if (answeredQuestions === totalQuestions) {
+      progressContainer.classList.add('show-submit');
+      progressText.textContent = 'All questions answered! ✅ Ready to submit!';
+    } else {
+      progressContainer.classList.remove('show-submit');
+    }
+  }
+
+  // Add haptic feedback and remove missing class on selection
+  questionRadios.forEach((radio, index) => {
+    radio.addEventListener('change', function() {
+      updateProgress();
+      
+      // Add haptic feedback on mobile
+      if ('vibrate' in navigator) {
+        navigator.vibrate(10);
+      }
+      
+      // Remove missing class when answered
+      const questionBlock = this.closest('.question-block');
+      questionBlock.classList.remove('missing');
+    });
+  });
+
+  // Form submission with validation
+  form.addEventListener('submit', function(e) {
+    if (answeredQuestions < totalQuestions) {
+      e.preventDefault();
+      
+      // Add shake animation to submit button
+      submitBtn.style.animation = 'shake 0.5s ease-in-out';
+      setTimeout(() => {
+        submitBtn.style.animation = '';
+      }, 500);
+    } else {
+      // Show loading state
+      submitBtn.innerHTML = '<span>📝</span> Submitting...';
+      submitBtn.disabled = true;
+    }
+  });
+
+  // Initialize progress
+  updateProgress();
+
+  // Add scroll listener for shadow effect and bottom positioning
+  let ticking = false;
+  function onScroll() {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const windowHeight = window.innerHeight;
+        const quizContainerRect = quizContainer.getBoundingClientRect();
+        const quizContainerHeight = quizContainerRect.height;
+        const documentHeight = document.documentElement.scrollHeight;
+
+        // Check if scrolled to the bottom of the quiz container
+        const isAtBottom = scrollTop + windowHeight >= documentHeight - 10; // Small buffer
+
+        if (isAtBottom) {
+          progressContainer.classList.add('at-bottom');
+          progressContainer.classList.remove('scrolled');
+        } else {
+          progressContainer.classList.remove('at-bottom');
+          if (scrollTop > 100) {
+            progressContainer.classList.add('scrolled');
+          } else {
+            progressContainer.classList.remove('scrolled');
+          }
+        }
+
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Auto-save functionality
+  let saveTimeout;
+  questionRadios.forEach(radio => {
+    radio.addEventListener('change', function() {
+      clearTimeout(saveTimeout);
+      saveTimeout = setTimeout(() => {
+        console.log('Auto-saving progress...');
+      }, 1000);
+    });
+  });
+});
+</script>

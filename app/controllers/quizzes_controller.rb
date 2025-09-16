@@ -109,6 +109,9 @@ class QuizzesController < ApplicationController
     if @total_score.blank? || @result.blank?
       redirect_to take_quiz_path(@quiz), alert: "Please complete the quiz first."
     end
+
+    @filled_psychologists = PsychologistProfile.filled.confirmed.active.limit(5)
+
   end
 
   def edit_questions

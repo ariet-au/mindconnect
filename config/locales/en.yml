@@ -6,6 +6,7 @@ en:
   edit_profile: "Edit profile"
   for_psychologists: "For psychologists"
   find_a_psychologist: "Find a psychologist"
+  quizzes_nav: "Quizzes"
   logout: "Logout"
   login: "Login"
   registration: "Registration"
@@ -599,3 +600,22 @@ en:
         resend_confirmation_instructions: "Didn't receive confirmation instructions?"
         resend_unlock_instructions: "Didn't receive unlock instructions?"
         sign_in_with: "Sign in with %{provider}" # %{provider} will be replaced by the provider name (e.g., Google, Facebook)
+  quizzes:
+    results:
+      page_title: "Your Quiz Results"
+      quiz_title: "Quiz:"
+      score: "Your total score:"
+      back_link: "Back to all quizzes"
+      psychologist_heading: "Recommended Psychologists"
+      rate: "Rate:"
+      per_hour: "/hr"
+      view_profile: "View Profile"
+    index:
+      page_title: "Take a Quiz"
+      subtitle: "Choose from the available quizzes below"
+      take_quiz: "Take Quiz"
+    take:
+      question_number: "Question %{number}"
+      submit_button: "Submit Quiz"
+      progress_text: "0 of %{total} answered (%{percent}% required to submit)" # Missing %{percent} in Russian
+

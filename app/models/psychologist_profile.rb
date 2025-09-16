@@ -127,13 +127,15 @@ pg_search_scope :search_full_text,
     trigram: { threshold: 0.2 } # finds fuzzy matches (typos, similar words)
   },
   ranked_by: ":tsearch + :trigram" # rank by combined score
-    def full_name
+  
+  
+  def full_name
       "#{first_name} #{last_name}" # or however you want it displayed
-    end
+  end
 
-    def strip_youtube_url
+  def strip_youtube_url
       self.youtube_video_url = youtube_video_url.strip.presence if youtube_video_url.present?
-    end
+  end
 
   def resize_profile_image
     return unless profile_image.attached?

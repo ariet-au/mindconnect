@@ -5,6 +5,7 @@ ru:
   edit_profile: "Редактировать профиль"
   for_psychologists: "Для психологов"
   find_a_psychologist: "Найти психолога"
+  quizzes_nav: "Тесты"
   logout: "Выйти"
   login: "Войти"
   registration: "Регистрация"
@@ -595,3 +596,23 @@ ru:
         resend_confirmation_instructions: "Не получили инструкции по подтверждению?"
         resend_unlock_instructions: "Не получили инструкции по разблокировке?"
         sign_in_with: "Войти через %{provider}"
+
+  quizzes:
+    results:
+      page_title: "Результаты вашего теста"
+      quiz_title: "Тест:"
+      score: "Ваш общий балл:"
+      back_link: "Назад ко всем тестам"
+      psychologist_heading: "Рекомендованные психологи"
+      rate: "Ставка:"
+      per_hour: "/час"
+      view_profile: "Посмотреть профиль"
+    index:
+      page_title: "Пройти тест"
+      subtitle: "Выберите один из доступных тестов ниже"
+      take_quiz: "Пройти тест"
+    take:
+      question_number: "Вопрос %{number}"
+      progress_text: "Отвечено 0 из %{total} (%{percent}% необходимо для отправки)"
+      submit_button: "Отправить тест"
+

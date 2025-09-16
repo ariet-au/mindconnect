@@ -5,6 +5,7 @@ kg:
   edit_profile: "Профилди түзөтүү"
   for_psychologists: "Психологдор үчүн"
   find_a_psychologist: "Психолог табуу"
+  quizzes_nav: "Тесттер"
   logout: "Чыгуу"
   login: "Кирүү"
   registration: "Катталуу"
@@ -586,4 +587,24 @@ kg:
         resend_confirmation_instructions: "Ырастоо нускамаларын алган жоксузбу?"
         resend_unlock_instructions: "Бөгөттөн чыгаруу нускамаларын алган жоксузбу?"
         sign_in_with: "%{provider} менен кирүү"
+
+  quizzes:
+    results:
+      page_title: "Тесттин жыйынтыгы"
+      quiz_title: "Тест:"
+      score: "Жалпы баллыңыз:"
+      back_link: "Бардык тесттерге кайтуу"
+      psychologist_heading: "Сунушталган психологдор"
+      rate: "Тарифи:"
+      per_hour: "/саат"
+      view_profile: "Профильди көрүү"
+    index:
+      page_title: "Тесттен өтүңүз"
+      subtitle: "Төмөндөгү жеткиликтүү тесттерден тандаңыз"
+      take_quiz: "Тесттен өтүү"
+    take:
+      question_number: "Суроо %{number}"
+      progress_text: "%{answered} суроого %{total} суроонун ичинен жооп берилди (100% жөнөтүү үчүн талап кылынат)"
+      submit_button: "Тестти жөнөтүү"
+
     

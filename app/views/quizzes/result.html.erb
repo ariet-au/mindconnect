@@ -1,6 +1,182 @@
-<h2><%= @quiz.title %> Results</h2>
+<style>
+    /* Reset and base styles */
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
 
-<p><strong>Your total score:</strong> <%= @total_score %></p>
-<p><strong>Interpretation:</strong> <%= @result %></p>
+    /* General layout and font */
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #f7f9fc;
+        color: #333;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
 
-<%= link_to "Back to all quizzes", quizzes_path, class: "button" %>
+    /* Page wrapper */
+    .main-content-wrapper {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    /* Main content box for results and psychologists */
+    .content-box {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.1);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    /* Typography */
+    .page-title {
+        font-size: 2rem;
+        text-align: center;
+        color: #222;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .section-heading {
+        font-size: 1.5rem;
+        text-align: center;
+        margin-top: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    p {
+        color: #555;
+    }
+
+    .strong-text {
+        font-weight: 600;
+        color: #333;
+    }
+
+    /* Button */
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        text-align: center;
+        text-decoration: none;
+        color: #fff;
+        background-color: #007bff;
+        border-radius: 4px;
+        transition: background-color 0.2s ease;
+    }
+
+    .btn:hover {
+        background-color: #0056b3;
+    }
+
+    /* Results section */
+    .results-section {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .results-section .page-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+
+    /* New styles for prominent score and result */
+    .score-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #007bff; /* Highlight color */
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .result-interpretation {
+        font-size: 1.2rem;
+        font-weight: 500;
+        color: #555;
+        margin-bottom: 1rem;
+    }
+    
+    /* Psychologists grid */
+    .psychologist-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+    
+    /* Profile card */
+    .profile-card {
+        background-color: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: box-shadow 0.2s ease;
+    }
+    
+    .profile-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+    
+    .profile-img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #ddd;
+        margin-bottom: 1rem;
+    }
+    
+    .profile-card h3 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        color: #333;
+    }
+    
+    .profile-card p.rate {
+        font-size: 0.9rem;
+        color: #777;
+        margin-bottom: 1rem;
+    }
+    
+    .profile-card p.about {
+        font-size: 0.8rem;
+        color: #777;
+        margin-bottom: 1rem;
+    }
+</style>
+
+<div class="main-content-wrapper">
+    <div class="results-section">
+        <h1 class="page-title"><%= t('quizzes.results.page_title') %></h1>
+        <p class="text-lg"><strong><%= t('quizzes.results.quiz_title') %></strong> <%= @quiz.title %></p>
+        <p class="score-value"><%= t('quizzes.results.score') %> <%= @total_score %></p>
+        <p class="result-interpretation"><%= @result %></p>
+        <div class="mt-4">
+            <%= link_to t('quizzes.results.back_link'), quizzes_path, class: "btn" %>
+        </div>
+    </div>
+    
+    <div>
+        <h2 class="section-heading"><%= t('quizzes.results.psychologist_heading') %></h2>
+        <div class="psychologist-grid">
+            <% @filled_psychologists.each do |psy| %>
+                <div class="profile-card">
+                    <%= image_tag psy.profile_img, alt: psy.full_name, class: "profile-img" %>
+                    <h3><%= psy.full_name %></h3>
+                    <p class="rate"><%= t('quizzes.results.rate') %> $<%= psy.standard_rate %><%= t('quizzes.results.per_hour') %></p>
+                    <p class="about"><%= psy.about_me.truncate(100) %></p>
+                    <%= link_to t('quizzes.results.view_profile'), psychologist_profile_path(psy), class: "btn" %>
+                </div>
+            <% end %>
+        </div>
+    </div>
+</div>
