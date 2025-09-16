@@ -110,7 +110,7 @@ class QuizzesController < ApplicationController
       redirect_to take_quiz_path(@quiz), alert: "Please complete the quiz first."
     end
 
-    @filled_psychologists = PsychologistProfile.filled.confirmed.active.limit(5)
+    @filled_psychologists = PsychologistProfile.filled.confirmed.limit(5)
 
   end
 
