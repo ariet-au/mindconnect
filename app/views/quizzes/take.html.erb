@@ -475,11 +475,11 @@
       <div class="question-block <%= 'missing' if @missing_questions&.include?(question) %>" data-question-id="<%= question.id %>">
         <span class="question-number"><%= t('quizzes.take.question_number', number: index + 1) %></span>
         <p><%= question.text %></p>
-        <% question.question_options.each do |option| %>
+        <% question.question_options.order(:score).each do |option| %>
           <label class="option-label">
             <%= radio_button_tag "responses[#{question.id}]", option.score,
-                                 params.dig(:responses, question.id.to_s) == option.score.to_s,
-                                 class: "question-radio" %>
+                                params.dig(:responses, question.id.to_s) == option.score.to_s,
+                                class: "question-radio" %>
             <span class="custom-radio"></span>
             <span class="option-text"><%= option.label %></span>
           </label>
