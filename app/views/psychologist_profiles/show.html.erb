@@ -1007,11 +1007,11 @@ body {
                 <a href="<%= contact_link %>" class="button is-primary">
                     <i class="<%= contact_keys[primary_contact_method.to_sym] %> mr-2"></i>
                     <span><%= t('psychologist_profiles.show.contact_me') %></span>
-                                <%= link_to t('psychologist_profiles.show.submit_client_info') , new_psychologist_profile_client_info_path(@psychologist_profile), class: "button is-secondary" %>
 
                 </a>
             </div>
         <% end %>
+                                        <%= link_to t('psychologist_profiles.show.submit_client_info') , new_psychologist_profile_client_info_path(@psychologist_profile), class: "button is-secondary" %>
 
         <%# ---- Other Contacts Toggle ---- %>
         <div class="other-contacts">
