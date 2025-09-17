@@ -51,6 +51,7 @@ Rails.application.routes.draw do
     get 'find-a-psychologist', to: 'psychologist_profiles#search_landing', as: :search_landing
     get 'for-psychologists', to: 'psychologist_profiles#landing_psych', as: :landing_psych
     get 'contact-us', to: 'psychologist_profiles#contact_us', as: :contact_us
+    get '/psychologist_profiles/check_email', to: 'psychologist_profiles#check_email', as: :psychologist_check_email
 
     # Currency and timezone settings
     post '/set_currency', to: 'application#set_currency', as: :set_currency

@@ -318,6 +318,10 @@ end
   def landing_psych
   end
 
+  def check_email
+    render "psychologist_profiles/check_email"
+  end
+
   def contact_us
   end
 

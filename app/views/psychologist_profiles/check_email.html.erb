@@ -1,0 +1,70 @@
+<div class="section is-fullheight has-background-light">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-12-mobile is-8-tablet is-6-desktop">
+        <div class="box signup-box p-5">
+          <h2 class="title is-4 has-text-centered has-text-primary-main mb-5">Регистрация успешна</h2>
+
+          <p class="has-text-grey-dark mb-4 is-size-6-mobile is-size-5-desktop">
+            Пожалуйста, проверьте вашу почту и перейдите по ссылке для подтверждения.
+          </p>
+
+          <p class="has-text-grey-dark mb-5 is-size-6-mobile is-size-5-desktop">
+            Если возникнут ошибки, свяжитесь с нами через
+            <a href="https://t.me/arietd" target="_blank" class="has-text">Telegram </a>
+            или
+            <a href="https://www.instagram.com/aksanaa_psy" target="_blank" class="has-text">Instagram (@aksanaa_psy)</a>.
+          </p>
+
+          <div class="has-text-centered mt-5">
+            <%= link_to "Вернуться на главную", root_path, class: "button is-outlined is-blue is-medium is-responsive custom-minimal-button" %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .section.is-fullheight {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+  }
+
+  .signup-box {
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .is-blue {
+    border-color: #3b82f6 !important;
+    color: #3b82f6 !important;
+  }
+
+  .custom-minimal-button {
+    background: transparent !important;
+    border: 2px solid #3b82f6 !important;
+    color: #3b82f6 !important;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 0.5rem 1.5rem;
+  }
+
+  .custom-minimal-button:hover {
+    background: #3b82f6 !important;
+    color: #fff !important;
+  }
+
+  @media (max-width: 768px) {
+    .signup-box {
+      padding: 1.5rem;
+    }
+
+    .custom-minimal-button {
+      width: 100%;
+      padding: 0.75rem;
+    }
+  }
+</style>
