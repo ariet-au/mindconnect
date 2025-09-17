@@ -63,7 +63,7 @@ class ServicesController < ApplicationController
     @service.destroy!
 
     respond_to do |format|
-      format.html { redirect_to services_path, status: :see_other, notice: "Service was successfully destroyed." }
+      format.html { redirect_to current_user.psychologist_profile, status: :see_other, notice: "Service was successfully destroyed." }
       format.json { head :no_content }
     end
   end
@@ -71,7 +71,7 @@ class ServicesController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_service
-      @service = Service.find(params.expect(:id))
+      @service = Service.find(params[:id])
     end
 
     def check_user_confirmation
@@ -84,6 +84,14 @@ class ServicesController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def service_params
-      params.expect(service: [ :user_id, :name, :description, :price, :currency, :duration_minutes, :delivery_method ])
+      params.require(:service).permit(
+        :user_id,
+        :name,
+        :description,
+        :price,
+        :currency,
+        :duration_minutes,
+        :delivery_method
+      )
     end
 end

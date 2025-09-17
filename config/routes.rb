@@ -79,7 +79,7 @@ Rails.application.routes.draw do
          get 'show_mob3'
       end
       get :available_slots, on: :member
-      resources :services, only: [:index, :show]
+      resources :services, only: [:index, :show, :edit, :destroy]
       resources :client_infos, only: [:new, :create]
       resources :educations, only: [:new, :create, :edit, :update, :destroy]
       resources :psychologist_availabilities, only: [:index, :create, :update] do
