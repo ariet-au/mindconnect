@@ -25,10 +25,13 @@
           <div class="column is-half">
             <div class="field">
             <!-- Preview container -->
-              <div id="preview-container" style="margin-top: 1rem;">
-                <img id="imagePreview" src="<%= url_for(@psychologist_profile.profile_img) if @psychologist_profile&.profile_img.attached? %>" 
-                    style="max-width: 200px; display: <%= @psychologist_profile&.profile_img&.attached? ? 'block' : 'none' %>;" />
-              </div>
+          <div id="preview-container" style="margin-top: 1rem;">
+              <%= image_tag(
+                    @psychologist_profile&.profile_img&.attached? ? url_for(@psychologist_profile.profile_img) : asset_path("default-profile.png"),
+                    id: "imagePreview",
+                    style: "max-width: 200px;"
+                  ) %>
+            </div>
               <%= form.label :profile_img, t('psychologist_profile.labels.upload_profile_image'), class: "label" %>
               <label class="button is-link is-light">
                 <span class="icon"><i class="fas fa-upload"></i></span>
@@ -240,8 +243,12 @@
             <div class="field">
               <%= form.label :profile_url, t('psychologist_profile.labels.profile_url'), class: "label" %>
               <div class="control">
-                <%= form.text_field :profile_url, class: "input", pattern: nil %>
+                <%= form.text_field :profile_url, class: "input", id: "profile_url_input", placeholder: "letters, numbers, - or _" %>
               </div>
+              <p class="help is-info" id="profile_url_rules">
+                <%= t('psychologist_profile.labels.profile_url_rules', default: "3–30 chars, lowercase letters, numbers, hyphens, underscores") %>
+              </p>
+              <p class="help is-danger" id="profile_url_error" style="display: none;"></p>
             </div>
           </div>
           <div class="column is-half">
@@ -272,7 +279,7 @@
               </div>
             </div>
           </div>
-          <div class="column is-half">
+          <div class="column is-one-third">
             <div class="field">
               <%= form.label :telegram, t('psychologist_profile.labels.telegram'), class: "label" %>
               <div class="control">
@@ -280,11 +287,19 @@
               </div>
             </div>
           </div>
-          <div class="column is-half">
+          <div class="column is-one-third">
             <div class="field">
               <%= form.label :whatsapp, t('psychologist_profile.labels.whatsapp'), class: "label" %>
               <div class="control">
                 <%= form.text_field :whatsapp, class: "input" %>
+              </div>
+            </div>
+          </div>
+          <div class="column ">
+            <div class="field">
+              <%= form.label :contact_email, t('psychologist_profile.labels.contact_email'), class: "label" %>
+              <div class="control">
+                <%= form.text_field :contact_email, class: "input" %>
               </div>
             </div>
           </div>
@@ -312,6 +327,8 @@
               </div>
             </div>
           </div>
+
+          
           <div class="column is-full">
             <div class="field">
               <%= form.label :primary_contact_method, t('psychologist_profile.labels.primary_contact_method'), class: "label" %>
@@ -322,7 +339,8 @@
                       [t('psychologist_profile.contact_methods.whatsapp'), 'whatsapp'],
                       [t('psychologist_profile.contact_methods.phone1'), 'contact_phone'],
                       [t('psychologist_profile.contact_methods.phone2'), 'contact_phone2'],
-                      [t('psychologist_profile.contact_methods.phone3'), 'contact_phone3']
+                      [t('psychologist_profile.contact_methods.phone3'), 'contact_phone3'],
+                      [t('psychologist_profile.contact_methods.contact_email'), 'contact_email'],
                     ], selected: @psychologist_profile.primary_contact_method), { include_blank: t('psychologist_profile.prompts.select_primary_contact') } %>
                 </div>
               </div>
@@ -362,6 +380,16 @@
               </label>
             </div>
           </div>
+
+          <div class="column is-full">
+            <div class="field">
+              <label class="checkbox">
+                <%= form.check_box :hidden %>
+                <%= t('psychologist_profile.labels.hidden') %>
+              </label>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -653,5 +681,64 @@ document.addEventListener('turbo:load', function() {
       }
     }
 });
+
+document.addEventListener("turbo:load", function () {
+  const firstName = document.getElementById("psychologist_profile_first_name");
+  const lastName = document.getElementById("psychologist_profile_last_name");
+  const submitBtn = document.querySelector("input[type=submit]");
+
+  function toggleSubmit() {
+    if (firstName.value.trim() === "" || lastName.value.trim() === "") {
+      submitBtn.disabled = true;
+    } else {
+      submitBtn.disabled = false;
+    }
+  }
+
+  if (firstName && lastName && submitBtn) {
+    toggleSubmit(); // initial check
+    firstName.addEventListener("input", toggleSubmit);
+    lastName.addEventListener("input", toggleSubmit);
+  }
+});
+
+document.addEventListener("turbo:load", () => {
+  const input = document.getElementById("profile_url_input");
+  const errorEl = document.getElementById("profile_url_error");
+
+  const regex = /^[a-z0-9_-]{3,30}$/;
+
+  let timeout;
+  input.addEventListener("input", () => {
+    const value = input.value.trim();
+
+    // Clear previous error
+    errorEl.style.display = "none";
+    errorEl.textContent = "";
+
+    // Show format error
+    if (value && !regex.test(value)) {
+      errorEl.style.display = "block";
+      errorEl.textContent = "URL can only contain 3–30 lowercase letters, numbers, hyphens, underscores";
+      return;
+    }
+
+    // Debounce AJAX uniqueness check
+    if (value) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        fetch(`/psychologist_profiles/check_profile_url?profile_url=${encodeURIComponent(value)}`)
+          .then(res => res.json())
+          .then(data => {
+            if (data.taken) {
+              errorEl.style.display = "block";
+              errorEl.textContent = "This URL is already taken";
+            }
+          });
+      }, 500);
+    }
+  });
+});
+
 </script>
 

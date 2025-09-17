@@ -107,12 +107,13 @@ class PsychologistProfile < ApplicationRecord
   before_validation :slugify_profile_url
   validates :profile_url,
           uniqueness: true,
-          allow_blank: true,
+          allow_nil: true,            # allow NULL
           length: { in: 3..30, message: "must be between 3 and 30 characters" },
           format: {
             with: /\A[a-z0-9\-_]+\z/,
             message: "can only contain lowercase letters, numbers, hyphens, and underscores"
-          }
+          },
+          if: -> { profile_url.present? } # only validate format/length if not nil
 
 
 pg_search_scope :search_full_text,
@@ -228,12 +229,15 @@ end
 
   
   private 
+  
   def slugify_profile_url
-  if profile_url.present?
-    self.profile_url = profile_url.downcase.strip
-                                  .gsub(/[^a-z0-9\s_-]/, "") # allow underscores now
-                                  .gsub(/\s+/, "-")          
-                                  .gsub(/-+/, "-")           
+    if profile_url.present?
+      self.profile_url = profile_url.downcase.strip
+                                    .gsub(/[^a-z0-9\s_-]/, "")
+                                    .gsub(/\s+/, "-")
+                                    .gsub(/-+/, "-")
+    else
+      self.profile_url = nil  # convert empty string to NULL
     end
   end
 

@@ -69,6 +69,9 @@ Rails.application.routes.draw do
 
     # Psychologist profiles and nested resources
     resources :psychologist_profiles do
+       collection do
+          get :check_profile_url  # <-- add this here
+        end
       member do 
          get 'show_mob'
          get 'show_mob2'

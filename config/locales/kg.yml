@@ -259,6 +259,7 @@ kg:
       address: "Дарек"
       telegram: "Телеграм"
       whatsapp: "WhatsApp"
+      contact_email: "Электрондук почта"
       contact_phone1: "Байланыш телефону 1"
       contact_phone2: "Байланыш телефону 2"
       contact_phone3: "Байланыш телефону 3"
@@ -267,6 +268,7 @@ kg:
       online_services: "Онлайн кызматтар?"
       select_languages: "Тилдерди тандоо"
       featured_service: "Профилде көрсөтүлгөн кызмат"
+      hidden: "Профильды Жашыр"
 
     prompts:
       select_timezone: "Убакыт алкагыңызды тандаңыз"
@@ -499,6 +501,7 @@ kg:
     show:
       submitted_by: "Жиберген %{name}"
       contact_methods:
+        contact_email: "Электрондук почта"
         email: "Электрондук почта"
         phone: "Телефон"
         whatsapp: "WhatsApp"

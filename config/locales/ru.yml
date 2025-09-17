@@ -260,6 +260,7 @@ ru:
       address: "Адрес"
       telegram: "Telegram"
       whatsapp: "WhatsApp"
+      contact_email: "Электронная почта"
       contact_phone1: "Контактный телефон 1"
       contact_phone2: "Контактный телефон 2"
       contact_phone3: "Контактный телефон 3"
@@ -268,6 +269,7 @@ ru:
       online_services: "Онлайн-услуги?"
       select_languages: "Выбрать языки"
       featured_service: "Услуга, отображаемая в профиле"
+      hidden: "Спрятать Профиль"
 
     prompts:
       select_timezone: "Выберите свой часовой пояс"
@@ -508,6 +510,7 @@ ru:
     show:
       submitted_by: "Отправлено %{name}"
       contact_methods:
+        contact_email: "Электронная почта"
         email: "Электронная почта"
         phone: "Телефон"
         whatsapp: "WhatsApp"

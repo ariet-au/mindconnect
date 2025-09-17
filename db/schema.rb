@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_13_091129) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_17_092419) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -333,6 +333,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_13_091129) do
     t.string "profile_url"
     t.string "religion"
     t.bigint "featured_service_id"
+    t.string "contact_email"
+    t.boolean "hidden", default: false, null: false
     t.index ["featured_service_id"], name: "index_psychologist_profiles_on_featured_service_id"
     t.index ["profile_url"], name: "index_psychologist_profiles_on_profile_url", unique: true
     t.index ["user_id"], name: "index_psychologist_profiles_on_user_id"

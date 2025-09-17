@@ -914,6 +914,8 @@ body {
             </div>
         <% end %>
 
+
+        <% if @psychologist_profile.services.present? %>
         <%# ---- Services Offered ---- %>
         <div class="profile-section">
             <h2 class="section-title"><i class="fas fa-concierge-bell"></i> <%= t('psychologist_profiles.show.services_offered') %></h2>
@@ -995,6 +997,7 @@ body {
                 <!-- END: Redesigned Service Card -->
             <% end %>
         </div>
+        <% end %>
 
         <%# ---- Contact Me Button ---- %>
         <% if contact_link %>
@@ -1019,7 +1022,7 @@ body {
                 <% other_methods = contact_keys.reject { |k, _| k.to_s == primary_contact_method } %>
                 <% other_methods.each do |method, icon| %>
                     <% value = case method
-                                    when :email then @psychologist_profile.user.email
+                                    when :email then @psychologist_profile.contact_email
                                     when :telegram then @psychologist_profile.telegram
                                     when :whatsapp then @psychologist_profile.whatsapp
                                     when :primary_phone then @psychologist_profile.contact_phone
@@ -1057,69 +1060,72 @@ body {
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Toggle for contact list
-        const contactToggle = document.querySelector('.toggle-contacts');
-        if(contactToggle) {
-            contactToggle.addEventListener('click', function() {
-                const contactList = document.querySelector('.contact-list');
-                const isExpanded = this.getAttribute('aria-expanded') === 'true';
-                this.setAttribute('aria-expanded', !isExpanded);
-                contactList.style.display = isExpanded ? 'none' : 'flex'; // Use flex for column layout
-                this.querySelector('.toggle-text').textContent = isExpanded ? 
-                    this.getAttribute('data-show-text') : 
-                    this.getAttribute('data-hide-text');
-                this.querySelector('i').classList.toggle('fa-chevron-down');
-                this.querySelector('i').classList.toggle('fa-chevron-up');
-            });
+  function initPage() {
+    // Toggle for contact list
+    const contactToggle = document.querySelector('.toggle-contacts');
+    if (contactToggle) {
+      contactToggle.addEventListener('click', function() {
+        const contactList = document.querySelector('.contact-list');
+        const isExpanded = this.getAttribute('aria-expanded') === 'true';
+        this.setAttribute('aria-expanded', !isExpanded);
+        contactList.style.display = isExpanded ? 'none' : 'flex';
+        this.querySelector('.toggle-text').textContent = isExpanded ?
+          this.getAttribute('data-show-text') :
+          this.getAttribute('data-hide-text');
+        this.querySelector('i').classList.toggle('fa-chevron-down');
+        this.querySelector('i').classList.toggle('fa-chevron-up');
+      });
+    }
+
+    // Copy to clipboard functionality
+    document.querySelectorAll('.copy-button').forEach(button => {
+      button.addEventListener('click', function(event) {
+        event.preventDefault();
+        const value = this.getAttribute('data-value');
+        const textArea = document.createElement("textarea");
+        textArea.value = value;
+        textArea.style.top = "0";
+        textArea.style.left = "0";
+        textArea.style.position = "fixed";
+
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+          document.execCommand('copy');
+          const originalIcon = this.innerHTML;
+          this.innerHTML = '<i class="fas fa-check" style="color: var(--success-muted);"></i>';
+          setTimeout(() => {
+            this.innerHTML = originalIcon;
+          }, 1500);
+        } catch (err) {
+          console.error('Fallback: Oops, unable to copy', err);
         }
 
-        // Copy to clipboard functionality
-        document.querySelectorAll('.copy-button').forEach(button => {
-            button.addEventListener('click', function(event) {
-                event.preventDefault();
-                const value = this.getAttribute('data-value');
-                const textArea = document.createElement("textarea");
-                textArea.value = value;
-                // Avoid scrolling to bottom
-                textArea.style.top = "0";
-                textArea.style.left = "0";
-                textArea.style.position = "fixed";
-                
-                document.body.appendChild(textArea);
-                textArea.focus();
-                textArea.select();
-                
-                try {
-                    document.execCommand('copy');
-                    // Optional: Add feedback to the user
-                    const originalIcon = this.innerHTML;
-                    this.innerHTML = '<i class="fas fa-check" style="color: var(--success-muted);"></i>';
-                    setTimeout(() => {
-                        this.innerHTML = originalIcon;
-                    }, 1500);
-                } catch (err) {
-                    console.error('Fallback: Oops, unable to copy', err);
-                }
-                
-                document.body.removeChild(textArea);
-            });
-        });
-
-        // Video toggle functionality
-        const videoToggle = document.querySelector('.toggle-video');
-        if (videoToggle) {
-            videoToggle.addEventListener('click', function() {
-                const videoContent = document.querySelector('.video-content');
-                const isExpanded = this.getAttribute('aria-expanded') === 'true';
-                this.setAttribute('aria-expanded', !isExpanded);
-                videoContent.style.display = isExpanded ? 'none' : 'block';
-                this.querySelector('.toggle-text').textContent = isExpanded ? 
-                    this.getAttribute('data-show-text') : 
-                    this.getAttribute('data-hide-text');
-                this.querySelector('i').classList.toggle('fa-chevron-down');
-                this.querySelector('i').classList.toggle('fa-chevron-up');
-            });
-        }
+        document.body.removeChild(textArea);
+      });
     });
+
+    // Video toggle functionality
+    const videoToggle = document.querySelector('.toggle-video');
+    if (videoToggle) {
+      videoToggle.addEventListener('click', function() {
+        const videoContent = document.querySelector('.video-content');
+        const isExpanded = this.getAttribute('aria-expanded') === 'true';
+        this.setAttribute('aria-expanded', !isExpanded);
+        videoContent.style.display = isExpanded ? 'none' : 'block';
+        this.querySelector('.toggle-text').textContent = isExpanded ?
+          this.getAttribute('data-show-text') :
+          this.getAttribute('data-hide-text');
+        this.querySelector('i').classList.toggle('fa-chevron-down');
+        this.querySelector('i').classList.toggle('fa-chevron-up');
+      });
+    }
+  }
+
+  // Run once on full page load
+  document.addEventListener("DOMContentLoaded", initPage);
+  // Run again on Turbo-driven navigation
+  document.addEventListener("turbo:load", initPage);
 </script>

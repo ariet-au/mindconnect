@@ -367,7 +367,13 @@ end
     redirect_back fallback_location: root_path, allow_other_host: false, params: { country: params[:country] }
   end
 
-  
+  def check_profile_url
+    url = params[:profile_url].to_s.downcase.strip
+    taken = PsychologistProfile.where.not(id: current_user&.psychologist_profile&.id)
+                              .where(profile_url: url)
+                              .exists?
+    render json: { taken: taken }
+  end
 
 
   private
@@ -399,7 +405,7 @@ end
             :contact_phone2, :contact_phone3, :gender, :education, :is_doctor, :in_person, :online, 
             :is_degree_boolean, :profile_img, :religion,
             :about_clients, :about_issues, :about_specialties, :primary_contact_method, :timezone,
-            :status, :youtube_video_url, :profile_url, :featured_service_id, 
+            :status, :youtube_video_url, :profile_url, :featured_service_id, :contact_email, :hidden,
             issue_ids: [],         # <-- Add this
             client_type_ids: [],  # <-- And this
             specialty_ids: [] ,     # <-- And this,

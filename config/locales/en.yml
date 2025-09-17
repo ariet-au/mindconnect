@@ -140,6 +140,7 @@ en:
       copy: "Copy"
       open_link: "Open link"
       contact_methods:
+        contact_email: "email"
         email: "Email"
         telegram: "Telegram"
         whatsapp: "WhatsApp"
@@ -267,6 +268,7 @@ en:
       address: "Address"
       telegram: "Telegram"
       whatsapp: "WhatsApp"
+      contact_email: "Email"
       contact_phone1: "Contact phone 1"
       contact_phone2: "Contact phone 2"
       contact_phone3: "Contact phone 3"
@@ -275,6 +277,7 @@ en:
       online_services: "Online services?"
       select_languages: "Select languages"
       featured_service: "Service shown on profile"
+      hidden: "Hide profile"
 
     prompts:
       select_timezone: "Select your timezone"
