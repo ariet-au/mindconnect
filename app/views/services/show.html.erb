@@ -2,7 +2,7 @@
 
 <%= render @service %>
 
-        <%= link_to t('services.show.back'), service_path(service), class: "button is-link is-light is-small" %>
+<%= link_to t('services.show.back'), psychologist_profile_services_path(@service.user.psychologist_profile), class: "button is-link is-light is-small" %>
 
 <div>
 </div>

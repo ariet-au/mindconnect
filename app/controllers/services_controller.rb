@@ -36,7 +36,7 @@ class ServicesController < ApplicationController
 
     respond_to do |format|
       if @service.save
-        format.html { redirect_to current_user.psychologist_profile, notice: "Service was successfully updated." }
+        format.html { redirect_to psychologist_profile_services_path(@service.user.psychologist_profile), notice: "Service was successfully created." }
         format.json { render :show, status: :created, location: @service }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -49,7 +49,7 @@ class ServicesController < ApplicationController
   def update
     respond_to do |format|
       if @service.update(service_params)
-        format.html { redirect_to current_user.psychologist_profile, notice: "Service was successfully updated." }
+        format.html { redirect_to psychologist_profile_services_path(@service.user.psychologist_profile), notice: "Service was successfully created." }
         format.json { render :show, status: :ok, location: @service }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -63,15 +63,22 @@ class ServicesController < ApplicationController
     @service.destroy!
 
     respond_to do |format|
-      format.html { redirect_to current_user.psychologist_profile, status: :see_other, notice: "Service was successfully destroyed." }
+      format.html { redirect_to psychologist_profile_services_path(@service.user.psychologist_profile), notice: "Service was successfully created." }
       format.json { head :no_content }
     end
   end
 
   private
     # Use callbacks to share common setup or constraints between actions.
+    # app/controllers/services_controller.rb
+
+
     def set_service
-      @service = Service.find(params[:id])
+      @service = Service.find_by(id: params[:id])
+
+      unless @service
+        redirect_to services_path, alert: "Service not found or has been deleted."
+      end
     end
 
     def check_user_confirmation

@@ -246,9 +246,15 @@
                 <%= form.text_field :profile_url, class: "input", id: "profile_url_input", placeholder: "letters, numbers, - or _" %>
               </div>
               <p class="help is-info" id="profile_url_rules">
-                <%= t('psychologist_profile.labels.profile_url_rules', default: "3–30 chars, lowercase letters, numbers, hyphens, underscores") %>
+                <%= t('psychologist_profile.labels.profile_url_rules', default: "3–30 chars, lowercase letters, numbers, hyphens, underscores, слитно буквыы от 3 до 30") %>
               </p>
               <p class="help is-danger" id="profile_url_error" style="display: none;"></p>
+
+              <!-- URL preview always visible -->
+              <p class="help is-info mt-2">
+                
+                <strong>https://aksanaa.com/p/<span id="profile_url_preview"><%= @psychologist_profile&.profile_url.presence || 'your-url-here' %></span></strong>
+              </p>
             </div>
           </div>
           <div class="column is-half">
@@ -705,10 +711,18 @@ document.addEventListener("turbo:load", function () {
 document.addEventListener("turbo:load", () => {
   const input = document.getElementById("profile_url_input");
   const errorEl = document.getElementById("profile_url_error");
+  const previewEl = document.getElementById("profile_url_preview");
 
   const regex = /^[a-z0-9_-]{3,30}$/;
-
   let timeout;
+
+  const updatePreview = (value) => {
+    previewEl.textContent = value || "your-url-here";
+  };
+
+  // Initialize preview on page load
+  updatePreview(input.value);
+
   input.addEventListener("input", () => {
     const value = input.value.trim();
 
@@ -716,15 +730,18 @@ document.addEventListener("turbo:load", () => {
     errorEl.style.display = "none";
     errorEl.textContent = "";
 
-    // Show format error
+    // Update preview (always)
+    updatePreview(value);
+
+    // Show format error if invalid
     if (value && !regex.test(value)) {
       errorEl.style.display = "block";
       errorEl.textContent = "URL can only contain 3–30 lowercase letters, numbers, hyphens, underscores";
       return;
     }
 
-    // Debounce AJAX uniqueness check
     if (value) {
+      // Debounce AJAX uniqueness check
       clearTimeout(timeout);
       timeout = setTimeout(() => {
         fetch(`/psychologist_profiles/check_profile_url?profile_url=${encodeURIComponent(value)}`)
@@ -739,6 +756,8 @@ document.addEventListener("turbo:load", () => {
     }
   });
 });
+
+
 
 </script>
 
