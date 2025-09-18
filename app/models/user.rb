@@ -1,6 +1,9 @@
 class User < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
+
+  
+
   has_one :psychologist_profile, dependent: :destroy
   has_one :client_profile, dependent: :destroy # Add this line
   has_many :quizzes, dependent: :destroy

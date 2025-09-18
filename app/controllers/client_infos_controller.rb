@@ -10,60 +10,58 @@ class ClientInfosController < ApplicationController
   end
 
   # GET /client_infos/new
-  def new
-    @client_info = ClientInfo.new
+ def new
+  @client_info = ClientInfo.new
 
-    if user_signed_in? && current_user.psychologist_profile
-      @client_info.psychologist_profile = current_user.psychologist_profile
-      @client_info.submitted_by = "psychologist"
-    elsif params[:psychologist_profile_id].present?
-      @client_info.psychologist_profile_id = params[:psychologist_profile_id]
-      @client_info.submitted_by = "client"
-    else
-      @client_info.submitted_by = "client"
-    end
-
-    @client_info.client_contacts.build
+  if params[:psychologist_profile_id].present?
+    # Case 1: User clicked "Submit Client Info" from a psychologist's profile
+    @client_info.psychologist_profile_id = params[:psychologist_profile_id]
+    @client_info.submitted_by = "client"
+  elsif user_signed_in? && current_user.psychologist_profile
+    # Case 2: User clicked "Add New Client" and is a signed-in psychologist
+    @client_info.psychologist_profile = current_user.psychologist_profile
+    @client_info.submitted_by = "psychologist"
+  else
+    # Case 3: Guest user accessing the form without a psychologist profile
+    @client_info.submitted_by = "client"
   end
 
-  
+  @client_info.client_contacts.build
+end
 
-  # POST /client_infos
-  def create
-    @client_info = ClientInfo.new(client_info_params)
+def create
+  @client_info = ClientInfo.new(client_info_params)
 
-    if user_signed_in? && current_user.psychologist_profile
-      # Case 1: Psychologist logged in and creating client
-      @client_info.psychologist_profile = current_user.psychologist_profile
-      @client_info.submitted_by = "psychologist"
-
-    elsif params[:psychologist_profile_id].present?
-      # Case 2: Guest client submitting via psychologist profile page
-      @client_info.psychologist_profile_id = params[:psychologist_profile_id]
-      @client_info.submitted_by = "client"
-
-    else
-      # Case 3: Guest client submitting without choosing a psychologist
-      @client_info.submitted_by = "client"
-      # psychologist_profile stays nil (unassigned)
-    end
-
-    if @client_info.save
-      ActivityLog.log(
-        user: current_user,             # will be nil if guest
-        request: request,
-        action_type: "created_client_info",
-        target: @client_info,
-        metadata: {
-          submitted_by: @client_info.submitted_by,
-          psychologist_profile_id: @client_info.psychologist_profile_id
-        }
-      )
-      redirect_to root_path, notice: "Thank you! Your information has been submitted."
-    else
-      render :new, status: :unprocessable_entity
-    end
+  if params[:psychologist_profile_id].present?
+    # Case 1: User clicked "Submit Client Info" from a psychologist's profile
+    @client_info.psychologist_profile_id = params[:psychologist_profile_id]
+    @client_info.submitted_by = "client"
+  elsif user_signed_in? && current_user.psychologist_profile
+    # Case 2: User clicked "Add New Client" and is a signed-in psychologist
+    @client_info.psychologist_profile = current_user.psychologist_profile
+    @client_info.submitted_by = "psychologist"
+  else
+    # Case 3: Guest user submitting without a psychologist profile
+    @client_info.submitted_by = "client"
+    # psychologist_profile stays nil (unassigned)
   end
+
+  if @client_info.save
+    ActivityLog.log(
+      user: current_user,             # will be nil if guest
+      request: request,
+      action_type: "created_client_info",
+      target: @client_info,
+      metadata: {
+        submitted_by: @client_info.submitted_by,
+        psychologist_profile_id: @client_info.psychologist_profile_id
+      }
+    )
+    redirect_to root_path, notice: "Thank you! Your information has been submitted."
+  else
+    render :new, status: :unprocessable_entity
+  end
+end
 
   # GET /client_infos/:id/edit
   def edit

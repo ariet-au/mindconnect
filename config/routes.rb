@@ -80,7 +80,7 @@ Rails.application.routes.draw do
       end
       get :available_slots, on: :member
       resources :services, only: [:index, :show, :edit, :destroy]
-      resources :client_infos, only: [:new, :create]
+      resources :client_infos, only: [:index,:new, :create]
       resources :educations, only: [:new, :create, :edit, :update, :destroy]
       resources :psychologist_availabilities, only: [:index, :create, :update] do
         collection do 

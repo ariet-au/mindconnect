@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_17_092419) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_18_023350) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -54,7 +54,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_17_092419) do
   end
 
   create_table "activity_logs", force: :cascade do |t|
-    t.bigint "user_id", null: false
+    t.bigint "user_id"
     t.string "action_type", null: false
     t.string "target_type"
     t.bigint "target_id"

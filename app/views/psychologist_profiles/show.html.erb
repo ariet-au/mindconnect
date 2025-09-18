@@ -1011,8 +1011,9 @@ body {
                 </a>
             </div>
         <% end %>
-                                        <%= link_to t('psychologist_profiles.show.submit_client_info') , new_psychologist_profile_client_info_path(@psychologist_profile), class: "button is-secondary" %>
-
+<%= link_to t('psychologist_profiles.show.submit_client_info'),
+    new_psychologist_profile_client_info_path(@psychologist_profile),
+    class: "button is-secondary" %>
         <%# ---- Other Contacts Toggle ---- %>
         <div class="other-contacts">
             <button class="toggle-contacts" aria-expanded="false" data-show-text="<%= t('psychologist_profiles.show.show_all_contacts') %>" data-hide-text="<%= t('psychologist_profiles.show.hide_all_contacts') %>">
