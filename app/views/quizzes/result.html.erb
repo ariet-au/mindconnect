@@ -170,8 +170,13 @@
         <div class="psychologist-grid">
             <% @filled_psychologists.each do |psy| %>
                 <div class="profile-card">
-                    <%= image_tag psy.profile_img, alt: psy.full_name, class: "profile-img" %>
-                    <h3><%= psy.full_name %></h3>
+<% if psy.profile_img.attached? %>
+  <%= image_tag psy.profile_img, alt: psy.full_name, class: "profile-img" %>
+<% else %>
+             <%= image_tag "default-profile.png", alt: "Default Profile", class: "profile-img" %>
+<% end %>
+                  <h3><%= psy.full_name %></h3>
+                  
                     <p class="rate"><%= t('quizzes.results.rate') %> <%= psy.standard_rate %><%= t('quizzes.results.per_hour') %></p>
                     <p class="about"><%= psy.about_me.truncate(100) %></p>
                     <%= link_to t('quizzes.results.view_profile'), psychologist_profile_path(psy), class: "btn" %>
