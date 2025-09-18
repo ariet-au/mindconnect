@@ -33,11 +33,7 @@ body {
     line-height: 1.6;
 }
 
-.container2 {
-    max-width: 1200px;
-    margin: 3rem auto;
-    padding: 0 1.5rem;
-}
+
 
 .card {
     background-color: var(--card-background);
@@ -198,13 +194,7 @@ body {
 }
 
 /* Original Button Colors */
-.button-group {
-    display: flex;
-    gap: 1.5rem;
-    justify-content: center;
-    
-    flex-wrap: wrap;
-}
+
 
 .button {
     display: inline-flex;
@@ -487,15 +477,9 @@ body {
 /* Utility */
 .text-center { text-align: center; }
 .mb-4 { margin-bottom: 1.5rem; }
-.mr-2 { margin-right: 0.5rem; }
 
 /* MOBILE OPTIMIZATIONS - Only applied on mobile devices */
 @media (max-width: 768px) {
-    .container2 {
-        margin: 0;
-        padding: 0;
-    }
-
     .card {
         padding: 1rem;
         margin-bottom: 0;
@@ -731,8 +715,111 @@ body {
         padding: 1rem;
     }
 }
-    </style>
 
+
+
+
+/* Enhanced CTA Button Group */
+.cta-button-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, max-content)); /* Adjusted minmax to prevent full-width stretching */
+    gap: 1rem;
+    justify-content: center; /* Center the grid items */
+    justify-items: center; /* Ensure single button is centered without stretching */
+    margin: 2rem 0;
+    padding: 0 1rem;
+}
+
+.cta-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.5rem; /* Reduced padding for smaller buttons */
+    border-radius: 10px; /* Slightly smaller border-radius */
+    font-weight: 600;
+    font-size: 0.95rem; /* Smaller font size */
+    text-decoration: none;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+    min-height: 48px; /* Reduced min-height for smaller buttons */
+    max-width: 300px; /* Added max-width to prevent stretching */
+    box-sizing: border-box; /* Ensure padding doesn't increase width */
+}
+
+.cta-button.is-primary {
+    background-color: var(--primary-blue);
+    color: white;
+    box-shadow: var(--shadow);
+}
+
+.cta-button.is-primary:hover {
+    background-color: #1E6091;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(42, 124, 204, 0.3);
+}
+
+.cta-button.is-secondary {
+    background-color: var(--background-white);
+    color: var(--primary-blue);
+    border-color: var(--primary-blue);
+}
+
+.cta-button.is-secondary:hover {
+    background-color: var(--primary-blue);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(42, 124, 204, 0.2);
+}
+
+.cta-button i {
+    margin-right: 0.75rem;
+    font-size: 1rem; /* Smaller icon size */
+}
+
+/* Ripple effect */
+.cta-button::after {
+    content: '';
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: scale(0);
+    transition: transform 0.4s ease;
+    pointer-events: none;
+}
+
+.cta-button:active::after {
+    transform: scale(2);
+    opacity: 0;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .cta-button-group {
+        grid-template-columns: 1fr; /* Maintain single column for mobile */
+        gap: 0.75rem;
+        padding: 0 0.5rem;
+    }
+
+    .cta-button {
+        padding: 0.75rem 1.25rem; /* Slightly smaller padding for mobile */
+        font-size: 0.9rem; /* Slightly smaller font size */
+        min-height: 44px; /* Adjusted for mobile */
+        max-width: 100%; /* Allow full-width on mobile for consistency */
+    }
+}
+
+@media (max-width: 480px) {
+    .cta-button {
+        font-size: 0.85rem; /* Further reduced for smaller screens */
+        padding: 0.625rem 1rem;
+        min-height: 40px;
+    }
+}
+</style>
 
 
 
@@ -815,34 +902,39 @@ body {
          
         
 
-        <%# ---- Main CTA Buttons ---- %>
-        <% primary_contact_method = @psychologist_profile.primary_contact_method %>
-        <% contact_keys = { email: 'fas fa-envelope', telegram: 'fab fa-telegram', whatsapp: 'fab fa-whatsapp', primary_phone: 'fas fa-phone' } %>
-        <% contact_link = case primary_contact_method
-                                when 'email' then "mailto:#{@psychologist_profile.user.email}"
-                                when 'telegram' then "https://t.me/#{@psychologist_profile.telegram}"
-                                when 'whatsapp' then "https://wa.me/#{@psychologist_profile.whatsapp}"
-                                when 'primary_phone' then "tel:#{@psychologist_profile.contact_phone}"
-                                else nil
-                                end %>
-        <div class="button-group">
-            <% if @psychologist_profile.featured_service.present? %>
-                <% service = @psychologist_profile.featured_service %>
-                <%= link_to select_service_path(psychologist_id: @psychologist_profile.id), class: "button is-primary flex-1" do %>
-                    <i class="fas fa-calendar-check mr-2"></i>
-                    <span><%= t('psychologist_profiles.show.book_a_session') %></span>
-                <% end %>
-            <% end %>
-            <% if contact_link %>
-                <a href="<%= contact_link %>" class="button is-secondary flex-1">
-                    <i class="<%= contact_keys[primary_contact_method.to_sym] %> mr-2"></i>
-                    <span><%= t('psychologist_profiles.show.contact_me') %></span>
-                </a>
-            <% end %>
+<% primary_contact_method = @psychologist_profile.primary_contact_method %>
+<% contact_keys = { email: 'fas fa-envelope', telegram: 'fab fa-telegram', whatsapp: 'fab fa-whatsapp', primary_phone: 'fas fa-phone' } %>
+<% contact_link = case primary_contact_method
+                        when 'email' then "mailto:#{@psychologist_profile.user.email}"
+                        when 'telegram' then "https://t.me/#{@psychologist_profile.telegram}"
+                        when 'whatsapp' then "https://wa.me/#{@psychologist_profile.whatsapp}"
+                        when 'primary_phone' then "tel:#{@psychologist_profile.contact_phone}"
+                        else nil
+                        end %>
 
 
-
-        </div>
+<div class="cta-button-group">
+    <% if @psychologist_profile.featured_service.present? %>
+        <% service = @psychologist_profile.featured_service %>
+        <%= link_to select_service_path(psychologist_id: @psychologist_profile.id), class: "cta-button is-primary" do %>
+            <i class="fas fa-calendar-check"></i>
+            <span><%= t('psychologist_profiles.show.book_a_session') %></span>
+        <% end %>
+    <% end %>
+    
+    <% if contact_link %>
+        <a href="<%= contact_link %>" class="cta-button is-secondary">
+            <i class="<%= contact_keys[primary_contact_method.to_sym] %>"></i>
+            <span><%= t('psychologist_profiles.show.contact_me') %></span>
+        </a>
+    <% end %>
+    
+    <%= link_to new_psychologist_profile_client_info_path(@psychologist_profile), class: "cta-button is-secondary" do %>
+        <i class="fas fa-user-plus"></i>
+        <span><%= t('psychologist_profiles.show.submit_client_info') %></span>
+    <% end %>
+</div>
+           
     </div>
 
     <div class="card">
@@ -1011,9 +1103,12 @@ body {
                 </a>
             </div>
         <% end %>
+
+                    <div class="profile-section text-center">
 <%= link_to t('psychologist_profiles.show.submit_client_info'),
     new_psychologist_profile_client_info_path(@psychologist_profile),
     class: "button is-secondary" %>
+     </div>
         <%# ---- Other Contacts Toggle ---- %>
         <div class="other-contacts">
             <button class="toggle-contacts" aria-expanded="false" data-show-text="<%= t('psychologist_profiles.show.show_all_contacts') %>" data-hide-text="<%= t('psychologist_profiles.show.hide_all_contacts') %>">

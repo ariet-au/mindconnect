@@ -1,5 +1,6 @@
 ru:
   hello: "Привет"
+  back: "Назад"
   contact: "Контакт"
   my_profile: "Мой профиль"
   edit_profile: "Редактировать профиль"

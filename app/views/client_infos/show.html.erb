@@ -154,6 +154,27 @@
     font-weight: 500;
   }
 
+  .custom-outline-blue {
+    background-color: transparent;
+    border: 2px solid #2563eb;
+    color: #2563eb;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    border-radius: 4px;
+    transition: all 0.2s ease-in-out;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    align: center;
+    width: 90%;
+  }
+
+  .custom-outline-blue:hover {
+    background-color: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+  }
+
   @media (max-width: 480px) {
     .client-container {
       padding: 12px;
@@ -183,8 +204,6 @@
       <% end %>
     </div>    
     <div class="client-location">📍 <%= @client_info.city %>  <%= ActiveSupport::TimeZone[@client_info.timezone].formatted_offset %> GMT</div>
-    
-
     
     <div class="reason-section">
       <div class="reason-text"><%= @client_info.reason_for_therapy %></div>
@@ -225,6 +244,10 @@
       </div>
     <% end %>
   </div>
-<% end %>
+  <% end %>
+  <div class="has-text-centered">
+
+    <%= link_to t('back'), client_infos_path, class: "custom-outline-blue" %>
+  </div>
 
 </div>
