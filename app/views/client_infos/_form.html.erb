@@ -138,8 +138,7 @@
 
           <div class="field is-grouped is-grouped-centered mt-6">
             <div class="control">
-              <%= f.submit t('client_infos.form.submit_button'), class: "button is-primary is-large is-fullwidth-mobile" %>
-            </div>
+              <%= f.submit t('client_infos.form.submit_button'), class: "button is-primary is-outlined is-large is-fullwidth-mobile" %>            </div>
           </div>
         <% end %>
       </div>
@@ -149,9 +148,7 @@
 
 <style>
   /* Mobile-first custom styles */
-  .container {
-    padding: 1rem;
-  }
+
   
   .box {
     border-radius: 12px;
@@ -200,7 +197,7 @@
   }
   
   .button.is-primary {
-    background-color: #3b82f6;
+    background-color: #ffffffff;
     border-color: #3b82f6;
     font-weight: 600;
     border-radius: 8px;
@@ -233,12 +230,11 @@
   .has-text-primary {
     color: #3b82f6 !important;
   }
+
   
   /* Mobile optimizations */
   @media screen and (max-width: 768px) {
-    .container {
-      padding: 0.5rem;
-    }
+    
     
     .box {
       margin: 0;
@@ -270,9 +266,7 @@
   
   /* Tablet and up */
   @media screen and (min-width: 769px) {
-    .container {
-      padding: 2rem;
-    }
+   
     
     .columns.is-multiline .column {
       padding: 0.75rem;

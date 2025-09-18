@@ -6,7 +6,7 @@ class ClientInfo < ApplicationRecord
 
   accepts_nested_attributes_for :client_contacts, allow_destroy: true, reject_if: :all_blank
 
-  validates :first_name, :last_name, presence: true
+  validates :first_name, presence: true
 
 
   enum :submitted_by, { client: "client", psychologist: "psychologist" }
