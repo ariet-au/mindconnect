@@ -2,8 +2,6 @@
   <div class="psychologist-nav">
           <div class="nav-content">
             <h3 class="nav-title">
-              <i class="fas fa-user-cog"></i>
-              <%= t('psychologist_dashboard.page_title') %>
             </h3>
             <div class="nav-actions">
               <%= link_to psychologist_profile_psychologist_availabilities_path(@psychologist_profile.id), class: "button is-primary-blue is-small" do %>
@@ -18,6 +16,18 @@
                 <span class="icon"><i class="fas fa-book"></i></span>
                 <span><%= t('psychologist_dashboard.client_info') %></span>
               <% end %>
+
+              <%= link_to edit_psychologist_profile_path(@psychologist_profile.id), class: "button is-primary-blue is-small" do %>
+                <span class="icon"><i class="fas fa-book"></i></span>
+                <span><%= t('psychologist_dashboard.edit_profile') %></span>
+              <% end %>
+
+              <%= link_to psychologist_profile_services_path(@psychologist_profile.id), class: "button is-primary-blue is-small" do %>
+                <span class="icon"><i class="fas fa-book"></i></span>
+                <span><%= t('psychologist_dashboard.services') %></span>
+              <% end %>
+
+              
             </div>
           </div>
         </div>

@@ -104,8 +104,8 @@
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-  const generateTimeOptions = (selectedValue='') => {
+ document.addEventListener('turbo:load', function () {
+    const generateTimeOptions = (selectedValue='') => {
     let html = '<option value="">Select Time</option>';
     for (let h=0; h<24; h++) {
       for (let m of [0,15,30,45]) {
