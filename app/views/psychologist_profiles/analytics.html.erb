@@ -1,0 +1,17 @@
+<%= javascript_include_tag "https://www.gstatic.com/charts/loader.js" %>
+<%= javascript_include_tag "chartkick" %>
+
+<h1>Analytics for <%= @psychologist_profile.full_name %></h1>
+
+<p>Total views: <%= @total_views %></p>
+
+<div>
+  <strong>Time range:</strong>
+  <%= link_to "1 Day", analytics_psychologist_profile_path(@psychologist_profile, range: "1_day") %> |
+  <%= link_to "1 Week", analytics_psychologist_profile_path(@psychologist_profile, range: "1_week") %> |
+  <%= link_to "1 Month", analytics_psychologist_profile_path(@psychologist_profile, range: "1_month") %> |
+  <%= link_to "3 Months", analytics_psychologist_profile_path(@psychologist_profile, range: "3_months") %>
+</div>
+
+<h2>Page Views Over Time</h2>
+<%= line_chart @page_views_by_time, xtitle: "Time", ytitle: "Views", library: {height: 400} %>

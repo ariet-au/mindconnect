@@ -449,6 +449,7 @@ ru:
     calendar_displayed_in: "Календарь отображается в:"
     my_services: "Мои сервисы"
     edit_profile: "Редактировать профиль"
+    analytics: "Аналитика"
     menu:
       menu_label: "Меню"
       dashboard: "Панель"

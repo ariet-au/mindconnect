@@ -22,6 +22,14 @@
           <span class="icon"><i class="fas fa-book"></i></span>
           <span><%= t('psychologist_dashboard.my_services') %></span>
         <% end %>
+
+        <%= link_to analytics_psychologist_profile_path(@psychologist_profile), class: "button is-primary-blue" do %>
+          <span class="icon"><i class="fas fa-chart-line"></i></span>
+          <span><%= t('psychologist_dashboard.analytics') %></span>
+        <% end %>
+
+     
+
       </div>
     </div>
   </div>
@@ -318,7 +326,7 @@
 }
 
 .nav-actions .button {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   padding: 0.5rem 1rem;
   border-radius: 6px;
   transition: all 0.3s ease; /* Smooth hover transitions */
@@ -364,8 +372,8 @@
   }
 
   .nav-actions .button {
-    font-size: 0.85rem;
-    padding: 0.4rem 0.8rem;
+    font-size: 0.7rem;
+    padding: 0.35rem 0.7rem;
   }
 }
     </style>

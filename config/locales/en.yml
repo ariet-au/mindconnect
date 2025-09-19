@@ -453,6 +453,7 @@ en:
     book_session: "Book a Session"
     calendar_displayed_in: "Calendar displayed in:"
     my_services: "My Services"
+    analytics: "Analytics"
     edit_profile: "Edit profile"
     menu:
       menu_label: "Menu"

@@ -440,6 +440,7 @@ kg:
     calendar_displayed_in: "Календарь төмөнкүдө көрсөтүлөт:"
     my_services: "Менин кызматтар"
     edit_profile: "Профилди түзөтүү"
+    analytics: "Аналитика"
     menu:
       menu_label: "Меню"
       dashboard: "Башкаруу панели"

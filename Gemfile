@@ -74,3 +74,6 @@ gem 'mailgun-ruby'
 
 gem 'icalendar'
 gem 'geocoder'
+
+gem "chartkick"
+gem "groupdate"

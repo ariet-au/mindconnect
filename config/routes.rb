@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get "analytics/index"
+  get "analytics/show"
   # Non-locale-scoped routes
 
 
@@ -77,6 +79,7 @@ Rails.application.routes.draw do
          get 'show_mob'
          get 'show_mob2'
          get 'show_mob3'
+         get :analytics  # /psychologist_profiles/:id/analytics
       end
       get :available_slots, on: :member
       resources :services, only: [:index, :show, :edit, :destroy]
