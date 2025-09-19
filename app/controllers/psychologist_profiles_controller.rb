@@ -320,8 +320,6 @@ end
 
   def analytics
     profile_id = @psychologist_profile.id
-
-    # Default time range: last 3 months
     range_param = params[:range] || "3_months"
 
     case range_param
@@ -342,20 +340,18 @@ end
       group_interval = :week
     end
 
-    # Fetch page views in the time range excluding the profile owner
     page_views_scope = PageView
       .where("url LIKE ?", "%/psychologist_profiles/#{profile_id}")
       .where("viewed_at >= ?", start_time)
-      .where.not(user_id: @psychologist_profile.user_id)
+      .where("user_id IS NULL OR user_id != ?", @psychologist_profile.user_id)
 
-    # Group by interval
+    # Make sure this line is correct:
     @page_views_by_time = page_views_scope.group_by_period(group_interval, :viewed_at).count
 
-    # Total views in the selected range
     @total_views = page_views_scope.count
-
     @range_param = range_param
   end
+
 
 
   def check_email
