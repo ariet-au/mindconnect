@@ -320,7 +320,7 @@ end
 
   def analytics
     profile_id = @psychologist_profile.id
-    range_param = params[:range] || "3_months"
+    range_param = params[:range] || "1_year"
 
     case range_param
     when "1_day"
@@ -332,12 +332,12 @@ end
     when "1_month"
       start_time = 1.month.ago
       group_interval = :day
-    when "3_months"
-      start_time = 3.months.ago
+    when "1_year"
+      start_time = 1.year.ago
       group_interval = :week
     else
-      start_time = 3.months.ago
-      group_interval = :week
+      start_time = 1.month.ago
+      group_interval = :day
     end
 
     page_views_scope = PageView
@@ -345,8 +345,9 @@ end
       .where("viewed_at >= ?", start_time)
       .where("user_id IS NULL OR user_id != ?", @psychologist_profile.user_id)
 
-    # Make sure this line is correct:
-    @page_views_by_time = page_views_scope.group_by_period(group_interval, :viewed_at).count
+    @page_views_by_time = page_views_scope
+      .group_by_period(group_interval, :viewed_at, time_zone: "Australia/Sydney")
+      .count
 
     @total_views = page_views_scope.count
     @range_param = range_param
