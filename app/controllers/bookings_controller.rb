@@ -653,11 +653,14 @@ end
 
 
   def booking_to_event(booking)
-      names = [booking.internal_client_profile&.full_name, booking.client_profile&.full_name]
+      names = [booking.client_info&.full_name, booking.client_profile&.full_name]
       client_name = names.compact.max_by { |n| [n.length, names.index(n) * -1] } || "N/A"
+
+      formatted_time_start_time = booking.start_time.strftime("%H:%M") #
+      formatted_time_end_time = booking.end_time.strftime("%H:%M") #
     {
       id: booking.id,
-      title: "#{booking.service&.name || 'Session'} - #{client_name} (#{booking.created_by})",
+      title:  "#{formatted_time_start_time} - #{formatted_time_end_time} - #{client_name}",
       start: booking.start_time.iso8601,
       end: booking.end_time.iso8601,
       extendedProps: {

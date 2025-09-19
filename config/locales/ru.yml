@@ -3,6 +3,7 @@ ru:
   back: "Назад"
   contact: "Контакты"
   my_profile: "Мой профиль"
+  my_services: "Мои сервисы"
   edit_profile: "Редактировать профиль"
   for_psychologists: "Для психологов"
   find_a_psychologist: "Найти психолога"
@@ -446,6 +447,8 @@ ru:
     welcome: "Добро пожаловать, %{name}"
     book_session: "Записаться на сеанс"
     calendar_displayed_in: "Календарь отображается в:"
+    my_services: "Мои сервисы"
+    edit_profile: "Редактировать профиль"
     menu:
       menu_label: "Меню"
       dashboard: "Панель"

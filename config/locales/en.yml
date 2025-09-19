@@ -4,6 +4,7 @@ en:
   description: "Найдите и забронируйте терапевта легко."
   contact: "Contacts"
   my_profile: "My profile"
+  my_services: "My Services"
   edit_profile: "Edit profile"
   for_psychologists: "For psychologists"
   find_a_psychologist: "Find a psychologist"
@@ -451,6 +452,8 @@ en:
     welcome: "Welcome, %{name}"
     book_session: "Book a Session"
     calendar_displayed_in: "Calendar displayed in:"
+    my_services: "My Services"
+    edit_profile: "Edit profile"
     menu:
       menu_label: "Menu"
       dashboard: "Dashboard"

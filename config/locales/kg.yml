@@ -3,6 +3,7 @@ kg:
   back: "Artka kaytuu baskychy"
   contact: "Байланыш"
   my_profile: "Менин профилим"
+  my_services: "Менин кызматтар"
   edit_profile: "Профилди түзөтүү"
   for_psychologists: "Психологдор үчүн"
   find_a_psychologist: "Психолог табуу"
@@ -437,6 +438,8 @@ kg:
     welcome: "Кош келиңиз, %{name}"
     book_session: "Сеанска жазылуу"
     calendar_displayed_in: "Календарь төмөнкүдө көрсөтүлөт:"
+    my_services: "Менин кызматтар"
+    edit_profile: "Профилди түзөтүү"
     menu:
       menu_label: "Меню"
       dashboard: "Башкаруу панели"
