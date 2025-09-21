@@ -1,4 +1,4 @@
-class TelegramController < ApplicationController
+class TelegramsController < ApplicationController
   before_action :authenticate_user!, only: [:show, :regenerate_code]
   skip_before_action :verify_authenticity_token, only: [:webhook]
 
