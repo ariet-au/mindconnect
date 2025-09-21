@@ -793,7 +793,7 @@ end
   def notify_booking_status(booking, status_message)
     tz_name = booking.psychologist_profile.timezone.presence || Time.zone.name
     tz      = ActiveSupport::TimeZone[tz_name] || Time.zone
-    formatted_time = booking.start_time.in_time_zone(tz).strftime("%A, %d %B %Y at %I:%M %p")
+    formatted_time = booking.start_ time.in_time_zone(tz).strftime("%A, %d %B %Y at %I:%M %p")
 
     client_name = booking.client_info&.full_name || booking.client_profile&.full_name || "Unknown"
 

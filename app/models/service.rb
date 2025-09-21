@@ -12,7 +12,13 @@ monetize :price, as: :price_money,
 
   enum :delivery_method, { in_person: 0, online: 1, phone: 2 }
 
-
+  validates :duration_minutes,
+            numericality: {
+              only_integer: true,
+              greater_than_or_equal_to: 10,
+              less_than_or_equal_to: 180
+            }
+            
 unless defined?(ActiveRecord::Base)
     attr_accessor :price_cents, :currency, :price_money
 
