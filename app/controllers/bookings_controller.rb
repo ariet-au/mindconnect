@@ -323,10 +323,19 @@ class BookingsController < ApplicationController
   def confirm
     if @booking.pending?
       if @booking.update(status: 'confirmed', confirmation_token: nil)
-        flash[:notice] = "Booking confirmed successfully."
+        # Send Telegram message
+        tz_name = @booking.psychologist_profile.timezone.presence || Time.zone.name
+        tz      = ActiveSupport::TimeZone[tz_name] || Time.zone
+        start   = @booking.start_time.in_time_zone(tz).strftime("%A, %d %B %Y at %I:%M %p")
 
-        # Notify psychologist (or client, depending who should know)
-        notify_booking_status(@booking, "✅ Booking confirmed")
+        if (chat_id = @booking.psychologist_profile.user&.telegram_chat_id)
+          TelegramNotifierJob.perform_later(
+            chat_id,
+            "✅ Booking confirmed!\n\nStart time: #{start}"
+          )
+        end
+
+        flash[:notice] = "Booking confirmed successfully."
       else
         flash[:alert] = "Failed to confirm booking: #{@booking.errors.full_messages.to_sentence}"
       end
@@ -343,10 +352,19 @@ class BookingsController < ApplicationController
   def decline
     if @booking.pending?
       if @booking.update(status: 'declined', confirmation_token: nil)
-        flash[:notice] = "Booking successfully declined."
+        # Send Telegram message
+        tz_name = @booking.psychologist_profile.timezone.presence || Time.zone.name
+        tz      = ActiveSupport::TimeZone[tz_name] || Time.zone
+        start   = @booking.start_time.in_time_zone(tz).strftime("%A, %d %B %Y at %I:%M %p")
 
-        # Notify psychologist (or client)
-        notify_booking_status(@booking, "❌ Booking declined")
+        if (chat_id = @booking.psychologist_profile.user&.telegram_chat_id)
+          TelegramNotifierJob.perform_later(
+            chat_id,
+            "❌ Booking declined.\n\nStart time was: #{start}"
+          )
+        end
+
+        flash[:notice] = "Booking successfully declined."
       else
         flash[:alert] = "Failed to decline booking: #{@booking.errors.full_messages.to_sentence}"
       end
@@ -359,6 +377,7 @@ class BookingsController < ApplicationController
       format.turbo_stream { redirect_to confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking) }
     end
   end
+
 
   def psychologist_bookings
     # Ensure the user is a psychologist and has a profile
@@ -772,18 +791,22 @@ end
 
 
   def notify_booking_status(booking, status_message)
-    tz = booking.psychologist_profile.time_zone.presence || Time.zone.name
-    formatted_time = booking.start_time.in_time_zone(tz).strftime("%d %b %Y at %H:%M")
+    tz_name = booking.psychologist_profile.timezone.presence || Time.zone.name
+    tz      = ActiveSupport::TimeZone[tz_name] || Time.zone
+    formatted_time = booking.start_time.in_time_zone(tz).strftime("%A, %d %B %Y at %I:%M %p")
 
-    message = "#{status_message}\n" \
+    client_name = booking.client_info&.full_name || booking.client_profile&.full_name || "Unknown"
+
+    message = "#{status_message}\n\n" \
               "📅 Booking on #{formatted_time}\n" \
-              "Client: #{booking.client_info&.full_name || booking.client_profile&.full_name || 'Unknown'}"
+              "👤 Client: #{client_name}"
 
     psychologist_user = booking.psychologist_profile.user
     return unless psychologist_user&.telegram_chat_id.present?
 
     TelegramNotifierJob.perform_later(psychologist_user.telegram_chat_id, message)
   end
+
 
   
 

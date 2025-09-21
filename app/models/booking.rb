@@ -58,15 +58,14 @@ class Booking < ApplicationRecord
     psychologist_user = psychologist_profile.user
     return unless psychologist_user&.telegram_chat_id.present?
 
-    # Default to Rails timezone if none set
-    tz = psychologist_profile.time_zone.presence || Time.zone.name
-
-    formatted_time = start_time.in_time_zone(tz).strftime("%d %b %Y at %H:%M")
+    # Handle timezone conversion
+    tz_name = psychologist_profile.timezone.presence || Time.zone.name
+    tz      = ActiveSupport::TimeZone[tz_name] || Time.zone
+    start   = start_time.in_time_zone(tz).strftime("%A, %d %B %Y at %I:%M %p")
 
     TelegramNotifierJob.perform_later(
       psychologist_user.telegram_chat_id,
-      "📅 New booking scheduled for #{formatted_time}.\n" \
-      "Client: #{client_info&.full_name || client_profile&.full_name || 'Unknown'}"
+      "📅 New booking created!\n\nStart time: #{start}\nClient: #{client_info&.full_name || 'Unknown'}"
     )
   end
 
