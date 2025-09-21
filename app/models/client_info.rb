@@ -19,8 +19,16 @@ class ClientInfo < ApplicationRecord
   
   private
   
+  
   def notify_psychologist
-    psychologist_user = 
-    psychologist_user.notify_telegram("📅 New booking created by #{client_profile.user.full_name}")
+    # Get the User object for the psychologist
+    psychologist_user = psychologist_profile.user
+    return unless psychologist_user&.telegram_chat_id.present?
+
+    # Send the notification asynchronously via your job
+    TelegramNotifierJob.perform_later(
+      psychologist_user.telegram_chat_id,
+      "📥 New client info submitted by #{full_name}."
+    )
   end
 end
