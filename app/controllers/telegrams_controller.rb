@@ -1,7 +1,8 @@
+require 'httparty'
+
 class TelegramsController < ApplicationController
   before_action :authenticate_user!, only: [:show, :regenerate_code]
   skip_before_action :verify_authenticity_token, only: [:webhook]
-  
 
   def show
     current_user.ensure_telegram_code!
@@ -18,13 +19,12 @@ class TelegramsController < ApplicationController
       update = JSON.parse(request.body.read)
       chat_id = update.dig("message", "chat", "id")
       text = update.dig("message", "text")
-
       return head :ok unless chat_id && text
 
       user = User.find_by(telegram_verification_code: text)
-
       if user
         user.update!(telegram_verified: true, telegram_chat_id: chat_id)
+        Rails.logger.info "[TelegramWebhook] Verified user #{user.id} (#{user.email})"
         send_message(chat_id, "✅ Verification successful!")
       else
         send_message(chat_id, "❌ Invalid verification code.")
@@ -40,33 +40,17 @@ class TelegramsController < ApplicationController
     end
   end
 
-private
-
-def send_message(chat_id, text)
-  token = ENV['TELEGRAM_BOT_TOKEN']
-  return unless token
-
-  HTTParty.post("https://api.telegram.org/bot#{token}/sendMessage",
-                body: { chat_id: chat_id, text: text })
-rescue => e
-  Rails.logger.error "[TelegramSendMessage] Failed: #{e.message}"
-end
-
-
-
-
   private
 
-  # Sends a message back to the Telegram user
   def send_message(chat_id, text)
     token = Rails.application.credentials.dig(:telegram, :bot_token)
-    unless token
-      Rails.logger.error "Telegram bot token missing in credentials!"
-      return
-    end
+    return unless token
 
     url = "https://api.telegram.org/bot#{token}/sendMessage"
-    HTTParty.post(url, body: { chat_id: chat_id, text: text })
+    HTTParty.post(url,
+      headers: { 'Content-Type' => 'application/json' },
+      body: { chat_id: chat_id, text: text }.to_json
+    )
   rescue => e
     Rails.logger.error "Failed to send Telegram message: #{e.message}"
   end

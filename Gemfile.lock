@@ -168,6 +168,10 @@ GEM
       activesupport (>= 6.1)
     groupdate (6.7.0)
       activesupport (>= 7.1)
+    httparty (0.23.1)
+      csv
+      mini_mime (>= 1.0.0)
+      multi_xml (>= 0.5.2)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
     icalendar (2.11.2)
@@ -252,6 +256,8 @@ GEM
       money (~> 6.13)
       railties (>= 3.0)
     msgpack (1.8.0)
+    multi_xml (0.7.2)
+      bigdecimal (~> 3.1)
     multipart-post (2.4.1)
     net-http (0.6.0)
       uri
@@ -489,6 +495,7 @@ DEPENDENCIES
   devise-i18n
   geocoder
   groupdate
+  httparty
   i18n (~> 1.14)
   icalendar
   image_processing (~> 1.2)
