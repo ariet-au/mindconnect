@@ -14,26 +14,34 @@ class TelegramsController < ApplicationController
 
   # API-only webhook
   def webhook
-    update = params.permit!.to_h
-
+    update = JSON.parse(request.body.read)
     chat_id = update.dig("message", "chat", "id")
-    text    = update.dig("message", "text").to_s.strip
+    text = update.dig("message", "text")
 
-    if text.present?
-      # Extract the last word as the code (handles "/start CODE")
-      code = text.split.last
-      user = User.find_by(telegram_verification_code: code)
+    if chat_id.nil? || text.nil?
+      return head :ok  # ignore invalid messages
+    end
 
-      if user
-        user.update!(telegram_chat_id: chat_id, telegram_verification_code: nil)
-        TELEGRAM_BOT.api.send_message(chat_id: chat_id,
-          text: "✅ Telegram connected! You’ll now get notifications.")
-      else
-        TELEGRAM_BOT.api.send_message(chat_id: chat_id,
-          text: "❌ Invalid code. Please check your profile.")
-      end
+    user = User.find_by(telegram_verification_code: text)
+
+    if user
+      # Mark user as verified
+      user.update!(telegram_verified: true, telegram_id: chat_id)
+      send_message(chat_id, "✅ Verification successful!")
+    else
+      send_message(chat_id, "❌ Invalid verification code. Please try again.")
     end
 
     head :ok
+  end
+
+  private
+
+  # Sends a message back to the Telegram user
+  def send_message(chat_id, text)
+    token = ENV['TELEGRAM_BOT_TOKEN']
+    url = "https://api.telegram.org/bot#{token}/sendMessage"
+
+    HTTParty.post(url, body: { chat_id: chat_id, text: text })
   end
 end
