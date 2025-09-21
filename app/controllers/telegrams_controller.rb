@@ -18,9 +18,11 @@ class TelegramsController < ApplicationController
       update = JSON.parse(request.body.read)
       chat_id = update.dig("message", "chat", "id")
       text = update.dig("message", "text")
+
       return head :ok unless chat_id && text
 
       user = User.find_by(telegram_verification_code: text)
+
       if user
         user.update!(telegram_verified: true, telegram_chat_id: chat_id)
         send_message(chat_id, "✅ Verification successful!")
@@ -28,13 +30,28 @@ class TelegramsController < ApplicationController
         send_message(chat_id, "❌ Invalid verification code.")
       end
     rescue JSON::ParserError => e
-      Rails.logger.error "Webhook JSON error: #{e.message}"
+      Rails.logger.error "[TelegramWebhook] JSON parse error: #{e.message}"
+    rescue ActiveRecord::RecordInvalid => e
+      Rails.logger.error "[TelegramWebhook] DB update failed: #{e.record.errors.full_messages.join(', ')}"
     rescue => e
-      Rails.logger.error "Webhook failed: #{e.message}\n#{e.backtrace.join("\n")}"
+      Rails.logger.error "[TelegramWebhook] Unexpected error: #{e.message}\n#{e.backtrace.join("\n")}"
     ensure
       head :ok
     end
   end
+
+private
+
+def send_message(chat_id, text)
+  token = ENV['TELEGRAM_BOT_TOKEN']
+  return unless token
+
+  HTTParty.post("https://api.telegram.org/bot#{token}/sendMessage",
+                body: { chat_id: chat_id, text: text })
+rescue => e
+  Rails.logger.error "[TelegramSendMessage] Failed: #{e.message}"
+end
+
 
 
 
