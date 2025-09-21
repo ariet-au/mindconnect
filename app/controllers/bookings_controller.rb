@@ -286,10 +286,47 @@ class BookingsController < ApplicationController
     end
   end
 
+  # def confirm
+  #   if @booking.pending?
+  #     if @booking.update(status: 'confirmed', confirmation_token: nil)
+  #       flash[:notice] = "Booking confirmed successfully."
+  #     else
+  #       flash[:alert] = "Failed to confirm booking: #{@booking.errors.full_messages.to_sentence}"
+  #     end
+  #   else
+  #     flash[:alert] = "Booking cannot be confirmed as its status is #{@booking.status}."
+  #   end
+
+  #   respond_to do |format|
+  #     format.html { redirect_to confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking) }
+  #     format.turbo_stream { redirect_to confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking) }
+  #   end
+  # end
+
+  # def decline
+  #   if @booking.pending?
+  #     if @booking.update(status: 'declined', confirmation_token: nil)
+  #       flash[:notice] = "Booking successfully declined."
+  #     else
+  #       flash[:alert] = "Failed to decline booking: #{@booking.errors.full_messages.to_sentence}"
+  #     end
+  #   else
+  #     flash[:alert] = "Booking cannot be declined as its status is #{@booking.status}."
+  #   end
+
+  #   respond_to do |format|
+  #     format.html { redirect_to confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking) }
+  #     format.turbo_stream { redirect_to confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking) }
+  #   end
+  # end
+
   def confirm
     if @booking.pending?
       if @booking.update(status: 'confirmed', confirmation_token: nil)
         flash[:notice] = "Booking confirmed successfully."
+
+        # Notify psychologist (or client, depending who should know)
+        notify_booking_status(@booking, "✅ Booking confirmed")
       else
         flash[:alert] = "Failed to confirm booking: #{@booking.errors.full_messages.to_sentence}"
       end
@@ -307,6 +344,9 @@ class BookingsController < ApplicationController
     if @booking.pending?
       if @booking.update(status: 'declined', confirmation_token: nil)
         flash[:notice] = "Booking successfully declined."
+
+        # Notify psychologist (or client)
+        notify_booking_status(@booking, "❌ Booking declined")
       else
         flash[:alert] = "Failed to decline booking: #{@booking.errors.full_messages.to_sentence}"
       end
@@ -728,6 +768,21 @@ end
         client_contacts_attributes: [:id, :method, :value, :_destroy]
       ]
     )
+  end
+
+
+  def notify_booking_status(booking, status_message)
+    tz = booking.psychologist_profile.time_zone.presence || Time.zone.name
+    formatted_time = booking.start_time.in_time_zone(tz).strftime("%d %b %Y at %H:%M")
+
+    message = "#{status_message}\n" \
+              "📅 Booking on #{formatted_time}\n" \
+              "Client: #{booking.client_info&.full_name || booking.client_profile&.full_name || 'Unknown'}"
+
+    psychologist_user = booking.psychologist_profile.user
+    return unless psychologist_user&.telegram_chat_id.present?
+
+    TelegramNotifierJob.perform_later(psychologist_user.telegram_chat_id, message)
   end
 
   

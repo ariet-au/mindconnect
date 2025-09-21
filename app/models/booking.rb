@@ -8,6 +8,9 @@ class Booking < ApplicationRecord
 
   before_create :generate_confirmation_token
 
+  after_create :notify_psychologist
+
+
   enum :status, {
     pending: 'pending',
     confirmed: 'confirmed',
@@ -50,5 +53,35 @@ class Booking < ApplicationRecord
   def generate_confirmation_token
     self.confirmation_token = SecureRandom.urlsafe_base64
   end
+
+  def notify_psychologist
+    psychologist_user = psychologist_profile.user
+    return unless psychologist_user&.telegram_chat_id.present?
+
+    # Default to Rails timezone if none set
+    tz = psychologist_profile.time_zone.presence || Time.zone.name
+
+    formatted_time = start_time.in_time_zone(tz).strftime("%d %b %Y at %H:%M")
+
+    TelegramNotifierJob.perform_later(
+      psychologist_user.telegram_chat_id,
+      "📅 New booking scheduled for #{formatted_time}.\n" \
+      "Client: #{client_info&.full_name || client_profile&.full_name || 'Unknown'}"
+    )
+  end
+
+  # Helper to show client name
+  def client_display_name
+    if client_profile.present?
+      client_profile.full_name
+    elsif internal_client_profile.present?
+      internal_client_profile.full_name
+    elsif client_info.present?
+      client_info.full_name
+    else
+      "Unknown client"
+    end
+  end
+
 end
 
