@@ -2,6 +2,7 @@ class ClientInfosController < ApplicationController
   before_action :authenticate_user!, except: [:new, :create]
   before_action :set_psychologist_profile, only: [:index, :new, :create]
   before_action :set_client_info, only: [:show, :edit, :update, :destroy]
+  
 
   # GET /client_infos
   def index

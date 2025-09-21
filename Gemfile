@@ -77,3 +77,4 @@ gem 'geocoder'
 
 gem "chartkick"
 gem "groupdate"
+gem "telegram-bot-ruby"

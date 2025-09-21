@@ -1,0 +1,26 @@
+<!-- telegram/show.html.erb -->
+<h1 class="title is-3">Telegram Notifications</h1>
+
+<% if current_user.telegram_chat_id.present? %>
+  <div class="notification is-success">
+    ✅ You are connected to @ak_sanaa_2_bot! You’ll now get updates.
+  </div>
+<% else %>
+  <div class="notification is-warning">
+    ❌ Not connected yet.
+  </div>
+
+  <p>To connect your account:</p>
+  <ol>
+    <li>Open Telegram and start a chat with 
+      <a href="https://t.me/ak_sanaa_2_bot" target="_blank">@ak_sanaa_2_bot</a>.
+    </li>
+    <li>Send the following code to the bot:</li>
+  </ol>
+
+  <div class="box has-text-centered">
+    <strong><%= current_user.telegram_verification_code %></strong>
+  </div>
+
+  <%= button_to "Generate New Code", regenerate_code_telegram_path, method: :post, class: "button is-warning is-light" %>
+<% end %>

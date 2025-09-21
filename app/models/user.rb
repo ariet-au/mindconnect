@@ -3,7 +3,7 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
 
   
-
+  after_create :create_associated_profile
   has_one :psychologist_profile, dependent: :destroy
   has_one :client_profile, dependent: :destroy # Add this line
   has_many :quizzes, dependent: :destroy
@@ -20,8 +20,16 @@ class User < ApplicationRecord
   def remember_me
     true
   end
- after_create :create_associated_profile
+ 
 
+
+  def ensure_telegram_code!
+    update!(telegram_verification_code: SecureRandom.hex(4)) if telegram_verification_code.blank?
+  end
+
+  def telegram_connected?
+    telegram_chat_id.present?
+  end
   private
 
 

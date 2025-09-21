@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get "telegram/webhook"
   get "analytics/index"
   get "analytics/show"
   # Non-locale-scoped routes
@@ -54,6 +55,11 @@ Rails.application.routes.draw do
     get 'for-psychologists', to: 'psychologist_profiles#landing_psych', as: :landing_psych
     get 'contact-us', to: 'psychologist_profiles#contact_us', as: :contact_us
     get '/psychologist_profiles/check_email', to: 'psychologist_profiles#check_email', as: :psychologist_check_email
+    #telegram
+    post "/telegram/webhook", to: "telegram#webhook"
+    resource :telegram, only: [:show] do
+      post :regenerate_code, on: :collection
+    end
 
     # Currency and timezone settings
     post '/set_currency', to: 'application#set_currency', as: :set_currency

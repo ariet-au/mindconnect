@@ -41,7 +41,7 @@ class PsychologistProfilesController < ApplicationController
     # --- End of Setup ---
 
     #@psychologist_profiles = PsychologistProfile.order(updated_at: :desc)
-    @psychologist_profiles = PsychologistProfile.confirmed.filled.active.order(updated_at: :desc)
+    @psychologist_profiles = PsychologistProfile.confirmed.filled.active.not_hidden.order(updated_at: :desc)
     # if params[:search].present?
     #   @psychologist_profiles = @psychologist_profiles
     #   .merge(PsychologistProfile.search_full_text(params[:search]))
@@ -56,11 +56,11 @@ class PsychologistProfilesController < ApplicationController
     session[:currency] = params[:currency] if params[:currency].present?
 
     @genders = PsychologistProfile.where.not(gender: [nil, ""]).distinct.order(:gender).pluck(:gender)
-    @religions = PsychologistProfile.where.not(religion: [nil, ""]).distinct.order(:religion).pluck(:religion)
+    # @religions = PsychologistProfile.where.not(religion: [nil, ""]).distinct.order(:religion).pluck(:religion)
 
-    if params[:religion].present?
-      @psychologist_profiles = @psychologist_profiles.where(religion: params[:religion])
-    end
+    # if params[:religion].present?
+    #   @psychologist_profiles = @psychologist_profiles.where(religion: params[:religion])
+    # end
 
     if params[:gender].present?
       @psychologist_profiles = @psychologist_profiles.where(gender: params[:gender])

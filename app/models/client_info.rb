@@ -2,6 +2,8 @@ class ClientInfo < ApplicationRecord
   belongs_to :psychologist_profile
   has_many :client_contacts, dependent: :destroy
   has_many :bookings, dependent: :nullify
+  after_create :notify_psychologist
+
 
 
   accepts_nested_attributes_for :client_contacts, allow_destroy: true, reject_if: :all_blank
@@ -14,4 +16,11 @@ class ClientInfo < ApplicationRecord
   def full_name
     "#{first_name} #{last_name}" # or however you want it displayed
   end 
+  
+  private
+  
+  def notify_psychologist
+    psychologist_user = 
+    psychologist_user.notify_telegram("📅 New booking created by #{client_profile.user.full_name}")
+  end
 end
