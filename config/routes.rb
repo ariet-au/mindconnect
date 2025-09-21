@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
-  get "telegram/webhook"
   get "analytics/index"
   get "analytics/show"
   # Non-locale-scoped routes
+  post "/telegram/webhook", to: "telegram#webhook"
 
 
   get '/p/:profile_url', to: 'psychologist_profiles#redirect_by_profile_url', as: :profile_shortlink
@@ -27,6 +27,7 @@ Rails.application.routes.draw do
 
   # Health check route
   get "up" => "rails/health#show", as: :rails_health_check
+
 
   # Locale-scoped routes
   scope "(:locale)", locale: /en|ru|kg/ do
@@ -56,7 +57,6 @@ Rails.application.routes.draw do
     get 'contact-us', to: 'psychologist_profiles#contact_us', as: :contact_us
     get '/psychologist_profiles/check_email', to: 'psychologist_profiles#check_email', as: :psychologist_check_email
     #telegram
-    post "/telegram/webhook", to: "telegram#webhook"
     resource :telegram, only: [:show] do
       post :regenerate_code, on: :collection
     end
