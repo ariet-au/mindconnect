@@ -1,63 +1,353 @@
-<%# app/views/layouts/_cookie_banner.html.erb %>
-<div id="cookie-banner" class="fixed-bottom bg-light p-3" style="display:none;">
-  <div class="container">
-    <p>We use cookies to improve your experience. Please choose which types you accept:</p>
-    
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" id="analyticsConsent" checked>
-      <label class="form-check-label" for="analyticsConsent">
-        Analytics Cookies
-      </label>
+<div id="cookie-banner" class="cookie-modal" aria-hidden="true">
+  <div class="cookie-modal-content">
+    <h5 class="title is-5 has-text-centered">We use cookies</h5>
+    <p class="subtitle is-6 has-text-centered">Please choose which types you accept:</p>
+
+    <div class="field">
+      <div class="control">
+        <label class="checkbox">
+          <input class="checkbox" type="checkbox" id="analyticsConsent" checked>
+          Analytics Cookies
+        </label>
+      </div>
     </div>
-    
-    <div class="mt-2">
-      <button id="accept-selected" class="btn btn-primary btn-sm">Accept Selected</button>
-      <button id="accept-all" class="btn btn-success btn-sm">Accept All</button>
-      <button id="reject-all" class="btn btn-outline-secondary btn-sm">Reject All</button>
+
+    <div class="buttons is-centered mt-4">
+      <button id="accept-selected" class="button is-primary">Accept Selected</button>
+      <button id="accept-all" class="button is-success">Accept All</button>
+      <button id="reject-all" class="button is-light">Reject All</button>
     </div>
   </div>
 </div>
 
+<style>
+
+/* Overlay modal */
+.cookie-modal {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Modal content */
+.cookie-modal-content {
+  background: #ffffff;
+  position: relative;
+  padding: 2.5rem;
+  border-radius: 16px;
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+  transform: translateY(30px) scale(0.95);
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  box-shadow: 
+    0 10px 40px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+/* Content positioning */
+.cookie-modal-content > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Show modal */
+.cookie-modal.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.cookie-modal.show .cookie-modal-content {
+  transform: translateY(0) scale(1);
+}
+
+/* Typography */
+.cookie-modal-content .title {
+  color: #1a1a1a !important;
+  font-weight: 600;
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem !important;
+}
+
+.cookie-modal-content .subtitle {
+  color: #666666 !important;
+  font-weight: 400;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem !important;
+  line-height: 1.4;
+}
+
+/* Checkbox container */
+.field {
+  background: transparent;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1.5rem 0;
+}
+
+/* Checkbox styling */
+.checkbox {
+  color: #333333;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.checkbox:hover {
+  color: #1a1a1a;
+}
+
+.checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin-right: 0.75rem;
+  accent-color: #1a73e8;
+  cursor: pointer;
+}
+
+/* Modern button styles */
+.button {
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 0.7rem 1.5rem;
+  transition: all 0.2s ease;
+  font-size: 0.875rem;
+  letter-spacing: 0.2px;
+  position: relative;
+  min-width: 100px;
+  border: 1px solid transparent;
+}
+
+.button.is-primary {
+  background: #1a73e8;
+  color: #ffffff;
+  border: none;
+}
+
+.button.is-primary:hover {
+  background: #1557b0;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(26, 115, 232, 0.2);
+}
+
+.button.is-success {
+  background: #34c759;
+  color: #ffffff;
+  border: none;
+}
+
+.button.is-success:hover {
+  background: #2ea44f;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(52, 199, 89, 0.2);
+}
+
+.button.is-light {
+  background: transparent;
+  color: #666666;
+  border: 1px solid #d0d0d0;
+}
+
+.button.is-light:hover {
+  background: #f8f8f8;
+  color: #333333;
+  border-color: #b0b0b0;
+  transform: translateY(-1px);
+}
+
+/* Button container */
+.buttons.is-centered {
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.buttons.is-centered .button {
+  margin: 0.25rem;
+  flex: 0 1 auto;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+  .cookie-modal-content {
+    padding: 2rem 1.5rem;
+    margin: 1rem;
+    border-radius: 12px;
+  }
+  
+  .cookie-modal-content .title {
+    font-size: 1.2rem;
+  }
+  
+  .cookie-modal-content .subtitle {
+    font-size: 0.9rem;
+  }
+  
+  .button {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.8rem;
+    min-width: 90px;
+  }
+  
+  .buttons.is-centered {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .buttons.is-centered .button {
+    width: 100%;
+    max-width: 180px;
+  }
+}
+
+/* Dark mode considerations */
+@media (prefers-color-scheme: dark) {
+  .cookie-modal {
+    background: rgba(0, 0, 0, 0.2);
+  }
+  
+  .cookie-modal-content {
+    background: #1a1a1a;
+    box-shadow: 
+      0 10px 40px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+  
+  .cookie-modal-content .title {
+    color: #ffffff !important;
+  }
+  
+  .cookie-modal-content .subtitle {
+    color: #cccccc !important;
+  }
+  
+  .checkbox {
+    color: #ffffff;
+  }
+  
+  .checkbox:hover {
+    color: #cccccc;
+  }
+  
+  .field {
+    border-color: #333333;
+  }
+  
+  .button.is-light {
+    color: #cccccc;
+    border-color: #333333;
+  }
+  
+  .button.is-light:hover {
+    background: #2a2a2a;
+    color: #ffffff;
+    border-color: #444444;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .cookie-modal,
+  .cookie-modal-content,
+  .button {
+    transition: none;
+  }
+}
+</style>
+
 <script>
-  // Show banner if consent not set
-  if(!localStorage.getItem('cookieConsent')) {
-    document.getElementById('cookie-banner').style.display = 'block';
+document.addEventListener("turbo:load", function() {
+
+  // --- Cookie helpers ---
+  function setConsentCookie(value) {
+    document.cookie = "cookieConsent=" + value + "; path=/; max-age=" + (60*60*24*365) + "; SameSite=Lax";
   }
 
-  // Consent handlers
-  document.getElementById('accept-all').addEventListener('click', function() {
-    gtag('consent', 'update', {
-      'ad_storage': 'granted',
-      'analytics_storage': 'granted',
-      'functionality_storage': 'granted',
-      'personalization_storage': 'granted'
-    });
-    localStorage.setItem('cookieConsent', 'all');
-    document.getElementById('cookie-banner').style.display = 'none';
-  });
+  function getConsentCookie() {
+    return document.cookie.split('; ').find(row => row.startsWith('cookieConsent='))?.split('=')[1];
+  }
 
-  document.getElementById('accept-selected').addEventListener('click', function() {
-    const analyticsChecked = document.getElementById('analyticsConsent').checked;
-    
-    gtag('consent', 'update', {
-      'analytics_storage': analyticsChecked ? 'granted' : 'denied',
-      'ad_storage': 'denied', // Always deny ad storage for healthcare app
-      'functionality_storage': 'denied',
-      'personalization_storage': 'denied'
-    });
-    
-    localStorage.setItem('cookieConsent', analyticsChecked ? 'analytics' : 'none');
-    document.getElementById('cookie-banner').style.display = 'none';
-  });
+  function updateConsent(settings) {
+    if (typeof gtag === "function") {
+      gtag('consent', 'update', settings);
+    }
+  }
 
-  document.getElementById('reject-all').addEventListener('click', function() {
-    gtag('consent', 'update', {
-      'ad_storage': 'denied',
-      'analytics_storage': 'denied',
-      'functionality_storage': 'denied',
-      'personalization_storage': 'denied'
+  // --- Banner & fade helpers ---
+  const banner = document.getElementById('cookie-banner');
+
+  function showBanner() {
+    banner.classList.add('show');
+    banner.setAttribute('aria-hidden', 'false');
+  }
+
+  function hideBanner() {
+    banner.classList.remove('show');
+    banner.setAttribute('aria-hidden', 'true');
+  }
+
+  if (!getConsentCookie() && banner) {
+    showBanner();
+  }
+
+  // --- Button handlers ---
+  const acceptAll = document.getElementById('accept-all');
+  const acceptSelected = document.getElementById('accept-selected');
+  const rejectAll = document.getElementById('reject-all');
+  const analyticsCheckbox = document.getElementById('analyticsConsent');
+
+  if (acceptAll) {
+    acceptAll.addEventListener('click', function() {
+      updateConsent({
+        'ad_storage': 'granted',
+        'analytics_storage': 'granted',
+        'functionality_storage': 'granted',
+        'personalization_storage': 'granted'
+      });
+      setConsentCookie('all');
+      hideBanner();
     });
-    localStorage.setItem('cookieConsent', 'none');
-    document.getElementById('cookie-banner').style.display = 'none';
-  });
+  }
+
+  if (acceptSelected) {
+    acceptSelected.addEventListener('click', function() {
+      const analyticsChecked = analyticsCheckbox.checked;
+
+      updateConsent({
+        'analytics_storage': analyticsChecked ? 'granted' : 'denied',
+        'ad_storage': 'denied',
+        'functionality_storage': 'denied',
+        'personalization_storage': 'denied'
+      });
+
+      setConsentCookie(analyticsChecked ? 'analytics' : 'none');
+      hideBanner();
+    });
+  }
+
+  if (rejectAll) {
+    rejectAll.addEventListener('click', function() {
+      updateConsent({
+        'ad_storage': 'denied',
+        'analytics_storage': 'denied',
+        'functionality_storage': 'denied',
+        'personalization_storage': 'denied'
+      });
+      setConsentCookie('none');
+      hideBanner();
+    });
+  }
+
+});
 </script>

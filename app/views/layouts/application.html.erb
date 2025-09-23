@@ -667,10 +667,7 @@ fieldset[disabled] .button.is-primary-blue {
 
 <body>
 
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDG7CN76"
-height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
+
 
 <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
   <div class="container">
@@ -802,8 +799,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </nav>
 
+
+
 <main class="main-content" style="padding-top: 4rem;">
     <div class="container">
+
+      <%= render "layouts/cookie_banner" %>  <%# This includes your banner %>
+        <%# Conditionally load Google Analytics if consent allows %>
+      <% if cookies[:cookieConsent].present? && cookies[:cookieConsent].in?(%w[all analytics]) %>
+              <!-- Google Tag Manager (noscript) -->
+            <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NDG7CN76"
+            height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+          <!-- End Google Tag Manager (noscript) -->
+          <!-- Your GA script goes here -->
+      <% end %>
       <%= yield %>
     </div>
 </main>
