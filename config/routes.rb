@@ -74,6 +74,10 @@ Rails.application.routes.draw do
     # Services and nested bookings
     resources :services do
       resources :bookings, only: [:new]
+      member do
+        patch :archive
+        patch :unarchive
+      end
     end
 
     # Psychologist profiles and nested resources

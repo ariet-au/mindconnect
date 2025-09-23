@@ -1,31 +1,28 @@
-<div id="<%= dom_id service %>" class="card mb-4 is-shadowless">
+<div id="<%= dom_id service %>" class="card mb-4 <%= service.archived? ? 'has-background-light' : '' %>">
   <div class="card-content p-5">
     <div class="media is-align-items-center mb-3">
       <div class="media-content">
         <p class="title is-4 mb-1">
           <%= link_to service.name, service_path(service), class: "has-text-link has-text-weight-bold" %>
           <span class="tag is-primary is-light ml-2"><%= t(service.delivery_method, scope: "services.delivery_methods") %></span>
+          <% if service.archived? %>
+            <span class="tag is-danger is-light ml-2"><%= t('services.show.archived') %></span>
+          <% end %>
         </p>
       </div>
     </div>
 
     <div class="content has-text-grey-dark">
-      <p class="mb-4">
-        <%= service.description %>
-      </p>
+      <p class="mb-4"><%= service.description %></p>
 
       <div class="is-flex is-justify-content-space-between is-align-items-center mb-4">
         <p class="has-text-weight-semibold is-flex is-align-items-center">
-          <span class="icon has-text-success mr-2">
-            <i class="fas fa-money-bill-wave"></i>
-          </span>
+          <span class="icon has-text-success mr-2"><i class="fas fa-money-bill-wave"></i></span>
           <span><%= number_to_currency(service.price, unit: service.currency) %></span>
         </p>
 
         <p class="has-text-weight-semibold is-flex is-align-items-center">
-          <span class="icon has-text-info mr-2">
-            <i class="fas fa-clock"></i>
-          </span>
+          <span class="icon has-text-info mr-2"><i class="fas fa-clock"></i></span>
           <span><%= service.duration_minutes %> <%= t('minutes') %></span>
         </p>
       </div>
@@ -33,6 +30,20 @@
       <div class="buttons is-right">
         <%= link_to t('services.show.edit'), edit_service_path(service), class: "button is-light is-small" %>
 
+        <% if current_user == service.user %>
+          <% if service.archived? %>
+            <%= button_to t('services.show.unarchive'),
+                          unarchive_service_path(service),
+                          method: :patch,
+                          class: "button is-success is-small" %>
+          <% else %>
+            <%= button_to t('services.show.archive'),
+                          archive_service_path(service),
+                          method: :patch,
+                          class: "button is-warning is-small is-outlined" %>
+          <% end %>
+        <% end %>
+      </div>
     </div>
   </div>
-</div> 
+</div>

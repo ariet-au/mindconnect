@@ -1,30 +1,23 @@
-<% content_for :title, t('services.index.title') %>
+<% active_services = @services.select { |s| !s.archived? } %>
+<% archived_services = @services.select(&:archived?) %>
 
-<section class="section py-6">
-  <div class="container">
-    <div class="is-flex is-justify-content-space-between is-align-items-center mb-5">
-      <h1 class="title is-2 has-text-weight-bold"><%= t('services.index.title') %></h1>
-      <%= link_to t('services.index.new_service'), new_service_path, class: "button is-primary is-medium has-text-weight-semibold is-rounded" %>
-    </div>
+<%# --- Active services --- %>
+<% active_services.each do |service| %>
+  <%= render "service", service: service %>
+<% end %>
 
+<%# --- Archived services for psychologist only --- %>
+<% if current_user == @psychologist_profile.user && archived_services.any? %>
+  <div class="mt-5">
+    <button class="button is-small is-light" 
+            onclick="document.getElementById('archived-services').classList.toggle('is-hidden')">
+      <%= t('services.show.archived_toggle') %>
+    </button>
 
-    <% if notice %>
-      <p class="notification is-success is-light mb-5">
-        <%= notice %>
-      </p>
-    <% end %>
-    
-
-    <div id="services">
-      <% if @services.empty? %>
-        <div class="notification is-info has-text-centered">
-          <%= t('services.index.no_services') || "No services available yet. Be the first to add one!" %>
-        </div>
-      <% else %>
-        <% @services.each do |service| %>
-          <%= render service %>
-        <% end %>
+    <div id="archived-services" class="is-hidden mt-3">
+      <% archived_services.each do |service| %>
+        <%= render "service", service: service %>
       <% end %>
     </div>
   </div>
-</section>
+<% end %>

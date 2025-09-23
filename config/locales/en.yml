@@ -562,6 +562,8 @@ en:
       edit: "Edit Service"
       destroy: "Destroy Service"
       back: "Back to Services"
+      archive: "Archive"
+      unarchive: "Unarchive"
     form:
       name: "Service Name"
       description: "Description"

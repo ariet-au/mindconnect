@@ -11,8 +11,17 @@ class ServicesController < ApplicationController
   # GET /services or /services.json
   def index
     @psychologist_profile = PsychologistProfile.find(params[:psychologist_profile_id])
-    @services = @psychologist_profile.services
+
+    if current_user == @psychologist_profile.user
+      # Show all, but order: active first, then archived
+      @services = @psychologist_profile.services.order(status: :asc, archived_at: :asc)
+    else
+      # Show only active
+      @services = @psychologist_profile.services.active
+    end
   end
+
+  
 
   # GET /services/1 or /services/1.json
   def show
@@ -66,6 +75,19 @@ class ServicesController < ApplicationController
       format.html { redirect_to psychologist_profile_services_path(@service.user.psychologist_profile), notice: "Service was successfully created." }
       format.json { head :no_content }
     end
+  end
+
+
+  def archive
+    @service = current_user.services.find(params[:id])
+    @service.archive!
+    redirect_to services_path, notice: "Service archived."
+  end
+
+  def unarchive
+    @service = current_user.services.find(params[:id])
+    @service.unarchive!
+    redirect_to services_path, notice: "Service restored."
   end
 
   private

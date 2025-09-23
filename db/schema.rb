@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_21_192033) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_23_122645) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -411,6 +411,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_21_192033) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "currency", limit: 3
+    t.integer "status", default: 0, null: false
+    t.datetime "archived_at"
+    t.index ["archived_at"], name: "index_services_on_archived_at"
+    t.index ["status"], name: "index_services_on_status"
     t.index ["user_id"], name: "index_services_on_user_id"
   end
 

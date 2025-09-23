@@ -2,10 +2,15 @@ class Service < ApplicationRecord
   belongs_to :user
   after_create :set_as_featured_if_first
 
+  enum :status, { active: 0, archived: 1 }
+
+  scope :active_only, -> { where(status: :active, archived_at: nil) }
+  scope :archived, -> { where(status: :archived).or(where.not(archived_at: nil)) }
+
   
  # monetize :price, as: :price_money,  with_model_currency: :currency ,allow_nil: true, as_subunit: false
 
-monetize :price, as: :price_money, 
+  monetize :price, as: :price_money, 
          with_model_currency: :currency, 
          allow_nil: true, 
          numericality: { greater_than_or_equal_to: 0 }
@@ -19,7 +24,7 @@ monetize :price, as: :price_money,
               less_than_or_equal_to: 180
             }
             
-unless defined?(ActiveRecord::Base)
+  unless defined?(ActiveRecord::Base)
     attr_accessor :price_cents, :currency, :price_money
 
     def initialize(price_amount, currency_code)
@@ -29,6 +34,17 @@ unless defined?(ActiveRecord::Base)
     end
   end
 
+  def archive!
+    update!(status: :archived, archived_at: Time.current)
+  end
+
+  def unarchive!
+    update!(status: :active, archived_at: nil)
+  end
+
+  def archived?
+    status == "archived" || archived_at.present?
+  end
 
 
   def name_with_duration
