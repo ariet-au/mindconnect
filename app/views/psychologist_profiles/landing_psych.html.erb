@@ -1,520 +1,521 @@
 <style>
-:root {
-    --primary-blue: #2c5282;
-    --secondary-blue: #4a90e2;
-    --telegram-blue: #0088cc;
-    --light-grey: #f7fafc;
-    --white: #ffffff;
-    --charcoal: #2d3748;
-    --accent-green: #2f855a;
-    --muted-grey: #a0aec0;
-    --accent-purple: #805ad5;
-    --insta-white: #ffffff;
-    --soft-neutral: #f9fafb; /* New for minimalistic sections */
-    --light-accent: #e5e7eb; /* Subtle accent for text */
-}
-
-body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    color: var(--charcoal);
-    background-color: var(--white);
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    line-height: 1.6;
-    font-weight: 400;
-}
-
-*,
-*::before,
-*::after {
-    box-sizing: inherit;
-}
-
-.container {
-    width: 100%;
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 0 1.5rem;
-}
-
-.section {
-    padding: 5rem 0;
-    position: relative;
-    overflow: hidden;
-}
-
-.hero-section {
-    background: linear-gradient(135deg, var(--white) 0%, var(--light-grey) 100%);
-    min-height: 80vh;
-    display: flex;
-    align-items: center;
-    text-align: center;
-    position: relative;
-    padding: 8rem 0;
-}
-
-.hero-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle at 70% 20%, rgba(135, 206, 235, 0.2), transparent 70%);
-    z-index: 1;
-}
-
-.hero-content {
-    position: relative;
-    z-index: 2;
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.logo {
-    max-width: 200px;
-    height: auto;
-    margin-bottom: 2rem;
-}
-
-.title {
-    font-size: 3.5rem;
-    font-weight: 900;
-    margin-bottom: 1.5rem;
-    line-height: 1.1;
-    letter-spacing: -0.05rem;
-}
-
-.feature-list {
-    list-style: none;
-    padding: 0;
-    text-align: left;
-    max-width: 600px;
-    margin: 0 auto 2.5rem;
-}
-
-.feature-list li {
-    display: flex;
-    align-items: flex-start;
-    margin-bottom: 1rem;
-    font-size: 1.125rem;
-    color: var(--charcoal);
-    line-height: 1.4;
-}
-
-.feature-list li::before {
-    content: '✔';
-    color: var(--accent-green);
-    margin-right: 0.75rem;
-    font-size: 1.25rem;
-    font-weight: 700;
-}
-
-.highlight {
-    color: var(--primary-blue);
-    font-weight: 700;
-}
-
-.buttons-group {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 1.25rem;
-    margin-top: 2rem;
-}
-
-.button {
-    padding: 1rem 2.5rem;
-    font-size: 1rem;
-    font-weight: 600;
-    border-radius: 9999px;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    width: fit-content;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.07);
-    transition: left 0.4s ease;
-}
-
-.button:hover::before {
-    left: 0;
-}
-
-.button-primary {
-    background-color: var(--primary-blue);
-    color: var(--white);
-}
-
-.button-primary:hover {
-    background-color: var(--secondary-blue);
-    transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
-
-.button-success {
-    background-color: var(--accent-green);
-    color: var(--white);
-}
-
-.button-success:hover {
-    background-color: #047857;
-    transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
-
-.button-outline {
-    background-color: transparent;
-    border: 2px solid var(--telegram-blue);
-    color: var(--telegram-blue);
-    box-shadow: none;
-}
-
-.button-outline:hover {
-    background-color: var(--telegram-blue);
-    color: var(--white);
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.button-outline-success {
-    background-color: transparent;
-    border: 2px solid var(--accent-green);
-    color: var(--accent-green);
-    box-shadow: none;
-}
-
-.button-outline-success:hover {
-    background-color: var(--accent-green);
-    color: var(--white);
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.social-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    margin: 0 0.5rem;
-    background: transparent;
-    border-radius: 12px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.social-icon i.fab.fa-instagram {
-    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888, #805ad5);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    color: transparent;
-    font-size: 24px;
-}
-
-.social-icon:hover {
-    transform: scale(1.1);
-}
-
-.how-it-works-section {
-    background-color: var(--soft-neutral); /* Softer background */
-    padding: 4rem 0; /* Reduced padding for minimalism */
-}
-
-.columns {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem; /* Tighter gap for cleaner look */
-    margin-top: 3rem;
-}
-
-.column {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-
-.step-card {
-    padding: 2rem;
-    background-color: var(--white);
-    border-radius: 10px; /* Softer corners */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Lighter shadow */
-    border-top: 3px solid var(--primary-blue); /* Thinner border */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    height: 100%;
-}
-
-.step-card:hover {
-    transform: translateY(-5px); /* Subtler lift */
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-}
-
-.card-icon {
-    width: 50px; /* Slightly smaller icon */
-    height: 50px;
-    color: var(--primary-blue);
-    margin-bottom: 1rem;
-    transition: transform 0.3s ease;
-}
-
-.step-card:hover .card-icon {
-    transform: scale(1.1); /* Subtler scale */
-}
-
-.card-title {
-    font-size: 1.5rem; /* Smaller, cleaner title */
-    font-weight: 600; /* Lighter weight */
-    margin-bottom: 0.5rem;
-    color: var(--charcoal); /* Darker for contrast */
-}
-
-.card-text {
-    font-size: 0.95rem; /* Smaller text */
-    color: var(--muted-grey); /* Softer text color */
-}
-
-.cta-section {
-    background: var(--white); /* Clean white background */
-    color: var(--charcoal);
-    text-align: center;
-    padding: 4rem 0; /* Reduced padding */
-    border-top: 1px solid var(--light-grey); /* Subtle divider */
-}
-
-.cta-content {
-    max-width: 700px;
-    margin: 0 auto;
-}
-
-.social-links {
-    margin-top: 1rem;
-    font-size: 0.95rem;
-    color: var(--muted-grey);
-}
-
-.social-links a {
-    color: var(--primary-blue);
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.social-links a:hover {
-    text-decoration: underline;
-}
-
-.cta-section .button-outline-success {
-    border-color: var(--accent-green);
-    color: var(--accent-green);
-    box-shadow: none;
-}
-
-.cta-section .button-outline-success:hover {
-    background-color: var(--accent-green);
-    color: var(--white);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.cta-section .button-outline {
-    border-color: var(--telegram-blue);
-    color: var(--telegram-blue);
-    box-shadow: none;
-}
-
-.cta-section .button-outline:hover {
-    background-color: var(--telegram-blue);
-    color: var(--white);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.cta-section .social-icon {
-    background: transparent;
-    color: var(--accent-purple);
-}
-
-.cta-section .social-icon:hover {
-    transform: scale(1.1);
-    background: var(--light-grey);
-}
-
-@media (max-width: 1024px) {
-    .title {
-        font-size: 3rem;
+    /* ============================================
+    Design System & Variables
+    ============================================ */
+    :root {
+        --primary-blue: #2563EB;
+        --primary-blue-dark: #1D4ED8;
+        --primary-blue-light: #3B82F6;
+        --accent-green: #059669;
+        --accent-green-dark: #047857;
+        --telegram-blue: #0088CC;
+        --gray-50: #F9FAFB;
+        --gray-100: #F3F4F6;
+        --gray-200: #E5E7EB;
+        --gray-300: #D1D5DB;
+        --gray-400: #9CA3AF;
+        --gray-500: #6B7280;
+        --gray-600: #4B5563;
+        --gray-700: #374151;
+        --gray-800: #1F2937;
+        --gray-900: #111827;
+        --white: #FFFFFF;
+        --background: #FDFDFD;
+        
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
     }
-    .feature-list li {
-        font-size: 1.1rem;
-    }
-    .section {
-        padding: 4rem 0;
-    }
-}
 
-@media (max-width: 768px) {
+    /* ============================================
+    Base & Typography
+    ============================================ */
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        color: var(--gray-900);
+        background-color: var(--background);
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        line-height: 1.6;
+        font-weight: 400;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    *, *::before, *::after {
+        box-sizing: inherit;
+    }
+
     .container {
-        padding: 0 1rem;
-    }
-    .columns {
-        grid-template-columns: 1fr;
-    }
-    .buttons-group {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    .button {
         width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
     }
-    .title {
-        font-size: 2.25rem;
-        letter-spacing: normal;
-    }
-    .feature-list {
-        max-width: 90%;
-    }
-    .feature-list li {
-        font-size: 1rem;
-    }
-    .feature-list li::before {
-        font-size: 1rem;
-    }
+
     .section {
-        padding: 3rem 0;
+        padding: 7rem 0;
+        position: relative;
     }
-    .logo {
-        max-width: 150px;
-    }
-    .card-title {
-        font-size: 1.4rem;
-    }
-    .card-text {
-        font-size: 0.9rem;
-    }
-    .social-icon {
-        width: 44px;
-        height: 44px;
-    }
-}
 
-@media (max-width: 480px) {
     .title {
-        font-size: 1.875rem;
+        font-size: 3.5rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        color: var(--gray-900);
     }
-    .feature-list li {
-        font-size: 0.95rem;
+
+    .features-section .title,
+    .cta-section .title {
+        font-size: 2.2rem; /* Adjust as needed */
+        line-height: 1.2;
     }
-    .logo {
-        max-width: 120px;
+
+    /* Optional: smaller subtitles too */
+    .features-section .subtitle,
+    .cta-section .subtitle {
+        font-size: 1rem;
     }
+
+
+    
+    .subtitle {
+        font-size: 1.25rem;
+        color: var(--gray-600);
+        max-width: 680px;
+        margin: 0 auto 3rem;
+        line-height: 1.6;
+        font-weight: 400;
+    }
+
+    .highlight {
+        color: var(--primary-blue);
+        font-weight: 600;
+    }
+
+    /* ============================================
+    Hero Section
+    ============================================ */
     .hero-section {
-        padding: 6rem 0;
+        background-color: var(--white);
+        text-align: center;
+        padding: 8rem 0 9rem;
+        border-bottom: 1px solid var(--gray-100);
     }
-}
+    
+    .hero-content {
+        max-width: 900px;
+        margin: 0 auto;
+    }
 
-@keyframes fadeInUp {
-    from {
+    .logo {
+        max-width: 200px;
+        height: auto;
+        margin-bottom: 3rem;
+        opacity: 0.95;
+    }
+
+    .feature-list {
+        list-style: none;
+        padding: 0;
+        text-align: left;
+        max-width: 580px;
+        margin: 3rem auto 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .feature-list li {
+        display: flex;
+        align-items: flex-start;
+        font-size: 1.125rem;
+        color: var(--gray-600);
+        line-height: 1.5;
+        font-weight: 400;
+    }
+
+    .feature-list li::before {
+        content: '✓';
+        color: var(--accent-green);
+        margin-right: 1rem;
+        font-size: 1.25rem;
+        font-weight: 700;
+        margin-top: 1px;
+        flex-shrink: 0;
+    }
+
+    /* ============================================
+    Buttons & Links
+    ============================================ */
+    .buttons-group {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 1.5rem;
+        margin-top: 3rem;
+        margin-bottom: 2rem;
+    }
+
+    .button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem 2.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        cursor: pointer;
+        border: 1px solid transparent;
+        white-space: nowrap;
+    }
+
+    .button:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .button-primary {
+        background-color: var(--primary-blue);
+        color: var(--white);
+        border-color: var(--primary-blue);
+    }
+    .button-primary:hover {
+        background-color: var(--primary-blue-dark);
+        border-color: var(--primary-blue-dark);
+    }
+
+    .button-outline {
+        background-color: transparent;
+        border-color: var(--gray-300);
+        color: var(--gray-700);
+    }
+    .button-outline:hover {
+        background-color: var(--gray-50);
+        border-color: var(--gray-400);
+        color: var(--gray-900);
+    }
+    
+    .button-outline-green {
+        background-color: transparent;
+        border-color: var(--accent-green);
+        color: var(--accent-green);
+    }
+    .button-outline-green:hover {
+        background-color: var(--accent-green);
+        color: var(--white);
+    }
+    
+    .button-outline-tg {
+        background-color: transparent;
+        border-color: var(--telegram-blue);
+        color: var(--telegram-blue);
+    }
+    .button-outline-tg:hover {
+        background-color: var(--telegram-blue);
+        color: var(--white);
+    }
+
+    .social-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 52px;
+        height: 52px;
+        border-radius: 0.5rem;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        background-color: var(--gray-50);
+        border: 1px solid var(--gray-200);
+    }
+
+    .social-icon i {
+        font-size: 24px;
+        background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .social-icon:hover {
+        transform: translateY(-2px);
+        background-color: var(--white);
+        border-color: var(--gray-300);
+        box-shadow: var(--shadow-md);
+    }
+
+    /* ============================================
+    Features Section
+    ============================================ */
+    .features-section {
+        background-color: var(--gray-50);
+        border-bottom: 1px solid var(--gray-100);
+    }
+    
+    .features-section .title, .features-section .subtitle {
+        text-align: center;
+    }
+
+    .columns {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 0.25rem;
+        margin-top: 4rem;
+    }
+
+    .feature-card {
+        padding: 2.5rem 2rem;
+        background-color: var(--white);
+        border-radius: 0.75rem;
+        box-shadow: var(--shadow-sm);
+        border: 1px solid var(--gray-200);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-align: left;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-xl);
+        border-color: var(--gray-300);
+    }
+
+    .feature-card.coming-soon {
+        opacity: 0.8;
+        border-color: var(--gray-200);
+        background: linear-gradient(135deg, var(--white) 0%, var(--gray-50) 100%);
+    }
+
+    .feature-card.coming-soon::before {
+        content: "Скоро";
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        background-color: var(--gray-100);
+        color: var(--gray-600);
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .card-icon {
+        width: 56px;
+        height: 56px;
+        color: var(--primary-blue);
+        margin-bottom: 1.5rem;
+        background-color: var(--gray-50);
+        border-radius: 0.75rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--gray-200);
+    }
+    
+    .feature-card.coming-soon .card-icon {
+        color: var(--gray-500);
+        background-color: var(--gray-100);
+    }
+    
+    .card-icon svg {
+        width: 28px;
+        height: 28px;
+    }
+
+    .card-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--gray-900);
+        line-height: 1.3;
+    }
+
+    .feature-card.coming-soon .card-title {
+        color: var(--gray-700);
+    }
+
+    .card-text {
+        font-size: 1.05rem;
+        color: var(--gray-600);
+        line-height: 1.6;
+        flex-grow: 1;
+    }
+
+    .feature-card.coming-soon .card-text {
+        color: var(--gray-500);
+    }
+
+    /* ============================================
+    CTA Section
+    ============================================ */
+    .cta-section {
+        background-color: var(--white);
+        text-align: center;
+        padding: 8rem 0;
+    }
+
+    /* ============================================
+    Animations & Responsive Design
+    ============================================ */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-in-up {
+        animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         opacity: 0;
-        transform: translateY(20px);
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
 
-.fade-in-up {
-    animation: fadeInUp 0.6s ease-out forwards;
-}
+    @media (max-width: 768px) {
+        /* Remove side padding for full-width on mobile */
+        .container {
+            padding: 0 1rem;
+        }
+        .title {
+            font-size: 2.5rem;
+        }
+        .subtitle {
+            font-size: 1.125rem;
+        }
+        .section {
+            padding: 4rem 0;
+        }
+        .hero-section {
+            padding: 6rem 0 7rem;
+        }
+        .cta-section {
+            padding: 6rem 0;
+        }
+        .buttons-group {
+            flex-direction: column;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            gap: 1rem;
+        }
+        .button {
+            width: 100%;
+            padding: 1rem 2rem;
+        }
+        .columns {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        /* Adjust card padding to give more room for text */
+        .feature-card {
+            padding: 2rem 1.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .title {
+            font-size: 2.25rem;
+        }
+        .feature-list li {
+            font-size: 1rem;
+        }
+    }
 </style>
 
 <!-- Hero Section -->
 <section class="hero-section section">
     <div class="container hero-content fade-in-up">
         <%= image_tag "logo-dark.png", alt: "AkSanaa Logo", class: "logo" %>
-        <h1 class="title text-gradient">
-            Упрощаем управление практикой.
+        <h1 class="title">
+            Профессиональная платформа для психологов
         </h1>
-        <ul class="feature-list">
-            <li>Красивый профиль — как ваша визитка в интернете</li>
-            <li>Ссылка, которую легко отправить клиенту</li>
-            <li>Делитесь уникальной ссылкой &nbsp;<span class="highlight"> aksanaa.com/p/ваше-имя</span></li>
-            <li>Клиенты сами находят вас и записываются онлайн</li>
-            <li>Мы развиваем AkSanaa вместе с психологами. Напишите нам, если хотите поучаствовать</li>
-            <li><strong>Бесплатно для первых 50 специалистов</strong> 🎉</li>
-        </ul>
+        <p class="subtitle">
+            Создайте профессиональный профиль, управляйте записями и используйте клинические инструменты. Все необходимое для развития частной практики в одном месте.
+        </p>
         <div class="buttons-group">
             <%= link_to "Присоединиться к платформе", new_user_registration_path, class: "button button-primary" %>
-            <%= link_to "Напиши нам в Telegram", "https://t.me/arietd", class: "button button-outline" %>
-            <a href="https://instagram.com/aksanaa_com" class="social-icon" target="_blank" rel="noopener noreferrer">
-                <i class="fa-brands fa-instagram"></i>
-            </a>
+            <%= link_to "Связаться с нами", "https://t.me/arietd", class: "button button-outline" %>
         </div>
+        <ul class="feature-list">
+            <li>Персональный профиль: <span class="highlight">aksanaa.com/p/ваше-имя</span></li>
+            <li>Система онлайн-записи с интеграцией Telegram</li>
+            <li><strong>Бесплатная регистрация для первых 50 специалистов</strong></li>
+        </ul>
     </div>
 </section>
 
-<!-- How It Works Section -->
-<section class="section how-it-works-section">
+<!-- Features Section -->
+<section class="section features-section">
     <div class="container">
-        <h2 class="title fade-in-up" style="text-align: center;">
-            Всё для вашей практики
+        <h2 class="title fade-in-up">
+            Инструменты для профессионалов
         </h2>
-        <p class="subtitle fade-in-up" style="text-align: center; max-width: 600px; margin: 0 auto;">
-            Профиль, расписание и бронирования в одном месте.
+        <p class="subtitle fade-in-up" style="animation-delay: 0.1s;">
+            Комплексное решение для ведения психологической практики с акцентом на качество и профессионализм.
         </p>
         <div class="columns">
-            <!-- Step 1 -->
-            <div class="column fade-in-up">
-                <div class="step-card">
-                    <figure class="card-icon">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                        </svg>
-                    </figure>
-                    <h3 class="card-title">1. Создайте профессиональный профиль</h3>
-                    <p class="card-text">
-                        Добавьте контакты, подчеркните свои специализации и направления работы. 
-                        Загрузите фото или видео-приветствие и получите персональную ссылку <span class="highlight">aksanaa.com/p/ваше-имя</span>.
-                    </p>
-                </div>
-            </div>
-            <!-- Step 2 -->
+            <!-- Feature 1: Profile -->
             <div class="column fade-in-up" style="animation-delay: 0.2s;">
-                <div class="step-card">
+                <div class="feature-card">
                     <figure class="card-icon">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h8M3 15h18M3 19h18a2 2 0 01-2 2H5a2 2 0 01-2-2v-11a2 2 0 012-2z"></path>
-                        </svg>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
                     </figure>
-                    <h3 class="card-title">2. Управляйте расписанием</h3>
+                    <h3 class="card-title">Профессиональный профиль</h3>
                     <p class="card-text">
-                        Укажите доступные часы и дни. Клиенты видят свободные слоты и выбирают удобное для них время.
+                        Создайте детальный профиль с указанием квалификации, специализаций, методов работы и стоимости услуг. Получайте заявки от клиентов и отслеживайте статистику просмотров.
                     </p>
                 </div>
             </div>
-            <!-- Step 3 -->
-            <div class="column fade-in-up" style="animation-delay: 0.4s;">
-                <div class="step-card">
+
+            <!-- Feature 2: Booking Management -->
+            <div class="column fade-in-up" style="animation-delay: 0.3s;">
+                <div class="feature-card">
                     <figure class="card-icon">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
+                       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                     </figure>
-                    <h3 class="card-title">3. Получайте запросы и бронирования</h3>
+                    <h3 class="card-title">Управление записями</h3>
                     <p class="card-text">
-                        Клиенты могут мгновенно отправить вам запрос или забронировать время. 
-                        Вы также можете сами предложить слот — клиент подтвердит, и встреча сразу появится в его календаре.
+                        Автоматизированная система записи с синхронизацией календаря. Клиенты видят доступное время и бронируют сессии самостоятельно. Мгновенные уведомления в Telegram.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Feature 3: Clinical Tools -->
+            <div class="column fade-in-up" style="animation-delay: 0.4s;">
+                <div class="feature-card">
+                    <figure class="card-icon">
+                       <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                    </figure>
+                    <h3 class="card-title">Клинические опросники</h3>
+                    <p class="card-text">
+                        Встроенная библиотека валидированных методик: PHQ-9, GAD-7, BDI-II, шкала Кесслера K10 и другие инструменты для профессиональной оценки состояния клиентов.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Feature 4: Coming Soon -->
+            <div class="column fade-in-up" style="animation-delay: 0.5s;">
+                <div class="feature-card coming-soon">
+                    <figure class="card-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    </figure>
+                    <h3 class="card-title">Профессиональное сообщество</h3>
+                    <p class="card-text">
+                        В разработке находится закрытое сообщество для проведения супервизий, интервизий и профессиональных мероприятий. Функция будет доступна в ближайшем обновлении.
                     </p>
                 </div>
             </div>
@@ -526,16 +527,14 @@ body {
 <section class="section cta-section">
     <div class="container cta-content fade-in-up">
         <h2 class="title">
-            Попробуйте бесплатно  
+            Присоединяйтесь к профессиональному сообществу
         </h2>
-        <br>
-        <p class="subtitle" style="max-width: 650px; margin: 0 auto;">
-            AkSanaa создана вместе с практикующими психологами, чтобы упростить вашу работу. 
-            Регистрация бесплатна и займёт всего пару минут.
+        <p class="subtitle">
+            AkSanaa разрабатывается практикующими психологами для повышения качества и эффективности частной практики. Бесплатная регистрация для первых 50 специалистов.
         </p>
         <div class="buttons-group">
-            <%= link_to "Создать профиль бесплатно", new_user_registration_path, class: "button button-outline-success" %>
-            <%= link_to "Связаться в Telegram", "https://t.me/arietd", class: "button button-outline" %>
+            <%= link_to "Создать профиль",  new_user_registration_path, class: "button button-outline-green" %>
+            <%= link_to "Telegram", "https://t.me/arietd", class: "button button-outline-tg" %>
             <a href="https://instagram.com/aksanaa_com" class="social-icon" target="_blank" rel="noopener noreferrer">
                 <i class="fa-brands fa-instagram"></i>
             </a>
