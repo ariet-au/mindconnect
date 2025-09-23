@@ -159,6 +159,7 @@ en:
       remove_education: "Remove this education"
     
   psychologist_search:
+    disclaimer: "This is a search service to help you find psychologists. It is not a medical service and does not provide medical advice or treatment."
     hide_advanced_filters: "Hide advanced filters"
     more_options_filters: "Advanced filters"
     placeholder: "Search by name, specialty, or keyword..."

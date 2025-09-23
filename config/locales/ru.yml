@@ -152,6 +152,7 @@ ru:
       remove_education: "Удалить это образование"
     
   psychologist_search:
+    disclaimer: "This is a search service to help you find psychologists. It is not a medical service and does not provide medical advice or treatment."
     hide_advanced_filters: "Скрыть расширенные фильтры"
     more_options_filters: "Больше опций фильтрации"
     placeholder: "Поиск по имени, специальности или ключевому слову..."
