@@ -384,13 +384,9 @@
       <% end %>
     </div>
   <% elsif @booking.confirmed? %>
-    <div class="status-notification is-success" id="booking-status">
+     <div class="status-notification is-success" id="booking-status">
       <p class="title"><%= t('.confirmed_title') %></p>
       <p><%= t('.confirmed_text') %></p>
-    </div>
-    <div class="buttons is-centered">
-      <%= link_to t('.download_ics_button'), download_ics_psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "button is-link" %>
-      <%= link_to t('.google_calendar_button'), "https://calendar.google.com/calendar/render?action=TEMPLATE&text=#{CGI.escape(t('.calendar_title', service: @booking.service&.name || 'Therapy Session'))}&dates=#{@booking.start_time.utc.strftime('%Y%m%dT%H%M%SZ')}/#{@booking.end_time.utc.strftime('%Y%m%dT%H%M%SZ')}&details=#{CGI.escape(t('.calendar_details', psychologist: @booking.psychologist_profile&.full_name))}", target: "_blank", class: "button is-link" %>
     </div>
   <% elsif @booking.declined? %>
     <div class="status-notification is-danger" id="booking-status">
@@ -403,6 +399,11 @@
       <p><%= t('.already_processed') %></p>
     </div>
   <% end %>
+ 
+    <div class="buttons is-centered">
+      <%= link_to t('.download_ics_button'), download_ics_psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "button is-link" %>
+      <%= link_to t('.google_calendar_button'), "https://calendar.google.com/calendar/render?action=TEMPLATE&text=#{CGI.escape(t('.calendar_title', service: @booking.service&.name || 'Therapy Session'))}&dates=#{@booking.start_time.utc.strftime('%Y%m%dT%H%M%SZ')}/#{@booking.end_time.utc.strftime('%Y%m%dT%H%M%SZ')}&details=#{CGI.escape(t('.calendar_details', psychologist: @booking.psychologist_profile&.full_name))}", target: "_blank", class: "button is-link" %>
+    </div>
 </div>
 
 <script>
