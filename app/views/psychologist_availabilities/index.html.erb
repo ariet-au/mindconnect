@@ -28,7 +28,10 @@
       <div id="availability-container">
         <% (0..6).each do |day_index| %>
           <div class="day-section" data-day="<%= day_index %>">
-            <h2 class="title is-5 has-text-grey-dark mb-4"><%= Date::DAYNAMES[day_index] %></h2>
+            <h2 class="title is-5 has-text-grey-dark mb-4">
+              <%= I18n.t("date.day_names")[day_index] %>
+            </h2>
+
             <div class="slots">
               <% @availabilities.select { |a| a.day_of_week == day_index }.each do |availability| %>
                 <% tz = @psychologist_profile.timezone.presence %>
