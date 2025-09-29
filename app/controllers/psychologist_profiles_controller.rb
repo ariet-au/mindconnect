@@ -435,9 +435,9 @@ end
         def psychologist_profile_params
           params.require(:psychologist_profile).permit(
             :first_name, :last_name, :about_me, :standard_rate, :currency, :years_of_experience, :license_number,
-            :country, :city, :address, :telegram, :whatsapp, :contact_phone,
+            :country, :city, :address, :telegram, :whatsapp, :contact_phone, :instagram,
             :contact_phone2, :contact_phone3, :gender, :education, :is_doctor, :in_person, :online, 
-            :is_degree_boolean, :profile_img, :religion,
+            :has_psychology_degree, :supervision, :profile_img, :religion,
             :about_clients, :about_issues, :about_specialties, :primary_contact_method, :timezone,
             :status, :youtube_video_url, :profile_url, :featured_service_id, :contact_email, :hidden,
             issue_ids: [],         # <-- Add this

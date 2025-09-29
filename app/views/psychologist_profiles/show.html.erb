@@ -1012,8 +1012,11 @@ body {
                 <% if @psychologist_profile.is_doctor %>
                     <span class="name-badge is-doctor"><i class="fas fa-user-md"></i><%= t('psychologist_profiles.show.doctor') %></span>
                 <% end %>
-                <% if @psychologist_profile.is_degree_boolean %>
-                    <span class="name-badge certified"><i class="fas fa-certificate"></i><%= t('psychologist_profiles.show.certified') %></span>
+                <% if @psychologist_profile.has_psychology_degree %>
+                    <span class="name-badge certified"><i class="fas fa-graduation-cap"></i><%= t('psychologist_profiles.show.certified') %></span>
+                <% end %>
+                <% if @psychologist_profile.supervision? %>
+                    <span class="name-badge supervision"><i class="fas fa-users"></i><%= t('psychologist_profiles.show.supervision') %></span>
                 <% end %>
             </div>
         </div>

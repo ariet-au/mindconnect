@@ -13,6 +13,14 @@ class ClientInfo < ApplicationRecord
 
   enum :submitted_by, { client: "client", psychologist: "psychologist" }
 
+  enum :status, {
+    inquiry: 0,
+    contacted: 1,
+    first_session: 2,
+    active: 3,
+    inactive: 4
+  }
+
   def full_name
     "#{first_name} #{last_name}" # or however you want it displayed
   end 

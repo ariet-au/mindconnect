@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_23_122645) do
+ActiveRecord::Schema[8.0].define(version: 2025_09_28_220554) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -125,6 +125,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_23_122645) do
     t.string "submitted_by", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "status", default: 0, null: false
+    t.string "lead_source"
+    t.string "referrer_url"
+    t.string "landing_page"
+    t.string "referred_by"
     t.index ["psychologist_profile_id"], name: "index_client_infos_on_psychologist_profile_id"
   end
 
@@ -316,7 +321,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_23_122645) do
     t.integer "gender"
     t.string "education"
     t.boolean "is_doctor"
-    t.string "is_degree_boolean"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.decimal "standard_rate", precision: 10, scale: 2
@@ -335,6 +339,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_23_122645) do
     t.bigint "featured_service_id"
     t.string "contact_email"
     t.boolean "hidden", default: false, null: false
+    t.boolean "has_psychology_degree", default: false, null: false
+    t.boolean "supervision", default: false, null: false
+    t.string "instagram"
     t.index ["featured_service_id"], name: "index_psychologist_profiles_on_featured_service_id"
     t.index ["profile_url"], name: "index_psychologist_profiles_on_profile_url", unique: true
     t.index ["user_id"], name: "index_psychologist_profiles_on_user_id"

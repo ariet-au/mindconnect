@@ -111,7 +111,7 @@
               </span>
             </h3>
             <div class="columns is-multiline">
-                <div class="column is-half">
+               <div class="column is-half">
                     <div class="field">
                         <%= form.label :years_of_experience, t('psychologist_profile.labels.years_of_experience'), class: "label" %>
                         <div class="control">
@@ -137,6 +137,27 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div class="columns is-multiline">
+              <div class="column is-one-third">
+                <div class="field">
+                  <input id="is_doctor" type="checkbox" name="psychologist_profile[is_doctor]" class="switch is-success" <%= "checked" if @psychologist_profile.is_doctor %>>
+                  <label for="is_doctor"><%= t('psychologist_profile.is_doctor') %></label>
+                </div>
+              </div>
+
+              <div class="column is-one-third">
+                <div class="field">
+                  <input id="has_psychology_degree" type="checkbox" name="psychologist_profile[has_psychology_degree]" class="switch is-info" <%= "checked" if @psychologist_profile.has_psychology_degree %>>
+                  <label for="has_psychology_degree"><%= t('psychologist_profile.has_psychology_degree') %></label>
+                </div>
+              </div>
+              <div class="column is-one-third">
+                <div class="field">
+                  <input id="supervision" type="checkbox" name="psychologist_profile[supervision]" class="switch is-info" <%= "checked" if @psychologist_profile.supervision %>>
+                  <label for="supervision"><%= t('psychologist_profile.supervision') %></label>
+                </div>
+              </div>
             </div>
         </div>
     </div>
@@ -311,6 +332,14 @@
           </div>
           <div class="column is-one-third">
             <div class="field">
+              <%= form.label :instagram, t('psychologist_profile.labels.instagram'), class: "label" %>
+              <div class="control">
+                <%= form.text_field :instagram, class: "input" %>
+              </div>
+            </div>
+          </div>
+          <div class="column is-one-third">
+            <div class="field">
               <%= form.label :contact_phone, t('psychologist_profile.labels.contact_phone1'), class: "label" %>
               <div class="control">
                 <%= form.text_field :contact_phone, class: "input" %>
@@ -322,14 +351,6 @@
               <%= form.label :contact_phone2, t('psychologist_profile.labels.contact_phone2'), class: "label" %>
               <div class="control">
                 <%= form.text_field :contact_phone2, class: "input" %>
-              </div>
-            </div>
-          </div>
-          <div class="column is-one-third">
-            <div class="field">
-              <%= form.label :contact_phone3, t('psychologist_profile.labels.contact_phone3'), class: "label" %>
-              <div class="control">
-                <%= form.text_field :contact_phone3, class: "input" %>
               </div>
             </div>
           </div>
@@ -389,9 +410,10 @@
 
           <div class="column is-full">
             <div class="field">
-              <label class="checkbox">
+              <label class="checkbox has-text-danger has-text-weight-bold">
                 <%= form.check_box :hidden %>
-                <%= t('psychologist_profile.labels.hidden') %>
+                <%= t('psychologist_profile.labels.hidden') %>!
+                <br>
               </label>
             </div>
           </div>
