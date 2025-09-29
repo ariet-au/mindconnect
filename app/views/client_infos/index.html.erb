@@ -4,12 +4,34 @@
 
     <%= link_to t('client_infos.index.add_new_client'), new_client_info_path, class: "button is-primary mb-4" %>
 
+    <%# --- Tabs for Status Filtering --- %>
+    <div class="tabs is-boxed mt-4">
+      <ul>
+        <% current_status = params[:status].present? ? params[:status].to_sym : nil %>
+        <% all_statuses = [:inquiry, :referred, :booked, :confirmed_booking, :active_upcoming, :active_no_upcoming, :inactive] %>
+
+        <%# Tab for ALL clients %>
+        <li class="<%= 'is-active' if current_status.nil? %>">
+          <%= link_to "#{t('client_infos.index.tabs.all', default: 'All')} (#{@status_counts[:all]})", client_infos_path %>
+        </li>
+
+        <% all_statuses.each do |status| %>
+          <li class="<%= 'is-active' if current_status == status %>">
+            <%= link_to "#{t("client_infos.index.tabs.#{status}", default: status.to_s.titleize)} (#{@status_counts[status] || 0})", client_infos_path(status: status) %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+    <%# --- End Tabs --- %>
+
     <% if @client_infos.any? %>
       <div class="table-container">
         <table class="table is-fullwidth is-striped is-hoverable">
           <thead>
             <tr>
               <th><%= t('client_infos.index.table.name') %></th>
+              <th><%= t('client_infos.index.table.status') %></th>
+              <th><%= t('client_infos.index.table.submitted_by') %></th>
               <th><%= t('client_infos.index.table.year_of_birth') %></th>
               <th><%= t('client_infos.index.table.city') %></th>
               <th><%= t('client_infos.index.table.contacts') %></th>
@@ -20,6 +42,9 @@
             <% @client_infos.each do |client| %>
               <tr class="client-row">
                 <td class="client-name" data-label="<%= t('client_infos.index.table.name') %>"><%= "#{client.first_name} #{client.last_name}" %></td>
+                <td><%= client.status %> </td>
+                <td><%= client.submitted_by %> </td>
+
                 <td data-label="<%= t('client_infos.index.table.year_of_birth') %>"><%= client.year_of_birth %></td>
                 <td data-label="<%= t('client_infos.index.table.city') %>"><%= client.city %></td>
                 <td data-label="<%= t('client_infos.index.table.contacts') %>">
@@ -29,8 +54,8 @@
                 </td>
                 <td data-label="<%= t('client_infos.index.table.actions') %>">
                 <% if client.psychologist_profile == current_user.psychologist_profile %>
-                    <%= link_to t('client_infos.index.show'), client_info_path(client), class: "button is-small " %>
-                    <%= link_to t('client_infos.index.edit'), edit_client_info_path(client), class: "button is-small is-link" %>
+                    <%= link_to t('client_infos.index.show'), client_info_path(client), class: "button is-small is-link" %>
+                    <%= link_to t('client_infos.index.edit'), edit_client_info_path(client), class: "button is-small" %>
                   <% else %>
                     <span class="has-text-grey-light">—</span>
                   <% end %>
@@ -45,4 +70,3 @@
     <% end %>
   </div>
 </div>
-

@@ -4,8 +4,6 @@ class ClientInfo < ApplicationRecord
   has_many :bookings, dependent: :nullify
   after_create :notify_psychologist
 
-
-
   accepts_nested_attributes_for :client_contacts, allow_destroy: true, reject_if: :all_blank
 
   validates :first_name, presence: true
@@ -14,19 +12,21 @@ class ClientInfo < ApplicationRecord
   enum :submitted_by, { client: "client", psychologist: "psychologist" }
 
   enum :status, {
-    inquiry: 0,
-    contacted: 1,
-    first_session: 2,
-    active: 3,
-    inactive: 4
+    inquiry: 0,                # submitted by unknown client
+    referred: 1,               # submitted by psychologist / known client
+    booked: 2,                 # booking created
+    confirmed_booking: 3,      # booking confirmed
+    active_upcoming: 4,        # active with sessions coming up
+    active_no_upcoming: 5,     # active but no upcoming sessions
+    inactive: 6                # previously active, now inactive
   }
 
   def full_name
     "#{first_name} #{last_name}" # or however you want it displayed
   end 
-  
+
+
   private
-  
   
   def notify_psychologist
     # Get the User object for the psychologist

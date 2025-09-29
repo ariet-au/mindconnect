@@ -6,4 +6,16 @@
 
     <%= link_to "← Back to Clients", client_infos_path, class: "button is-text mt-4" %>
   </div>
+
+  <div class="control">
+    <%# The Delete Button %>
+    <%= link_to t('client_infos.form.delete', default: 'Delete Client'), 
+        client_info_path(@client_info, locale: I18n.locale),
+        data: { 
+          turbo_method: :delete,
+          turbo_confirm: t('client_infos.confirm_delete', default: "Are you sure you want to permanently delete this client?") 
+        },
+        class: "button is-danger is-outlined" 
+    %>
+  </div>
 </div>

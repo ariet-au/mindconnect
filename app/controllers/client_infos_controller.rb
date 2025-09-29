@@ -6,8 +6,20 @@ class ClientInfosController < ApplicationController
 
   # GET /client_infos
   def index
-    # Only show clients belonging to this psychologist
+    # Base scope for this psychologist
     @client_infos = @psychologist_profile.client_infos.includes(:client_contacts).order(created_at: :desc)
+
+    # Get all counts per status for tabs
+    @status_counts = @psychologist_profile.client_infos.group(:status).count.transform_keys(&:to_sym)
+    @status_counts[:all] = @psychologist_profile.client_infos.count
+
+    # Add a total for "all"
+    @status_counts[:all] = @client_infos.count
+
+    # Filter by selected status if present and valid
+    if params[:status].present? && ClientInfo.statuses.key?(params[:status].to_sym)
+      @client_infos = @client_infos.where(status: ClientInfo.statuses[params[:status]])
+    end
   end
 
   # GET /client_infos/new
@@ -33,18 +45,18 @@ end
 def create
   @client_info = ClientInfo.new(client_info_params)
 
-  if params[:psychologist_profile_id].present?
-    # Case 1: User clicked "Submit Client Info" from a psychologist's profile
-    @client_info.psychologist_profile_id = params[:psychologist_profile_id]
-    @client_info.submitted_by = "client"
-  elsif user_signed_in? && current_user.psychologist_profile
-    # Case 2: User clicked "Add New Client" and is a signed-in psychologist
+  if user_signed_in? && current_user.psychologist? && current_user.psychologist_profile.id == params[:psychologist_profile_id].to_i
+  # Any logged-in psychologist submitting the form is a psychologist
     @client_info.psychologist_profile = current_user.psychologist_profile
-    @client_info.submitted_by = "psychologist"
+    @client_info.submitted_by = :psychologist
+    @client_info.status = :referred
+  elsif params[:psychologist_profile_id].present?
+    # Client submitting via a psychologist's profile
+    @client_info.psychologist_profile_id = params[:psychologist_profile_id]
+    @client_info.submitted_by = :client
   else
-    # Case 3: Guest user submitting without a psychologist profile
-    @client_info.submitted_by = "client"
-    # psychologist_profile stays nil (unassigned)
+    # Guest client submitting with no profile
+    @client_info.submitted_by = :client
   end
 
   if @client_info.save
@@ -58,7 +70,7 @@ def create
         psychologist_profile_id: @client_info.psychologist_profile_id
       }
     )
-    redirect_to root_path, notice: "Thank you! Your information has been submitted."
+    redirect_to client_infos_path, notice: "Thank you! Your information has been submitted."
   else
     render :new, status: :unprocessable_entity
   end
@@ -100,11 +112,21 @@ end
   end
 
   def destroy
+  # 1. Find the client info record using the ID from the URL parameters
+    @client_info = ClientInfo.find(params[:id])
+
+    # 2. Check authorization using your custom method
     if editable_by_psychologist?(@client_info)
-      @client_info.destroy
-      redirect_to client_infos_path, notice: "Client deleted successfully."
+      # 3. Use the locale-scoped path for redirection
+      if @client_info.destroy
+        redirect_to client_infos_path(locale: I18n.locale), notice: t('client_infos.delete_success', default: "Client deleted successfully.")
+      else
+        # Handle case where destroy fails (e.g., due to model callbacks or database constraints)
+        redirect_to client_infos_path(locale: I18n.locale), alert: t('client_infos.delete_failure', default: "Client could not be deleted.")
+      end
     else
-      redirect_to client_infos_path, alert: "You cannot delete a client submitted by the client."
+      # 3. Use the locale-scoped path for redirection
+      redirect_to client_infos_path(locale: I18n.locale), alert: t('client_infos.delete_unauthorized', default: "You cannot delete this client.")
     end
   end
 
@@ -126,7 +148,7 @@ end
 
   def client_info_params
     params.require(:client_info).permit(
-      :first_name, :last_name, :year_of_birth, :city, :timezone, :reason_for_therapy,
+      :first_name, :last_name, :year_of_birth, :city, :timezone, :reason_for_therapy, :status, 
       client_contacts_attributes: [:id, :method, :value, :_destroy]
     )
   end

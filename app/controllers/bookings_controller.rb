@@ -323,6 +323,8 @@ class BookingsController < ApplicationController
   def confirm
     if @booking.pending?
       if @booking.update(status: 'confirmed', confirmation_token: nil)
+
+        @booking.client_info.update(status: :confirmed_booking)
         # Send Telegram message
         tz_name = @booking.psychologist_profile.timezone.presence || Time.zone.name
         tz      = ActiveSupport::TimeZone[tz_name] || Time.zone
@@ -500,6 +502,9 @@ class BookingsController < ApplicationController
             status: @booking.status
           }
         )
+        if @booking.client_info.present? && ['inactive', 'inquiry','referred'].include?(@booking.client_info.status)
+          @booking.client_info.update(status: :booked)
+        end
         redirect_to psychologist_profile_booking_path(@booking.psychologist_profile, @booking), notice: "Booking confirmed!"
       else
         Rails.logger.debug "Booking save failed: #{@booking.errors.full_messages.join(', ')}"
@@ -617,7 +622,14 @@ private
 
 
 def load_clients_for_form
-  @clients = @psychologist.present? ? @psychologist.client_infos.order(:last_name, :first_name) : []
+  @clients =
+    if @psychologist.present?
+      @psychologist.client_infos
+                  .where.not(status: ClientInfo.statuses[:inquiry])
+                  .order(:last_name, :first_name)
+    else
+      []
+    end
 end
   
 
@@ -784,6 +796,7 @@ end
         :city,
         :timezone,
         :reason_for_therapy,
+        :status,
         client_contacts_attributes: [:id, :method, :value, :_destroy]
       ]
     )

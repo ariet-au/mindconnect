@@ -11,6 +11,7 @@ class Booking < ApplicationRecord
   after_create :notify_psychologist
 
 
+
   enum :status, {
     pending: 'pending',
     confirmed: 'confirmed',
@@ -27,6 +28,19 @@ class Booking < ApplicationRecord
 
   before_validation :set_end_time, if: :start_time_changed?
   validate :end_time_after_start_time
+
+  after_commit :update_client_info_status, on: :create
+
+  def update_client_info_status
+    return unless confirmed? # only do if booking is confirmed
+
+    return unless client_info.present?
+
+    new_status = :confirmed_booking
+    client_info.update(status: new_status) if client_info.status != new_status.to_s
+  end
+
+
 
   private
 
@@ -68,6 +82,9 @@ class Booking < ApplicationRecord
       "📅 New booking created!\n\nStart time: #{start}\nClient: #{client_info&.full_name || 'Unknown'}"
     )
   end
+
+
+
 
   # Helper to show client name
   def client_display_name
