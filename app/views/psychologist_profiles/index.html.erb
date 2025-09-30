@@ -722,7 +722,10 @@
                 <p class="location-text mb-2">
                   <% if profile.city.present? || profile.country.present? %>
                     <span class="icon is-small"><i class="fas fa-map-marker-alt"></i></span>
-                    <%= [profile.city, profile.country].compact.join(", ") %>
+                    <%= [
+                          profile.city.present? ? t("cities.#{profile.city.parameterize.underscore}") : nil,
+                          profile.country.present? ? t("countries.#{profile.country.parameterize.underscore}") : nil
+                        ].compact.join(", ") %>              
                   <% end %>
                   <% if profile.years_of_experience.present? %>
                     <span class="ml-2"><i class="fas fa-clock"></i> <%= t('psychologist_profiles.show.years_experience_short', count: profile.years_of_experience) %></span>
