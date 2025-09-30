@@ -25,6 +25,42 @@ en:
     en: "English"
     ru: "Russian"
     kg: "Kyrgyz"
+  
+  specialties:
+    acceptance_and_commitment_therapy: "Acceptance and Commitment Therapy"
+    gestalt_therapy: "Gestalt Therapy"
+    family_therapy: "Family Therapy"
+    psychodynamic_therapy: "Psychodynamic Therapy"
+    emdr: "EMDR"
+    cbt: "Cognitive Behavioral Therapy"
+    dbt: "Dialectical Behavior Therapy"
+    relief_therapy: "Relief Therapy"
+    eft: "Emotionally Focused Therapy"
+    pct: "Person-Centered Therapy"
+    art_therapy: "Art Therapy"
+    rebt: "Rational Emotive Behavior Therapy"
+    psychoanalysis: "Psychoanalysis"
+    applied_behavior_analysis: "Applied Behavior Analysis"
+    exposure_therapy: "Exposure Therapy"
+    ifs: "Internal Family Systems"
+    mindfulness_based_therapy: "Mindfulness-Based Therapy"
+    narrative_therapy: "Narrative Therapy"
+    solution_focused_brief_therapy: "Solution-Focused Brief Therapy"
+    trauma_focused_therapy: "Trauma-Focused Therapy"
+    play_therapy: "Play Therapy"
+    group_therapy: "Group Therapy"
+    existential_therapy: "Existential Therapy"
+    integrative_therapy: "Integrative Therapy"
+    somatic_therapy: "Somatic Therapy"
+    interpersonal_therapy: "Interpersonal Therapy"
+  
+  client_types:
+    single_adult: "adult"
+    single_child: "child"
+    single_teenager: "teenager"
+    other_pair: "Other group"
+    romantic_couple: "romantic couple"
+    parent_child: "family"  
 
   countries:
     kyrgyzstan: "Kyrgyzstan"
@@ -50,7 +86,7 @@ en:
     karaganda: "Karaganda"
     oskemen: "Oskemen"
     pavlodar: "Pavlodar"
-    djalal_abad: "Jalal-Abad"
+    djalal-abad: "Jalal-Abad"
     karakol: "Karakol"
     toshkent: "Tashkent"
     namangan: "Namangan"
@@ -187,10 +223,12 @@ en:
     min_rate_placeholder: "Min"
     max_rate_placeholder: "Max"
     apply_filters_button: "Apply Filters"
-    phd_badge: "PhD"
+    doctor_badge: "PhD"
     certified_badge: "Certified"
     view_profile_button: "View Profile"
     contact_button: "Contact"
+    solo: "Solo"
+    pair: "Pair"
 
     
   enums:
@@ -237,6 +275,13 @@ en:
     other_couple: "Other couple"
     family: "Family"
     group: "Group"
+    results:
+      single_adult: "Adults"
+      single_child: "Children"
+      single_teenager: "Teenagers"
+      romantic_pair: "Romantic Relationships"
+      parent_child: "Family"
+      other_pair: "Others"
 
   psychologist_profile:
     errors:
@@ -281,6 +326,9 @@ en:
       select_languages: "Select languages"
       featured_service: "Service shown on profile"
       hidden: "Hide profile"
+      supervision: "Оffers Supervision"
+      is_doctor: "Psychotherapist"
+      has_psychology_degree: "Clinical Psychologist"
 
     prompts:
       select_timezone: "Select your timezone"

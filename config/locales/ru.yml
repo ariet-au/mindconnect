@@ -24,6 +24,34 @@ ru:
     en: "Английский"
     ru: "Русский"
     kg: "Кыргызский"
+
+  specialties:
+    acceptance_and_commitment_therapy: "Терапия принятия и ответственности"
+    gestalt_therapy: "Гештальт-терапия"
+    family_therapy: "Семейная терапия"
+    psychodynamic_therapy: "Психодинамическая терапия"
+    emdr: "EMDR"
+    cbt: "Когнитивно-поведенческая терапия"
+    dbt: "Диалектическая поведенческая терапия"
+    relief_therapy: "Терапия облегчения"
+    eft: "Эмоционально-фокусированная терапия"
+    pct: "Личностно-ориентированная терапия"
+    art_therapy: "Арт-терапия"
+    rebt: "Рационально-эмотивная поведенческая терапия"
+    psychoanalysis: "Психоанализ"
+    applied_behavior_analysis: "Прикладной анализ поведения"
+    exposure_therapy: "Экспозиционная терапия"
+    ifs: "Система внутренней семьи"
+    mindfulness_based_therapy: "Терапия, основанная на осознанности"
+    narrative_therapy: "Нарративная терапия"
+    solution_focused_brief_therapy: "Решение-ориентированная краткосрочная терапия"
+    trauma_focused_therapy: "Травма-фокусированная терапия"
+    play_therapy: "Игровая терапия"
+    group_therapy: "Групповая терапия"
+    existential_therapy: "Экзистенциальная терапия"
+    integrative_therapy: "Интегративная терапия"
+    somatic_therapy: "Соматическая терапия"
+    interpersonal_therapy: "Межличностная терапия"
     
   countries:
     kyrgyzstan: "Кыргызстан"
@@ -49,7 +77,7 @@ ru:
     karaganda: "Караганда"
     oskemen: "Усть-Каменогорск"
     pavlodar: "Павлодар"
-    djalal_abad: "Джалал-Абад"
+    djalal-abad: "Джалал-Абад"
     karakol: "Каракол"
     toshkent: "Ташкент"
     namangan: "Наманган"
@@ -109,7 +137,7 @@ ru:
       about_me: "Обо мне"
       invalid_youtube_link: "Неверный формат ссылки YouTube."
       education: "Образование"
-      degree_of_study: "%{degree} по %{field}"
+      degree_of_study: "%{degree} %{field}"
       at_institution: "в %{institution}"
       graduated_in: "Выпуск: %{year}"
       professional_qualification: "Профессиональная квалификация"
@@ -180,10 +208,13 @@ ru:
     min_rate_placeholder: "Мин"
     max_rate_placeholder: "Макс"
     apply_filters_button: "Применить фильтры"
-    phd_badge: "Кандидат наук"
-    certified_badge: "Сертифицирован"
+    doctor_badge: "Мэд. обр"
+    certified_badge: "Высш. психол. oбр."
     view_profile_button: "Посмотреть профиль"
     contact_button: "Контакт"
+    solo: "Индивидуално"
+    pair: "Группа"
+
     
   enums:
     gender:
@@ -224,11 +255,20 @@ ru:
     single_teenager: "Подросток"
     teenager: "Подросток"
     romantic_couple: "Романтическая пара"
+    romantic_pair: "Романтическая пара"
     couple: "Пара"
-    parent_child: "Родитель-ребенок"
-    other_couple: "Другая пара"
+    parent_child: "Детско-родительские Отношения"
+    other_pair: "Другая Группа"
     family: "Семья"
     group: "Группа"
+    results:
+      single_adult: "Взрослые"
+      single_child: "Дети"
+      single_teenager: "Подростоки"
+      romantic_pair: "Романтическая пары"
+      parent_child: "Детско-родительские Отношения"
+      other_pair: "Другая Группы"
+
 
   psychologist_profile:
     errors:
@@ -273,6 +313,10 @@ ru:
       select_languages: "Выбрать языки"
       featured_service: "Услуга, отображаемая в профиле"
       hidden: "Спрятать Профиль"
+      supervision: "Супервизия"
+      is_doctor: "Медицинское Образование"
+      has_psychology_degree: "Высшее психологическое образование"
+
 
     prompts:
       select_timezone: "Выберите свой часовой пояс"

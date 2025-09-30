@@ -25,10 +25,10 @@
           <div class="column is-half">
             <div class="field">
             <!-- Preview container -->
-          <div id="preview-container" style="margin-top: 1rem;">
+            <div id="preview-container-page" style="margin-top: 1rem;">
               <%= image_tag(
                     @psychologist_profile&.profile_img&.attached? ? url_for(@psychologist_profile.profile_img) : asset_path("default-profile.png"),
-                    id: "imagePreview",
+                    id: "imagePreviewPage",
                     style: "max-width: 200px;"
                   ) %>
             </div>
@@ -142,20 +142,20 @@
               <div class="column is-one-third">
                 <div class="field">
                   <input id="is_doctor" type="checkbox" name="psychologist_profile[is_doctor]" class="switch is-success" <%= "checked" if @psychologist_profile.is_doctor %>>
-                  <label for="is_doctor"><%= t('psychologist_profile.is_doctor') %></label>
+                  <label for="is_doctor"><%= t('psychologist_profile.labels.is_doctor') %></label>
                 </div>
               </div>
 
               <div class="column is-one-third">
                 <div class="field">
                   <input id="has_psychology_degree" type="checkbox" name="psychologist_profile[has_psychology_degree]" class="switch is-info" <%= "checked" if @psychologist_profile.has_psychology_degree %>>
-                  <label for="has_psychology_degree"><%= t('psychologist_profile.has_psychology_degree') %></label>
+                  <label for="has_psychology_degree"><%= t('psychologist_profile.labels.has_psychology_degree') %></label>
                 </div>
               </div>
               <div class="column is-one-third">
                 <div class="field">
                   <input id="supervision" type="checkbox" name="psychologist_profile[supervision]" class="switch is-info" <%= "checked" if @psychologist_profile.supervision %>>
-                  <label for="supervision"><%= t('psychologist_profile.supervision') %></label>
+                  <label for="supervision"><%= t('psychologist_profile.labels.supervision') %></label>
                 </div>
               </div>
             </div>
@@ -226,7 +226,7 @@
             <div class="field">
               <%= form.label :specialty_ids, t('psychologist_profile.labels.select_specialties'), class: "label" %>
               <div class="control">
-                <%= form.collection_select :specialty_ids, Specialty.all, :id, :name, {}, { multiple: true, class: "tom-select-specialties" } %>
+                <%= form.collection_select :specialty_ids, Specialty.all, :id, ->(speciality_name) { t("specialties.#{speciality_name.name}") }, {}, { multiple: true, class: "tom-select-specialties" } %>
               </div>
             </div>
             <div class="field">
@@ -236,6 +236,24 @@
               </div>
             </div>
           </div>
+
+          <div class="column is-half">
+            <div class="field">
+              <label class="checkbox">
+                <%= form.check_box :in_person %>
+                <%= t('psychologist_profile.labels.in_person_services') %>
+              </label>
+            </div>
+          </div>
+          <div class="column is-half">
+            <div class="field">
+              <label class="checkbox">
+                <%= form.check_box :online %>
+                <%= t('psychologist_profile.labels.online_services') %>
+              </label>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
@@ -278,26 +296,39 @@
               </p>
             </div>
           </div>
-          <div class="column is-half">
-            <div class="field">
-              <%= form.label :country, t('psychologist_profile.labels.country'), class: "label" %>
-              <div class="control">
-                <div class="select is-fullwidth">
-                  <%= form.select :country, options_for_select(countries_with_cities.map { |c| c['name'] }, selected: @psychologist_profile.country), { include_blank: t('psychologist_profile.prompts.select_country') }, { class: 'input', id: 'country-select' } %>
-                </div>
+         <div class="column is-half">
+          <div class="field">
+            <%= form.label :country, t('psychologist_profile.labels.country'), class: "label" %>
+            <div class="control">
+              <div class="select is-fullwidth">
+                <%
+                  translated_countries = countries_with_cities.map do |country|
+                    translation_key = "countries.#{country['name'].downcase.parameterize(separator: '_')}"
+                    [t(translation_key, default: country['name']), country['name']]
+                  end
+                %>
+                <%= form.select :country, 
+                      options_for_select(translated_countries, selected: @psychologist_profile.country), 
+                      { include_blank: t('countries') }, 
+                      { class: 'input', id: 'country-select' } 
+                %>
               </div>
             </div>
           </div>
-          <div class="column is-half">
-            <div class="field">
-              <%= form.label :city, t('psychologist_profile.labels.city'), class: "label" %>
-              <div class="control">
-                <div class="select is-fullwidth">
-                  <%= form.select :city, [], { selected: @psychologist_profile.city }, { include_blank: t('psychologist_profile.prompts.select_city'), class: 'input', id: 'city-select', disabled: true } %>
-                </div>
+        </div>
+        <div class="column is-half">
+          <div class="field">
+            <%= form.label :city, t('psychologist_profile.labels.city'), class: "label" %>
+            <div class="control">
+              <div class="select is-fullwidth">
+                <%= form.select :city,
+                      [], # empty initially, JS will populate
+                      { include_blank: t('cities') },
+                      { class: 'input', id: 'city-select', 'data-saved-city': @psychologist_profile.city } %>
               </div>
             </div>
           </div>
+        </div>
           <div class="column is-full">
             <div class="field">
               <%= form.label :address, t('psychologist_profile.labels.address'), class: "label" %>
@@ -373,41 +404,23 @@
               </div>
             </div>
           </div>
-          <div class="column is-full">
-            <div class="field">
-              <%= form.label :language_ids, t('psychologist_profile.labels.select_languages'), class: "label" %>
-              <div class="control">
-                <%= form.collection_select :language_ids, Language.all, :id, :name, {}, { multiple: true, class: "tom-select-languages" } %>
-              </div>
+        <div class="column is-full">
+          <div class="field">
+            <%= form.label :language_ids, t('psychologist_profile.labels.select_languages'), class: "label" %>
+            <div class="control">
+              <%
+                translated_options = Language.all.map do |lang|
+                  translation_key = "spoken_languages.#{lang.name}"
+                  translated_name = t(translation_key, default: lang.name)
+                  [translated_name, lang.id]
+                end
+              %>
+              <%= form.select :language_ids, translated_options, {}, { multiple: true, class: "tom-select-languages" } %>
             </div>
           </div>
-          <div class="column is-full">
-            <div class="field">
-              <%= form.label :featured_service_id, t('psychologist_profile.labels.featured_service'), class: "label" %>
-              <div class="control">
-                 <div class="select is-fullwidth">
-                    <%= form.collection_select :featured_service_id, @psychologist_profile.user.services, :id, :name, { prompt: t('psychologist_profile.prompts.select_featured_service') }, { class: "input" } %>
-                 </div>
-              </div>
-            </div>
-          </div>
-          <div class="column is-half">
-            <div class="field">
-              <label class="checkbox">
-                <%= form.check_box :in_person %>
-                <%= t('psychologist_profile.labels.in_person_services') %>
-              </label>
-            </div>
-          </div>
-          <div class="column is-half">
-            <div class="field">
-              <label class="checkbox">
-                <%= form.check_box :online %>
-                <%= t('psychologist_profile.labels.online_services') %>
-              </label>
-            </div>
-          </div>
-
+        </div>
+          
+          
           <div class="column is-full">
             <div class="field">
               <label class="checkbox has-text-danger has-text-weight-bold">
@@ -537,9 +550,10 @@ document.addEventListener("turbo:load", function () {
   let cropper;
 
   const imageInput = document.getElementById("imageInput");
-  if (!imageInput) return; 
+  if (!imageInput) return;
 
-  const imagePreview = document.getElementById("imagePreview");
+  const imagePreview = document.getElementById("imagePreview"); // modal preview
+  const imagePreviewPage = document.getElementById("imagePreviewPage"); // page preview
   const cropModal = document.getElementById("cropModal");
   const confirmCrop = document.getElementById("confirmCrop");
   const cancelCrop = document.getElementById("cancelCrop");
@@ -577,15 +591,26 @@ document.addEventListener("turbo:load", function () {
     cropper.getCroppedCanvas().toBlob((blob) => {
       const file = new File([blob], "cropped_profile.jpg", { type: "image/jpeg" });
 
+      // Update hidden input so Rails gets the cropped image
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(file);
       croppedImageInput.files = dataTransfer.files;
+
+      // Update preview on the page
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        if (imagePreviewPage) {
+          imagePreviewPage.src = e.target.result;
+        }
+      };
+      reader.readAsDataURL(file);
 
       cropModal.classList.remove("is-active");
       cropper.destroy();
     });
   });
 });
+
 
 document.addEventListener('turbo:load', function() {
     // Dynamic Education Fields Logic
@@ -629,15 +654,14 @@ document.addEventListener('turbo:load', function() {
       });
     }
 
-    // Country and City Select Logic
-    const countrySelect = document.getElementById('country-select');
-    const citySelect = document.getElementById('city-select');
-    const countryData = <%= raw countries_with_cities.to_json %>;
+      const countrySelect = document.getElementById('country-select');
+      const citySelect = document.getElementById('city-select');
+      const countryData = <%= raw @countries_with_cities.to_json %>;
 
-    if (countrySelect && citySelect) {
-        const updateCities = () => {
+      if (countrySelect && citySelect) {
+          const updateCities = () => {
             const selectedCountry = countrySelect.value;
-            const savedCity = citySelect.getAttribute('data-saved-city') || '<%= j(@psychologist_profile.city) %>';
+            const savedCity = citySelect.dataset.savedCity || '<%= j(@psychologist_profile.city) %>';
 
             citySelect.innerHTML = '';
             citySelect.disabled = !selectedCountry;
@@ -647,25 +671,28 @@ document.addEventListener('turbo:load', function() {
             citySelect.add(placeholder);
 
             if (selectedCountry) {
-                const country = countryData.find(c => c.name === selectedCountry);
-                if (country && country.cities) {
-                    country.cities.forEach(city => {
-                        const option = new Option(city, city);
-                        if (city === savedCity) {
-                            option.selected = true;
-                            placeholder.selected = false;
-                        }
-                        citySelect.add(option);
-                    });
-                }
+              const country = countryData.find(c => c.name === selectedCountry);
+              if (country && country.cities) {
+                country.cities.forEach(city => {
+                  const option = new Option(city.translated_name, city.name);
+                  if (city.name === savedCity) {
+                    option.selected = true;
+                    placeholder.selected = false;
+                  }
+                  citySelect.add(option);
+                });
+              }
             }
-        };
+          };
 
-        countrySelect.addEventListener('change', updateCities);
-        if (countrySelect.value) {
+          countrySelect.addEventListener('change', updateCities);
+
+          // Populate cities on page load if country is already selected
+          if (countrySelect.value) {
             updateCities();
-        }
-    }
+          }
+      }
+    
 
 
     // TomSelect Initialization

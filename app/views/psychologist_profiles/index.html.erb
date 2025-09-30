@@ -382,14 +382,14 @@
                   <div class="dropdown-trigger">
                     <button type="button" id="solo-trigger" class="button is-light is-expanded" aria-haspopup="true" aria-controls="solo-menu">
                       <span class="icon"><i class="fas fa-user" id="solo-icon"></i></span>
-                      <span>Solo</span>
+                      <span><%= t('psychologist_search.solo') %></span>
                     </button>
                   </div>
                   <div class="dropdown-menu" id="solo-menu" role="menu">
                     <div class="dropdown-content">
-                      <button type="button" class="dropdown-item client-option" data-value="single_adult">Adult</button>
-                      <button type="button" class="dropdown-item client-option" data-value="single_child">Child</button>
-                      <button type="button" class="dropdown-item client-option" data-value="single_teen">Teen</button>
+                      <button type="button" class="dropdown-item client-option" data-value="single_adult"><%= t('client_types.adult') %></button>
+                      <button type="button" class="dropdown-item client-option" data-value="single_child"><%= t('client_types.teenager') %></button>
+                      <button type="button" class="dropdown-item client-option" data-value="single_teen"><%= t('client_types.child') %></button>
                     </div>
                   </div>
                 </div>
@@ -399,14 +399,14 @@
                   <div class="dropdown-trigger">
                     <button type="button" id="pair-trigger" class="button is-light is-expanded" aria-haspopup="true" aria-controls="pair-menu">
                       <span class="icon"><i class="fas fa-users" id="pair-icon"></i></span>
-                      <span>Pair</span>
+                      <span><%= t('psychologist_search.pair') %></span>
                     </button>
                   </div> 
                   <div class="dropdown-menu" id="pair-menu" role="menu">
                     <div class="dropdown-content">
-                      <button type="button" class="dropdown-item client-option" data-value="romantic_couple">Romantic Pair</button>
-                      <button type="button" class="dropdown-item client-option" data-value="parent_child">Parent Child</button>
-                      <button type="button" class="dropdown-item client-option" data-value="other_couple">Other Pair</button>
+                      <button type="button" class="dropdown-item client-option" data-value="romantic_couple"><%= t('client_types.romantic_pair') %></button>
+                      <button type="button" class="dropdown-item client-option" data-value="parent_child"><%= t('client_types.parent_child') %></button>
+                      <button type="button" class="dropdown-item client-option" data-value="other_couple"><%= t('client_types.other_pair') %></button>
                     </div>
                   </div>
                 </div>
@@ -545,13 +545,14 @@
                   </label>
                   <div class="control">
                     <%= select_tag :specialty_ids,
-                        options_for_select(
-                          Specialty.all.map { |s| [s.name, s.id] },
-                          params[:specialty_ids]
-                        ),
-                        multiple: true,
-                        class: "filter-select tom-select",
-                        id: "specialties-select" %>
+                            options_for_select(
+                              Specialty.all.map { |s| [t("specialties.#{s.name.parameterize.underscore}"), s.id] },
+                              params[:specialty_ids]
+                            ),
+                            multiple: true,
+                            class: "filter-select tom-select",
+                            id: "specialties-select",
+                            prompt: t("psychologist_profile.select_specialties") %>
                   </div>
                 </div>
               </div>
@@ -693,7 +694,7 @@
           <div class="columns">
             <div class="column">
               <h3 class="title is-5 mb-1">
-                <% if profile.is_doctor %><%= t('psychologist_search.phd_badge') %> <% end %><%= profile.first_name %> <%= profile.last_name %> 
+               <%= profile.first_name %> <%= profile.last_name %> 
               </h3>
               
               <div class="mb-2">
@@ -707,7 +708,7 @@
                 <% end %>
                 <% if profile.is_doctor %>
                   <span class="tag is-primary is-light ml-1">
-                    <i class="fas fa-user-md mr-1"></i> <%= t('psychologist_search.phd_badge') %>
+                    <i class="fas fa-user-md mr-1"></i> <%= t('psychologist_search.doctor_badge') %>
                   </span>
                 <% end %>
                 <% if profile.has_psychology_degree %>
@@ -740,15 +741,15 @@
                   <% profile.specialties.each do |specialty| %>
                     <span class="tag is-specialty-tag"><%= specialty.name %></span>
                   <% end %>
-              
                 </div>
               <% end %>
               
               <% if profile.client_types.any? %>
-                <p class="is-size-7 has-text-grey mt-2">
-                  <span class="icon is-small"><i class="fas fa-users"></i></span>
-                  <%= profile.client_types.map(&:name).join(" • ") %>
-                </p>
+                  <p class="is-size-7 has-text-grey mt-2">
+                      <span class="icon is-small"><i class="fas fa-users"></i></span>
+                      <% # Use map to get the translated name for each type %>
+                      <%= profile.client_types.map { |type| t("client_types.results.#{type.name.downcase.parameterize.underscore}") }.join(" • ") %>
+                  </p>
               <% end %>
             </div>
 

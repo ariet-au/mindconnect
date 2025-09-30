@@ -259,6 +259,8 @@ end
     # Ensure there's at least one blank education form for adding new ones
     # or if the profile somehow has no existing educations
     @psychologist_profile.educations.build if @psychologist_profile.educations.empty?
+    @countries_with_cities = get_countries_with_cities_data
+
   end
 
   # POST /psychologist_profiles or /psychologist_profiles.json
@@ -417,8 +419,20 @@ end
     end
 
   def get_countries_with_cities_data
-    # Access the pre-loaded data from application config
-    Rails.application.config.countries_and_cities
+    data = YAML.load_file(Rails.root.join("config/countries_cities.yml"))
+
+    data.map do |country|
+      {
+        "name" => country["name"],
+        "translated_name" => I18n.t("countries.#{country['name'].parameterize(separator: '_')}", default: country["name"]),
+        "cities" => country["cities"].map do |city|
+          {
+            "name" => city,
+            "translated_name" => I18n.t("cities.#{city.parameterize(separator: '_')}", default: city)
+          }
+        end
+      }
+    end
   end
 
     def check_user_confirmation

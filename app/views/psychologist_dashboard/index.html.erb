@@ -619,7 +619,7 @@
 
 
 
-    document.addEventListener("DOMContentLoaded", () => {
+     document.addEventListener("turbo:load", function () {
       const zoneName = luxon.DateTime.local().zoneName;
       document.querySelectorAll("#browserTimezone").forEach(el => {
         el.textContent = zoneName;

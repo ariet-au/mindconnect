@@ -25,6 +25,34 @@ kg:
     ru: "Орусча"
     kg: "Кыргызча"
 
+  specialties:
+    acceptance_and_commitment_therapy: "Кабыл алуу жана милдеттенме терапиясы"
+    gestalt_therapy: "Гештальт терапиясы"
+    family_therapy: "Үй-бүлөлүк терапия"
+    psychodynamic_therapy: "Психодинамикалык терапия"
+    emdr: "EMDR"
+    cbt: "Когнитивдик-жүрүм-турум терапиясы"
+    dbt: "Диалектикалык жүрүм-турум терапиясы"
+    relief_therapy: "Жеңилдетүү терапиясы"
+    eft: "Эмоцияга багытталган терапия"
+    pct: "Инсанга багытталган терапия"
+    art_therapy: "Көркөм терапия"
+    rebt: "Рационалдуу-эмоциялык жүрүм-турум терапиясы"
+    psychoanalysis: "Психоанализ"
+    applied_behavior_analysis: "Колдонмо жүрүм-турум анализи"
+    exposure_therapy: "Экспозиция терапиясы"
+    ifs: "Ички үй-бүлө системалары"
+    mindfulness_based_therapy: "Аң-сезимге негизделген терапия"
+    narrative_therapy: "Нарративдик терапия"
+    solution_focused_brief_therapy: "Чечимге багытталган кыска мөөнөттүү терапия"
+    trauma_focused_therapy: "Травмага багытталган терапия"
+    play_therapy: "Оюн терапиясы"
+    group_therapy: "Топтук терапия"
+    existential_therapy: "Экзистенциалдык терапия"
+    integrative_therapy: "Интегративдик терапия"
+    somatic_therapy: "Соматикалык терапия"
+    interpersonal_therapy: "Жеке аралык терапия"
+
   countries:
     kyrgyzstan: "Кыргызстан"
     kazakhstan: "Казакстан"
@@ -49,7 +77,7 @@ kg:
     karaganda: "Караганда"
     oskemen: "Усть-Каменогорск"
     pavlodar: "Павлодар"
-    djalal_abad: "Жалал-Абад"
+    djalal-abad: "Жалал-Абад"
     karakol: "Каракол"
     toshkent: "Ташкент"
     namangan: "Наманган"
@@ -178,10 +206,12 @@ kg:
     min_rate_placeholder: "Мин"
     max_rate_placeholder: "Макс"
     apply_filters_button: "Фильтрлерди колдонуу"
-    phd_badge: "PhD"
+    doctor_badge: ""
     certified_badge: "Тастыкталган"
     view_profile_button: "Профилди көрүү"
     contact_button: "Байланыш"
+    solo: "Жеке"
+    pair: "Жуп"
 
     
   enums:
@@ -223,11 +253,19 @@ kg:
     single_teenager: "Өспүрүм"
     teenager: "Өспүрүм"
     romantic_couple: "Романтикалык жуп"
+    romantic_pair: "Романтическая пара"
     couple: "Жуп"
     parent_child: "Ата-эне-бала"
     other_couple: "Башка жуп"
     family: "Үй-бүлө"
     group: "Топ"
+    results:
+      single_adult: "Чоң кишилер"
+      single_child: "Балдар"
+      single_teenager: "Өспүрүмдөр"
+      romantic_pair: "Романтикалык жуп"
+      parent_child: "Ата-эне-бала"
+      other_pair: "Башка жуптар"
 
   psychologist_profile:
     errors:
@@ -272,6 +310,9 @@ kg:
       select_languages: "Тилдерди тандоо"
       featured_service: "Профилде көрсөтүлгөн кызмат"
       hidden: "Профильды Жашыр"
+      supervision: "Супервизия"
+      is_doctor: "Медицинское Образование"
+      has_psychology_degree: "Высшее психологическое образование"
 
     prompts:
       select_timezone: "Убакыт алкагыңызды тандаңыз"
