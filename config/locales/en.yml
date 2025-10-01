@@ -617,6 +617,7 @@ en:
       back: "Back to Services"
       archive: "Archive"
       unarchive: "Unarchive"
+      add_new_service: "Add new service"
     form:
       name: "Service Name"
       description: "Description"

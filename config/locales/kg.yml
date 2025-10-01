@@ -597,6 +597,7 @@ kg:
       back: "Кызматтарга кайтуу"
       archive: "Жашыр"
       unarchive: "Көрсөтүү"
+      add_new_service: "Жаңы кызмат кошуу"
     form:
       name: "Кызматтын аты"
       description: "Сүрөттөө"

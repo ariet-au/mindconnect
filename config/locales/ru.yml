@@ -609,6 +609,7 @@ ru:
       back: "Вернуться к услугам"
       archive: "Скрыть"
       unarchive: "Показать"
+      add_new_service: "Добавить новую услугу"
     form:
       name: "Название услуги"
       description: "Описание"
