@@ -330,6 +330,8 @@ en:
       supervision: "Оffers Supervision"
       is_doctor: "Psychotherapist"
       has_psychology_degree: "Clinical Psychologist"
+      instagram_placeholder: "Instgram username" 
+      telegram_placeholder: "Telgram Username"
 
     prompts:
       select_timezone: "Select your timezone"

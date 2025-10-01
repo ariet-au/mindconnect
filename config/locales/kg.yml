@@ -314,6 +314,8 @@ kg:
       supervision: "Супервизия"
       is_doctor: "Медицинское Образование"
       has_psychology_degree: "Высшее психологическое образование"
+      instagram_placeholder: "Сиздики Инстаграм аты" 
+      telegram_placeholder: "Сиздики Telegram аты"
 
     prompts:
       select_timezone: "Убакыт алкагыңызды тандаңыз"

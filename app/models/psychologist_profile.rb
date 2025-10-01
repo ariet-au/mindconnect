@@ -6,6 +6,7 @@ class PsychologistProfile < ApplicationRecord
   include PgSearch::Model
 
   before_validation :set_default_primary_contact_method, on: :create
+  before_save :normalize_socials
 
 
 
@@ -230,6 +231,30 @@ end
 
   
   private 
+
+  def normalize_socials
+    normalize_instagram
+    normalize_telegram
+  end
+
+  def normalize_instagram
+    return if instagram.blank?
+
+    self.instagram = instagram.strip
+                              .sub(/^https?:\/\/(www\.)?instagram\.com\//i, "") # remove domain
+                              .sub(/^www\./i, "")                               # remove www
+                              .sub(/\/$/, "")                                   # remove trailing slash
+                              .sub(/^@/, "")                                    # remove @
+  end
+
+  def normalize_telegram
+    return if telegram.blank?
+
+    self.telegram = telegram.strip
+                             .sub(/^https?:\/\/(www\.)?t\.me\//i, "") # remove t.me link
+                             .sub(/^@/, "")                           # remove @
+                             .sub(/\/$/, "")                          # remove trailing slash
+  end
   
   def slugify_profile_url
     if profile_url.present?

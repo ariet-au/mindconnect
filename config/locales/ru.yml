@@ -317,6 +317,8 @@ ru:
       supervision: "Супервизия"
       is_doctor: "Медицинское Образование"
       has_psychology_degree: "Высшее психологическое образование"
+      instagram_placeholder: "Ваш ник в инстаграмме (не ссылка)"
+      telegram_placeholder: "Ваш ник в Telegram (не ссылка)" 
 
 
     prompts:
