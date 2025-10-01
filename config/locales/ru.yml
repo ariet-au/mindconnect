@@ -150,7 +150,7 @@ ru:
       services_offered: "Предлагаемые услуги"
       add_new_service: "Добавить новую услугу"
       next_available_appointment: "Следующая доступная запись"
-      no_availability: "В настоящее время нет доступности"
+      no_availability: "В настоящее время нет свободных мест напишите или оставьте заявку"
       check_back_later: "Пожалуйста, проверьте позже или свяжитесь напрямую"
       free: "Бесплатно"
       duration_minutes:
@@ -164,6 +164,7 @@ ru:
       hide_all_contacts: "Скрыть все контакты"
       copy: "Копировать"
       open_link: "Открыть ссылку"
+      other_contacts: "Контакты"
       contact_methods:
         email: "Электронная почта"
         telegram: "Телеграм"

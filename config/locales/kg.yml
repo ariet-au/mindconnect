@@ -148,7 +148,7 @@ kg:
       services_offered: "Сунушталган кызматтар"
       add_new_service: "Жаңы кызмат кошуу"
       next_available_appointment: "Кийинки жеткиликтүү жазылуу"
-      no_availability: "Учурда жеткиликтүүлүк жок"
+      no_availability: "Учурда жеткиликтүүлүк жок. Сураныч калтырыңыз же жазыңыз"
       check_back_later: "Сураныч, кийинчерээк текшериңиз же түздөн-түз байланышыңыз"
       free: "Акысыз"
       duration_minutes:
@@ -162,6 +162,7 @@ kg:
       hide_all_contacts: "Бардык байланыштарды жашыруу"
       copy: "Көчүрүү"
       open_link: "Шилтемени ачуу"
+      other_contacts: "Байланыш жолдору"
       contact_methods:
         email: "Электрондук почта"
         telegram: "Телеграм"

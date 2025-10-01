@@ -164,7 +164,7 @@ en:
       services_offered: "Services Offered"
       add_new_service: "Add a new service"
       next_available_appointment: "Next available appointment"
-      no_availability: "No availability at this time"
+      no_availability: "No availability at this time, contact directly or via request"
       check_back_later: "Please check back later or contact directly"
       free: "Free"
       duration_minutes:
@@ -178,6 +178,7 @@ en:
       hide_all_contacts: "Hide all contacts"
       copy: "Copy"
       open_link: "Open link"
+      other_contacts: "Other Contact Methods"
       contact_methods:
         contact_email: "email"
         email: "Email"

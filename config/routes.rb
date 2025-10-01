@@ -92,7 +92,7 @@ Rails.application.routes.draw do
          get :analytics  # /psychologist_profiles/:id/analytics
       end
       get :available_slots, on: :member
-      resources :services, only: [:index, :show, :edit, :destroy]
+      resources :services, only: [:index, :show, :edit, :destroy, :new]
       resources :client_infos, only: [:index,:new, :create, :edit,:update, :destroy, :show]
       resources :educations, only: [:new, :create, :edit, :update, :destroy]
       resources :psychologist_availabilities, only: [:index, :create, :update] do
