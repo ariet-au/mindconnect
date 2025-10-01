@@ -396,7 +396,7 @@ ru:
         other: "%{count} минуты"
       status_tags:
         confirmed: "Подтверждено"
-        pending: "Ожидает"
+        pending: "Не подтвержденно"
         cancelled: "Отменено"
         unknown: "Неизвестно"
       created_by_options:
@@ -433,7 +433,7 @@ ru:
         other: "%{count} минуты"
       status_tags:
         confirmed: "Подтверждено"
-        pending: "Ожидает"
+        pending: "Не подтвержденно"
         cancelled: "Отменено"
         unknown: "Неизвестно"
       created_by_options:
@@ -515,7 +515,7 @@ ru:
       date: "Дата"
       start_time: "Время начала"
       status: "Статус"
-      pending: "Ожидается"
+      pending: "Не подтвержденно"
       confirmed: "Подтверждено"
       declined: "Отклонено"
       cancelled: "Отменено"

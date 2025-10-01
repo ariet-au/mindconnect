@@ -1035,6 +1035,8 @@ body {
                 <span class="badge"><i class="fas fa-clock"></i><%= t('psychologist_profiles.show.years_experience', count: @psychologist_profile.years_of_experience) %></span>
             <% end %>
         </div>
+
+        <% if @psychologist_profile.psychologist_availabilities.exists? %>
         <div class="profile-badges">
             <% if @next_available_slot %>
                 <div class="availability-widget-top available"> 
@@ -1051,6 +1053,7 @@ body {
                 </div>
             <% end %>
         </div>
+        <% end %>
     </div>
 
     <% primary_contact_method = @psychologist_profile.primary_contact_method %>
