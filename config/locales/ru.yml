@@ -112,6 +112,7 @@ ru:
         
   psychologist_profiles:
     show:
+      next_available: "След. Запись"
       submit_client_info: "Оставить заявку"
       contact_me: "Связаться со мной"
       my_services: "Мои услуги"

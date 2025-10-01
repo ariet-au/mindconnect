@@ -959,10 +959,9 @@ body {
 /* Mobile optimizations */
 @media (max-width: 768px) {
     .profile-actions-nav {
-        top: 0.5rem;
-        right: 0.5rem;
-        padding: 0.4rem 0.8rem;
-        gap: 0.5rem;
+        position: static; /* no overlap */
+        margin-bottom: 1rem; /* pushes next section down a bit */
+        justify-content: flex-end; /* keep them aligned right */
     }
 
     .profile-actions-nav .button {
@@ -974,7 +973,7 @@ body {
 @media (max-width: 480px) {
     .profile-actions-nav {
         flex-direction: column;
-        align-items: flex-end;
+        align-items: stretch;
     }
 
     .profile-actions-nav .button {
@@ -1038,7 +1037,8 @@ body {
         </div>
         <div class="profile-badges">
             <% if @next_available_slot %>
-                <div class="availability-widget-top available">
+                <div class="availability-widget-top available"> 
+                <%= t('psychologist_profiles.show.next_available') %>
                     <i class="fas fa-calendar-check widget-icon-top"></i>
                     <span class="widget-time-top">
                         <%= l(@next_available_slot.to_time, format: :short) if @next_available_slot.present? %>

@@ -110,6 +110,7 @@ kg:
         
   psychologist_profiles:
     show:
+      next_available: "Бош"
       submit_client_info: "Байланыш калтыруу"
       contact_me: "Байланышуу"
       my_services: "Менин кызматтарым"
