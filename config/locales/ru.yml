@@ -95,7 +95,9 @@ ru:
       short: "%d %b %H:%M"
       long: "%d %B %Y %H:%M"   
     am: ""
-    pm: "" 
+    pm: ""
+    duration: "Продолжительность (минут)"
+    minutes: "минут" 
   date:
     formats:
       default: "%Y-%m-%d"
@@ -616,8 +618,9 @@ ru:
       price: "Цена"
       currency: "Валюта"
       duration: "Продолжительность (минут)"
-      delivery_method: "Способ предоставления"
+      delivery_method: "Формат проведения"
       select_currency: "Выберите валюту"
+      select_delivery_method: "Выберите формат проведения"
       save: "Сохранить услугу"
       errors:
         header: "%{count} ошибок(и) не позволили сохранить услугу:"

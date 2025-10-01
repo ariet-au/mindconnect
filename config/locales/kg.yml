@@ -94,6 +94,8 @@ kg:
       default: "%d.%m.%Y %H:%M:%S"
       short: "%d %b %H:%M"
       long: "%d %B %Y %H:%M"
+    duration: "Узактыгы (мүнөт)"
+    minutes: "мүнөт" 
   date:
     formats:
       default: "%Y-%m-%d"
@@ -606,6 +608,7 @@ kg:
       duration: "Узактыгы (мүнөт)"
       delivery_method: "Жеткирүү ыкмасы"
       select_currency: "Валютаны тандоо"
+      select_delivery_method: "Жеткирүү ыкмасы тандоо"
       save: "Кызматты сактоо"
       errors:
         header: "%{count} ката ушул кызматты сактоого тоскоолдук кылды:"

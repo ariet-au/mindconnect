@@ -103,6 +103,9 @@ en:
       default: "%d.%m.%Y %H:%M:%S"
       short: "%d %b %H:%M"
       long: "%d %B %Y %H:%M"
+    duration: "Duration (minutes)"
+    minutes: "min"
+
   date:
     formats:
       default: "%Y-%m-%d"
