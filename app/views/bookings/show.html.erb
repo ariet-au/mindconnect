@@ -198,6 +198,11 @@
       flex-direction: column;
       gap: 32px;
     }
+      .button-actions-grid .calendar-section,
+      .button-actions-grid .share-section {
+               flex: none; /* Reset flex to remove equal-width constraint if it interferes */
+        width: 100%; /* Explicitly set to full width on mobile */
+      }
   }
 
   /* Generic Dropdown Wrapper */
