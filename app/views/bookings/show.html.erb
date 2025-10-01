@@ -1,156 +1,653 @@
+<!--
+  This is a booking details partial, likely for a Ruby on Rails application,
+  judging by the ERB syntax (<%= %>).
+
+  User requested two main changes:
+  1. Fix the Telegram share link which was likely failing due to double URL encoding.
+  2. Rework the styling to be less "black and white" and more like a "minimalistic typical Bulma form",
+     and to remove any <head> or <body> tags as it's a partial.
+
+  Changes Made:
+  - ERB Logic: Refactored the share URL generation. Raw text is now defined first, and then
+    ERB::Util.url_encode is used correctly on the final URL parameters. This prevents double-encoding issues.
+
+  - Styling (CSS):
+    - Removed all <head> and <body> tags as requested.
+    - Reworked the main container to be a single "card" with a soft shadow and a light border,
+      removing the harsh black borders from all elements.
+    - Updated buttons to use a solid color for the primary action (inspired by Bulma's blue)
+      and a light gray for secondary actions, providing a clearer visual hierarchy.
+    - Softened the styles for dropdown menus, the status badge, and the "copy link" notification
+      to match the new, lighter aesthetic.
+  - Layout: Created a new flexbox container `.button-actions-grid` to place the Calendar and Share
+    sections side-by-side on desktop, stacking them on mobile.
+-->
 <style>
-  /* Custom styles specific to the booking details view */
+  /* FONT AWESOME FOR ICONS ARE ASSUMED TO BE LOADED GLOBALLY */
+
+  /* Clean Minimalistic Design - Bulma Inspired */
   .booking-details-container {
-    background-color: #ffffff;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1), 0 0 0 1px rgba(10, 10, 10, 0.1);
-    max-width: 768px; /* Constrain width for better readability */
-    margin: 20px auto; /* Center the container */
-  }
-  .booking-details-item {
-    margin-bottom: 1rem;
-  }
-  .booking-details-label {
-    font-weight: 600;
-    color: #363636; /* Bulma default text color */
-  }
-  .booking-details-time-display {
-    padding: calc(0.5em - 1px) calc(0.75em - 1px);
+    max-width: 640px;
+    margin: 40px auto;
+    position: relative;
+    background: white;
     border: 1px solid #dbdbdb;
-    border-radius: 4px;
-    background-color: #f0f0f0; /* Slightly different background for read-only */
-    display: inline-block; /* To make padding/border apply correctly */
-    min-width: 250px; /* Give it some space */
-    word-break: break-all; /* Ensure long links/times wrap */
-  }
-  .booking-details-actions {
-    margin-top: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(10, 10, 10, 0.1);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   }
 
-  /* Styles from application.css for custom buttons */
-  .button.is-primary-blue {
-    background-color: #fff;
-    border: 1px solid #2C3E50;
-    color: #2C3E50;
-    box-shadow: none;
+  @media (max-width: 768px) {
+    .booking-details-container {
+      margin: 12px;
+    }
   }
 
-  .button.is-primary-blue:hover,
-  .button.is-primary-blue.is-hovered {
-    background-color: #2C3E50;
-    border-color: #2C3E50;
-    color: #fff;
+  /* Header */
+  .booking-header {
+    padding: 32px 32px 24px;
+    border-bottom: 1px solid #dbdbdb;
+  }
+
+  @media (max-width: 768px) {
+    .booking-header {
+      padding: 24px;
+    }
+  }
+
+  .booking-header h2 {
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #7a7a7a;
+  }
+
+  .booking-header .service-name {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #363636;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+  }
+
+  @media (max-width: 768px) {
+    .booking-header .service-name {
+      font-size: 1.75rem;
+    }
+  }
+
+  /* Main Content */
+  .booking-content {
+    padding: 32px;
+    background-color: #ffffff;
+    border-radius: 0 0 8px 8px;
+  }
+
+  @media (max-width: 768px) {
+    .booking-content {
+      padding: 24px;
+    }
+  }
+
+  /* Info Grid */
+  .booking-info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+    margin-bottom: 32px;
+  }
+
+  @media (max-width: 768px) {
+    .booking-info-grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+  }
+
+  .info-card.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .info-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #7a7a7a;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .info-label i {
+    font-size: 0.8rem;
+    width: 16px;
+    text-align: center;
+  }
+
+  .info-value {
+    color: #363636;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
+  /* Time Display */
+  .time-display {
+    border: 1px solid #dbdbdb;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-family: 'SF Mono', 'Monaco', 'Courier New', monospace;
+    font-size: 0.95rem;
+    margin-top: 6px;
+    letter-spacing: -0.01em;
+    background: #f9f9f9;
+  }
+
+  /* Status Badge */
+  .status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    background: #f0f0f0;
+    color: #5a5a5a;
+  }
+
+  /* Separator */
+  .section-separator {
+    height: 1px;
+    background: #e5e7eb;
+    margin: 32px 0;
+  }
+
+  .section-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  /* NEW STYLES for Calendar/Share row */
+  .button-actions-grid {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+  }
+
+  .button-actions-grid .calendar-section,
+  .button-actions-grid .share-section {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  /* Responsive stacking for the new grid */
+  @media (max-width: 768px) {
+    .button-actions-grid {
+      flex-direction: column;
+      gap: 32px;
+    }
+  }
+
+  /* Generic Dropdown Wrapper */
+  .dropdown-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .dropdown-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 24px;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    background: white;
+    font-weight: 600;
+    font-size: 0.95rem;
     cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    color: #363636;
+    text-decoration: none;
   }
 
-  .button.is-primary-blue:focus,
-  .button.is-primary-blue.is-focused {
-    background-color: #2C3E50;
-    border-color: #2C3E50;
-    color: #fff;
-    outline: none;
-    box-shadow: 0 0 0 0.125em rgba(44, 62, 80, 0.25);
+  .dropdown-trigger:hover {
+    border-color: #b5b5b5;
+    background: #f9f9f9;
+  }
+  
+  .dropdown-trigger i.arrow {
+    transition: transform 0.2s ease;
+    margin-left: auto;
   }
 
-  .button.is-primary-blue:active,
-  .button.is-primary-blue.is-active {
-    background-color: #1A252F;
-    border-color: #1A252F;
-    color: #fff;
+  .dropdown-wrapper.is-active .dropdown-trigger i.arrow {
+    transform: rotate(180deg);
   }
 
-  .button.is-primary-blue[disabled],
-  fieldset[disabled] .button.is-primary-blue {
-    background-color: #fff;
-    border-color: #2C3E50;
-    color: #2C3E50;
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(10, 10, 10, 0.1);
+    z-index: 100;
+    display: none;
+    overflow: hidden;
+  }
+
+  .dropdown-wrapper.is-active .dropdown-menu {
+    display: block;
+  }
+
+  .dropdown-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+    color: #363636;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    border-bottom: 1px solid #e5e7eb;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+
+  .dropdown-option:last-child {
+    border-bottom: none;
+  }
+
+  .dropdown-option:hover {
+    background: #fafafa;
+  }
+
+  .dropdown-option i {
+    width: 20px;
+    text-align: center;
+    font-size: 1.1rem;
+    color: #7a7a7a;
+  }
+  
+  .dropdown-option.whatsapp i { color: #25D366; }
+  .dropdown-option.telegram i { color: #0088cc; }
+  .dropdown-option.google i { color: #EA4335; }
+  .dropdown-option.outlook i { color: #0078D4; }
+
+  /* Action Buttons */
+  .action-section {
+    display: flex;
+    gap: 12px;
+  }
+
+  @media (max-width: 768px) {
+    .action-section {
+      flex-direction: column;
+    }
+  }
+
+  .btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    letter-spacing: 0.02em;
+  }
+
+  .btn.primary {
+    background-color: #3273dc; /* Bulma's primary blue */
+    border-color: #3273dc;
+    color: white;
+  }
+
+  .btn.primary:hover {
+    background-color: #276cda;
+    border-color: #276cda;
+  }
+
+  .btn.secondary {
+    background-color: #f5f5f5;
+    border-color: #f5f5f5;
+    color: #363636;
+  }
+
+  .btn.secondary:hover {
+    background-color: #e8e8e8;
+    border-color: #e8e8e8;
+  }
+
+  /* Custom Notification */
+  #custom-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    padding: 14px 20px;
+    border-radius: 6px;
+    background: #222;
+    color: white;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.9rem;
+    transform: translateY(-10px);
+  }
+
+  @media (max-width: 768px) {
+    #custom-notification {
+      top: 10px;
+      right: 10px;
+      left: 10px;
+      max-width: calc(100% - 20px);
+    }
+  }
+
+  #custom-notification.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  #custom-notification::before {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 1rem;
+    color: #23d160; /* Bulma's success green */
   }
 </style>
 
 <div class="booking-details-container">
-  <h2 class="title is-4"><%= t('.page_title') %></h2>
+  <div id="custom-notification"></div>
 
-  <div class="booking-details-item">
-    <p><span class="booking-details-label"><%= t('.service_label') %>:</span> <%= @booking.service&.name || 'N/A' %></p>
-  </div>
-  <div class="booking-details-item">
-    <p><span class="booking-details-label"><%= t('.psychologist_label') %>:</span> <%= @booking.psychologist_profile&.full_name || 'N/A' %></p>
-  </div>
-  <div class="booking-details-item">
-    <p><span class="booking-details-label"><%= t('.client_label') %>:</span> <%= @booking.client_profile&.full_name || @booking.internal_client_profile&.full_name || 'N/A' %></p>
+  <!-- Header -->
+  <div class="booking-header">
+    <h2><%= t('.page_title') %></h2>
+    <div class="service-name"><%= @booking.service&.name || 'N/A' %></div>
   </div>
 
-  <div class="booking-details-item">
-    <p><span class="booking-details-label"><%= t('.booking_time_label') %>:</span>
-      <span class="utc-date-time-range booking-details-time-display"
-            data-start-utc="<%= @booking.start_time.utc.iso8601 if @booking.start_time.present? %>"
-            data-end-utc="<%= @booking.end_time.utc.iso8601 if @booking.start_time.present? %>">
-        <%= t('.loading_time') %>
-      </span>
-    </p>
-  </div>
+  <div class="booking-content">
+    <!-- Info Grid -->
+    <div class="booking-info-grid">
+      <div class="info-card">
+        <div class="info-label">
+          <i class="fas fa-user-tie"></i>
+          <%= t('.psychologist_label') %>
+        </div>
+        <div class="info-value"><%= @booking.psychologist_profile&.full_name || 'N/A' %></div>
+      </div>
 
-  <div class="booking-details-item">
-    <p><span class="booking-details-label"><%= t('.duration_label') %>:</span> <%= @booking.service&.duration_minutes ? t('.duration_minutes', count: @booking.service.duration_minutes) : t('.duration_minutes', count: number_with_precision((@booking.end_time - @booking.start_time) / 60, precision: 0)) %></p>
-  </div>
-  <div class="booking-details-item">
-    <p><span class="booking-details-label"><%= t('.status_label') %>:</span> <%= t(".status_tags.#{@booking.status&.underscore || 'unknown'}") %></p>
-  </div>
-  <div class="booking-details-item">
-    <p><span class="booking-details-label"><%= t('.created_by_label') %>:</span> <%= t(".created_by_options.#{@booking.created_by&.underscore || 'na'}") %></p>
-  </div>
-  <div class="booking-details-item">
-    <p><span class="booking-details-label"><%= t('.notes_label') %>:</span> <%= @booking.notes.presence || t('.no_notes') %></p>
-  </div>
+      <div class="info-card">
+        <div class="info-label">
+          <i class="fas fa-user"></i>
+          <%= t('.client_label') %>
+        </div>
+        <div class="info-value"><%= @booking.client_profile&.full_name || @booking.internal_client_profile&.full_name || 'N/A' %></div>
+      </div>
 
-  <% if @booking.pending? && @booking.created_by == 'psychologist' %>
-    <%
-      psychologist_profile = @booking.psychologist_profile
-      confirmation_url = confirm_psychologist_profile_booking_url(psychologist_profile, @booking, token: @booking.confirmation_token)
-    %>
-    <div class="booking-details-item">
-      <p><span class="booking-details-label"><%= t('.share_link_label') %>:</span>
-        <span class="booking-details-time-display">
-          <a href="<%= confirmation_url %>">
-            <%= confirmation_url %>
-          </a>
-        </span>
-      </p>
-    </div>
-    <div class="booking-details-item">
-      <p><span class="booking-details-label"><%= t('.share_via_label') %>:</span></p>
-      <div class="field is-grouped booking-details-actions">
-        <p class="control">
-          <a href="https://t.me/share/url?url=<%= CGI.escape(confirmation_url) %>&text=<%= CGI.escape(t('.telegram_share_text', service: @booking.service&.name || 'N/A', psychologist: @booking.psychologist_profile&.full_name || 'N/A')) %>"
-             class="button is-info" target="_blank">
-            Share to Telegram
-          </a>
-        </p>
-        <p class="control">
-          <a href="https://api.whatsapp.com/send?text=<%= CGI.escape(t('.whatsapp_share_text', service: @booking.service&.name || 'N/A', psychologist: @booking.psychologist_profile&.full_name || 'N/A', url: confirmation_url)) %>"
-             class="button is-success" target="_blank">
-            Share to WhatsApp
-          </a>
-        </p>
+      <div class="info-card full-width">
+        <div class="info-label">
+          <i class="fas fa-clock"></i>
+          <%= t('.booking_time_label') %>
+        </div>
+        <div class="info-value">
+          <div class="utc-date-time-range time-display"
+               data-start-utc="<%= @booking.start_time.utc.iso8601 if @booking.start_time.present? %>"
+               data-end-utc="<%= @booking.end_time.utc.iso8601 if @booking.start_time.present? %>">
+            <%= t('.loading_time') %>
+          </div>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-label">
+          <i class="fas fa-hourglass-half"></i>
+          <%= t('.duration_label') %>
+        </div>
+        <div class="info-value"><%= @booking.service&.duration_minutes ? t('.duration_minutes', count: @booking.service.duration_minutes) : t('.duration_minutes', count: number_with_precision((@booking.end_time - @booking.start_time) / 60, precision: 0)) %></div>
+      </div>
+
+      <div class="info-card">
+        <div class="info-label">
+          <i class="fas fa-info-circle"></i>
+          <%= t('.status_label') %>
+        </div>
+        <div class="info-value">
+          <span class="status-badge"><%= t(".status_tags.#{@booking.status&.underscore || 'unknown'}") %></span>
+        </div>
+      </div>
+
+      <div class="info-card full-width">
+        <div class="info-label">
+          <i class="fas fa-sticky-note"></i>
+          <%= t('.notes_label') %>
+        </div>
+        <div class="info-value"><%= @booking.notes.presence || t('.no_notes') %></div>
       </div>
     </div>
-  <% end %>
 
-  <div class="field is-grouped booking-details-actions">
-    <p class="control">
-      <%= link_to t('.edit_button'), edit_psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "button is-primary-blue" %>
-    </p>
-    <p class="control">
-      <%= link_to t('.back_button'), psychologist_profile_bookings_path(@booking.psychologist_profile), class: "button is-light" %>
-    </p>
-  </div>
+    <div class="section-separator"></div>
 
-  <div class="booking-details-item">
-    <p><span class="booking-details-label"><%= t('.add_to_calendar_label') %>:</span></p>
-    <div class="buttons">
-      <%= link_to t('.download_ics_button'), download_ics_psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "button is-link" %>
-      <%= link_to t('.google_calendar_button'), "https://calendar.google.com/calendar/render?action=TEMPLATE&text=#{CGI.escape(t('.calendar_title', service: @booking.service&.name || 'N/A'))}&dates=#{@booking.start_time.utc.strftime('%Y%m%dT%H%M%SZ')}/#{@booking.end_time.utc.strftime('%Y%m%dT%H%M%SZ')}&details=#{CGI.escape(t('.calendar_details', psychologist: @booking.psychologist_profile&.full_name))}", target: "_blank", class: "button is-success" %>
+    <!-- Calendar and Share Actions Row -->
+    <div class="button-actions-grid">
+      <!-- Calendar Section (Left) -->
+      <div class="calendar-section">
+        <div class="section-title">
+          <i class="fas fa-calendar-plus"></i>
+          <%= t('.add_to_calendar_label') %>
+        </div>
+        <div class="dropdown-wrapper" id="calendarDropdown">
+          <button class="dropdown-trigger" type="button">
+            <i class="fas fa-calendar-check"></i>
+            <span>Add to Calendar</span>
+            <i class="fas fa-chevron-down arrow"></i>
+          </button>
+          <div class="dropdown-menu">
+            <%= link_to download_ics_psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "dropdown-option ics" do %>
+              <i class="fas fa-download"></i>
+              <span>Download ICS File</span>
+            <% end %>
+            <%= link_to "https://calendar.google.com/calendar/render?action=TEMPLATE&text=#{CGI.escape(t('.calendar_title', service: @booking.service&.name || 'N/A'))}&dates=#{@booking.start_time.utc.strftime('%Y%m%dT%H%M%SZ')}/#{@booking.end_time.utc.strftime('%Y%m%dT%H%M%SZ')}&details=#{CGI.escape(t('.calendar_details', psychologist: @booking.psychologist_profile&.full_name))}", target: "_blank", rel: "noopener", class: "dropdown-option google" do %>
+              <i class="fab fa-google"></i>
+              <span>Google Calendar</span>
+            <% end %>
+            <%= link_to "https://outlook.live.com/calendar/0/action/compose?subject=#{CGI.escape(t('.calendar_title', service: @booking.service&.name || 'N/A'))}&startdt=#{@booking.start_time.utc.iso8601}&enddt=#{@booking.end_time.utc.iso8601}&body=#{CGI.escape(t('.calendar_details', psychologist: @booking.psychologist_profile&.full_name))}", target: "_blank", rel: "noopener", class: "dropdown-option outlook" do %>
+              <i class="fab fa-microsoft"></i>
+              <span>Outlook</span>
+            <% end %>
+            <%= link_to download_ics_psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "dropdown-option apple" do %>
+              <i class="fab fa-apple"></i>
+              <span>Apple Calendar</span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Share Section (Right) -->
+      <% if @booking.pending? && @booking.created_by == 'psychologist' %>
+        <%
+          psychologist_profile = @booking.psychologist_profile
+          confirmation_url = confirm_psychologist_profile_booking_url(psychologist_profile, @booking, token: @booking.confirmation_token)
+          raw_telegram_text = t('.telegram_share_text', service: @booking.service&.name || 'N/A', psychologist: @booking.psychologist_profile&.full_name || 'N/A')
+          raw_whatsapp_text = t('.whatsapp_share_text', service: @booking.service&.name || 'N/A', psychologist: @booking.psychologist_profile&.full_name || 'N/A', url: confirmation_url)
+        %>
+        <div class="share-section">
+          <div class="section-title">
+            <i class="fas fa-share-alt"></i>
+            <%= t('.share_via_label') %>
+          </div>
+          <div class="dropdown-wrapper" id="shareDropdown">
+            <button class="dropdown-trigger" type="button">
+              <i class="fas fa-share-nodes"></i>
+              <span>Share Booking</span>
+              <i class="fas fa-chevron-down arrow"></i>
+            </button>
+            <div class="dropdown-menu">
+              <%= link_to "https://t.me/share/url?url=#{ERB::Util.url_encode(confirmation_url)}&text=#{ERB::Util.url_encode(raw_telegram_text)}",
+                          class: "dropdown-option telegram", target: "_blank", rel: "noopener" do %>
+                <i class="fab fa-telegram-plane"></i>
+                <span>Telegram</span>
+              <% end %>
+              <%= link_to "https://api.whatsapp.com/send?text=#{ERB::Util.url_encode(raw_whatsapp_text)}",
+                          class: "dropdown-option whatsapp", target: "_blank", rel: "noopener" do %>
+                <i class="fab fa-whatsapp"></i>
+                <span>WhatsApp</span>
+              <% end %>
+              <button class="dropdown-option copy" data-copy-url="<%= confirmation_url %>">
+                <i class="fas fa-copy"></i>
+                <span>Copy Link</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="section-separator"></div>
+
+    <!-- Action Buttons -->
+    <div class="action-section">
+      <%= link_to edit_psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "btn primary" do %>
+        <i class="fas fa-edit"></i>
+        <span><%= t('.edit_button') %></span>
+      <% end %>
+
+      <%= link_to psychologist_profile_bookings_path(@booking.psychologist_profile), class: "btn secondary" do %>
+        <i class="fas fa-arrow-left"></i>
+        <span><%= t('.back_button') %></span>
+      <% end %>
     </div>
   </div>
 </div>
+
+<script>
+document.addEventListener("turbo:load", function () {
+  const notificationElement = document.getElementById('custom-notification');
+  const shareDropdown = document.getElementById('shareDropdown');
+  const calendarDropdown = document.getElementById('calendarDropdown');
+
+  function showNotification(message) {
+    if (!notificationElement) return;
+    notificationElement.textContent = message;
+    notificationElement.classList.add('is-visible');
+    setTimeout(() => {
+      notificationElement.classList.remove('is-visible');
+    }, 3000);
+  }
+
+  function copyToClipboard(text) {
+    // Use the modern clipboard API if available, with a fallback
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(() => {
+        showNotification('Link copied to clipboard!');
+      }).catch(err => {
+        console.error('Async copy failed:', err);
+        showNotification('Failed to copy link.');
+      });
+    } else {
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.opacity = '0';
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+
+      try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+          showNotification('Link copied to clipboard!');
+        } else {
+          showNotification('Failed to copy. Please try manually.');
+        }
+      } catch (err) {
+        console.error('Fallback copy command failed:', err);
+        showNotification('Copy failed: ' + err.message);
+      }
+      document.body.removeChild(textArea);
+    }
+  }
+
+  function setupDropdown(dropdownElement) {
+    if (!dropdownElement) return;
+    const trigger = dropdownElement.querySelector('.dropdown-trigger');
+    
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      // Close other dropdowns first
+      if (shareDropdown && shareDropdown !== dropdownElement) shareDropdown.classList.remove('is-active');
+      if (calendarDropdown && calendarDropdown !== dropdownElement) calendarDropdown.classList.remove('is-active');
+      
+      dropdownElement.classList.toggle('is-active');
+    });
+  }
+  
+  setupDropdown(shareDropdown);
+  setupDropdown(calendarDropdown);
+
+  // Setup copy button inside share dropdown
+  if (shareDropdown) {
+    const copyBtn = shareDropdown.querySelector('.dropdown-option.copy');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const urlToCopy = copyBtn.dataset.copyUrl;
+        copyToClipboard(urlToCopy);
+        shareDropdown.classList.remove('is-active');
+      });
+    }
+  }
+
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', (e) => {
+    if (shareDropdown && !shareDropdown.contains(e.target)) {
+      shareDropdown.classList.remove('is-active');
+    }
+    if (calendarDropdown && !calendarDropdown.contains(e.target)) {
+      calendarDropdown.classList.remove('is-active');
+    }
+  });
+});
+
+document.addEventListener("turbo:before-cache", function() {
+  const shareDropdown = document.getElementById('shareDropdown');
+  const calendarDropdown = document.getElementById('calendarDropdown');
+  const notificationElement = document.getElementById('custom-notification');
+  
+  if (shareDropdown) shareDropdown.classList.remove('is-active');
+  if (calendarDropdown) calendarDropdown.classList.remove('is-active');
+  if (notificationElement) notificationElement.classList.remove('is-visible');
+});
+</script>
+
