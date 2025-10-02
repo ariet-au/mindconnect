@@ -743,9 +743,14 @@
               <div class="tags are-small mt-2">
                 <% profile.specialties.each do |specialty| %>
                   <span class="tag is-specialty-tag">
-                  <%= specialty.name %> 
-<%= t("specialties.#{specialty.name.parameterize.underscore}", default: specialty.name) %>
-                  </span>
+<%= begin
+      # generate a safe key: remove anything that is not a-z, 0-9, or underscore
+      key = specialty.name.downcase.gsub(/[^a-z0-9_]/, "_")
+      I18n.exists?("specialties.#{key}") ? t("specialties.#{key}") : specialty.name
+    rescue
+      specialty.name
+    end %>
+                        </span>
                 <% end %>
               </div>
             <% end %>
