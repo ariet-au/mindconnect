@@ -1067,8 +1067,13 @@ body {
                     end %>
     <div class="cta-button-group">
         <% if @psychologist_profile.services.present? %>
-            <%= link_to select_service_path(psychologist_id: @psychologist_profile.id, service_id: @psychologist_profile.services.first.id), class: "cta-button is-primary book-session-button", 'data-service-id': @psychologist_profile.services.first.id do %>
-                <i class="fas fa-calendar-check"></i>
+          <%= link_to select_service_path(
+                psychologist_id: @psychologist_profile.id,
+                service_id: @psychologist_profile.services.first.id
+                ),
+                class: "cta-button is-primary book-session-button",
+                'data-service-id': @psychologist_profile.services.first.id do %>
+             <i class="fas fa-calendar-check"></i>
                 <span><%= t('psychologist_profiles.show.book_a_session') %></span>
             <% end %>
         <% end %>

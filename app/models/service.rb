@@ -1,5 +1,6 @@
 class Service < ApplicationRecord
   belongs_to :user
+  has_many :bookings
   after_create :set_as_featured_if_first
 
   enum :status, { active: 0, archived: 1 }

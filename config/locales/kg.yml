@@ -13,6 +13,8 @@ kg:
   registration: "Катталуу"
   online: "Онлайн"
   in_person: "Жеке"
+  search_client_placeholder: "Клиенттын Аты"
+
   og:
     title: "AkSanaa"
     description: "Терапевтти оңой табыңыз жана жазылыңыз."

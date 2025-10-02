@@ -14,6 +14,7 @@ en:
   registration: "Registration"
   online: "Online"
   in_person: "In person"
+  search_client_placeholder: "Client name"
   og:
     title: "AkSanaa"
     description: "Find and book therapists easily."

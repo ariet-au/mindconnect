@@ -8,7 +8,7 @@ require 'icalendar/tzinfo'
 class BookingsController < ApplicationController
   #skip_before_action :set_psychologist_profile, only: [:dynamic_select]
   before_action :authenticate_user!, except: [:select_service, :choose_time, :assign_client, :confirm_form, :confirm]
-  before_action :set_booking, only: [:show, :edit, :update, :destroy, :confirm, :decline, :confirm_form]
+  before_action :set_booking, only: [:show, :edit, :update, :destroy, :confirm, :decline, :confirm_form, :cancel]
 
   #before_action :set_psychologist_profile, only: [:create_json, :update_json, :destroy_json, :new]
 
@@ -215,8 +215,24 @@ class BookingsController < ApplicationController
 
   def destroy
     @booking.destroy
-    redirect_to bookings_path, notice: 'Booking was successfully deleted.'
+
+    referer = request.referer
+
+    if referer&.include?(edit_psychologist_profile_booking_path(@booking.psychologist_profile, @booking))
+      # If delete was triggered from the edit page → go to psychologist bookings list
+      redirect_to psychologist_bookings_psychologist_profile_bookings_path(@booking.psychologist_profile),
+                  notice: 'Booking was successfully deleted.'
+    elsif referer&.include?(psychologist_bookings_psychologist_profile_bookings_path(@booking.psychologist_profile))
+      # If delete was triggered from psychologist_bookings page → stay there
+      redirect_to psychologist_bookings_psychologist_profile_bookings_path(@booking.psychologist_profile),
+                  notice: 'Booking was successfully deleted.'
+    else
+      # Otherwise just go back or fallback
+      redirect_back fallback_location: psychologist_dashboard_path,
+                    notice: 'Booking was successfully deleted.'
+    end
   end
+
 
   def create_json
     @booking = @psychologist_profile.bookings.new(booking_params)
@@ -286,39 +302,7 @@ class BookingsController < ApplicationController
     end
   end
 
-  # def confirm
-  #   if @booking.pending?
-  #     if @booking.update(status: 'confirmed', confirmation_token: nil)
-  #       flash[:notice] = "Booking confirmed successfully."
-  #     else
-  #       flash[:alert] = "Failed to confirm booking: #{@booking.errors.full_messages.to_sentence}"
-  #     end
-  #   else
-  #     flash[:alert] = "Booking cannot be confirmed as its status is #{@booking.status}."
-  #   end
 
-  #   respond_to do |format|
-  #     format.html { redirect_to confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking) }
-  #     format.turbo_stream { redirect_to confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking) }
-  #   end
-  # end
-
-  # def decline
-  #   if @booking.pending?
-  #     if @booking.update(status: 'declined', confirmation_token: nil)
-  #       flash[:notice] = "Booking successfully declined."
-  #     else
-  #       flash[:alert] = "Failed to decline booking: #{@booking.errors.full_messages.to_sentence}"
-  #     end
-  #   else
-  #     flash[:alert] = "Booking cannot be declined as its status is #{@booking.status}."
-  #   end
-
-  #   respond_to do |format|
-  #     format.html { redirect_to confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking) }
-  #     format.turbo_stream { redirect_to confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking) }
-  #   end
-  # end
 
   def confirm
     if @booking.pending?
@@ -346,8 +330,14 @@ class BookingsController < ApplicationController
     end
 
     respond_to do |format|
-      format.html { redirect_to confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking) }
-      format.turbo_stream { redirect_to confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking) }
+      case params[:redirect_to]
+      when 'psychologist_bookings'
+        format.html { redirect_to psychologist_bookings_psychologist_profile_bookings_path(@booking.psychologist_profile) }
+        format.turbo_stream { redirect_to psychologist_bookings_psychologist_profile_bookings_path(@booking.psychologist_profile) }
+      else
+        format.html { redirect_to confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking) }
+        format.turbo_stream { redirect_to confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking) }
+      end
     end
   end
 
@@ -375,10 +365,36 @@ class BookingsController < ApplicationController
     end
 
     respond_to do |format|
-      format.html { redirect_to confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking) }
-      format.turbo_stream { redirect_to confirm_psychologist_profile_booking_path(@booking.psychologist_profile, @booking) }
+      case params[:redirect_to]
+      when 'psychologist_bookings'
+        format.html { redirect_to psychologist_bookings_psychologist_profile_bookings_path(@booking.psychologist_profile) }
+        format.turbo_stream { redirect_to psychologist_bookings_psychologist_profile_bookings_path(@booking.psychologist_profile) }
+      else
+        format.html { redirect_to psychologist_profile_booking_path(@booking.psychologist_profile, @booking) }
+        format.turbo_stream { redirect_to psychologist_profile_booking_path(@booking.psychologist_profile, @booking) }
+      end
     end
   end
+
+  def cancel
+    if @booking.update(status: 'cancelled')
+      flash[:notice] = "Booking cancelled successfully."
+    else
+      flash[:alert] = "Failed to cancel booking: #{@booking.errors.full_messages.to_sentence}"
+    end
+
+    respond_to do |format|
+      case params[:redirect_to]
+      when 'psychologist_bookings'
+        format.html { redirect_to psychologist_bookings_psychologist_profile_bookings_path(@booking.psychologist_profile) }
+        format.turbo_stream { redirect_to psychologist_bookings_psychologist_profile_bookings_path(@booking.psychologist_profile) }
+      else
+        format.html { redirect_to psychologist_profile_booking_path(@booking.psychologist_profile, @booking) }
+        format.turbo_stream { redirect_to psychologist_profile_booking_path(@booking.psychologist_profile, @booking) }
+      end
+    end
+  end
+
 
 
   def psychologist_bookings
@@ -388,11 +404,26 @@ class BookingsController < ApplicationController
       return
     end
 
-    # Fetch only today's and upcoming bookings for the psychologist
-    @upcoming_bookings = Booking.includes(:client_profile, :internal_client_profile, :service)
-                                .where(psychologist_profile_id: current_user.psychologist_profile.id)
-                                .where('start_time >= ?', Time.current.beginning_of_day )
-                                .order(start_time: :asc)
+    # Fetch services used by this psychologist (all time, for complete filter options)
+    @services = Service.joins(:bookings).where(bookings: { psychologist_profile_id: current_user.psychologist_profile.id }).distinct.order(:name)
+
+    # Base query for bookings (upcoming only)
+    base_query = Booking.includes(:client_info, :client_profile, :internal_client_profile, :service)
+                      .where(psychologist_profile_id: current_user.psychologist_profile.id)
+                      .where('start_time >= ?', Time.current.beginning_of_day)
+                      .order(start_time: :asc)
+
+    # Calculate status counts (for all upcoming bookings, before any client-side filtering)
+    @status_counts = {
+      all: base_query.count,
+      confirmed: base_query.where(status: 'confirmed').count,
+      pending: base_query.where(status: 'pending').count,
+      cancelled: base_query.where(status: 'cancelled').count,
+      unknown: base_query.where("status IS NULL OR status = ''").count
+    }
+
+    # Load all upcoming bookings - let client-side JS handle filtering (status, service, client name, week)
+    @upcoming_bookings = base_query
   end
 
 
@@ -412,9 +443,17 @@ class BookingsController < ApplicationController
   end
 
   def select_service
-    @services = current_user.services
-    # Set psychologist_id based on current user if psychologist
-    @psychologist_id = current_user.psychologist_profile&.id if current_user.role == "psychologist"
+    # Load the psychologist from params
+    @psychologist = PsychologistProfile.find_by(id: params[:psychologist_id])
+    unless @psychologist
+      redirect_to root_path, alert: "Psychologist not found" and return
+    end
+
+    # Load their services
+    @services = @psychologist.services
+
+    # Optional: store the selected service if provided
+    @selected_service = @services.find_by(id: params[:service_id]) if params[:service_id].present?
   end
 
   def choose_time
@@ -463,7 +502,7 @@ class BookingsController < ApplicationController
         start_time: @selected_time,
         end_time: @selected_time.present? ? Time.parse(@selected_time) + @service.duration_minutes.minutes : nil,
         status: "pending",
-        created_by: current_user&.role == "psychologist" ? "psychologist" : "client"
+        created_by: current_user.present? && current_user.role == "psychologist" ? "psychologist" : "client"
       )
 
       # Assign or build client_info
@@ -504,8 +543,12 @@ class BookingsController < ApplicationController
         )
         if @booking.client_info.present? && ['inactive', 'inquiry','referred'].include?(@booking.client_info.status)
           @booking.client_info.update(status: :booked)
-        end
+          redirect_to psychologist_profile_path(@booking.psychologist_profile), notice: "Booking confirmed!"
+        
+      
+        else 
         redirect_to psychologist_profile_booking_path(@booking.psychologist_profile, @booking), notice: "Booking confirmed!"
+        end
       else
         Rails.logger.debug "Booking save failed: #{@booking.errors.full_messages.join(', ')}"
         flash.now[:alert] = "Failed to save booking. Please check the form."

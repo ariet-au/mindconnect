@@ -4,6 +4,7 @@ class Booking < ApplicationRecord
   belongs_to :client_profile, optional: true
   belongs_to :internal_client_profile, optional: true
   belongs_to :client_info, optional: true
+  belongs_to :service
   accepts_nested_attributes_for :client_info, allow_destroy: true, reject_if: :all_blank
 
   before_create :generate_confirmation_token

@@ -13,91 +13,127 @@
   <% end %>
 </div>
 
-<h1 class="title is-4 has-text-centered"><%= t('.bookings_overview_title') %></h1>
-
 <!-- Filter Section -->
-<div class="filter-container px-4 py-2">
-  <div class="field">
-    <label class="label has-text-weight-normal"><%= t('.filter_by_status') %></label>
-    <div class="control">
-      <div class="buttons has-addons is-fullwidth">
-        <button class="button is-small is-fullwidth status-filter <%= 'is-primary' if params[:status].nil? || params[:status] == 'all' %>" data-status="all"><%= t('.filter_all_statuses') %></button>
-        <button class="button is-small is-fullwidth status-filter <%= 'is-primary' if params[:status] == 'confirmed' %>" data-status="confirmed"><%= t('.status_tags.confirmed') %></button>
-        <button class="button is-small is-fullwidth status-filter <%= 'is-primary' if params[:status] == 'pending' %>" data-status="pending"><%= t('.status_tags.pending') %></button>
-        <button class="button is-small is-fullwidth status-filter <%= 'is-primary' if params[:status] == 'cancelled' %>" data-status="cancelled"><%= t('.status_tags.cancelled') %></button>
-        <button class="button is-small is-fullwidth status-filter <%= 'is-primary' if params[:status] == 'unknown' %>" data-status="unknown"><%= t('.status_tags.unknown') %></button>
-      </div>
+<div class="filter-container">
+  <div class="filter-header">
+    <h2 class="filter-title"><%= t('.filter_by_status') %></h2>
+    <div class="status-filters">
+      <button class="status-btn <%= 'active' if params[:status].nil? || params[:status] == 'all' %>" data-status="all">
+        <%= t('.filter_all_statuses') %> <span class="count"><%= @status_counts[:all] || 0 %></span>
+      </button>
+      <button class="status-btn <%= 'active' if params[:status] == 'confirmed' %>" data-status="confirmed">
+        <%= t('.status_tags.confirmed') %> <span class="count"><%= @status_counts[:confirmed] || 0 %></span>
+      </button>
+      <button class="status-btn <%= 'active' if params[:status] == 'pending' %>" data-status="pending">
+        <%= t('.status_tags.pending') %> <span class="count"><%= @status_counts[:pending] || 0 %></span>
+      </button>
+      <button class="status-btn <%= 'active' if params[:status] == 'cancelled' %>" data-status="cancelled">
+        <%= t('.status_tags.cancelled') %> <span class="count"><%= @status_counts[:cancelled] || 0 %></span>
+      </button>
+      <button class="status-btn <%= 'active' if params[:status] == 'unknown' %>" data-status="unknown">
+        <%= t('.status_tags.unknown') %> <span class="count"><%= @status_counts[:unknown] || 0 %></span>
+      </button>
     </div>
   </div>
-  <div class="field">
-    <label class="label has-text-weight-normal"><%= t('.filter_by_date') %></label>
-    <div class="control">
-      <div class="select is-fullwidth">
-        <select id="date-range-filter">
-          <option value="today" <%= 'selected' if params[:range] == 'today' %>><%= t('.range_today') %></option>
-          <option value="week" <%= 'selected' if params[:range] == 'week' %>><%= t('.range_week') %></option>
-          <option value="month" <%= 'selected' if params[:range] == 'month' %>><%= t('.range_month') %></option>
+
+  <div class="filter-controls">
+    <div class="filter-group">
+      <label class="filter-label"><%= t('.filter_by_service') %></label>
+      <div class="select is-fullwidth is-small">
+        <select id="service-filter">
+          <option value="all" <%= 'selected' if params[:service_id].nil? %>><%= t('.filter_all_services') %></option>
+          <% @services.each do |service| %>
+            <option value="<%= service.id %>" <%= 'selected' if params[:service_id] == service.id.to_s %>><%= service.name %></option>
+          <% end %>
         </select>
       </div>
+    </div>
+
+    <div class="filter-group">
+      <label class="filter-label"><%= t('.filter_by_week') %></label>
+      <div class="select is-fullwidth is-small">
+        <select id="week-filter">
+          <option value="current" <%= 'selected' if params[:week] == 'current' %>><%= t('.week_current') %></option>
+          <option value="next" <%= 'selected' if params[:week] == 'next' %>><%= t('.week_next') %></option>
+          <option value="all" <%= 'selected' if params[:week].nil? || params[:week] == 'all' %>><%= t('.week_all') %></option>
+        </select>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <label class="filter-label"><%= t('.search_by_client') %></label>
+      <input class="input is-small" type="text" id="client-search" placeholder="<%= t('.search_client_placeholder') %>">
     </div>
   </div>
 </div>
 
 <!-- Bookings List -->
-<div class="bookings-container px-4">
+<div class="bookings-container">
   <% if @upcoming_bookings.any? %>
     <% @upcoming_bookings.group_by { |booking| booking.start_time.to_date }.each do |date, bookings| %>
-      <div class="booking-group mb-4">
-        <h2 class="subtitle is-5 has-text-weight-bold"><%= date.strftime('%B %d, %Y') %></h2>
+      <div class="booking-group" data-date="<%= date.to_s %>">
+        <h3 class="date-header"><%= date.strftime('%B %d, %Y') %></h3>
         <% bookings.each do |booking| %>
-          <div class="box booking-card mb-2" data-status="<%= booking.status || 'unknown' %>">
-            <div class="columns is-mobile">
-              <div class="column is-narrow">
-                <span class="tag <%= case booking.status&.to_sym
-                                    when :confirmed then 'is-success'
-                                    when :pending then 'is-warning'
-                                    when :cancelled then 'is-danger'
-                                    else 'is-info'
-                                    end %>">
-                  <%= booking.status.present? ? t(".status_tags.#{booking.status.underscore}") : t('.status_tags.unknown') %>
-                </span>
-                <span>
-                <%= booking.created_by %>
-                </span>
-              </div>
-              <div class="column">
-<p class="has-text-weight-bold">
-  <% if booking.client_info.present? %>
-    <%= link_to booking.client_info.full_name, client_info_path(booking.client_info) %>
-  <% else %>
-    N/A
-  <% end %>
-</p>                <p class="is-size-7"><%= booking.service&.name || 'N/A' %></p>
-                <p class="is-size-7">
+          <div class="booking-card" data-status="<%= booking.status || 'unknown' %>" data-service-id="<%= booking.service_id || '' %>" data-client-name="<%= booking.client_info&.full_name&.downcase || '' %>">
+            <div class="booking-header">
+              <div class="booking-info">
+                <div class="client-name">
+                  <% if booking.client_info.present? %>
+                    <%= link_to booking.client_info.full_name, client_info_path(booking.client_info), class: 'client-link' %>
+                  <% else %>
+                    N/A
+                  <% end %>
+                </div>
+                <div class="booking-meta">
+                  <span class="service-name"><%= booking.service&.name || 'N/A' %></span>
+                  <span class="meta-separator">•</span>
+                  <span class="duration"><%= t('bookings.psychologist_bookings.duration_minutes', count: booking.service&.duration_minutes || 0) %></span>
+                </div>
+                <div class="booking-time">
                   <span class="utc-date-time-range"
                         data-start-utc="<%= booking.start_time.utc.iso8601 %>"
                         data-end-utc="<%= booking.end_time&.utc&.iso8601 %>">
                     <%= t('.loading_time') %>
                   </span>
-                </p>
-                <p class="is-size-7"><%= t('bookings.psychologist_bookings.duration_minutes', count: booking.service&.duration_minutes || 0) %></p>
+                </div>
+              </div>
+              <div class="booking-badges">
+                <span class="status-badge <%= booking.status || 'unknown' %>">
+                  <%= booking.status.present? ? t(".status_tags.#{booking.status.underscore}") : t('.status_tags.unknown') %>
+                </span>
+                <span class="created-badge"><%= booking.created_by %></span>
               </div>
             </div>
-            <div class="buttons is-right">
+            <div class="booking-actions">
+            <% unless booking.status == 'cancelled' %>
               <% if booking.created_by == 'client' && booking.status == 'pending' %>
-                <%= button_to t('.confirm_button'), confirm_booking_path(booking), method: :post, class: 'button is-small is-success' %>
-                <%= button_to t('.decline_button'), decline_booking_path(booking), method: :post, class: 'button is-small is-danger' %>
+                <%= button_to t('.confirm_button'),
+                    confirm_psychologist_profile_booking_path(booking.psychologist_profile, booking, redirect_to: 'psychologist_bookings'),
+                    method: :patch,
+                    class: 'btn-action btn-confirm' %>
+
+                <%= button_to t('.decline_button'),
+                    decline_psychologist_profile_booking_path(booking.psychologist_profile, booking, redirect_to: 'psychologist_bookings'),
+                    method: :patch,
+                    class: 'btn-action btn-decline' %>
+              <% else %>
+                    <%= button_to t('.cancel_button'),
+                    cancel_psychologist_profile_booking_path(booking.psychologist_profile, booking, redirect_to: 'psychologist_bookings'),
+                    method: :patch,
+                    class: 'btn-action btn-cancel' %>
               <% end %>
-              <%= link_to t('.view_button'), psychologist_profile_booking_path(current_user.psychologist_profile, booking), class: 'button is-small is-primary is-light' %>
-              <%= link_to t('.edit_button'), edit_psychologist_profile_booking_path(current_user.psychologist_profile, booking), class: 'button is-small is-info is-light' %>
+             <% end %> 
+              <%= link_to t('.view_button'), psychologist_profile_booking_path(booking.psychologist_profile, booking), class: 'btn-action btn-view' %>
+              <%= link_to t('.edit_button'), edit_psychologist_profile_booking_path(booking.psychologist_profile, booking), class: 'btn-action btn-edit' %>
             </div>
           </div>
         <% end %>
       </div>
     <% end %>
   <% else %>
-    <div class="notification is-info has-text-centered">
-      <%= t('.no_bookings') %>
+    <div class="no-bookings">
+      <i class="fas fa-calendar-times"></i>
+      <p><%= t('.no_bookings') %></p>
     </div>
   <% end %>
 </div>
@@ -122,6 +158,7 @@
           status: '<%= booking.status || 'unknown' %>',
           clientName: '<%= (booking.client_info&.full_name || 'N/A').to_json %>',
           service: '<%= booking.service&.name&.to_json || 'N/A' %>',
+          serviceId: <%= booking.service_id || 'null' %>,
           notes: '<%= booking.notes&.to_json || '' %>',
           createdBy: '<%= booking.created_by || 'na' %>',
           psychologistProfileId: <%= current_user.psychologist_profile.id %>
@@ -130,108 +167,433 @@
     ];
 
     // Filter by Status
-    document.querySelectorAll('.status-filter').forEach(button => {
+    document.querySelectorAll('.status-btn').forEach(button => {
       button.addEventListener('click', () => {
         const status = button.dataset.status;
-        document.querySelectorAll('.status-filter').forEach(btn => btn.classList.remove('is-primary'));
-        button.classList.add('is-primary');
-        document.querySelectorAll('.booking-card').forEach(card => {
-          card.style.display = (status === 'all' || card.dataset.status === status) ? '' : 'none';
-        });
+        document.querySelectorAll('.status-btn').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        applyFilters();
       });
     });
 
-    // Filter by Date Range
-    document.getElementById('date-range-filter').addEventListener('change', (e) => {
-      const range = e.target.value;
+    // Filter by Service
+    document.getElementById('service-filter').addEventListener('change', () => {
+      applyFilters();
+    });
+
+    // Search by Client Name
+    document.getElementById('client-search').addEventListener('input', () => {
+      applyFilters();
+    });
+
+    // Filter by Week
+    document.getElementById('week-filter').addEventListener('change', () => {
+      applyFilters();
+    });
+
+    function applyFilters() {
+      const status = document.querySelector('.status-btn.active')?.dataset.status || 'all';
+      const serviceId = document.getElementById('service-filter').value;
+      const clientSearch = document.getElementById('client-search').value.toLowerCase();
+      const weekFilter = document.getElementById('week-filter').value;
+      
       const now = new Date();
       let startDate, endDate;
-      if (range === 'today') {
-        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      } else if (range === 'week') {
-        startDate = new Date(now.setDate(now.getDate() - now.getDay()));
-        endDate = new Date(now.setDate(now.getDate() + 6));
-      } else if (range === 'month') {
-        startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-        endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      if (weekFilter === 'current') {
+        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
+        endDate = new Date(startDate.getTime());
+        endDate.setDate(endDate.getDate() + 6);
+      } else if (weekFilter === 'next') {
+        startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay() + 7);
+        endDate = new Date(startDate.getTime());
+        endDate.setDate(endDate.getDate() + 6);
+      } else {
+        startDate = new Date(0);
+        endDate = new Date(8640000000000000);
       }
-      document.querySelectorAll('.booking-group').forEach(group => {
-        const date = new Date(group.querySelector('.subtitle').textContent);
-        group.style.display = (date >= startDate && date <= endDate) ? '' : 'none';
-      });
-    });
 
-    // Modal Function
-    function openBookingModal(booking) {
-      const modalContent = `
-        <p><strong><%= t('.client_header') %>:</strong> ${booking.clientName}</p>
-        <p><strong><%= t('.service_header') %>:</strong> ${booking.service}</p>
-        <p><strong><%= t('.status_header') %>:</strong> ${booking.status}</p>
-        <p><strong><%= t('.start_time_header') %>:</strong> ${new Date(booking.start).toLocaleString()}</p>
-        <p><strong><%= t('.end_time_header') %>:</strong> ${new Date(booking.end).toLocaleString()}</p>
-        <p><strong><%= t('.notes') %>:</strong> ${booking.notes || 'None'}</p>
-        <div class="buttons">
-          ${booking.status === 'pending' && booking.createdBy === 'client' ? `
-            <form action="/psychologist_profiles/${booking.psychologistProfileId}/bookings/${booking.id}/confirm" method="post">
-              <input type="hidden" name="_method" value="post">
-              <button type="submit" class="button is-success is-small"><%= t('.confirm_button') %></button>
-            </form>
-            <form action="/psychologist_profiles/${booking.psychologistProfileId}/bookings/${booking.id}/decline" method="post">
-              <input type="hidden" name="_method" value="post">
-              <button type="submit" class="button is-danger is-small"><%= t('.decline_button') %></button>
-            </form>
-          ` : ''}
-          <a href="/psychologist_profiles/${booking.psychologistProfileId}/bookings/${booking.id}" class="button is-primary is-small"><%= t('.view_button') %></a>
-          <a href="/psychologist_profiles/${booking.psychologistProfileId}/bookings/${booking.id}/edit" class="button is-info is-small"><%= t('.edit_button') %></a>
-          <form action="/psychologist_profiles/${booking.psychologistProfileId}/bookings/${booking.id}" method="post" data-turbo-confirm="<%= t('.delete_confirm') %>">
-            <input type="hidden" name="_method" value="delete">
-            <button type="submit" class="button is-danger is-small"><%= t('.delete_button') %></button>
-          </form>
-        </div>
-      `;
-      document.getElementById('booking-modal-content').innerHTML = modalContent;
-      document.getElementById('booking-modal').classList.add('is-active');
+      document.querySelectorAll('.booking-group').forEach(group => {
+        const date = new Date(group.dataset.date);
+        const showGroup = date >= startDate && date <= endDate;
+        group.style.display = showGroup ? '' : 'none';
+
+        group.querySelectorAll('.booking-card').forEach(card => {
+          const cardStatus = card.dataset.status;
+          const cardServiceId = card.dataset.serviceId;
+          const cardClientName = card.dataset.clientName;
+          const showCard = 
+            (status === 'all' || cardStatus === status) &&
+            (serviceId === 'all' || cardServiceId === serviceId) &&
+            (clientSearch === '' || cardClientName.includes(clientSearch));
+          
+          card.style.display = showCard && showGroup ? '' : 'none';
+        });
+
+        // Hide group if no cards are visible
+        group.style.display = Array.from(group.querySelectorAll('.booking-card')).some(card => card.style.display !== 'none') ? '' : 'none';
+      });
     }
 
-    // Attach click handlers to view buttons
-    document.querySelectorAll('.booking-card .button.is-primary').forEach(button => {
-      button.addEventListener('click', (e) => {
-        e.preventDefault();
-        const bookingId = button.closest('.booking-card').dataset.bookingId;
-        const booking = bookings.find(b => b.id == bookingId);
-        if (booking) openBookingModal(booking);
-      });
-    });
+
+    // Initial filter application
+    applyFilters();
   });
 </script>
 
 <style>
-  .filter-container {
-    background: #f5f5f5;
-    border-radius: 8px;
-    margin-bottom: 1rem;
+  :root {
+    --blue: #3273dc;
+    --charcoal: #2f3640;
+    --light-grey: #f8f9fa;
+    --border-grey: #e1e4e8;
+    --text-grey: #586069;
+    --success: #28a745;
+    --warning: #ffc107;
+    --danger: #dc3545;
   }
-  .booking-card {
+
+  /* Filter Container */
+  .filter-container {
+    background: white;
+    border: 1px solid var(--border-grey);
     border-radius: 8px;
     padding: 1rem;
+    margin-bottom: 1.5rem;
   }
-  .booking-card .tag {
-    margin-right: 0.5rem;
-  }
-  .booking-card .buttons {
-    margin-top: 0.5rem;
-  }
-  .booking-group .subtitle {
+
+  .filter-header {
     margin-bottom: 1rem;
-    color: #333;
   }
+
+  .filter-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--charcoal);
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .status-filters {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .status-btn {
+    padding: 0.5rem 0.875rem;
+    font-size: 0.875rem;
+    border: 1px solid var(--border-grey);
+    border-radius: 6px;
+    background: white;
+    color: var(--text-grey);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+
+  .status-btn:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+  }
+
+  .status-btn.active {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: white;
+  }
+
+  .status-btn .count {
+    font-size: 0.75rem;
+    opacity: 0.8;
+  }
+
+  .filter-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-grey);
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .filter-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-grey);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Bookings Container */
+  .bookings-container {
+    max-width: 100%;
+  }
+
+  .booking-group {
+    margin-bottom: 2rem;
+  }
+
+  .date-header {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--charcoal);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--border-grey);
+  }
+
+  /* Booking Card */
+  .booking-card {
+    background: white;
+    border: 1px solid var(--border-grey);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    transition: box-shadow 0.2s;
+  }
+
+  .booking-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .booking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .booking-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .client-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--charcoal);
+    margin-bottom: 0.25rem;
+  }
+
+  .client-link {
+    color: var(--charcoal);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .client-link:hover {
+    color: var(--blue);
+  }
+
+  .booking-meta {
+    font-size: 0.875rem;
+    color: var(--text-grey);
+    margin-bottom: 0.25rem;
+  }
+
+  .meta-separator {
+    margin: 0 0.5rem;
+    opacity: 0.5;
+  }
+
+  .booking-time {
+    font-size: 0.875rem;
+    color: var(--text-grey);
+  }
+
+  .booking-badges {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-end;
+  }
+
+  .status-badge {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 12px;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .status-badge.confirmed {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+
+  .status-badge.pending {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+  }
+
+  .status-badge.cancelled {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+
+  .status-badge.unknown {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+  }
+
+  .created-badge {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    color: var(--text-grey);
+    background: var(--light-grey);
+    border: 1px solid var(--border-grey);
+    border-radius: 4px;
+  }
+
+  /* Booking Actions */
+  .booking-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-action {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 6px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid;
+  }
+
+  .btn-view {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: white;
+  }
+
+  .btn-view:hover {
+    background: #2366d1;
+    border-color: #2366d1;
+    color: white;
+  }
+
+  .btn-edit, .btn-confirm, .btn-decline {
+    background: white;
+  }
+
+  .btn-edit {
+    border-color: var(--border-grey);
+    color: var(--text-grey);
+  }
+
+  .btn-edit:hover {
+    border-color: var(--blue);
+    color: var(--blue);
+  }
+
+  .btn-confirm {
+    border-color: var(--success);
+    color: var(--success);
+  }
+
+  .btn-confirm:hover {
+    background: var(--success);
+    color: white;
+  }
+
+  .btn-decline {
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+
+  .btn-decline:hover {
+    background: var(--danger);
+    color: white;
+  }
+
+  /* No Bookings */
+  .no-bookings {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-grey);
+  }
+
+  .no-bookings i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+  }
+
+  .no-bookings p {
+    font-size: 1rem;
+  }
+
+  /* Mobile Responsive */
   @media (max-width: 768px) {
-    .button.is-small {
-      font-size: 0.85rem;
+    .filter-container {
+      padding: 0.75rem;
     }
-    .booking-card .column {
-      padding: 0.5rem;
+
+    .status-filters {
+      gap: 0.375rem;
+    }
+
+    .status-btn {
+      padding: 0.375rem 0.625rem;
+      font-size: 0.8125rem;
+      flex: 1;
+      min-width: calc(50% - 0.25rem);
+    }
+
+    .filter-controls {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+
+    .booking-header {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .booking-badges {
+      flex-direction: row;
+      align-items: center;
+      width: 100%;
+    }
+
+    .booking-actions {
+      gap: 0.375rem;
+    }
+
+    .btn-action {
+      flex: 1;
+      min-width: calc(50% - 0.25rem);
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8125rem;
+      text-align: center;
+      justify-content: center;
+    }
+
+    .date-header {
+      font-size: 0.9375rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .status-btn {
+      min-width: 100%;
     }
   }
 </style>

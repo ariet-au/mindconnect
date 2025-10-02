@@ -113,6 +113,7 @@ Rails.application.routes.draw do
         member do
           get 'confirm', to: 'bookings#confirm_form'
           patch 'confirm'
+          patch 'cancel'
           patch 'decline'
           patch :update_json
           delete :destroy_json
