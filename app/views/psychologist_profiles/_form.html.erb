@@ -737,25 +737,7 @@ document.addEventListener('turbo:load', function() {
     }
 });
 
-document.addEventListener("turbo:load", function () {
-  const firstName = document.getElementById("psychologist_profile_first_name");
-  const lastName = document.getElementById("psychologist_profile_last_name");
-  const submitBtn = document.querySelector("input[type=submit]");
 
-  function toggleSubmit() {
-    if (firstName.value.trim() === "" || lastName.value.trim() === "") {
-      submitBtn.disabled = true;
-    } else {
-      submitBtn.disabled = false;
-    }
-  }
-
-  if (firstName && lastName && submitBtn) {
-    toggleSubmit(); // initial check
-    firstName.addEventListener("input", toggleSubmit);
-    lastName.addEventListener("input", toggleSubmit);
-  }
-});
 
 document.addEventListener("turbo:load", () => {
   const input = document.getElementById("profile_url_input");

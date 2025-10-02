@@ -62,7 +62,7 @@ class PsychologistProfile < ApplicationRecord
   # Scopes for filtering profiles
   scope :confirmed, -> { where(user_id: User.where.not(confirmed_at: nil).select(:id)) }  
   scope :active, -> { where(user_id: User.where('last_sign_in_at >= ?', 1.month.ago).select(:id)) }
-  scope :filled, -> { where.not(first_name: [nil, ''], last_name: [nil, ''], about_me: [nil, ''], standard_rate: [nil, 0]) }
+  scope :filled, -> { where.not(first_name: [nil, ''], about_me: [nil, ''], standard_rate: [nil, 0]) }
   scope :not_hidden, -> { where(hidden: [false, nil]) }
 
   monetize :standard_rate, as: :standard_rate_money, 
