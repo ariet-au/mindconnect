@@ -179,6 +179,11 @@
   <% end %>
 </div>
 
+
+
+              <%= link_to t('.delete_button'), psychologist_profile_booking_path(current_user.psychologist_profile, booking), data: { turbo_method: :delete, turbo_confirm: t('.delete_confirm') }, class: 'button is-small is-danger is-light' %>
+
+
 <script>
 document.addEventListener("turbo:load", function() {
   const duration = parseInt(<%= @booking.service.duration_minutes %>);

@@ -560,27 +560,41 @@ en:
       delete: "Delete"
       cancel: "Cancel"
 
+  
   client_infos:
     index:
       title: "My Clients"
       add_new_client: "➕ Add New Client"
-      show: "Show"
+      show: "View"
       edit: "Edit"
       no_clients: "No clients yet."
       table:
         name: "Name"
-        year_of_birth: "Year of Birth"
+        status: "Status"
+        submitted_by: "Submitted By"
+        age: "Age"
         city: "City"
         contacts: "Contacts"
         actions: "Actions"
+      tabs:
+        all: "All"
+        # Translations for the ENUM statuses
+        inquiry: "Inquiry"
+        referred: "Referred"
+        booked: "Booked"
+        confirmed_booking: "Confirmed Booking"
+        active_upcoming: "Active (Upcoming Session)"
+        active_no_upcoming: "Active (No Upcoming)"
+        inactive: "Inactive"
     show:
-      submitted_by: "Отправлено %{name}"
+      submitted_by: "Submitted by %{name}"
       contact_methods:
-        email: "Электронная почта"
-        phone: "Телефон"
+        contact_email: "Email"
+        email: "Email"
+        phone: "Phone"
         whatsapp: "WhatsApp"
         telegram: "Telegram"
-        other: "Другое"
+        other: "Other"
     form:
       title: "Client Information"
       personal_information: "Personal Information"
@@ -590,24 +604,25 @@ en:
       add_contact: "Add another contact method"
       submit_button: "Save Information"
       placeholder:
-        first_name: "First name"
-        last_name: "Last name"
-        year_of_birth: "Year of birth"
+        first_name: "First Name"
+        last_name: "Last Name"
+        year_of_birth: "Year of Birth"
         city: "City, Country"
         timezone: "Select timezone"
-        reason_for_therapy: "What brings you to therapy today?"
+        reason_for_therapy: "What brought you to therapy today?"
       help_text:
-        location_detection: "We'll try to detect your location automatically"
-        timezone_detection: "We'll try to detect your timezone automatically"
+        location_detection: "We will attempt to automatically detect your location"
+        timezone_detection: "We will attempt to automatically detect your timezone"
       contact_methods:
         select_method: "Select method"
-        placeholder: "e.g. +61412345678 or @username"
+        placeholder: "e.g., +61412345678 or @username"
         remove: "Remove"
         email: "Email"
         phone: "Phone"
         whatsapp: "WhatsApp"
         telegram: "Telegram"
         other: "Other"
+    
 
   services:
     index:

@@ -538,21 +538,34 @@ kg:
       delete: "Жок кылуу"
       cancel: "Жокко чыгаруу"
 
+  
   client_infos:
     index:
       title: "Менин кардарларым"
       add_new_client: "➕ Жаңы кардар кошуу"
       show: "Көрсөтүү"
-      edit: "Өзгөртүү"
-      no_clients: "Кардарлар азырынча жок."
+      edit: "Түзөтүү"
+      no_clients: "Азырынча кардарлар жок."
       table:
         name: "Аты"
-        year_of_birth: "Туулган жылы"
+        status: "Статусу"
+        submitted_by: "Жиберген"
+        age: "Жашы"
         city: "Шаар"
-        contacts: "Байланыштар"
+        contacts: "Байланыш"
         actions: "Аракеттер"
+      tabs:
+        all: "Бардыгы"
+        # Translations for the ENUM statuses
+        inquiry: "Суроо"
+        referred: "Жөнөтүлгөн"
+        booked: "Брондолгон"
+        confirmed_booking: "Бронь тастыкталды"
+        active_upcoming: "Активдүү (алдыда сессия бар)"
+        active_no_upcoming: "Активдүү (алдыда сессия жок)"
+        inactive: "Активдүү эмес"
     show:
-      submitted_by: "Жиберген %{name}"
+      submitted_by: "%{name} тарабынан жөнөтүлгөн"
       contact_methods:
         contact_email: "Электрондук почта"
         email: "Электрондук почта"
@@ -566,20 +579,20 @@ kg:
       location_information: "Жайгашкан жери жөнүндө маалымат"
       therapy_information: "Терапия жөнүндө маалымат"
       contact_information: "Байланыш маалыматы"
-      add_contact: "Дагы бир байланыш ыкмасын кошуу"
+      add_contact: "Башка байланыш ыкмасын кошуу"
       submit_button: "Маалыматты сактоо"
       placeholder:
         first_name: "Аты"
         last_name: "Фамилиясы"
         year_of_birth: "Туулган жылы"
         city: "Шаар, Өлкө"
-        timezone: "Убакыт алкагын тандаңыз"
-        reason_for_therapy: "Бүгүн сизди терапияга эмне алып келди?"
+        timezone: "Убакыт алкагын тандоо"
+        reason_for_therapy: "Бүгүн терапияга эмне алып келди?"
       help_text:
-        location_detection: "Биз сиздин жайгашкан жериңизди автоматтык түрдө аныктоого аракет кылабыз"
-        timezone_detection: "Биз сиздин убакыт алкагыңызды автоматтык түрдө аныктоого аракет кылабыз"
+        location_detection: "Жайгашкан жериңизди автоматтык түрдө аныктоого аракет кылабыз"
+        timezone_detection: "Убакыт алкагыңызды автоматтык түрдө аныктоого аракет кылабыз"
       contact_methods:
-        select_method: "Ыкманы тандаңыз"
+        select_method: "Ыкманы тандоо"
         placeholder: "мис., +61412345678 же @username"
         remove: "Өчүрүү"
         email: "Электрондук почта"
@@ -587,6 +600,8 @@ kg:
         whatsapp: "WhatsApp"
         telegram: "Telegram"
         other: "Башка"
+
+    
 
   services:
     index:

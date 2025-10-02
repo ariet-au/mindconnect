@@ -6,21 +6,19 @@ class ClientInfosController < ApplicationController
 
   # GET /client_infos
   def index
-    # Base scope for this psychologist
+    # Base scope for this psychologist with eager loading
     @client_infos = @psychologist_profile.client_infos.includes(:client_contacts).order(created_at: :desc)
 
-    # Get all counts per status for tabs
+    # Counts per status
     @status_counts = @psychologist_profile.client_infos.group(:status).count.transform_keys(&:to_sym)
-    @status_counts[:all] = @psychologist_profile.client_infos.count
-
-    # Add a total for "all"
     @status_counts[:all] = @client_infos.count
 
-    # Filter by selected status if present and valid
-    if params[:status].present? && ClientInfo.statuses.key?(params[:status].to_sym)
-      @client_infos = @client_infos.where(status: ClientInfo.statuses[params[:status]])
+    # Filter by status if valid
+    if params[:status].present? && ClientInfo.statuses.key?(params[:status])
+      @client_infos = @client_infos.where(status: params[:status])
     end
   end
+
 
   # GET /client_infos/new
  def new

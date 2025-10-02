@@ -559,10 +559,21 @@ ru:
       no_clients: "Клиентов пока нет."
       table:
         name: "Имя"
-        year_of_birth: "Год рождения"
+        status: "Статус"         # MISSING: For the <th>
+        submitted_by: "Отправитель" # MISSING: For the <th>
+        age: "Возраст"
         city: "Город"
         contacts: "Контакты"
         actions: "Действия"
+      tabs:
+        all: "Все" 
+        inquiry: "Запрос"
+        referred: "Реферал"
+        booked: "Не потвержденная Бронь"
+        confirmed_booking: "Бронь подтверждена"
+        active_upcoming: "Активный (бронь есть)"
+        active_no_upcoming: "Активный (брони нет)"
+        inactive: "Неактивный"
     show:
       submitted_by: "Отправлено %{name}"
       contact_methods:
@@ -599,6 +610,8 @@ ru:
         whatsapp: "WhatsApp"
         telegram: "Telegram"
         other: "Другое"
+  
+    
 
   services:
     index:

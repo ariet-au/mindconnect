@@ -4,35 +4,39 @@
 
     <%= link_to t('client_infos.index.add_new_client'), new_client_info_path, class: "button is-primary mb-4" %>
 
-    <%# --- Tabs for Status Filtering --- %>
-    <div class="tabs is-boxed mt-4">
-      <ul>
-        <% current_status = params[:status].present? ? params[:status].to_sym : nil %>
-        <% all_statuses = [:inquiry, :referred, :booked, :confirmed_booking, :active_upcoming, :active_no_upcoming, :inactive] %>
+    <%# --- Tabs for Status Filtering (Now horizontally scrollable) --- %>
+    <div class="tabs is-boxed mt-4 is-fullwidth">
+      <div class="tabs-scroll-wrapper">
+        <ul>
+          <% current_status = params[:status] %>
+          <% all_statuses = [:inquiry, :referred, :booked, :confirmed_booking, :active_upcoming, :active_no_upcoming, :inactive] %>
 
-        <%# Tab for ALL clients %>
-        <li class="<%= 'is-active' if current_status.nil? %>">
-          <%= link_to "#{t('client_infos.index.tabs.all', default: 'All')} (#{@status_counts[:all]})", client_infos_path %>
-        </li>
+          <ul>
+            <!-- All tab -->
+            <li class="<%= 'is-active' if params[:status].blank? %>">
+              <%= link_to "#{t('client_infos.index.tabs.all')} (#{@status_counts[:all]})", client_infos_path %>
+            </li>
 
-        <% all_statuses.each do |status| %>
-          <li class="<%= 'is-active' if current_status == status %>">
-            <%= link_to "#{t("client_infos.index.tabs.#{status}", default: status.to_s.titleize)} (#{@status_counts[status] || 0})", client_infos_path(status: status) %>
-          </li>
-        <% end %>
-      </ul>
+            <% all_statuses.each do |status| %>
+              <% status_str = status.to_s %>
+              <li class="<%= 'is-active' if params[:status] == status_str %>">
+                <%= link_to "#{t("client_infos.index.tabs.#{status_str}", default: status_str.titleize)} (#{@status_counts[status] || 0})", client_infos_path(status: status_str) %>
+              </li>
+            <% end %>
+          </ul>
+      </div>
     </div>
+
+
     <%# --- End Tabs --- %>
 
     <% if @client_infos.any? %>
-      <div class="table-container">
+      <div class="table-container"> <%# This class handles horizontal scroll for the table %>
         <table class="table is-fullwidth is-striped is-hoverable">
           <thead>
             <tr>
               <th><%= t('client_infos.index.table.name') %></th>
-              <th><%= t('client_infos.index.table.status') %></th>
-              <th><%= t('client_infos.index.table.submitted_by') %></th>
-              <th><%= t('client_infos.index.table.year_of_birth') %></th>
+              <th><%= t('client_infos.index.table.age') %></th>
               <th><%= t('client_infos.index.table.city') %></th>
               <th><%= t('client_infos.index.table.contacts') %></th>
               <th><%= t('client_infos.index.table.actions') %></th>
@@ -42,23 +46,36 @@
             <% @client_infos.each do |client| %>
               <tr class="client-row">
                 <td class="client-name" data-label="<%= t('client_infos.index.table.name') %>"><%= "#{client.first_name} #{client.last_name}" %></td>
-                <td><%= client.status %> </td>
-                <td><%= client.submitted_by %> </td>
 
-                <td data-label="<%= t('client_infos.index.table.year_of_birth') %>"><%= client.year_of_birth %></td>
-                <td data-label="<%= t('client_infos.index.table.city') %>"><%= client.city %></td>
+<td data-label="<%= t('client_infos.index.table.age') %>">
+  <%= 
+    if client.year_of_birth.present?
+      Time.current.year - client.year_of_birth 
+    else
+      '<span class="has-text-grey-light">—</span>'.html_safe
+    end
+  %>
+</td>
+<td data-label="<%= t('client_infos.index.table.city') %>">
+  <%= client.city.present? ? client.city : "-" %>
+</td>
+                <%# IMPLEMENTATION of dynamic translation for contact methods %>
                 <td data-label="<%= t('client_infos.index.table.contacts') %>">
                   <% client.client_contacts.each do |c| %>
-                    <p><strong><%= c.method.titleize %>:</strong> <%= c.value %></p>
+                    <p>
+                      <strong><%= t("client_infos.show.contact_methods.#{c.method}", default: c.method.titleize) %>:</strong> 
+                      <%= c.value %>
+                    </p>
                   <% end %>
                 </td>
+
                 <td data-label="<%= t('client_infos.index.table.actions') %>">
                 <% if client.psychologist_profile == current_user.psychologist_profile %>
-                    <%= link_to t('client_infos.index.show'), client_info_path(client), class: "button is-small is-link is-outlined" %>
-                    <%= link_to t('client_infos.index.edit'), edit_client_info_path(client), class: "button is-small" %>
-                  <% else %>
-                    <span class="has-text-grey-light">—</span>
-                  <% end %>
+                      <%= link_to t('client_infos.index.show'), client_info_path(client), class: "button is-small is-link is-outlined" %>
+                      <%= link_to t('client_infos.index.edit'), edit_client_info_path(client), class: "button is-small" %>
+                    <% else %>
+                      <span class="has-text-grey-light">—</span>
+                    <% end %>
                 </td>
               </tr>
             <% end %>
@@ -70,3 +87,16 @@
     <% end %>
   </div>
 </div>
+
+
+<style>
+/* Custom CSS to enable horizontal scroll on Bulma tabs for small screens */
+.tabs-scroll-wrapper {
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.tabs-scroll-wrapper ul {
+  display: inline-flex; /* Forces all tabs onto one line */
+}
+<style>
