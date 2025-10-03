@@ -133,7 +133,7 @@ ru:
       view_my_bookings: "Мои записи"
       client_info: "Клиенты"
       doctor: "Доктор"
-      certified: "Сертифицирован"
+      certified: "Дипломированный Психолог"
       religion: "Религия: %{religion}"
       years_experience:
         one: "1 год опыта"

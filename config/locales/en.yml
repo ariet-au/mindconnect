@@ -147,7 +147,7 @@ en:
       view_my_bookings: "My Bookings"
       client_info: "Client Info"
       doctor: "Doctor"
-      certified: "Certified"
+      certified: "Clinical Psychologist"
       religion: "Religion: %{religion}"
       years_experience:
         one: "1 year of experience"
@@ -230,7 +230,7 @@ en:
     max_rate_placeholder: "Max"
     apply_filters_button: "Apply Filters"
     doctor_badge: "PhD"
-    certified_badge: "Certified"
+    certified_badge: "Clinical Psych."
     view_profile_button: "View Profile"
     contact_button: "Contact"
     solo: "Solo"
