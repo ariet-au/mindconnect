@@ -15,13 +15,13 @@ class ApplicationController < ActionController::Base
   helper_method :current_currency
   before_action :set_locale
 
-  def after_sign_in_path_for(resource)
-    if resource.role == "psychologist"
-      psychologist_dashboard_path
-    else
-      super # fallback to Devise's default behavior, e.g., root_path
-    end
-  end
+  # def after_sign_in_path_for(resource)
+  #   if resource.role == "psychologist"
+  #     psychologist_dashboard_path
+  #   else
+  #     super # fallback to Devise's default behavior, e.g., root_path
+  #   end
+  # end
 
 
 
