@@ -66,6 +66,24 @@
     height: auto;
     border-radius: 8px;
   }
+
+  /* Mobile adjustments: full width, no side margins */
+  @media (max-width: 768px) {
+    body {
+      justify-content: flex-start;
+      align-items: flex-start;
+      padding: 1rem 0;
+    }
+
+    .login-box {
+      width: 100% !important;
+      max-width: none !important;
+      margin: 0 !important;
+      padding: 2rem 1rem !important; /* Reduced side padding for full-width feel, adjust as needed */
+      border-radius: 0; /* Optional: remove rounded corners on mobile for edge-to-edge */
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: lighter shadow on mobile */
+    }
+  }
 </style>
 
 <div class="box login-box">
