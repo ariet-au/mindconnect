@@ -388,6 +388,21 @@ en:
       confirm_booking_button: Confirm Booking
       missing_psychologist_or_service_error: Psychologist or Service is missing. Please select both to continue.
     psychologist_bookings:
+      request: 'request'
+      cancel_button: "Cancel"
+      actions: "Actions"
+      week_all: "All weeks"
+      filter_by_service: "Filter by service"
+      filter_by_week: "Filter by week"
+      filter_all_services: "Filter by service"
+      filter_by_status: "Filter by status"
+      filter_all_statuses: "All statuses"
+      week_current: "Current week"
+      week_next: "Next week"
+      search_by_client: "Search by client"
+      search_client_placeholder: "Search client..."
+      view_button: "View"
+      no_bookings: "No bookings"
       upcoming_bookings_title: "Upcoming Bookings"
       past_bookings_title: "Past Bookings"
       service_header: "Service"

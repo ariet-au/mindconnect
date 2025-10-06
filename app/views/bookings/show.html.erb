@@ -547,10 +547,10 @@
         <span><%= t('.edit_button') %></span>
       <% end %>
 
-      <%= link_to psychologist_dashboard_path, class: "btn secondary" do %>
-        <i class="fas fa-arrow-left"></i>
-        <span><%= t('.back_button') %></span>
-      <% end %>
+<%= link_to 'javascript:history.back()', class: "btn secondary" do %>
+  <i class="fas fa-arrow-left"></i>
+  <span><%= t('.back_button') %></span>
+<% end %>
     </div>
   </div>
 </div>

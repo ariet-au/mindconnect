@@ -76,7 +76,7 @@
         <% bookings.each do |booking| %>
           <div class="booking-card" data-status="<%= booking.status || 'unknown' %>" data-service-id="<%= booking.service_id || '' %>" data-client-name="<%= booking.client_info&.full_name&.downcase || '' %>">
             <div class="booking-header">
-              <div class="booking-info">
+              <div class="client-row">
                 <div class="client-name">
                   <% if booking.client_info.present? %>
                     <%= link_to booking.client_info.full_name, client_info_path(booking.client_info), class: 'client-link' %>
@@ -84,47 +84,64 @@
                     N/A
                   <% end %>
                 </div>
-                <div class="booking-meta">
-                  <span class="service-name"><%= booking.service&.name || 'N/A' %></span>
-                  <span class="meta-separator">•</span>
-                  <span class="duration"><%= t('bookings.psychologist_bookings.duration_minutes', count: booking.service&.duration_minutes || 0) %></span>
-                </div>
-                <div class="booking-time">
-                  <span class="utc-date-time-range"
-                        data-start-utc="<%= booking.start_time.utc.iso8601 %>"
-                        data-end-utc="<%= booking.end_time&.utc&.iso8601 %>">
-                    <%= t('.loading_time') %>
+                <div class="booking-badges">
+<%= content_tag(:span, t('.request'), class: "request-badge") if booking.created_by != "psychologist" %>
+                  <span class="status-badge <%= booking.status || 'unknown' %>">
+                    <%= booking.status.present? ? t(".status_tags.#{booking.status.underscore}") : t('.status_tags.unknown') %>
                   </span>
                 </div>
               </div>
-              <div class="booking-badges">
-                <span class="status-badge <%= booking.status || 'unknown' %>">
-                  <%= booking.status.present? ? t(".status_tags.#{booking.status.underscore}") : t('.status_tags.unknown') %>
+              <div class="booking-meta">
+                <span class="service-name"><%= booking.service&.name || 'N/A' %></span>
+                <span class="meta-separator">•</span>
+                <span class="duration"><%= t('bookings.psychologist_bookings.duration_minutes', count: booking.service&.duration_minutes || 0) %></span>
+              </div>
+              <div class="booking-time">
+                <span class="utc-date-time-range"
+                      data-start-utc="<%= booking.start_time.utc.iso8601 %>"
+                      data-end-utc="<%= booking.end_time&.utc&.iso8601 %>">
+                  <%= t('.loading_time') %>
                 </span>
-                <span class="created-badge"><%= booking.created_by %></span>
               </div>
             </div>
             <div class="booking-actions">
-            <% unless booking.status == 'cancelled' %>
-              <% if booking.created_by == 'client' && booking.status == 'pending' %>
-                <%= button_to t('.confirm_button'),
-                    confirm_psychologist_profile_booking_path(booking.psychologist_profile, booking, redirect_to: 'psychologist_bookings'),
-                    method: :patch,
-                    class: 'btn-action btn-confirm' %>
+              <% unless booking.status == 'cancelled' %>
+                <% if booking.created_by == 'client' && booking.status == 'pending' %>
+                  <%= button_to t('.confirm_button'),
+                      confirm_psychologist_profile_booking_path(booking.psychologist_profile, booking, redirect_to: 'psychologist_bookings'),
+                      method: :patch,
+                      class: 'btn-action btn-confirm' %>
 
-                <%= button_to t('.decline_button'),
-                    decline_psychologist_profile_booking_path(booking.psychologist_profile, booking, redirect_to: 'psychologist_bookings'),
-                    method: :patch,
-                    class: 'btn-action btn-decline' %>
-              <% else %>
-                    <%= button_to t('.cancel_button'),
-                    cancel_psychologist_profile_booking_path(booking.psychologist_profile, booking, redirect_to: 'psychologist_bookings'),
-                    method: :patch,
-                    class: 'btn-action btn-cancel' %>
-              <% end %>
-             <% end %> 
+                  <%= button_to t('.decline_button'),
+                      decline_psychologist_profile_booking_path(booking.psychologist_profile, booking, redirect_to: 'psychologist_bookings'),
+                      method: :patch,
+                      class: 'btn-action btn-decline' %>
+                <% end %>
+              <% end %> 
               <%= link_to t('.view_button'), psychologist_profile_booking_path(booking.psychologist_profile, booking), class: 'btn-action btn-view' %>
-              <%= link_to t('.edit_button'), edit_psychologist_profile_booking_path(booking.psychologist_profile, booking), class: 'btn-action btn-edit' %>
+              <div class="dropdown is-right">
+                <div class="dropdown-trigger">
+                  <button class="btn-action btn-more" aria-haspopup="true" aria-controls="dropdown-menu">
+                    <span><%= t('.actions') %></span>
+                    <span class="icon is-small">
+                      <i class="fas fa-angle-down" aria-hidden="true"></i>
+                    </span>
+                  </button>
+                </div>
+                <div class="dropdown-menu" id="dropdown-menu" role="menu">
+                  <div class="dropdown-content">
+                    <% unless booking.status == 'cancelled' %>
+                      <% unless booking.created_by == 'client' && booking.status == 'pending' %>
+                        <%= button_to t('.cancel_button'),
+                            cancel_psychologist_profile_booking_path(booking.psychologist_profile, booking, redirect_to: 'psychologist_bookings'),
+                            method: :patch,
+                            class: 'dropdown-item' %>
+                      <% end %>
+                    <% end %>
+                    <%= link_to t('.edit_button'), edit_psychologist_profile_booking_path(booking.psychologist_profile, booking), class: 'dropdown-item' %>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         <% end %>
@@ -234,9 +251,26 @@
       });
     }
 
-
     // Initial filter application
     applyFilters();
+
+    // Dropdown toggle
+    document.querySelectorAll('.dropdown-trigger button').forEach(btn => {
+      btn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const dropdown = btn.closest('.dropdown');
+        dropdown.classList.toggle('is-active');
+      });
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', (event) => {
+      if (!event.target.closest('.dropdown')) {
+        document.querySelectorAll('.dropdown').forEach(dropdown => {
+          dropdown.classList.remove('is-active');
+        });
+      }
+    });
   });
 </script>
 
@@ -365,22 +399,22 @@
 
   .booking-header {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 1rem;
+    flex-direction: column;
+    gap: 0.25rem;
     margin-bottom: 0.75rem;
   }
 
-  .booking-info {
-    flex: 1;
-    min-width: 0;
+  .client-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.25rem;
   }
 
   .client-name {
     font-size: 1rem;
     font-weight: 600;
     color: var(--charcoal);
-    margin-bottom: 0.25rem;
   }
 
   .client-link {
@@ -411,12 +445,12 @@
 
   .booking-badges {
     display: flex;
-    flex-direction: column;
+    align-items: center;
     gap: 0.5rem;
-    align-items: flex-end;
   }
 
-  .status-badge {
+  .status-badge,
+  .request-badge {
     padding: 0.25rem 0.75rem;
     font-size: 0.75rem;
     font-weight: 600;
@@ -450,13 +484,10 @@
     border: 1px solid #bee5eb;
   }
 
-  .created-badge {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-    color: var(--text-grey);
+  .request-badge {
     background: var(--light-grey);
+    color: var(--text-grey);
     border: 1px solid var(--border-grey);
-    border-radius: 4px;
   }
 
   /* Booking Actions */
@@ -489,21 +520,22 @@
     color: white;
   }
 
-  .btn-edit, .btn-confirm, .btn-decline {
+  .btn-more {
     background: white;
-  }
-
-  .btn-edit {
     border-color: var(--border-grey);
     color: var(--text-grey);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
   }
 
-  .btn-edit:hover {
+  .btn-more:hover {
     border-color: var(--blue);
     color: var(--blue);
   }
 
   .btn-confirm {
+    background: white;
     border-color: var(--success);
     color: var(--success);
   }
@@ -514,6 +546,7 @@
   }
 
   .btn-decline {
+    background: white;
     border-color: var(--danger);
     color: var(--danger);
   }
@@ -521,6 +554,30 @@
   .btn-decline:hover {
     background: var(--danger);
     color: white;
+  }
+
+  .dropdown.is-active .dropdown-menu {
+    display: block;
+  }
+
+  .dropdown-menu {
+    display: none;
+  }
+
+  .dropdown-item {
+    padding: 0.5rem 1rem;
+    color: var(--text-grey);
+    white-space: nowrap;
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .dropdown-item:hover {
+    background-color: var(--light-grey);
   }
 
   /* No Bookings */
@@ -563,14 +620,17 @@
     }
 
     .booking-header {
-      flex-direction: column;
       gap: 0.75rem;
     }
 
+    .client-row {
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
     .booking-badges {
-      flex-direction: row;
-      align-items: center;
-      width: 100%;
+      justify-content: flex-start;
     }
 
     .booking-actions {

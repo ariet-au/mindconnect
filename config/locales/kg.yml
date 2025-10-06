@@ -372,6 +372,21 @@ kg:
       confirm_booking_button: Брондоону ырастоо
       missing_psychologist_or_service_error: Психолог же кызмат жок. Улантуу үчүн экөөнү тең тандаңыз.
     psychologist_bookings:
+      request: 'Суроо'
+      cancel_button: "Отменить"
+      actions: "Аракеттер"
+      week_all: "Бардык жумалар"
+      filter_by_service: "Кызмат боюнча чыпкалоо" 
+      filter_by_week: "Жума боюнча чыпкалоо"
+      filter_all_services: "Кызмат боюнча чыпкалоо"
+      filter_by_status: "Статус боюнча чыпкалоо"
+      filter_all_statuses: "Бардык статустар"
+      week_current: "Учурдагы жума"
+      week_next: "Кийинки жума"
+      search_by_client: "Кардар боюнча издөө"
+      search_client_placeholder: "Кардарды издөө..."
+      view_button: "Көрүү"
+      no_bookings: "Жазуулар жок"
       upcoming_bookings_title: "Алдыдагы жазуулар"
       past_bookings_title: "Өткөн жазуулар"
       service_header: "Кызмат"

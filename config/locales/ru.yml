@@ -376,6 +376,21 @@ ru:
       confirm_booking_button: Подтвердить бронирование
       missing_psychologist_or_service_error: Психолог или услуга отсутствуют. Пожалуйста, выберите оба, чтобы продолжить.
     psychologist_bookings:
+      request: 'запрос'
+      cancel_button: "Отменить"
+      actions: "Действия"
+      week_all: "Все недели"
+      filter_by_service: "Выбрать сервис"
+      filter_by_week: "Фильтровать по неделе"
+      filter_all_services: "Фильтровать по услуге"
+      filter_by_status: "Фильтровать по статусу"
+      filter_all_statuses: "Все статусы"
+      week_current: "Текущая неделя"
+      week_next: "Следующая неделя"
+      search_by_client: "Поиск по клиенту"
+      search_client_placeholder: "Поиск клиента..."
+      view_button: "Просмотр"
+      no_bookings: "Нет записей"
       upcoming_bookings_title: "Предстоящие записи"
       past_bookings_title: "Прошлые записи"
       service_header: "Услуга"
