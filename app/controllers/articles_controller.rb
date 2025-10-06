@@ -3,12 +3,40 @@ class ArticlesController < ApplicationController
 
   # GET /articles or /articles.json
   def index
-    @articles = Article.all.order(created_at: :desc)
-  end 
+    @articles = Article.order(created_at: :desc)
+
+    # Grab all page views that contain '/articles/' in the URL
+    page_views = PageView.where("url LIKE ?", "%/articles/%")
+
+    # Build a hash: article_id => views_count
+    @views_counts = page_views.each_with_object(Hash.new(0)) do |pv, hash|
+      if pv.url =~ %r{/articles/(\d+)}
+        article_id = $1.to_i
+        hash[article_id] += 1
+      end
+    end
+  end
 
   # GET /articles/1 or /articles/1.json
   def show
+    @article = Article.find(params[:id])
+
+    # Only create a page view if this session hasn't viewed this article yet
+    unless PageView.exists?(session_id: session.id.to_s, url: request.fullpath)
+      PageView.create!(
+        user_id: current_user&.id,
+        session_id: session.id.to_s,
+        url: request.fullpath
+      )
+    end
+
+    # Count views for this article by URL
+    # Cache for 10 minutes to avoid counting every request
+    @views_count = Rails.cache.fetch(["article-views", @article.id], expires_in: 10.minutes) do
+      PageView.where("url LIKE ?", "%/articles/#{@article.id}").count
+    end
   end
+
 
   # GET /articles/new
   def new
