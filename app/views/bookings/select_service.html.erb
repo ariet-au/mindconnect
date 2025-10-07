@@ -5,19 +5,145 @@
     </div>
   <% end %>
 
-  <h1 class="title has-text-centered mb-4"><%= t('.select_service_title') %></h1>
+  <h1 class="title has-text-centered mb-6">
+    <%= t('.select_service_title') %>
+  </h1>
 
-  <div class="box p-5 has-shadow">
-    <% @services.each do |service| %>
-      <%= link_to choose_time_path(
-            service_id: service.id,
-            psychologist_id: @psychologist_id || params[:psychologist_id],
-            date: Date.today
-          ),
-          class: "button is-primary is-fullwidth mb-3" do %>
-        <span class="has-text-weight-semibold"><%= service.name %></span>
-        <span class="has-text-grey ml-2">(<%= t('.duration_minutes', minutes: service.duration_minutes) %>)</span>
+  <% if @services.present? %>
+    <div class="columns is-multiline">
+      <% @services.each_with_index do |service, index| %>
+        <div class="column is-12">
+          <div class="box" style="border: 1px solid #e8e8e8; box-shadow: none; transition: all 0.2s ease;">
+            <div class="is-flex is-flex-direction-column">
+              <!-- Main service row -->
+              <div class="is-flex is-align-items-center is-justify-content-space-between" style="gap: 1rem;">
+                <div class="is-flex-grow-1" style="min-width: 0;">
+                  <h2 class="title is-5 mb-2" style="line-height: 1.3;"><%= service.name %></h2>
+                  
+                  <div class="is-flex is-flex-wrap-wrap" style="gap: 1rem; font-size: 0.9rem;">
+                    <span class="has-text-grey">
+                      <i class="fas fa-clock" style="width: 14px;"></i> <%= service.duration_minutes %> <%= t('.minutes') %>
+                    </span>
+                    <span class="has-text-grey">
+                      <i class="fas fa-tag" style="width: 14px;"></i> <%= number_to_currency(service.price, unit: service.currency || "USD") %>
+                    </span>
+                    <span class="has-text-grey">
+                      <% case service.delivery_method %>
+                      <% when 'in_person' %>
+                        <i class="fas fa-user" style="width: 14px;"></i> <%= t('.delivery_methods.in_person') %>
+                      <% when 'online' %>
+                        <i class="fas fa-video" style="width: 14px;"></i> <%= t('.delivery_methods.online') %>
+                      <% when 'phone' %>
+                        <i class="fas fa-phone" style="width: 14px;"></i> <%= t('.delivery_methods.phone') %>
+                      <% end %>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="is-flex is-align-items-center" style="gap: 0.5rem; flex-shrink: 0;">
+                  <%= link_to choose_time_path(
+                        service_id: service.id,
+                        psychologist_id: @psychologist.id,
+                        date: Date.today
+                      ),
+                      class: "button is-primary",
+                      style: "font-weight: 500;" do %>
+                    <span><%= t('.select_button') %></span>
+                  <% end %>
+
+                  <% if service.description.present? %>
+                    <button 
+                      class="button is-ghost" 
+                      data-controller="toggle"
+                      data-action="click->toggle#toggle"
+                      data-toggle-target="button"
+                      style="padding: 0.5rem; color: #7a7a7a;"
+                      aria-label="<%= t('.toggle_description') %>">
+                      <span data-toggle-target="icon">
+                        <i class="fas fa-chevron-down"></i>
+                      </span>
+                    </button>
+                  <% end %>
+                </div>
+              </div>
+
+              <!-- Expandable description -->
+              <% if service.description.present? %>
+                <div 
+                  data-toggle-target="content"
+                  style="max-height: 0; overflow: hidden; transition: max-height 0.3s ease;">
+                  <div class="content mt-4 pt-4" style="border-top: 1px solid #f0f0f0; color: #4a4a4a; line-height: 1.6;">
+                    <%= simple_format(service.description) %>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
       <% end %>
-    <% end %>
-  </div>
+    </div>
+  <% else %>
+    <div class="notification is-light has-text-centered" style="border: 1px solid #e8e8e8; background: #fafafa;">
+      <%= t('.no_services_available') %>
+    </div>
+  <% end %>
 </div>
+
+<script type="module">
+  class ToggleController {
+    static targets = ['content', 'icon', 'button']
+
+    toggle(event) {
+      event.preventDefault()
+      const content = event.currentTarget.closest('.box').querySelector('[data-toggle-target="content"]')
+      const icon = event.currentTarget.querySelector('[data-toggle-target="icon"] i')
+      
+      if (content.style.maxHeight && content.style.maxHeight !== '0px') {
+        content.style.maxHeight = '0'
+        icon.className = 'fas fa-chevron-down'
+        event.currentTarget.setAttribute('aria-expanded', 'false')
+      } else {
+        content.style.maxHeight = content.scrollHeight + 'px'
+        icon.className = 'fas fa-chevron-up'
+        event.currentTarget.setAttribute('aria-expanded', 'true')
+      }
+    }
+  }
+
+  // Register Stimulus-like controller with Turbo
+  document.addEventListener('turbo:load', () => {
+    document.querySelectorAll('[data-controller="toggle"]').forEach(element => {
+      const controller = new ToggleController()
+      element.addEventListener('click', (e) => controller.toggle(e))
+    })
+  })
+</script>
+
+<style>
+  .box:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+    border-color: #d0d0d0 !important;
+  }
+
+  .button.is-ghost:hover {
+    background-color: transparent;
+    color: #363636;
+  }
+
+  @media screen and (max-width: 768px) {
+    .is-flex.is-align-items-center.is-justify-content-space-between {
+      flex-direction: column;
+      align-items: flex-start !important;
+    }
+
+    .is-flex.is-align-items-center[style*="gap: 0.5rem"] {
+      width: 100%;
+      justify-content: space-between;
+      margin-top: 1rem;
+    }
+
+    .button.is-primary {
+      flex-grow: 1;
+    }
+  }
+</style>

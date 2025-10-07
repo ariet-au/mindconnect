@@ -200,7 +200,7 @@ ru:
     all_client_types: "Все типы клиентов"
     languages_label: "Языки"
     select_languages_placeholder: "Выберите языки"
-    delivery_method_label: "Метод доставки"
+    delivery_method_label: "Формат"
     in_person: "Лично"
     online: "Онлайн"
     religion_label: "Религия"
@@ -365,6 +365,15 @@ ru:
 
   bookings:
     select_service:
+      select_service_title: "Select a Service"
+      minutes: "min"
+      select_button: "Select"
+      toggle_description: "Toggle description"
+      no_services_available: "No services available at the moment."
+      delivery_methods:
+        in_person: "In Person"
+        online: "Online"
+        phone: "Phone"
       select_service_title: Выберите услугу
       duration_minutes: "%{minutes} минут"
     choose_time:

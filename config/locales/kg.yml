@@ -361,8 +361,17 @@ kg:
 
   bookings:
     select_service:
-      select_service_title: Кызматты тандаңыз
-      duration_minutes: "%{minutes} мүнөт"
+      select_service_title: "Кызматты тандаңыз"
+      minutes: "мүн" # Short for "мүнөт" (münöt)
+      select_button: "Тандоо"
+      toggle_description: "Сүрөттөмөнү которуштуруу" # or "Сүрөттөмөнү көрсөтүү/жашыруу"
+      no_services_available: "Учурда жеткиликтүү кызматтар жок."
+      delivery_methods:
+        in_person: "Жеке жолугушуу" # or "Ордунда"
+        online: "Онлайн"
+        phone: "Телефон аркылуу"
+      select_service_title: Выберите услугу
+      duration_minutes: "%{minutes} минут"
     choose_time:
       page_title: Убакытты тандаңыз
       date_selection_instruction: Бош убакыттарды көрүү үчүн күндү тандаңыз. Бош орундары бар күндөр белгиленген.

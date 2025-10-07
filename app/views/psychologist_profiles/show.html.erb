@@ -1068,14 +1068,14 @@ body {
     <div class="cta-button-group">
         <% if @psychologist_profile.services.present? %>
           <%= link_to select_service_path(
-                psychologist_id: @psychologist_profile.id,
-                service_id: @psychologist_profile.services.first.id
-                ),
-                class: "cta-button is-primary book-session-button",
-                'data-service-id': @psychologist_profile.services.first.id do %>
-             <i class="fas fa-calendar-check"></i>
-                <span><%= t('psychologist_profiles.show.book_a_session') %></span>
-            <% end %>
+      psychologist_id: @psychologist_profile.id,
+      service_id: @psychologist_profile.services.first.id
+    ),
+    class: "cta-button is-primary book-session-button" do %>
+  <i class="fas fa-calendar-check"></i>
+  <span><%= t('psychologist_profiles.show.book_a_session') %></span>
+<% end %>
+
         <% end %>
         <% if contact_link %>
             <a href="<%= contact_link %>" class="cta-button is-secondary">

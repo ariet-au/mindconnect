@@ -377,8 +377,17 @@ en:
 
   bookings:
     select_service:
-      select_service_title: Select a Service
-      duration_minutes: "%{minutes} min"
+      select_service_title: "Выберите услугу"
+      minutes: "мин"
+      select_button: "Выбрать"
+      toggle_description: "Показать/скрыть описание"
+      no_services_available: "На данный момент услуги недоступны."
+      delivery_methods:
+        in_person: "Очно"
+        online: "Онлайн"
+        phone: "По телефону"
+      select_service_title: Выберите услугу
+      duration_minutes: "%{minutes} минут"
     choose_time:
       page_title: Choose a Time
       date_selection_instruction: Select a date to see available times. Dates with availability are highlighted.
