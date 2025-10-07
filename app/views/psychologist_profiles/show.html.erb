@@ -1068,13 +1068,12 @@ body {
     <div class="cta-button-group">
     
         <% if @psychologist_profile.services.present? %>
-           <%= link_to select_service_path(
+          <%= link_to select_service_path(
                 locale: I18n.locale,
-                psychologist_id: @psychologist_profile.id,
-                service_id: @psychologist_profile.services.first.id
+                psychologist_id: @psychologist_profile.id
                 ),
-                class: "cta-button is-primary book-session-button",
-                data: { service_id: @psychologist_profile.services.first.id } do %>
+                class: "cta-button is-primary book-session-button ignore-carousel",
+                data: { turbo: false } do %>
             <i class="fas fa-calendar-check"></i>
             <span><%= t('psychologist_profiles.show.book_a_session') %></span>
             <% end %>
@@ -1598,7 +1597,7 @@ function initPage() {
     const items = carousel.querySelectorAll('.carousel-item');
     const prevArrow = carousel.querySelector('.carousel-arrow.prev');
     const nextArrow = carousel.querySelector('.carousel-arrow.next');
-    const bookSessionButton = document.querySelector('.book-session-button');
+    const bookSessionButton = document.querySelector('.book-session-button:not(.ignore-carousel)');
 
     if (!container || !items.length) return;
 

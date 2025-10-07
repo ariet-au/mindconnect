@@ -451,9 +451,6 @@ class BookingsController < ApplicationController
 
     # Load their services
     @services = @psychologist.services
-
-    # Optional: store the selected service if provided
-    @selected_service = @services.find_by(id: params[:service_id]) if params[:service_id].present?
   end
 
   def choose_time
