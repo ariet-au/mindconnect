@@ -9,6 +9,7 @@ en:
   for_psychologists: "For psychologists"
   find_a_psychologist: "Find a psychologist"
   quizzes_nav: "Quizzes"
+  articles_nav: "Articles"
   logout: "Logout"
   login: "Login"
   registration: "Registration"
@@ -717,3 +718,35 @@ en:
       submit_button: "Submit Quiz"
       progress_text: "0 of %{total} answered (%{percent}% required to submit)" # Missing %{percent} in Russian
 
+
+  articles:
+    edit:
+      title: "Editing article"
+    show_article: "Show this article"
+    back_to_articles: "Back to articles"
+    delete_article: "Delete"
+    confirm_deletion: "Are you sure?"
+    not_published_yet: "Not published yet"
+    not_published: "Not published"
+    edit_article: "Edit Article"
+    back: "Back"
+    published: "Published"
+    draft: "Draft"
+    read_more: "Read more"
+    error: "error"
+    views: "views"
+    attributes:
+      title: "Title"
+      body: "Body"
+      is_published: "Published?"
+    submit_form: "Save Article"
+    _form:
+      prohibited_save: "prohibited this article from being saved:"
+    index:
+      title: "Articles"
+      new_article: "New article"
+      no_articles: "No articles found."
+    sidebar:
+      categories: "Categories"
+      popular_articles: "Popular Articles"
+      coming_soon: "Coming soon"

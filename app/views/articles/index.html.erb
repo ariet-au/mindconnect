@@ -239,8 +239,10 @@
 
 <div class="articles-feed-container">
   <div class="articles-feed-header">
-    <h1 class="articles-feed-title">Articles</h1>
-    <%= link_to "New article", new_article_path, class: "articles-create-btn" %>
+    <%# Changed t('.title') to t('articles.index.title') %>
+    <h1 class="articles-feed-title"><%= t('articles.index.title') %></h1>
+    <%# Changed t('.new_article') to t('articles.index.new_article') %>
+    <%= link_to t('articles.index.new_article'), new_article_path, class: "articles-create-btn" %>
   </div>
 
   <% if notice.present? %>
@@ -264,13 +266,16 @@
                 <span>•</span>
                   <span class="article-preview-views">
                   <span>👁</span>
-        <span><%= number_with_delimiter(@views_counts[article.id] || 0) %> views</span>
+                  <%# Changed t('.views') to t('articles.views') for consistency with show view %>
+                  <span><%= number_with_delimiter(@views_counts[article.id] || 0) %> <%= t('articles.views', count: @views_counts[article.id] || 0) %></span>
                 </span>
                 <span>•</span>
                 <% if article.is_published %>
-                  <span class="article-preview-status published">Published</span>
+                  <%# Changed t('published') to t('articles.published') %>
+                  <span class="article-preview-status published"><%= t('articles.published') %></span>
                 <% else %>
-                  <span class="article-preview-status draft">Draft</span>
+                  <%# Changed t('draft') to t('articles.draft') %>
+                  <span class="article-preview-status draft"><%= t('articles.draft') %></span>
                 <% end %>
               </div>
 
@@ -285,7 +290,8 @@
                 <%= article.body.to_plain_text.truncate(200) %>
               </div>
 
-              <%= link_to "Read more", article_path(article), class: "article-preview-read-more" %>
+              <%# Changed t('read_more') to t('articles.read_more') %>
+              <%= link_to t('articles.read_more'), article_path(article), class: "article-preview-read-more" %>
             </div>
           <% end %>
         </div>
@@ -294,19 +300,20 @@
           <%= paginate @articles if @articles.respond_to?(:total_pages) %>
         </div>
       <% else %>
-        <div class="articles-empty">No articles found.</div>
+        <%# Changed t('.no_articles') to t('articles.index.no_articles') %>
+        <div class="articles-empty"><%= t('articles.index.no_articles') %></div>
       <% end %>
     </div>
     
     <aside class="articles-sidebar">
       <div class="articles-sidebar-widget">
-        <h3 class="articles-sidebar-widget-title">Categories</h3>
-        <p class="articles-sidebar-widget-content">Coming soon</p>
+        <h3 class="articles-sidebar-widget-title"><%= t('sidebar.categories') %></h3>
+        <p class="articles-sidebar-widget-content"><%= t('sidebar.coming_soon') %></p>
       </div>
       
       <div class="articles-sidebar-widget">
-        <h3 class="articles-sidebar-widget-title">Popular Articles</h3>
-        <p class="articles-sidebar-widget-content">Coming soon</p>
+        <h3 class="articles-sidebar-widget-title"><%= t('sidebar.popular_articles') %></h3>
+        <p class="articles-sidebar-widget-content"><%= t('sidebar.coming_soon') %></p>
       </div>
     </aside>
   </div>

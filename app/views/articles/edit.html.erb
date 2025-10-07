@@ -1,17 +1,12 @@
-<% content_for :title, "Editing article" %>
-
-<h1>Editing article</h1>
+<% content_for :title, t('articles.edit.title') %>
 
 <%= render "form", article: @article %>
 
 <br>
 
 <div>
-  <%= link_to "Show this article", @article %> |
-  <%= link_to "Back to articles", articles_path %>
+  <%= link_to t('articles.show_article'), @article %> |
+  <%= link_to t('articles.back_to_articles'), articles_path %>
 
-
-
-      <%= button_to "Delete", @article, method: :delete, class: "btn btn-outline-danger btn-sm", form: { data: { turbo_confirm: "Are you sure?" } } %>
-
+  <%= button_to t('articles.delete_article'), @article, method: :delete, class: "btn btn-outline-danger btn-sm", form: { data: { turbo_confirm: t('articles.confirm_deletion') } } %>
 </div>

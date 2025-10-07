@@ -8,6 +8,7 @@ kg:
   for_psychologists: "Психологдор үчүн"
   find_a_psychologist: "Психолог табуу"
   quizzes_nav: "Тесттер"
+  articles_nav: "Статьи"
   logout: "Чыгуу"
   login: "Кирүү"
   registration: "Катталуу"
@@ -700,3 +701,35 @@ kg:
       submit_button: "Тестти жөнөтүү"
 
     
+
+  articles:
+    edit:
+      title: "Макаланы оңдоо"
+    show_article: "Макаланы көрсөтүү"
+    back_to_articles: "Макалаларга кайтуу"
+    delete_article: "Өчүрүү"
+    confirm_deletion: "Чын эле өчүргүңүз келеби?"
+    not_published_yet: "Азырынча жарыялана элек"
+    not_published: "Жарыялана элек"
+    edit_article: "Макаланы оңдоо"
+    back: "Артка"
+    published: "Жарыяланган"
+    draft: "Черновик"
+    read_more: "Кененирээк окуу"
+    error: "ката"
+    views: "кароолор"
+    attributes:
+      title: "Аталышы"
+      body: "Мазмуну"
+      is_published: "Жарыяланганбы?"
+    submit_form: "Макаланы сактоо"
+    _form:
+      prohibited_save: "бул макаланын сакталышына тоскоол болду:"
+    index:
+      title: "Макалалар"
+      new_article: "Жаңы макала"
+      no_articles: "Макала табылган жок."
+    sidebar:
+      categories: "Категориялар"
+      popular_articles: "Популярдуу макалалар"
+      coming_soon: "Жакында"

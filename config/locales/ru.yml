@@ -8,6 +8,7 @@ ru:
   for_psychologists: "Для психологов"
   find_a_psychologist: "Найти психолога"
   quizzes_nav: "Тесты"
+  articles_nav: "Статьи"
   logout: "Выйти"
   login: "Войти"
   registration: "Регистрация"
@@ -709,3 +710,35 @@ ru:
       progress_text: "Отвечено 0 из %{total} (%{percent}% необходимо для отправки)"
       submit_button: "Отправить тест"
 
+
+  articles:
+    edit:
+      title: "Редактирование статьи"
+    show_article: "Показать статью"
+    back_to_articles: "Назад к статьям"
+    delete_article: "Удалить"
+    confirm_deletion: "Вы уверены?"
+    not_published_yet: "Еще не опубликовано"
+    not_published: "Не опубликовано"
+    edit_article: "Редактировать статью"
+    back: "Назад"
+    published: "Опубликовано"
+    draft: "Черновик"
+    read_more: "Читать далее"
+    error: "ошибка"
+    views:  "просмотров"
+    attributes:
+      title: "Заголовок"
+      body: "Содержание"
+      is_published: "Опубликовано?"
+    submit_form: "Сохранить статью"
+    _form:
+      prohibited_save: "помешали сохранению статьи:"
+    index:
+      title: "Статьи"
+      new_article: "Новая статья"
+      no_articles: "Статей не найдено."
+    sidebar:
+      categories: "Категории"
+      popular_articles: "Популярные статьи"
+      coming_soon: "Скоро"

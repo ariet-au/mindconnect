@@ -1,7 +1,7 @@
 <%= form_with(model: article) do |form| %>
   <% if article.errors.any? %>
     <div style="color: red">
-      <h2><%= pluralize(article.errors.count, "error") %> prohibited this article from being saved:</h2>
+      <h2><%= pluralize(article.errors.count, t('error')) %> <%= t('.prohibited_save') %></h2>
 
       <ul>
         <% article.errors.each do |error| %>
@@ -11,23 +11,22 @@
     </div>
   <% end %>
 
-
   <div>
-    <%= form.label :title, style: "display: block" %>
-    <%= form.text_field :title %>
+    <%= form.label :title, t('attributes.title'), style: "display: block" %>
+    <%= form.text_field :title, style: "width: 100%; padding: 8px;" %>
   </div>
 
- <div class="field">
-    <%= form.label :body %>
+  <div class="field">
+    <%= form.label :body, t('attributes.body') %>
     <%= form.rich_textarea :body %>
   </div>
 
   <div>
-    <%= form.label :is_published, style: "display: block" %>
+    <%= form.label :is_published, t('attributes.is_published'), style: "display: block" %>
     <%= form.checkbox :is_published %>
   </div>
 
   <div>
-    <%= form.submit %>
+    <%= form.submit t('submit_form') %>
   </div>
 <% end %>
