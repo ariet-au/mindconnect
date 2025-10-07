@@ -165,7 +165,7 @@
         </time>
         <span>•</span>
         <span class="article-author">
-          <%= @article.psychologist_profile.full_name %>
+                  <%= link_to @article.psychologist_profile.full_name, psychologist_profile_path(@article.psychologist_profile) %>
         </span>
         <span>•</span>
         <span class="article-views">
