@@ -1,0 +1,168 @@
+<div class="columns is-multiline">
+
+  <!-- Title -->
+  <div class="column is-full">
+    <div class="field">
+      <%= f.label :title, class: "label" %>
+      <div class="control">
+        <%= f.text_field :title, class: "input", placeholder: "Event title" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Description -->
+  <div class="column is-full">
+    <div class="field">
+      <%= f.label :description, class: "label" %>
+      <div class="control">
+        <%= f.text_area :description, class: "textarea", placeholder: "Event description" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Start & End Time -->
+  <div class="column is-half">
+    <div class="field">
+      <%= f.label :start_time, class: "label" %>
+      <div class="control">
+        <%= f.datetime_select :start_time, class: "input" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="column is-half">
+    <div class="field">
+      <%= f.label :end_time, class: "label" %>
+      <div class="control">
+        <%= f.datetime_select :end_time, class: "input" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Registration Ends -->
+  <div class="column is-half">
+    <div class="field">
+      <%= f.label :registration_ends_at, "Registration Ends", class: "label" %>
+      <div class="control">
+        <%= f.datetime_select :registration_ends_at, class: "input" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Timezone -->
+  <div class="column is-half">
+    <div class="field">
+      <%= f.label :timezone, class: "label" %>
+      <div class="control">
+        <%= f.text_field :timezone, class: "input", placeholder: "e.g., Australia/Sydney" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Online / In Person -->
+  <div class="column is-half">
+    <div class="field">
+      <%= f.label :online, "Event Type", class: "label" %>
+      <div class="control">
+        <div class="select is-fullwidth">
+          <%= f.select :online, [["Online", true], ["In Person", false]] %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Address (only relevant if in-person) -->
+  <div class="column is-half">
+    <div class="field">
+      <%= f.label :address, class: "label" %>
+      <div class="control">
+        <%= f.text_field :address, class: "input", placeholder: "Physical address (if in person)" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Online Link -->
+  <div class="column is-full">
+    <div class="field">
+      <%= f.label :online_link, class: "label" %>
+      <div class="control">
+        <%= f.text_field :online_link, class: "input", placeholder: "Zoom / Google Meet link" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hide Details Until Approved -->
+  <div class="column is-full">
+    <div class="field">
+      <div class="control">
+        <label class="checkbox">
+          <%= f.check_box :hide_details_until_approved %>
+          Hide address/link until attendee approved
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- Capacity -->
+  <div class="column is-half">
+    <div class="field">
+      <%= f.label :capacity, class: "label" %>
+      <div class="control">
+        <%= f.number_field :capacity, class: "input" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Price & Currency -->
+  <div class="column is-half">
+    <div class="field">
+      <%= f.label :price, class: "label" %>
+      <div class="control">
+        <%= f.number_field :price, class: "input", step: 0.01 %>
+      </div>
+    </div>
+  </div>
+
+  <div class="column is-half">
+    <div class="field">
+      <%= f.label :currency, class: "label" %>
+      <div class="control">
+        <%= f.text_field :currency, class: "input", placeholder: "USD" %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Language -->
+  <div class="column is-half">
+    <div class="field">
+      <%= f.label :language, class: "label" %>
+      <div class="control">
+        <%= f.text_field :language, class: "input", placeholder: "English, Spanish, etc." %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audience & Access Type -->
+  <div class="column is-half">
+    <div class="field">
+      <%= f.label :audience, class: "label" %>
+      <div class="control">
+        <div class="select is-fullwidth">
+          <%= f.select :audience, Event.audiences.keys.map { |k| [k.humanize, k] } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="column is-half">
+    <div class="field">
+      <%= f.label :access_type, class: "label" %>
+      <div class="control">
+        <div class="select is-fullwidth">
+          <%= f.select :access_type, Event.access_types.keys.map { |k| [k.humanize, k] } %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

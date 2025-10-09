@@ -1,0 +1,34 @@
+<%= form_with model: EventRegistration.new(event: event), url: event_event_registrations_path(event), class: "space-y-4", data: { turbo: false } do |f| %>
+  <%= f.hidden_field :status, value: :pending %>
+  <%= f.hidden_field :price, value: event.price || 0 %>
+  <%= f.hidden_field :currency, value: event.currency || "USD" %>
+
+  <div class="bg-gray-100 p-4 rounded-lg">
+    <h2 class="text-lg font-semibold mb-2">Your Information</h2>
+    
+    <%# Build client_info with required attributes if not present %>
+    <% f.object.build_client_info(
+         psychologist_profile_id: event.psychologist_profile_id,
+         submitted_by: current_user ? "client" : "psychologist"
+       ) if f.object.client_info.nil? %>
+    
+    <%= f.fields_for :client_info_attributes, f.object.client_info do |client_f| %>
+      <%= render "client_infos/client_info_fields", f: client_f %>
+    <% end %>
+  </div>
+
+  <div>
+    <%= f.submit "Register for Event", class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" %>
+  </div>
+
+  <% if f.object.errors.any? %>
+    <div class="text-red-600">
+      <p>The following errors prevented registration:</p>
+      <ul class="list-disc pl-5">
+        <% f.object.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+<% end %>

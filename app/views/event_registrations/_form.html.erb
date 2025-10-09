@@ -1,0 +1,51 @@
+<%= form_with model: [ @event, @registration ], local: true do |f| %>
+  <% if current_user.nil? %>
+    <h3>Guest Information</h3>
+    <%= f.fields_for :client_info do |client_f| %>
+      <div class="field">
+        <%= client_f.label :first_name, class: "label" %>
+        <div class="control">
+          <%= client_f.text_field :first_name, class: "input" %>
+        </div>
+      </div>
+
+      <div class="field">
+        <%= client_f.label :last_name, class: "label" %>
+        <div class="control">
+          <%= client_f.text_field :last_name, class: "input" %>
+        </div>
+      </div>
+
+      <div class="field">
+        <%= client_f.label :email, class: "label" %>
+        <div class="control">
+          <%= client_f.email_field :email, class: "input" %>
+        </div>
+      </div>
+
+      <div class="field">
+        <%= client_f.label :phone, class: "label" %>
+        <div class="control">
+          <%= client_f.telephone_field :phone, class: "input" %>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+
+  <h3>Registration Details</h3>
+  <div class="field">
+    <div class="control">
+      <% if @event.price.present? && @event.price > 0 %>
+        <p>Price: <%= number_to_currency(@event.price, unit: @event.currency || "USD") %></p>
+      <% else %>
+        <p>Free Event</p>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="field">
+    <div class="control">
+      <%= f.submit "Register", class: "button is-primary" %>
+    </div>
+  </div>
+<% end %>

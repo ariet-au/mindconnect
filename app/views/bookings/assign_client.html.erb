@@ -11,7 +11,7 @@
 
     <h3><%= t('.or_create_new_client_title') %></h3>
     <%= f.fields_for :client_info do |client_f| %>
-      <%= render "client_infos/client_info_fields", f: client_f %>
+      <%= render "client_infoAs/client_info_fields", f: client_f %>
     <% end %>
 
     <div class="field">

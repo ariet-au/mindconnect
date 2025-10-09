@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  event: one
+  user: one
+  client_info: one
+  status: 1
+  price: 9.99
+  currency: MyString
+  paid_at: 2025-10-08 05:21:32
+
+two:
+  event: two
+  user: two
+  client_info: two
+  status: 1
+  price: 9.99
+  currency: MyString
+  paid_at: 2025-10-08 05:21:32

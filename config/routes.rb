@@ -32,6 +32,27 @@ Rails.application.routes.draw do
   # Locale-scoped routes
   scope "(:locale)", locale: /en|ru|kg/ do
 
+
+    resources :events do
+      member do
+        get :share                    # /events/:id/share       → Share/copy link
+        patch :cancel                  # /events/:id/cancel      → Cancel event
+        patch :archive                 # /events/:id/archive     → Archive event
+        get :duplicate                 # /events/:id/duplicate   → Duplicate event
+      end
+
+      resources :event_registrations, only: [:create, :new, :show, :edit, :update] do
+        member do
+          patch :approve               # /events/:event_id/event_registrations/:id/approve
+          patch :decline               # /events/:event_id/event_registrations/:id/decline
+          patch :cancel                # /events/:event_id/event_registrations/:id/cancel
+          patch :mark_attended         # /events/:event_id/event_registrations/:id/mark_attended
+          patch :mark_no_show          # /events/:event_id/event_registrations/:id/mark_no_show
+        end
+      end
+    end
+
+
     get '/book/select_service', to: 'bookings#select_service', as: :select_service
     get '/book/choose_time', to: 'bookings#choose_time', as: :choose_time
     get '/book/assign_client', to: 'bookings#assign_client', as: :assign_client

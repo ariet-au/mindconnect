@@ -1,0 +1,160 @@
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-3xl mx-auto">
+    <!-- Event Title & Add to Calendar -->
+    <h1 class="text-3xl font-bold mb-4"><%= @event.title || "Untitled Event" %></h1>
+    <div class="mb-4 flex gap-2">
+      <%= link_to "📅 Add to Calendar", event_path(@event, format: :ics), class: "button is-light" %>
+      <button type="button" class="button is-light" data-clipboard-text="<%= event_url(@event) %>">
+        <span class="icon"><i class="fas fa-share-alt"></i></span>
+        <span>Copy Event Link</span>
+      </button>
+    </div>
+
+    <!-- Event Description -->
+    <% if @event.description.present? %>
+      <p class="text-gray-700 mb-6"><%= @event.description %></p>
+    <% end %>
+
+    <!-- Event Details -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+      <div>
+        <p><strong>Start Time:</strong> <%= @event.start_time&.strftime("%B %d, %Y %I:%M %p") || "Not specified" %></p>
+        <p><strong>End Time:</strong> <%= @event.end_time&.strftime("%B %d, %Y %I:%M %p") || "Not specified" %></p>
+        <p><strong>Timezone:</strong> <%= @event.timezone || "Not specified" %></p>
+        <% if @event.location_visible?(current_user) %>
+          <p><strong>Format:</strong> <%= @event.online.nil? ? "Not set" : (@event.online? ? "Online" : "In-person") %></p>
+          <% if @event.online? && @event.online_link.present? %>
+            <p><strong>Link:</strong> <%= link_to @event.online_link, @event.online_link, target: "_blank", class: "text-blue-600 hover:underline" %></p>
+          <% elsif !@event.online? && @event.address.present? %>
+            <p><strong>Address:</strong> <%= @event.address %></p>
+          <% end %>
+        <% else %>
+          <p class="text-gray-500 italic">Location details available after registration approval</p>
+        <% end %>
+      </div>
+
+      <div>
+        <p><strong>Price:</strong> <%= @event.price.present? && @event.price > 0 ? number_to_currency(@event.price, unit: @event.currency || "USD") : "Free" %></p>
+        <p><strong>Capacity:</strong> <%= @event.capacity || "Unlimited" %></p>
+        <p><strong>Registrations:</strong> <%= @event.registrations_count || 0 %></p>
+        <p><strong>Status:</strong> <%= @event.status&.humanize || "Not specified" %></p>
+        <% if @event.language.present? %>
+          <p><strong>Language:</strong> <%= @event.language %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Owner Actions & Registrations -->
+    <% if current_user.psychologist_profile&.id == @event.psychologist_profile_id %>
+      <div class="mt-8 border-t pt-6">
+        <h2 class="text-2xl font-bold mb-4">Registered Participants (<%= @event.event_registrations.count %>)</h2>
+
+        <% if @event.event_registrations.any? %>
+          <table class="min-w-full border border-gray-200 text-left text-sm">
+            <thead>
+              <tr class="bg-gray-100">
+                <th class="py-2 px-4 border-b">#</th>
+                <th class="py-2 px-4 border-b">Name</th>
+                <th class="py-2 px-4 border-b">Contact</th>
+                <th class="py-2 px-4 border-b">Status</th>
+                <th class="py-2 px-4 border-b">Registered At</th>
+                <th class="py-2 px-4 border-b">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @event.event_registrations.includes(:user, :client_info).each_with_index do |reg, i| %>
+                <tr class="<%= cycle('bg-white', 'bg-gray-50') %>">
+                  <td class="py-2 px-4 border-b"><%= i + 1 %></td>
+                  <td class="py-2 px-4 border-b">
+                    <% if reg.user.present? %>
+                      <%= reg.user.full_name rescue reg.user.email %>
+                    <% elsif reg.client_info.present? %>
+                      <%= [reg.client_info.first_name, reg.client_info.last_name].compact.join(' ') %>
+                    <% else %>
+                      Unknown
+                    <% end %>
+                  </td>
+                  <td class="py-2 px-4 border-b">
+                    <% if reg.user.present? %>
+                      <%= reg.user.email %>
+                    <% elsif reg.client_info.present? %>
+                      <%= reg.client_info.email || reg.client_info.phone_number %>
+                    <% end %>
+                  </td>
+                  <td class="py-2 px-4 border-b">
+                    <%# Status Badge %>
+                    <span class="px-2 py-1 rounded text-white <%= case reg.status
+                      when 'pending' then 'bg-gray-500'
+                      when 'approved' then 'bg-green-500'
+                      when 'declined' then 'bg-red-500'
+                      when 'cancelled' then 'bg-orange-500'
+                      when 'waitlisted' then 'bg-yellow-500'
+                      when 'attended' then 'bg-blue-500'
+                      when 'no_show' then 'bg-indigo-500'
+                      when 'event_cancelled' then 'bg-gray-700'
+                      else 'bg-gray-300'
+                    end %>">
+                      <%= reg.status&.humanize %>
+                    </span>
+                  </td>
+                  <td class="py-2 px-4 border-b"><%= reg.registered_at&.strftime("%b %d, %Y %I:%M %p") %></td>
+                  <td class="py-2 px-4 border-b flex gap-1">
+                    <%# Owner actions %>
+                    <% unless reg.status&.in?(%w[event_cancelled cancelled attended no_show]) %>
+                      <%= link_to "Approve", approve_event_event_registration_path(reg), method: :patch, class: "button is-small is-success" if reg.status == 'pending' %>
+                      <%= link_to "Decline", decline_event_event_registration_path(reg), method: :patch, class: "button is-small is-danger" if reg.status == 'pending' %>
+                      <%= link_to "Cancel", cancel_event_event_registration_path(reg), method: :patch, class: "button is-small is-warning" %>
+                      <%= link_to "Mark Attended", mark_attended_event_event_registration_path(reg), method: :patch, class: "button is-small is-info" if reg.status == 'approved' %>
+                      <%= link_to "Mark No Show", mark_no_show_event_event_registration_path(reg), method: :patch, class: "button is-small is-light" if reg.status == 'approved' %>
+                    <% end %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        <% else %>
+          <p class="text-gray-600">No one has registered yet.</p>
+        <% end %>
+
+        <!-- Event-Level Owner Actions -->
+        <div class="mt-4 flex gap-2">
+          <% unless @event.status == 'cancelled' %>
+            <%= link_to "Cancel Event", cancel_event_path(@event), method: :patch, data: { confirm: "Are you sure you want to cancel this event?" }, class: "button is-danger" %>
+          <% end %>
+          <%= link_to "Edit Event", edit_event_path(@event), class: "button is-primary" %>
+          <%= link_to "Duplicate Event", duplicate_event_path(@event), class: "button is-light" %>
+          <% if @event.visibility != 'archived' %>
+            <%= link_to "Archive Event", archive_event_path(@event), method: :patch, class: "button is-warning" %>
+          <% end %>
+        </div>
+      </div>
+
+    <% else %>
+      <!-- Attendee View -->
+      <% if @event.registration_open? %>
+        <% if current_user && @event.event_registrations.exists?(user: current_user) %>
+          <% registration = @event.event_registrations.find_by(user: current_user) %>
+          <p class="text-green-600 font-semibold mb-4">You are already registered! Status: <%= registration.status&.humanize %></p>
+        <% else %>
+          <%= render partial: "event_registrations/registration_form", locals: { event: @event } %>
+        <% end %>
+      <% else %>
+        <p class="text-red-600 font-semibold mb-4">Registration is closed for this event.</p>
+      <% end %>
+    <% end %>
+
+    <%= link_to "Back to Events", events_path, class: "text-blue-600 hover:underline mt-4 inline-block" %>
+  </div>
+</div>
+
+<script>
+document.addEventListener("turbo:load", function() {
+  document.querySelectorAll('button[data-clipboard-text]').forEach(button => {
+    button.addEventListener('click', () => {
+      navigator.clipboard.writeText(button.dataset.clipboardText).then(() => {
+        alert("Event link copied!");
+      }).catch(err => console.error("Copy failed", err));
+    });
+  });
+});
+</script>

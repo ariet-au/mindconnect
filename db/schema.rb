@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_09_28_220554) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_07_182132) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -177,6 +177,59 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_28_220554) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["psychologist_profile_id"], name: "index_educations_on_psychologist_profile_id"
+  end
+
+  create_table "event_registrations", force: :cascade do |t|
+    t.bigint "event_id", null: false
+    t.bigint "user_id"
+    t.bigint "client_info_id"
+    t.integer "status"
+    t.datetime "registered_at"
+    t.datetime "approved_at"
+    t.datetime "cancelled_at"
+    t.text "cancellation_reason"
+    t.boolean "attended"
+    t.string "timezone"
+    t.decimal "price"
+    t.string "currency"
+    t.datetime "paid_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_info_id"], name: "index_event_registrations_on_client_info_id"
+    t.index ["event_id"], name: "index_event_registrations_on_event_id"
+    t.index ["user_id"], name: "index_event_registrations_on_user_id"
+  end
+
+  create_table "events", force: :cascade do |t|
+    t.bigint "psychologist_profile_id", null: false
+    t.string "title"
+    t.text "description"
+    t.datetime "start_time"
+    t.datetime "end_time"
+    t.decimal "price"
+    t.string "currency"
+    t.string "timezone"
+    t.boolean "online"
+    t.string "address"
+    t.string "online_link"
+    t.boolean "hide_details_until_approved"
+    t.integer "audience"
+    t.integer "access_type"
+    t.integer "visibility"
+    t.integer "status"
+    t.integer "capacity"
+    t.datetime "registration_ends_at"
+    t.datetime "archived_at"
+    t.string "language"
+    t.integer "views_count"
+    t.integer "registrations_count"
+    t.string "slug"
+    t.boolean "approved_by_admin"
+    t.datetime "deleted_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["psychologist_profile_id"], name: "index_events_on_psychologist_profile_id"
+    t.index ["slug"], name: "index_events_on_slug"
   end
 
   create_table "internal_client_profiles", force: :cascade do |t|
@@ -508,6 +561,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_09_28_220554) do
   add_foreign_key "client_types_issues", "client_types"
   add_foreign_key "client_types_issues", "issues"
   add_foreign_key "educations", "psychologist_profiles"
+  add_foreign_key "event_registrations", "client_infos"
+  add_foreign_key "event_registrations", "events"
+  add_foreign_key "event_registrations", "users"
+  add_foreign_key "events", "psychologist_profiles"
   add_foreign_key "internal_client_profiles", "client_profiles"
   add_foreign_key "internal_client_profiles", "psychologist_profiles"
   add_foreign_key "page_views", "users"

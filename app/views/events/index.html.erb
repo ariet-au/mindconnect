@@ -1,0 +1,110 @@
+<%# app/views/events/index.html.erb %>
+
+<section class="section">
+  <div class="container">
+    <div class="level">
+      <div class="level-left">
+        <h1 class="title">Events</h1>
+      </div>
+      <div class="level-right">
+        <% if user_signed_in? && current_user.psychologist_profile.present? %>
+          <%= link_to "New Event", new_event_path, class: "button is-primary" %>
+        <% end %>
+      </div>
+    </div>
+
+    <%# --- My Events Section --- %>
+    <% if user_signed_in? && current_user.psychologist_profile && @my_events.any? %>
+      <div class="box has-background-light mb-6">
+        <h2 class="subtitle mb-4">My Events</h2>
+        <div class="columns is-multiline">
+          <% @my_events.each do |event| %>
+            <div class="column is-one-third">
+              <div class="card">
+                <div class="card-content">
+                  <p class="title is-5"><%= event.title.presence || "Untitled Event" %></p>
+                  <p class="subtitle is-6">
+                    <%= event.start_time.present? ? event.start_time.strftime("%B %d, %Y • %I:%M %p") : "Date not set" %>
+                  </p>
+                  <p>
+                    <strong>Type:</strong> <%= event.online.nil? ? "Not set" : (event.online? ? "Online" : "In Person") %><br>
+                    <strong>Status:</strong> <%= event.status.present? ? event.status.humanize : "Not set" %><br>
+                    <strong>Audience:</strong> <%= event.audience.present? ? event.audience.to_s.humanize : "Not set" %><br>
+                    <strong>Visibility:</strong> <%= event.visibility.present? ? event.visibility.to_s.humanize : "Not set" %><br>
+                    <strong>Registrations:</strong> <%= event.registrations_count || 0 %><br>
+                    <% if event.price.present? && event.price.to_f > 0 %>
+                      <strong>Price:</strong> <%= number_to_currency(event.price, unit: event.currency || "USD") %>
+                    <% else %>
+                      <strong>Price:</strong> Free
+                    <% end %>
+                  </p>
+                </div>
+
+                <footer class="card-footer">
+                  <%= link_to "View", event_path(event), class: "card-footer-item" %>
+                  <button type="button" class="card-footer-item button is-light" data-clipboard-text="<%= event_url(event) %>">
+                    <span class="icon"><i class="fas fa-share-alt"></i></span>
+                    <span>Share</span>
+                  </button>
+                </footer>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <%# --- All Events Section --- %>
+    <h2 class="subtitle mb-4">All Events</h2>
+
+    <% if @other_events.any? %>
+      <div class="columns is-multiline">
+        <% @other_events.each do |event| %>
+          <div class="column is-one-third">
+            <div class="card">
+              <div class="card-content">
+                <p class="title is-5"><%= event.title.presence || "Untitled Event" %></p>
+                <p class="subtitle is-6">
+                  <%= event.start_time.present? ? event.start_time.strftime("%B %d, %Y • %I:%M %p") : "Date not set" %>
+                </p>
+                <p>
+                  <strong>Type:</strong> <%= event.online.nil? ? "Not set" : (event.online? ? "Online" : "In Person") %><br>
+                  <strong>Status:</strong> <%= event.status.present? ? event.status.humanize : "Not set" %><br>
+                  <strong>Audience:</strong> <%= event.audience.present? ? event.audience.to_s.humanize : "Not set" %><br>
+                  <strong>Registrations:</strong> <%= event.registrations_count || 0 %><br>
+                  <% if event.price.present? && event.price.to_f > 0 %>
+                    <strong>Price:</strong> <%= number_to_currency(event.price, unit: event.currency || "USD") %>
+                  <% else %>
+                    <strong>Price:</strong> Free
+                  <% end %>
+                </p>
+              </div>
+
+              <footer class="card-footer">
+                <%= link_to "View", event_path(event), class: "card-footer-item" %>
+                <button type="button" class="card-footer-item button is-light" data-clipboard-text="<%= event_url(event) %>">
+                  <span class="icon"><i class="fas fa-share-alt"></i></span>
+                  <span>Share</span>
+                </button>
+              </footer>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p>No events found.</p>
+    <% end %>
+  </div>
+</section>
+
+<script>
+document.addEventListener("turbo:load", function() {
+  document.querySelectorAll('button[data-clipboard-text]').forEach(button => {
+    button.addEventListener('click', () => {
+      navigator.clipboard.writeText(button.dataset.clipboardText).then(() => {
+        alert("Event link copied!");
+      }).catch(err => console.error("Copy failed", err));
+    });
+  });
+});
+</script>

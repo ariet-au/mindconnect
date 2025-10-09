@@ -50,6 +50,9 @@ class PsychologistProfile < ApplicationRecord
     # Add this line:
   has_many :psychologist_availabilities, dependent: :destroy
   
+  #events
+  has_many :events, dependent: :destroy
+
 
   # You probably also want:
   has_many :psychologist_unavailabilities, dependent: :destroy

@@ -18,7 +18,13 @@ class ClientInfo < ApplicationRecord
     confirmed_booking: 3,      # booking confirmed
     active_upcoming: 4,        # active with sessions coming up
     active_no_upcoming: 5,     # active but no upcoming sessions
-    inactive: 6                # previously active, now inactive
+    inactive: 6,              # previously active, now inactive
+    
+    event_registered: 10,      # submitted info to an event
+    event_waitlisted: 11,      # on waitlist for full event
+    event_attended: 12,        # attended the event
+    event_no_show: 13,         # registered but didn’t attend
+     vbevent_converted: 14        # became a therapy client or follow-up booking 
   }
 
   def full_name

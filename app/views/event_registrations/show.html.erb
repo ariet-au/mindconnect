@@ -1,0 +1,27 @@
+<section class="section">
+  <div class="container">
+    <h1 class="title is-3">Registration Details</h1>
+
+    <p><strong>Event:</strong> <%= link_to @registration.event.title, event_path(@registration.event) %></p>
+
+    <% if @registration.user %>
+      <p><strong>User:</strong> <%= @registration.user.full_name %></p>
+    <% else %>
+      <p><strong>Guest:</strong> <%= @registration.client_info&.full_name || "N/A" %></p>
+      <p><strong>Email:</strong> <%= @registration.client_info&.email %></p>
+      <p><strong>Phone:</strong> <%= @registration.client_info&.phone %></p>
+    <% end %>
+
+    <p><strong>Status:</strong> <%= @registration.status.humanize %></p>
+    <p><strong>Price:</strong> 
+      <% if @registration.price.present? && @registration.price > 0 %>
+        <%= number_to_currency(@registration.price, unit: @registration.currency.presence || "USD") %>
+      <% else %>
+        Free
+      <% end %>
+    </p>
+    <p><strong>Paid:</strong> <%= @registration.paid? ? "Yes (#{@registration.paid_at.strftime("%b %d, %Y")})" : "No" %></p>
+
+    <%= link_to "Back to Event", event_path(@registration.event), class: "button is-light mt-3" %>
+  </div>
+</section>
