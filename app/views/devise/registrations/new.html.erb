@@ -96,11 +96,17 @@
   <h2 class="title is-4 has-text-centered has-text-primary-main">Sign up</h2>
 
   <p class="has-text-grey-dark mb-3">
-    Пожалуйста, проверьте папку со спамом. Gmail хорошо работает.
+    Пожалуйста, проверьте папку со <b>спамом</b>!!!!!!!!!.
   </p>
 
   <p class="has-text-grey-dark mb-5">
     Если у вас будут проблемы, в контактах есть наш Telegram и email.
+
+    
+
+    <%= link_to "Не получили инструкции по подтверждению?", new_confirmation_path(resource_name), class: "btn btn-primary" %>
+
+  
   </p>
 
   <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>

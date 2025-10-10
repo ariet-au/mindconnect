@@ -61,9 +61,15 @@
 <div class="confirmation-content">
   <h2 class="title is-4 has-text-primary-main"><%= t('devise.shared.links.resend_confirmation')%> </h2>
 
+
+  <p> проверьте <b>СПАМ!!!!</b> папку там будет имейл/письмо</p>
+
   <%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
     <%= render "devise/shared/error_messages", resource: resource %>
 
+
+
+   
     <div class="field">
       <%= f.label :email, class: "label" %><br />
       <div class="control">
