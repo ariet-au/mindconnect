@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   # Non-locale-scoped routes
   post "/telegram/webhook", to: "telegrams#webhook"
 
+  resources :page_view_events, only: [:create]
 
   get '/p/:profile_url', to: 'psychologist_profiles#redirect_by_profile_url', as: :profile_shortlink
 

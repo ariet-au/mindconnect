@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_07_182132) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_12_232954) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -280,6 +280,15 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_07_182132) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["name"], name: "index_languages_on_name", unique: true
+  end
+
+  create_table "page_view_events", force: :cascade do |t|
+    t.bigint "page_view_id", null: false
+    t.string "event_type"
+    t.json "metadata"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["page_view_id"], name: "index_page_view_events_on_page_view_id"
   end
 
   create_table "page_views", force: :cascade do |t|
@@ -567,6 +576,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_07_182132) do
   add_foreign_key "events", "psychologist_profiles"
   add_foreign_key "internal_client_profiles", "client_profiles"
   add_foreign_key "internal_client_profiles", "psychologist_profiles"
+  add_foreign_key "page_view_events", "page_views"
   add_foreign_key "page_views", "users"
   add_foreign_key "progress_notes", "bookings"
   add_foreign_key "progress_notes", "therapy_plans"
