@@ -19,7 +19,6 @@ class PsychologistProfile < ApplicationRecord
 
 
   has_one_attached :profile_img
-  has_many :internal_client_profiles, dependent: :destroy # Add this line
 
   has_many :client_infos, dependent: :destroy
 

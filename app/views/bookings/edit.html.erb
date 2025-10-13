@@ -98,10 +98,10 @@
         </div>
       </div>
       <div class="booking-form-field">
-        <%= f.label :internal_client_profile_id, "Internal Client (for notes)", class: "label" %>
+        <%= f.label :client_info_id, "Client Infos", class: "label" %>
         <div class="control">
           <div class="select is-fullwidth">
-            <%= f.collection_select :internal_client_profile_id, InternalClientProfile.all, :id, :label, { selected: @booking.internal_client_profile_id }, class: "input" %>
+            <%= f.collection_select :client_info_id, ClientInfo.all, :id, :full_name, { selected: @booking.client_info_id }, class: "input" %>
           </div>
         </div>
       </div>

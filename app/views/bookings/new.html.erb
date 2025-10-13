@@ -33,11 +33,11 @@
         </div>
       </div>
       <div class="field">
-        <%= f.label :internal_client_profile_id, "Internal Client (for notes)", class: "label" %>
+        <%= f.label :client_info_id, "Internal Client (for notes)", class: "label" %>
         <div class="control">
           <div class="select is-fullwidth">
             <%# Ensure @internal_clients is populated in your controller, e.g., @internal_clients = InternalClientProfile.all %>
-            <%= f.collection_select :internal_client_profile_id, @internal_clients || InternalClientProfile.all, :id, :label, { include_blank: true }, class: "input" %>
+            <%= f.collection_select :client_info_id, @internal_clients || ClientInfo.all, :id, :full_name, { include_blank: true }, class: "input" %>
           </div>
         </div>
       </div>

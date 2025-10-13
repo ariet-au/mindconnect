@@ -112,7 +112,6 @@ class AnalyticsController < ApplicationController
     when %r{^/service} then 'Services'
     when %r{^/event} then 'Events'
     when %r{^/client_info}, %r{^/client_profile} then 'Clients'
-    when %r{^/internal_client_profile} then 'Internal Clients'
     when %r{^/article} then 'Articles'
     when %r{^/calendar} then 'Calendar'
     when %r{^/quiz} then 'Quizzes'

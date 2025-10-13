@@ -19,7 +19,7 @@ def index
                                 .where('start_time >= ?', Time.current)
                                 .order(start_time: :asc)
                                 .limit(5)
-                                .includes(:internal_client_profile, :client_profile)
+                                .includes(:client_info, :client_profile)
 
     @unavailabilities = PsychologistUnavailability.where(psychologist_profile_id: @psychologist_profile.id)
                                                   .where('end_time >= ?', Time.current)

@@ -36,7 +36,7 @@
           <td><%= booking.service.name %></td>
           <td><%= t(".created_by_options.#{booking.created_by.presence || 'na'}") %></td>
           <td><%= booking.psychologist_profile&.first_name || 'N/A' %></td>
-          <td><%= booking.client_profile&.first_name || booking.internal_client_profile&.first_name || 'N/A' %></td>
+          <td><%= booking.client_profile&.first_name || booking.client_info&.first_name || 'N/A' %></td>
           <td>
             <span
               class="utc-date-time-range"

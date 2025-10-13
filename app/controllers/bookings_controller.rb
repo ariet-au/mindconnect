@@ -96,6 +96,7 @@ class BookingsController < ApplicationController
     
     # Prepare collections for client selection in the view
     @external_clients = ClientProfile.all # Adjust scope as needed, e.g., current_user.clients
+    @internal_clients = ClientInfo.all
   end
 
   def new_with_service_selection
@@ -594,10 +595,8 @@ class BookingsController < ApplicationController
 
     # Determine the client based on user role
     if current_user.role == "psychologist" && params[:client_id].present?
-      #@internal_client = InternalClientProfile.find(params[:client_id])
       @client_profile = nil
     else
-      #@internal_client = current_user.internal_client_profile
       @client_profile = nil
     end
 
@@ -607,7 +606,6 @@ class BookingsController < ApplicationController
     booking = Booking.new(
       psychologist_profile: @psychologist,
       service: @service,
-      #internal_client_profile: @internal_client,
       client_profile: @client_profile,
       start_time: @selected_time,
       end_time: @selected_time + @service.duration_minutes.minutes,
