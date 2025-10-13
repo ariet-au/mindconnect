@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_12_232954) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_13_224318) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -87,7 +87,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_12_232954) do
     t.bigint "psychologist_profile_id", null: false
     t.bigint "service_id"
     t.bigint "client_profile_id"
-    t.bigint "internal_client_profile_id"
     t.datetime "start_time"
     t.datetime "end_time"
     t.string "status"
@@ -100,7 +99,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_12_232954) do
     t.index ["client_info_id"], name: "index_bookings_on_client_info_id"
     t.index ["client_profile_id"], name: "index_bookings_on_client_profile_id"
     t.index ["confirmation_token"], name: "index_bookings_on_confirmation_token", unique: true
-    t.index ["internal_client_profile_id"], name: "index_bookings_on_internal_client_profile_id"
     t.index ["psychologist_profile_id"], name: "index_bookings_on_psychologist_profile_id"
     t.index ["service_id"], name: "index_bookings_on_service_id"
   end
@@ -232,40 +230,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_12_232954) do
     t.index ["slug"], name: "index_events_on_slug"
   end
 
-  create_table "internal_client_profiles", force: :cascade do |t|
-    t.string "first_name"
-    t.string "last_name"
-    t.string "phone_number1"
-    t.string "phone_number2"
-    t.string "telegram"
-    t.string "whatsapp"
-    t.string "gender"
-    t.date "dob"
-    t.string "country"
-    t.string "city"
-    t.text "address"
-    t.string "internal_reference_number"
-    t.string "preferred_contact_method"
-    t.string "emergency_contact_name"
-    t.string "emergency_contact_phone"
-    t.string "emergency_contact_relationship"
-    t.text "reason_for_referral"
-    t.string "gp_name"
-    t.text "gp_contact_info"
-    t.text "initial_assessment_summary"
-    t.text "risk_assessment_summary"
-    t.text "treatment_plan_summary"
-    t.boolean "first_time_therapy"
-    t.integer "status"
-    t.bigint "psychologist_profile_id", null: false
-    t.bigint "client_profile_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["client_profile_id"], name: "index_internal_client_profiles_on_client_profile_id"
-    t.index ["psychologist_profile_id", "internal_reference_number"], name: "idx_internal_client_ref_per_psych", unique: true
-    t.index ["psychologist_profile_id"], name: "index_internal_client_profiles_on_psychologist_profile_id"
-  end
-
   create_table "issues", force: :cascade do |t|
     t.string "name"
     t.text "description"
@@ -303,19 +267,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_12_232954) do
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_page_views_on_user_id"
     t.index ["viewed_at"], name: "index_page_views_on_viewed_at"
-  end
-
-  create_table "progress_notes", force: :cascade do |t|
-    t.bigint "therapy_plan_id", null: false
-    t.bigint "booking_id"
-    t.text "notes"
-    t.text "homework_assigned"
-    t.integer "assessment_score"
-    t.date "note_date"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["booking_id"], name: "index_progress_notes_on_booking_id"
-    t.index ["therapy_plan_id"], name: "index_progress_notes_on_therapy_plan_id"
   end
 
   create_table "psychological_issues", force: :cascade do |t|
@@ -494,27 +445,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_12_232954) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "therapy_plans", force: :cascade do |t|
-    t.bigint "internal_client_profile_id", null: false
-    t.bigint "issue_id"
-    t.bigint "specialties_id"
-    t.text "diagnosis"
-    t.text "short_term_goals"
-    t.text "long_term_goals"
-    t.text "intervention_details"
-    t.string "frequency"
-    t.integer "duration_weeks"
-    t.text "progress_metrics"
-    t.string "status", default: "draft", null: false
-    t.datetime "start_date"
-    t.datetime "end_date"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["internal_client_profile_id"], name: "index_therapy_plans_on_internal_client_profile_id"
-    t.index ["issue_id"], name: "index_therapy_plans_on_issue_id"
-    t.index ["specialties_id"], name: "index_therapy_plans_on_specialties_id"
-  end
-
   create_table "user_sessions", force: :cascade do |t|
     t.bigint "user_id"
     t.string "session_id"
@@ -561,7 +491,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_12_232954) do
   add_foreign_key "articles", "psychologist_profiles"
   add_foreign_key "bookings", "client_infos"
   add_foreign_key "bookings", "client_profiles"
-  add_foreign_key "bookings", "internal_client_profiles"
   add_foreign_key "bookings", "psychologist_profiles"
   add_foreign_key "bookings", "services"
   add_foreign_key "client_contacts", "client_infos"
@@ -574,12 +503,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_12_232954) do
   add_foreign_key "event_registrations", "events"
   add_foreign_key "event_registrations", "users"
   add_foreign_key "events", "psychologist_profiles"
-  add_foreign_key "internal_client_profiles", "client_profiles"
-  add_foreign_key "internal_client_profiles", "psychologist_profiles"
   add_foreign_key "page_view_events", "page_views"
   add_foreign_key "page_views", "users"
-  add_foreign_key "progress_notes", "bookings"
-  add_foreign_key "progress_notes", "therapy_plans"
   add_foreign_key "psychologist_availabilities", "psychologist_profiles"
   add_foreign_key "psychologist_client_types", "client_types"
   add_foreign_key "psychologist_client_types", "psychologist_profiles"
@@ -597,8 +522,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_12_232954) do
   add_foreign_key "quiz_scoring_rules", "quizzes"
   add_foreign_key "quizzes", "users"
   add_foreign_key "services", "users"
-  add_foreign_key "therapy_plans", "internal_client_profiles"
-  add_foreign_key "therapy_plans", "issues"
-  add_foreign_key "therapy_plans", "specialties", column: "specialties_id"
   add_foreign_key "user_sessions", "users"
 end

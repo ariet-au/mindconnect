@@ -2,7 +2,6 @@ class Booking < ApplicationRecord
   belongs_to :psychologist_profile
   belongs_to :service, optional: true
   belongs_to :client_profile, optional: true
-  belongs_to :internal_client_profile, optional: true
   belongs_to :client_info, optional: true
   belongs_to :service
   accepts_nested_attributes_for :client_info, allow_destroy: true, reject_if: :all_blank
@@ -47,7 +46,7 @@ class Booking < ApplicationRecord
 
   def at_least_one_client_present
     unless client_profile_id.present? || client_info_id.present? || client_info.present?
-      errors.add(:base, "At least one client (client_profile or internal_client_profile) must be selected")
+      errors.add(:base, "At least one client (client_profile or client info filledin) must be selected")
     end
   end
 
@@ -91,8 +90,6 @@ class Booking < ApplicationRecord
   def client_display_name
     if client_profile.present?
       client_profile.full_name
-    elsif internal_client_profile.present?
-      internal_client_profile.full_name
     elsif client_info.present?
       client_info.full_name
     else

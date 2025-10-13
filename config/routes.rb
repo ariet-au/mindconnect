@@ -1,6 +1,12 @@
 Rails.application.routes.draw do
   get "analytics/index"
   get "analytics/show"
+  resources :analytics, only: [] do
+    collection do
+      get :scroll_stats
+      get :page_links   # 👈 new route
+    end
+  end
   # Non-locale-scoped routes
   post "/telegram/webhook", to: "telegrams#webhook"
 
@@ -63,7 +69,6 @@ Rails.application.routes.draw do
 
     resources :client_infos, only: [:index, :new, :show, :create, :edit, :update, :destroy]
     resources :articles
-    resources :internal_client_profiles
     resources :client_profiles
     resources :issues do
       collection { get :filtered }
@@ -165,12 +170,6 @@ Rails.application.routes.draw do
     get '/calendar', to: 'psychologist_unavailabilities#calendar'
     get 'psychologist_profiles/:psychologist_profile_id/calendar', to: 'psychologist_unavailabilities#calendar', as: :psychologist_profile_calendar
 
-    # Therapy plans and progress notes
-    resources :internal_client_profiles do
-      resources :therapy_plans do
-        resources :progress_notes
-      end
-    end
   end
 
   # Root route

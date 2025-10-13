@@ -47,38 +47,7 @@
 
 
     <div class="columns is-mobile is-multiline">
-      <div class="column is-narrow">
-        <aside class="menu" style="background-color: #2C3E50; padding: 20px; height: 100vh; width: 200px; position: fixed; z-index: 100;">
-          <p class="menu-label has-text-white"><%= t('psychologist_dashboard.menu.menu_label') %></p>
-          <ul class="menu-list">
-            <li>
-              <a href="<%= psychologist_dashboard_path %>" class="has-text-white <%= 'is-active' if current_page?(psychologist_dashboard_path) %>" style="<%= 'background-color: #34495E;' if current_page?(psychologist_dashboard_path) %>">
-                <span class="icon"><i class="fas fa-home"></i></span> <%= t('psychologist_dashboard.menu.dashboard') %>
-              </a>
-            </li>
-            <li>
-              <a href="<%= psychologist_profile_psychologist_availabilities_path(@psychologist_profile) %>" class="has-text-white <%= 'is-active' if current_page?(psychologist_profile_psychologist_availabilities_path(@psychologist_profile)) %>" style="<%= 'background-color: #34495E;' if current_page?(psychologist_profile_psychologist_availabilities_path(@psychologist_profile)) %>">
-                <span class="icon"><i class="fas fa-calendar-check"></i></span> <%= t('psychologist_dashboard.menu.availability') %>
-              </a>
-            </li>
-            <li>
-              <a href="<%= psychologist_profile_bookings_path(@psychologist_profile) %>" class="has-text-white <%= 'is-active' if current_page?(psychologist_profile_bookings_path(@psychologist_profile)) %>" style="<%= 'background-color: #34495E;' if current_page?(psychologist_profile_bookings_path(@psychologist_profile)) %>">
-                <span class="icon"><i class="fas fa-book"></i></span> <%= t('psychologist_dashboard.menu.bookings') %>
-              </a>
-            </li>
-            <li>
-              <a href="<%= internal_client_profiles_path %>" class="has-text-white <%= 'is-active' if current_page?(internal_client_profiles_path) %>" style="<%= 'background-color: #34495E;' if current_page?(internal_client_profiles_path) %>">
-                <span class="icon"><i class="fas fa-users"></i></span> <%= t('psychologist_dashboard.menu.client_profiles') %>
-              </a>
-            </li>
-            <li>
-              <a href="<%= edit_psychologist_profile_path(@psychologist_profile) %>" class="has-text-white <%= 'is-active' if current_page?(edit_psychologist_profile_path(@psychologist_profile)) %>" style="<%= 'background-color: #34495E;' if current_page?(edit_psychologist_profile_path(@psychologist_profile)) %>">
-                <span class="icon"><i class="fas fa-user-edit"></i></span> <%= t('psychologist_dashboard.menu.edit_profile') %>
-              </a>
-            </li>
-          </ul>
-        </aside>
-      </div>
+      
 
       <div class="column" >
 
@@ -480,12 +449,14 @@
     browserTimezoneSpans.forEach(span => span.textContent = browserTimezone);
     if (displayedTimezoneSpan) displayedTimezoneSpan.textContent = browserTimezone;
 
-    console.log(`[DEBUG] Initializing calendar.`);
-    console.log(`[DEBUG] Psychologist Profile ID: ${psychologistProfileId}`);
-    console.log(`[DEBUG] Browser Timezone: ${browserTimezone}`);
+    // 👇 Detect if mobile screen
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+
+    // 👇 Choose view based on screen size
+    const initialView = isMobile ? "timeGridDay" : "timeGridWeek";
 
     calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: 'timeGridWeek',
+      initialView: initialView, // 👈 dynamically set
       slotMinTime: "04:00:00",
       slotMaxTime: "23:00:00",
       allDaySlot: false,

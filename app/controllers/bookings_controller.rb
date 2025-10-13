@@ -31,7 +31,6 @@ class BookingsController < ApplicationController
           id: @booking.id,
           status: @booking.status,
           client: @booking.client_profile ? { full_name: @booking.client_profile.full_name } : nil,
-          internal_client: @booking.internal_client_profile ? { full_name: @booking.internal_client_profile.full_name } : nil,
           service: @booking.service ? { name: @booking.service.name } : nil,
           start_time: @booking.start_time.iso8601,
           end_time: @booking.end_time.iso8601
@@ -97,7 +96,6 @@ class BookingsController < ApplicationController
     
     # Prepare collections for client selection in the view
     @external_clients = ClientProfile.all # Adjust scope as needed, e.g., current_user.clients
-    @internal_clients = InternalClientProfile.all # Adjust scope as needed
   end
 
   def new_with_service_selection
@@ -165,7 +163,6 @@ class BookingsController < ApplicationController
     
     # Prepare collections for client selection in the view
     @external_clients = ClientProfile.all
-    @internal_clients = @psychologist_profile.internal_client_profiles # Assuming you have a scope for internal clients
   end
   # app/controllers/psychologist_profiles_controller.rb
 # app/controllers/psychologist_profiles_controller.rb
@@ -408,7 +405,7 @@ class BookingsController < ApplicationController
     @services = Service.joins(:bookings).where(bookings: { psychologist_profile_id: current_user.psychologist_profile.id }).distinct.order(:name)
 
     # Base query for bookings (upcoming only)
-    base_query = Booking.includes(:client_info, :client_profile, :internal_client_profile, :service)
+    base_query = Booking.includes(:client_info, :client_profile, :service)
                       .where(psychologist_profile_id: current_user.psychologist_profile.id)
                       .where('start_time >= ?', Time.current.beginning_of_day)
                       .order(start_time: :asc)
@@ -531,7 +528,6 @@ class BookingsController < ApplicationController
             created_by: @booking.created_by,
             client_info_id: @booking.client_info_id,
             client_profile_id: @booking.client_profile_id,
-            internal_client_profile_id: @booking.internal_client_profile_id,
             service_id: @booking.service_id,
             start_time: @booking.start_time,
             end_time: @booking.end_time,
@@ -598,10 +594,10 @@ class BookingsController < ApplicationController
 
     # Determine the client based on user role
     if current_user.role == "psychologist" && params[:client_id].present?
-      @internal_client = InternalClientProfile.find(params[:client_id])
+      #@internal_client = InternalClientProfile.find(params[:client_id])
       @client_profile = nil
     else
-      @internal_client = current_user.internal_client_profile
+      #@internal_client = current_user.internal_client_profile
       @client_profile = nil
     end
 
@@ -611,7 +607,7 @@ class BookingsController < ApplicationController
     booking = Booking.new(
       psychologist_profile: @psychologist,
       service: @service,
-      internal_client_profile: @internal_client,
+      #internal_client_profile: @internal_client,
       client_profile: @client_profile,
       start_time: @selected_time,
       end_time: @selected_time + @service.duration_minutes.minutes,
@@ -786,7 +782,7 @@ end
         confirmation_token: booking.confirmation_token,
         psychologist_profile_id: booking.psychologist_profile_id   # ✅ add this
       },
-      color: booking.internal_client_profile_id.present? ? '#6f42c1' : '#0d6efd',
+      color: booking.client_info_id.present? ? '#6f42c1' : '#0d6efd',
       textColor: 'white'
     }
   end
