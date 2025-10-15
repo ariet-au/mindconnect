@@ -148,7 +148,9 @@ kg:
       no_education_details: "Билими тууралуу маалымат берилген эмес."
       no_specializations: "Адистештирүү көрсөтүлгөн эмес."
       no_client_types: "Кардардын түрлөрү көрсөтүлгөн эмес."
-      areas_of_focus: "Фокус чөйрөлөрү"
+      areas_of_focus: "Кандай маселелер боюнча иштейм"
+      about_clients: "Кимдерге жардам берем"
+      about_specialties: "Психотерапиядагы ыкмаларым"
       no_issues: "Маселелер көрсөтүлгөн эмес."
       services_offered: "Сунушталган кызматтар"
       add_new_service: "Жаңы кызмат кошуу"
@@ -286,6 +288,7 @@ kg:
     labels:
       upload_profile_image: "Профил сүрөтүн жүктөө"
       profile_url: "Профилдин URL"
+      profile_url_rules: "3-30 кичиникей тамгалар менен, сиздики озунчо URL"
       timezone: "Убакыт алкагы"
       first_name: "Аты"
       last_name: "Фамилиясы"

@@ -42,11 +42,37 @@
       <!-- Hidden destroy field -->
       <%= f.hidden_field :_destroy %>
 
-      <!-- Remove button -->
-      <button type="button" class="button is-danger is-light remove-education-button">
-        <span class="icon"><i class="fas fa-trash"></i></span>
+      <!-- Remove button - mobile friendly -->
+      <button type="button" class="button is-danger remove-education-button mb-3 is-fullwidth-mobile">
+        <span class="icon is-small">
+          <i class="fas fa-trash"></i>
+        </span>
         <span><%= t('psychologist_profiles.education.remove_education') %></span>
       </button>
     </div>
   </div>
 </div>
+
+<style>
+/* Custom styles for mobile remove button */
+@media screen and (max-width: 768px) {
+  .remove-education-button {
+    border-radius: 4px !important; /* Square corners instead of oval */
+    padding: 0.75rem 1rem !important; /* Better padding for touch */
+    font-size: 1rem !important; /* Readable font size */
+    height: auto !important; /* Remove fixed height constraints */
+    min-height: 2.5rem !important; /* Minimum touch target size */
+  }
+  
+  .remove-education-button .icon {
+    margin-right: 0.5rem !important;
+  }
+}
+
+/* Ensure full width on very small screens */
+@media screen and (max-width: 480px) {
+  .remove-education-button {
+    width: 100% !important;
+  }
+}
+</style>

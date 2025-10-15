@@ -165,6 +165,8 @@ en:
       no_specializations: "No specializations listed."
       no_client_types: "No client types listed."
       areas_of_focus: "Areas of Focus"
+      about_clients: "Client which I work with"
+      about_specialties: "My specialization in Therapy"
       no_issues: "No issues listed."
       services_offered: "Services Offered"
       add_new_service: "Add a new service"

@@ -1126,6 +1126,26 @@ body {
         </div>
     <% end %>
 
+
+    <% if @psychologist_profile.about_clients.present? %>
+        <div class="profile-section">
+            <h2 class="section-title"><i class="fas fa-heartbeat"></i> <%= t('psychologist_profiles.show.about_clients') %></h2>
+            <div class="section-content">
+                <p><%= simple_format(@psychologist_profile.about_clients) %></p>
+            </div>
+        </div>
+    <% end %>
+
+
+    <% if @psychologist_profile.about_specialties.present? %>
+        <div class="profile-section">
+            <h2 class="section-title"><i class="fas fa-heartbeat"></i> <%= t('psychologist_profiles.show.about_specialties') %></h2>
+            <div class="section-content">
+                <p><%= simple_format(@psychologist_profile.about_specialties) %></p>
+            </div>
+        </div>
+    <% end %>
+
     <% if @psychologist_profile.educations.any? %>
         <div class="profile-section">
             <h2 class="section-title"><i class="fas fa-graduation-cap"></i> <%= t('psychologist_profiles.show.education') %></h2>
