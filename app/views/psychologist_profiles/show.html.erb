@@ -1119,7 +1119,7 @@ body {
 
     <% if @psychologist_profile.about_issues.present? %>
         <div class="profile-section">
-            <h2 class="section-title"><i class="fas fa-heartbeat"></i> <%= t('psychologist_profiles.show.areas_of_focus') %></h2>
+            <h2 class="section-title"><i class="fas fa-clipboard-list"></i> <%= t('psychologist_profiles.show.areas_of_focus') %></h2>
             <div class="section-content">
                 <p><%= simple_format(@psychologist_profile.about_issues) %></p>
             </div>
@@ -1129,7 +1129,7 @@ body {
 
     <% if @psychologist_profile.about_clients.present? %>
         <div class="profile-section">
-            <h2 class="section-title"><i class="fas fa-heartbeat"></i> <%= t('psychologist_profiles.show.about_clients') %></h2>
+            <h2 class="section-title"><i class="fas fa-users"></i> <%= t('psychologist_profiles.show.about_clients') %></h2>
             <div class="section-content">
                 <p><%= simple_format(@psychologist_profile.about_clients) %></p>
             </div>
