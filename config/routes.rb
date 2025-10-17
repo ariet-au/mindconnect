@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+
   get "analytics/index"
   get "analytics/show"
   resources :analytics, only: [] do
@@ -39,6 +40,11 @@ Rails.application.routes.draw do
   # Locale-scoped routes
   scope "(:locale)", locale: /en|ru|kg/ do
 
+      get "pages/home"
+      get "pages/about_for_psych"
+      get "pages/about_for_clients"
+      get "pages/contact"
+
 
     resources :events do
       member do
@@ -77,7 +83,7 @@ Rails.application.routes.draw do
     resources :client_types
     resources :specialties
 
-
+    
     # Static pages
     get 'find-a-psychologist', to: 'psychologist_profiles#search_landing', as: :search_landing
     get 'for-psychologists', to: 'psychologist_profiles#landing_psych', as: :landing_psych
@@ -113,9 +119,6 @@ Rails.application.routes.draw do
           get :check_profile_url  # <-- add this here
         end
       member do 
-         get 'show_mob'
-         get 'show_mob2'
-         get 'show_mob3'
          get :analytics  # /psychologist_profiles/:id/analytics
       end
       get :available_slots, on: :member

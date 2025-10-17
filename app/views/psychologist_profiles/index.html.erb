@@ -506,14 +506,19 @@
                 <div class="control">
                   <div class="select is-fullwidth">
                     <%= select_tag :city,
-                        options_for_select(
-                          [[t('psychologist_search.all_cities'), '']] +
-                          @cities_for_select.map { |city_name| [t("cities.#{city_name}"), city_name] },
-                          params[:city]
-                        ),
-                        class: "select filter-select",
-                        id: "search-city",
-                        disabled: @cities_for_select.empty? %>
+  options_for_select(
+    [[t('psychologist_search.all_cities'), '']] +
+    @cities_for_select.map do |city|
+      [
+        city["translated_name"].presence || city["name"].titleize,
+        city["name"]
+      ]
+    end,
+    params[:city]
+  ),
+  class: "select filter-select",
+  id: "search-city",
+  disabled: @cities_for_select.empty? %>
                   </div>
                 </div>
               </div>

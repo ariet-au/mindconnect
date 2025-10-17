@@ -1,0 +1,127 @@
+<!-- app/views/shared/_landing.html.erb -->
+
+<section class="hero is-medium is-primary is-bold has-text-centered">
+  <div class="hero-body">
+    <div class="container">
+      <h1 class="title">
+        Find a Psychologist <span id="location-text">in your city</span> or Online
+      </h1>
+      <h2 class="subtitle">
+        Get professional help from verified psychologists — online or in person.
+      </h2>
+
+      <div class="buttons is-centered mt-5">
+        <%= link_to "Start Search", psychologist_profiles_path, class: "button is-link is-medium" %>
+        <%= link_to "Join as a Psychologist", new_user_registration_path(role: :psychologist), class: "button is-light is-medium" %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section has-background-light">
+  <div class="container has-text-centered">
+    <h2 class="title is-3 mb-5">Search by</h2>
+
+    <div class="columns is-multiline is-centered">
+
+      <!-- By Location -->
+      <div class="column is-4">
+        <div class="box">
+          <h3 class="title is-5">Location</h3>
+            <p>
+             <% @cities.each do |city, count| %>
+                <% next if city.blank? %>
+                <%= link_to "#{city.titleize} (#{count})", psychologist_profiles_path(city: city), class: "has-text-link" %>
+              <% end %>           
+            </p>
+          <p class="mt-3">
+<%= link_to "Online (#{@online_count})", psychologist_profiles_path(online: 1), class: "has-text-link" %>
+          </p>
+        </div>
+      </div>
+
+      <!-- By Issue -->
+      <div class="column is-4">
+        <div class="box">
+          <h3 class="title is-5">Issue</h3>
+          <% @popular_issues.each do |issue| %>
+            <p><%= link_to issue.name, psychologist_profiles_path(issue: issue.name), class: "has-text-link" %></p>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- By Price -->
+      <div class="column is-4">
+        <div class="box">
+          <h3 class="title is-5">Price</h3>
+
+
+        <p>
+  From <%= number_to_currency(@min_price, unit: @selected_currency, precision: 0) %>
+  to <%= number_to_currency(@max_price, unit: @selected_currency, precision: 0) %>
+</p>
+          <%= link_to "See All", psychologist_profiles_path(sort: "price"), class: "button is-small is-link mt-3" %>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-5">
+      <%= link_to "Find the right psychologist for you", psychologist_profiles_path, class: "button is-link is-medium" %>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container has-text-centered">
+    <h2 class="title is-3 mb-6">How It Works</h2>
+
+    <div class="columns is-centered is-variable is-6">
+      <div class="column is-2">
+        <div class="box">
+          <p><strong>1.</strong> Search</p>
+          <p class="is-size-7">Find a psychologist by location or issue</p>
+        </div>
+      </div>
+      <div class="column is-2">
+        <div class="box">
+          <p><strong>2.</strong> Message or Book</p>
+          <p class="is-size-7">Contact them or book directly</p>
+        </div>
+      </div>
+      <div class="column is-2">
+        <div class="box">
+          <p><strong>3.</strong> Confirm Booking</p>
+          <p class="is-size-7">Receive reminders and details</p>
+        </div>
+      </div>
+      <div class="column is-2">
+        <div class="box">
+          <p><strong>4.</strong> Get Help</p>
+          <p class="is-size-7">Start your sessions and feel supported</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section has-background-light has-text-centered">
+  <div class="container">
+    <h2 class="title is-4 mb-3">Are you a Psychologist?</h2>
+    <p class="mb-4">Join our growing network and connect with clients looking for your expertise.</p>
+    <%= link_to "Join as a Psychologist", new_user_registration_path(role: :psychologist), class: "button is-primary is-medium" %>
+  </div>
+</section>
+
+<script>
+  // Detect user's city via browser geolocation (fallback: "your city")
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      fetch(`https://nominatim.openstreetmap.org/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}&format=json`)
+        .then(response => response.json())
+        .then(data => {
+          const city = data.address.city || data.address.town || data.address.village || data.address.state;
+          if (city) document.getElementById("location-text").textContent = `in ${city}`;
+        });
+    });
+  }
+</script>

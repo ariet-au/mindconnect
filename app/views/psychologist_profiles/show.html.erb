@@ -1247,9 +1247,12 @@ body {
                                         </div>
                                     </div>
                                 </div>
+
+                                <% if @psychologist_profile.psychologist_availabilities.exists? %>
                                 <div class="service-actions">
                                     <%= link_to t('psychologist_profiles.show.book_this_service'), choose_time_path(psychologist_id: @psychologist_profile.id, service_id: service.id), class: "button is-primary service-book-button" %>
                                 </div>
+                                <% end %>
                             </div>
                         </div>
                     <% end %>

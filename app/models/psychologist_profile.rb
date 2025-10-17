@@ -159,6 +159,9 @@ pg_search_scope :search_full_text,
       content_type: profile_image.content_type
     )
   end
+
+
+
   # For demonstration purposes outside a full ActiveRecord context,
   # we'll add a simple initializer and accessors. In a real Rails app
   # with ActiveRecord, these would be handled by the ORM and `monetize`.
@@ -201,7 +204,10 @@ pg_search_scope :search_full_text,
 
   # This method converts the standard_rate_money from its current currency to the target_currency.
   # It leverages the ExchangeRateService to perform the actual rate calculation and conversion.
-  def converted_rate(target_currency)
+
+
+
+  def converted_rate(target_currency = "USD")
     target_currency = target_currency.upcase
 
     if currency == target_currency
