@@ -18,7 +18,7 @@
 
   <div class="field">
     <%= form.label :body, t('articles.attributes.body') %>
-    <%= form.rich_textarea :body %>
+    <%= form.rich_textarea :body, class: "tall-textarea" %>
   </div>
 
   <div>
@@ -30,3 +30,8 @@
     <%= form.submit t('articles.submit_form') %>
   </div>
 <% end %>
+<style>
+.tall-textarea {
+  min-height: 50vh; /* 70% of the screen height */
+}
+</style>

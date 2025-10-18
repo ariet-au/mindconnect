@@ -195,7 +195,7 @@
 
       <%= link_to t('articles.back'), articles_path, class: "article-edit-btn" %>
 
-  <% if current_user.psychologist_profile.id == @article.psychologist_profile.id %>
-      <%= link_to t('articles.edit_article'), edit_article_path(@article), class: "article-edit-btn" %>
-          <% end %>
+        <% if current_user && current_user.psychologist_profile && current_user.psychologist_profile.id == @article.psychologist_profile.id %>
+          <%= link_to t('articles.edit_article'), edit_article_path(@article), class: "article-edit-btn" %>
+        <% end %>
     </div>
