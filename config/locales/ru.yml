@@ -274,10 +274,10 @@ ru:
       single_adult: "Взрослые"
       single_child: "Дети"
       single_teenager: "Подростоки"
-      romantic_pair: "Романтическая пары"
-      romantic_couple: "Романтическая пара"
+      romantic_pair: "Романтические пары"
+      romantic_couple: "Романтические пара"
       parent_child: "Детско-родительские Отношения"
-      other_pair: "Другая Группы"
+      other_pair: "Другая Группа"
 
 
   psychologist_profile:
