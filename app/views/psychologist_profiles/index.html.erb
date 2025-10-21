@@ -750,8 +750,10 @@
               <div class="tags are-small mt-2">
                 <% profile.specialties.each do |specialty| %>
                   <span class="tag is-specialty-tag">
-<%= t("specialties.#{specialty.name.parameterize.underscore}", default: specialty.name) %>
-                  </span>
+                    <%= link_to t("specialties.#{specialty.name.parameterize.underscore}", default: specialty.name),
+                      definition_specialty_path(specialty),
+                      class: "specialty-link" %>
+                              </span>
                 <% end %>
               </div>
             <% end %>

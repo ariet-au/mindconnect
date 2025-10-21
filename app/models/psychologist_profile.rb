@@ -63,7 +63,7 @@ class PsychologistProfile < ApplicationRecord
 
   # Scopes for filtering profiles
   scope :confirmed, -> { where(user_id: User.where.not(confirmed_at: nil).select(:id)) }  
-  scope :active, -> { where(user_id: User.where('last_sign_in_at >= ?', 1.month.ago).select(:id)) }
+  scope :active, -> { where(user_id: User.where('last_sign_in_at >= ?', 2.months.ago).select(:id)) }
   scope :filled, -> {
     where.not(first_name: [nil, ''], last_name: [nil, ''], about_me: [nil, ''])
     .where("standard_rate IS NOT NULL AND standard_rate != 0")

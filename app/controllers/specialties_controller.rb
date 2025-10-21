@@ -18,8 +18,12 @@ class SpecialtiesController < ApplicationController
     # Specialty has_many :psychologist_profiles, through: :psychologist_specialties
 
     @psychologist_profiles = @specialty.psychologist_profiles
-                                      .where(hidden: false)
-                                      .includes(:user)
+      .confirmed
+      .filled
+      .active
+      .not_hidden
+      .order(updated_at: :desc)
+
   end
 
   # GET /specialties/new
