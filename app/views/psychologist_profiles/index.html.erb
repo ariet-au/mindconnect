@@ -749,11 +749,12 @@
             <% if profile.specialties.any? || profile.issues.any? %>
               <div class="tags are-small mt-2">
                 <% profile.specialties.each do |specialty| %>
-                  <span class="tag is-specialty-tag">
-                    <%= link_to t("specialties.#{specialty.name.parameterize.underscore}", default: specialty.name),
-                      definition_specialty_path(specialty),
-                      class: "specialty-link" %>
-                              </span>
+                <span class="tag is-specialty-tag">
+                  <%= link_to t("specialties.#{specialty.name.parameterize.underscore}", default: specialty.name),
+                              definition_specialty_path(specialty),
+                              class: "specialty-link",
+                              style: "color: inherit; text-decoration: none;" %>
+                </span>
                 <% end %>
               </div>
             <% end %>
