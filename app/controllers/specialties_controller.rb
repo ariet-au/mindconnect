@@ -10,6 +10,18 @@ class SpecialtiesController < ApplicationController
   def show
   end
 
+  def definition
+    @specialty = Specialty.find(params[:id])
+
+    # assuming you have associations set up:
+    # Specialty has_many :psychologist_specialties
+    # Specialty has_many :psychologist_profiles, through: :psychologist_specialties
+
+    @psychologist_profiles = @specialty.psychologist_profiles
+                                      .where(hidden: false)
+                                      .includes(:user)
+  end
+
   # GET /specialties/new
   def new
     @specialty = Specialty.new

@@ -7,6 +7,8 @@ class PagesController < ApplicationController
   .order("count_all DESC")
   .count
 
+
+  @quizzes = Quiz.limit(4)
     # Count those who offer online sessions
     @online_count = PsychologistProfile.where(online: true).count
 

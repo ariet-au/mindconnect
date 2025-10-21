@@ -81,8 +81,11 @@ Rails.application.routes.draw do
     end
     resources :psychological_issues
     resources :client_types
-    resources :specialties
-
+    resources :specialties do
+      member do
+        get :definition
+      end
+    end
     
     # Static pages
     get 'find-a-psychologist', to: 'psychologist_profiles#search_landing', as: :search_landing

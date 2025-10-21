@@ -699,7 +699,9 @@
           <div class="columns">
             <div class="column">
               <h3 class="title is-5 mb-1">
-               <%= profile.first_name %> <%= profile.last_name %> 
+                <%= link_to psychologist_profile_path(profile), style: "color: inherit; text-decoration: none; cursor: pointer;" do %>
+                  <%= profile.first_name %> <%= profile.last_name %>
+                <% end %>             
               </h3>
               
               <div class="mb-2">
@@ -707,7 +709,7 @@
                   <span class="tag is-light">
                     <i class="fas fa-money-bill-wave mr-1">
                     </i> <% converted = profile.converted_rate(current_currency) %>
-<%= humanized_money_with_symbol(converted) %>
+                    <%= humanized_money_with_symbol(converted) %>
 
                   </span>
                 <% end %>

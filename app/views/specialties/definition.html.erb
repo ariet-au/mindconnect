@@ -1,0 +1,107 @@
+<div class="container is-max-desktop">
+  <div class="columns is-centered">
+    <div class="column is-three-fifths-desktop is-four-fifths-tablet">
+
+      <% if notice.present? %>
+        <div class="notification is-success mt-4">
+          <button class="delete"></button>
+          <p><%= notice %></p>
+        </div>
+      <% end %>
+
+      <div class="card my-5">
+        <header class="card-header">
+          <p class="card-header-title">
+            <%= t("specialties.#{@specialty.name.parameterize.underscore}", default: @specialty.name) %>
+          </p>
+        </header>
+
+        <div class="card-content">
+          <div class="content">
+            <%= t("specialties.definition.#{@specialty.name.parameterize.underscore}", default: @specialty.description) %>
+          </div>
+        </div>
+
+        <footer class="card-footer">
+          <%= link_to t("back"), :back , class: "card-footer-item button is-text" %>
+        </footer>
+      </div>
+
+    <% if @psychologist_profiles.any? %>
+        <h2 class="title is-4 mt-6"><%= t("specialties.with_speciality") %></h2>
+
+        <% @psychologist_profiles.each do |profile| %>
+          <div class="box mb-4">
+            <div class="media">
+              <!-- LEFT: Profile Image -->
+              <div class="media-left">
+                <% if profile.profile_img.attached? %>
+                    <%= image_tag profile.profile_img.variant(resize_to_limit: [96, 96]), class: "profile-img"%>
+                <% else %>
+                    <%= image_tag("default_avatar.png", class: "profile-img", style: "width:64px; height:64px; object-fit: cover;") %>
+                <% end %>
+              </div>
+
+              <!-- RIGHT: Profile Info -->
+              <div class="media-content">
+                <!-- Name -->
+                <p class="title is-5 mb-1">
+                  <%= link_to psychologist_profile_path(profile), class: "neutral-link" do %>
+                    <%= profile.first_name %> <%= profile.last_name %>
+                  <% end %>
+                </p>
+
+                <!-- City + Converted Rate -->
+                <p class="is-size-7 has-text-grey mb-1">
+                  <% city_present = profile.city.present? %>
+                  <% rate_present = profile.standard_rate.present? %>
+
+                  <% if city_present %>
+                    📍 <%= profile.city %>
+                  <% end %>
+
+                  <% if city_present && rate_present %>
+                    &nbsp;&bull;&nbsp;
+                  <% end %>
+
+                  <% if rate_present %>
+                    💰
+                    <% converted = profile.converted_rate(current_currency) %>
+                    <%= humanized_money_with_symbol(converted) %> / session
+                  <% end %>
+                </p>
+
+                <!-- About Me + Read More -->
+                <% if profile.about_me.present? %>
+                  <p class="mt-2">
+                    <%= truncate(profile.about_me, length: 120) %>
+                    <%= link_to t("specialties.read_more", default: "Read more"),
+                                psychologist_profile_path(profile),
+                                class: "neutral-link is-size-7 ml-1" %>
+                  </p>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+      <% else %>
+        <p class="has-text-grey">
+          No psychologists are currently listed under this specialty.
+        </p>
+      <% end %>
+
+    </div>
+  </div>
+</div>
+
+<style>
+.profile-img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #ddd;
+        margin-bottom: 1rem;
+    }
+</style>

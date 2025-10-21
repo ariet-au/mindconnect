@@ -14,19 +14,12 @@
           <span class="icon"><i class="fas fa-book"></i></span>
           <span><%= t('psychologist_dashboard.client_info') %></span>
         <% end %>
-        <%= link_to edit_psychologist_profile_path(@psychologist_profile.id), class: "button is-primary-blue" do %>
-          <span class="icon"><i class="fas fa-user-edit"></i></span>
-          <span><%= t('psychologist_dashboard.edit_profile') %></span>
-        <% end %>
+
         <%= link_to psychologist_profile_services_path(@psychologist_profile.id), class: "button is-primary-blue" do %>
           <span class="icon"><i class="fas fa-book"></i></span>
           <span><%= t('psychologist_dashboard.my_services') %></span>
         <% end %>
 
-        <%= link_to analytics_psychologist_profile_path(@psychologist_profile), class: "button is-primary-blue" do %>
-          <span class="icon"><i class="fas fa-chart-line"></i></span>
-          <span><%= t('psychologist_dashboard.analytics') %></span>
-        <% end %>
 
 
         <%= link_to  telegram_path, class: "button is-primary-blue" do %>
@@ -35,10 +28,6 @@
         <% end %>
 
 
-        <%= link_to  edit_user_registration_path, class: "button is-primary-blue" do %>
-          <span class="icon"><i class="fas fa-message"></i></span>
-          <span><%= t('edit_user') %></span>
-        <% end %>
 
       </div>
     </div>
@@ -1169,3 +1158,16 @@
       }
     });
 </script>  
+
+
+        <%= link_to analytics_psychologist_profile_path(@psychologist_profile), class: "button is-primary-blue" do %>
+          <span class="icon"><i class="fas fa-chart-line"></i></span>
+          <span><%= t('psychologist_dashboard.analytics') %></span>
+        <% end %>
+
+
+
+        <%= link_to  edit_user_registration_path, class: "button is-primary-blue" do %>
+          <span class="icon"><i class="fas fa-message"></i></span>
+          <span><%= t('edit_user') %></span>
+        <% end %>

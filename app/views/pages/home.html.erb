@@ -1,119 +1,625 @@
-<!-- app/views/shared/_landing.html.erb -->
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 
-<section class="hero is-medium is-primary is-bold has-text-centered">
-  <div class="hero-body">
-    <div class="container">
-      <h1 class="title">
-        Find a Psychologist <span id="location-text">in your city</span> or Online
-      </h1>
-      <h2 class="subtitle">
-        Get professional help from verified psychologists — online or in person.
-      </h2>
+  :root {
+    --primary: #2c5aa0;
+    --secondary: #f0f4f9;
+    --accent: #4a9eff;
+    --text-dark: #1a2332;
+    --text-light: #6b7280;
+    --border: #e5e7eb;
+  }
 
-      <div class="buttons is-centered mt-5">
-        <%= link_to "Start Search", psychologist_profiles_path, class: "button is-link is-medium" %>
-        <%= link_to "Join as a Psychologist", new_user_registration_path(role: :psychologist), class: "button is-light is-medium" %>
-      </div>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color: var(--text-dark);
+    line-height: 1.6;
+  }
+
+  .hero-section {
+    background: linear-gradient(135deg, #ffffff 0%, var(--secondary) 100%);
+    padding: 80px 20px;
+    text-align: center;
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(74, 158, 255, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .hero-section::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -10%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(44, 90, 160, 0.08) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .hero-content {
+    max-width: 700px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero-section h1 {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--text-dark);
+    line-height: 1.2;
+  }
+
+  .hero-section h1 span {
+    color: var(--primary);
+  }
+
+  .hero-section p {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    color: var(--text-light);
+    margin-bottom: 40px;
+  }
+
+  .hero-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    padding: 14px 32px;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s ease;
+    border: none;
+  }
+
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 4px 12px rgba(44, 90, 160, 0.25);
+  }
+
+  .btn-primary:hover {
+    background: #1f3f6b;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(44, 90, 160, 0.35);
+  }
+
+  .btn-secondary {
+    background: white;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+  }
+
+  .btn-secondary:hover {
+    background: var(--secondary);
+    transform: translateY(-2px);
+  }
+
+  .section {
+    padding: 70px 20px;
+  }
+
+  .section-title {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 50px;
+    color: var(--text-dark);
+  }
+
+  .search-section {
+    background: white;
+  }
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* Carousel Styles */
+  .carousel-wrapper {
+    position: relative;
+    margin-bottom: 40px;
+  }
+
+  .carousel-container {
+    overflow: hidden;
+    border-radius: 8px;
+  }
+
+  .carousel-track {
+    display: flex;
+    transition: transform 0.5s ease;
+    gap: 20px;
+  }
+
+  .carousel-item {
+    flex: 0 0 calc(25% - 15px);
+    background: var(--secondary);
+    padding: 30px;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary);
+    transition: all 0.3s ease;
+  }
+
+  .carousel-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(44, 90, 160, 0.12);
+  }
+
+  .carousel-item h3 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    color: var(--text-dark);
+  }
+
+  .carousel-item p {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+  }
+
+  .carousel-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-block;
+  }
+
+  .carousel-link:hover {
+    transform: translateX(5px);
+  }
+
+  .carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--primary);
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 10;
+    font-size: 1.2rem;
+  }
+
+  .carousel-arrow:hover:not(.disabled) {
+    background: #1f3f6b;
+  }
+
+  .carousel-arrow.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .carousel-arrow.prev {
+    left: 10px;
+  }
+
+  .carousel-arrow.next {
+    right: 10px;
+  }
+
+  /* Price Grid */
+  .price-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+  }
+
+  .price-card {
+    background: var(--secondary);
+    padding: 30px;
+    border-radius: 8px;
+    border-left: 4px solid var(--primary);
+    transition: all 0.3s ease;
+  }
+
+  .price-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(44, 90, 160, 0.12);
+  }
+
+  .price-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    color: var(--text-dark);
+  }
+
+  .price-card p {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+  }
+
+  .price-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-block;
+  }
+
+  .price-link:hover {
+    transform: translateX(5px);
+  }
+
+  .btn-center {
+    text-align: center;
+    margin-top: 30px;
+  }
+
+  .how-section {
+    background: white;
+  }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .step {
+    text-align: center;
+  }
+
+  .step-number {
+    width: 56px;
+    height: 56px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0 auto 20px;
+  }
+
+  .step h4 {
+    font-size: 1.15rem;
+    margin-bottom: 12px;
+    color: var(--text-dark);
+  }
+
+  .step p {
+    color: var(--text-light);
+    font-size: 0.95rem;
+  }
+
+  .quizzes-section {
+    background: linear-gradient(135deg, var(--secondary) 0%, #e8f0fc 100%);
+  }
+
+  .quiz-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 25px;
+  }
+
+  .quiz-card {
+    background: white;
+    padding: 35px 25px;
+    border-radius: 8px;
+    text-align: center;
+    border-top: 4px solid var(--primary);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+  }
+
+  .quiz-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(44, 90, 160, 0.15);
+  }
+
+  .quiz-icon {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    color: var(--primary);
+  }
+
+  .quiz-card h4 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: var(--text-dark);
+  }
+
+  .quiz-card p {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+
+  .quiz-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-block;
+    margin-top: 15px;
+  }
+
+  .quiz-link:hover {
+    transform: translateX(5px);
+  }
+
+  .cta-section {
+    background: white;
+    text-align: center;
+  }
+
+  .cta-content {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .cta-section h3 {
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    margin-bottom: 15px;
+    color: var(--text-dark);
+  }
+
+  .cta-section p {
+    color: var(--text-light);
+    margin-bottom: 30px;
+    font-size: 1.05rem;
+  }
+
+  @media (max-width: 768px) {
+    .section {
+      padding: 50px 20px;
+    }
+
+    .hero-section {
+      padding: 60px 20px;
+      min-height: auto;
+    }
+
+    .hero-buttons {
+      flex-direction: column;
+    }
+
+    .btn {
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .carousel-item {
+      flex: 0 0 calc(50% - 10px);
+    }
+
+    .price-grid,
+    .quiz-grid,
+    .steps-grid {
+      gap: 20px;
+    }
+
+    .carousel-arrow {
+      width: 36px;
+      height: 36px;
+      font-size: 1rem;
+    }
+
+    .carousel-arrow.prev {
+      left: 5px;
+    }
+
+    .carousel-arrow.next {
+      right: 5px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .carousel-item {
+      flex: 0 0 100%;
+    }
+  }
+</style>
+
+<section class="hero-section">
+  <div class="hero-content">
+    <h1>Find Your <span>Perfect Psychologist</span></h1>
+    <p id="location-text">Get professional mental health support from verified experts — online or in your city</p>
+    <div class="hero-buttons">
+      <a href="#search" class="btn btn-primary">Start Your Search</a>
+      <a href="#join" class="btn btn-secondary">Join as a Psychologist</a>
     </div>
   </div>
 </section>
 
-<section class="section has-background-light">
-  <div class="container has-text-centered">
-    <h2 class="title is-3 mb-5">Search by</h2>
-
-    <div class="columns is-multiline is-centered">
-
-      <!-- By Location -->
-      <div class="column is-4">
-        <div class="box">
-          <h3 class="title is-5">Location</h3>
-            <p>
-             <% @cities.each do |city, count| %>
-                <% next if city.blank? %>
-                <%= link_to "#{city.titleize} (#{count})", psychologist_profiles_path(city: city), class: "has-text-link" %>
-              <% end %>           
-            </p>
-          <p class="mt-3">
-<%= link_to "Online (#{@online_count})", psychologist_profiles_path(online: 1), class: "has-text-link" %>
-          </p>
+<section class="section search-section" id="search">
+  <div class="container">
+    <h2 class="section-title">Find What You Need</h2>
+    
+    <!-- Locations Carousel -->
+    <h3 style="font-size: 1.5rem; margin: 40px 0 20px; color: var(--text-dark);">By Location</h3>
+    <div class="carousel-wrapper" id="locations-carousel">
+      <button class="carousel-arrow prev">‹</button>
+      <div class="carousel-container">
+        <div class="carousel-track">
+          <% @cities.each do |city, count| %>
+            <% next if city.blank? %>
+            <div class="carousel-item">
+              <h3><%= city.titleize %></h3>
+              <p><%= count %> verified psychologists</p>
+              <%= link_to "Explore →", psychologist_profiles_path(city: city), class: "carousel-link" %>
+            </div>
+          <% end %>
+          <div class="carousel-item">
+            <h3>Online</h3>
+            <p><%= @online_count %> available psychologists</p>
+            <%= link_to "Explore →", psychologist_profiles_path(online: 1), class: "carousel-link" %>
+          </div>
         </div>
       </div>
+      <button class="carousel-arrow next">›</button>
+    </div>
 
-      <!-- By Issue -->
-      <div class="column is-4">
-        <div class="box">
-          <h3 class="title is-5">Issue</h3>
+    <!-- Issues Carousel -->
+    <h3 style="font-size: 1.5rem; margin: 40px 0 20px; color: var(--text-dark);">By Issue</h3>
+    <div class="carousel-wrapper" id="issues-carousel">
+      <button class="carousel-arrow prev">‹</button>
+      <div class="carousel-container">
+        <div class="carousel-track">
           <% @popular_issues.each do |issue| %>
-            <p><%= link_to issue.name, psychologist_profiles_path(issue: issue.name), class: "has-text-link" %></p>
+            <div class="carousel-item">
+              <h3><%= issue.name %></h3>
+              <p><%= issue.psychologists_count %> specialists</p>
+              <%= link_to "Find Help →", psychologist_profiles_path(issue: issue.name), class: "carousel-link" %>
+            </div>
           <% end %>
         </div>
       </div>
+      <button class="carousel-arrow next">›</button>
+    </div>
 
-      <!-- By Price -->
-      <div class="column is-4">
-        <div class="box">
-          <h3 class="title is-5">Price</h3>
-
-
-        <p>
-  From <%= number_to_currency(@min_price, unit: @selected_currency, precision: 0) %>
-  to <%= number_to_currency(@max_price, unit: @selected_currency, precision: 0) %>
-</p>
-          <%= link_to "See All", psychologist_profiles_path(sort: "price"), class: "button is-small is-link mt-3" %>
-        </div>
+    <!-- Price Section -->
+    <h3 style="font-size: 1.5rem; margin: 40px 0 20px; color: var(--text-dark);">By Price</h3>
+    <div class="price-grid">
+      <div class="price-card">
+        <h3><%= number_to_currency(@min_price, unit: @selected_currency, precision: 0) %> - <%= number_to_currency(@max_price, unit: @selected_currency, precision: 0) %></h3>
+        <p>Browse all price ranges</p>
+        <%= link_to "See All →", psychologist_profiles_path(sort: "price"), class: "price-link" %>
       </div>
     </div>
 
-    <div class="mt-5">
-      <%= link_to "Find the right psychologist for you", psychologist_profiles_path, class: "button is-link is-medium" %>
+    <div class="btn-center">
+      <%= link_to "Browse All Psychologists", psychologist_profiles_path, class: "btn btn-primary" %>
     </div>
   </div>
 </section>
 
-<section class="section">
-  <div class="container has-text-centered">
-    <h2 class="title is-3 mb-6">How It Works</h2>
-
-    <div class="columns is-centered is-variable is-6">
-      <div class="column is-2">
-        <div class="box">
-          <p><strong>1.</strong> Search</p>
-          <p class="is-size-7">Find a psychologist by location or issue</p>
-        </div>
-      </div>
-      <div class="column is-2">
-        <div class="box">
-          <p><strong>2.</strong> Message or Book</p>
-          <p class="is-size-7">Contact them or book directly</p>
-        </div>
-      </div>
-      <div class="column is-2">
-        <div class="box">
-          <p><strong>3.</strong> Confirm Booking</p>
-          <p class="is-size-7">Receive reminders and details</p>
-        </div>
-      </div>
-      <div class="column is-2">
-        <div class="box">
-          <p><strong>4.</strong> Get Help</p>
-          <p class="is-size-7">Start your sessions and feel supported</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="section has-background-light has-text-centered">
+<section class="section how-section">
   <div class="container">
-    <h2 class="title is-4 mb-3">Are you a Psychologist?</h2>
-    <p class="mb-4">Join our growing network and connect with clients looking for your expertise.</p>
-    <%= link_to "Join as a Psychologist", new_user_registration_path(role: :psychologist), class: "button is-primary is-medium" %>
+    <h2 class="section-title">How It Works</h2>
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step-number">1</div>
+        <h4>Search</h4>
+        <p>Find psychologists by location, specialty, or price</p>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <h4>Connect</h4>
+        <p>Message or book directly with verified professionals</p>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <h4>Confirm</h4>
+        <p>Get appointment reminders and all the details</p>
+      </div>
+      <div class="step">
+        <div class="step-number">4</div>
+        <h4>Heal</h4>
+        <p>Begin your sessions and take control of your health</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section quizzes-section">
+  <div class="container">
+    <h2 class="section-title">Assessment Tools</h2>
+    
+    <div class="quiz-grid">
+      <% @quizzes.each do |quiz| %>
+        <div class="quiz-card" onclick="window.location.href='<%= take_quiz_path(quiz) %>'">
+          <div class="quiz-icon">📋</div>
+          <h4><%= quiz.title %></h4>
+          <p><%= truncate(quiz.description, length: 100) %></p>
+
+    <%= link_to t('quizzes.index.take_quiz'), take_quiz_path(quiz), class: "quiz-link" %>
+
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<section class="section cta-section" id="join">
+  <div class="cta-content">
+    <h3>Are you a Psychologist?</h3>
+    <p>Join our growing network and connect with clients actively seeking professional support.</p>
+    <%= link_to "Start Your Profile", new_user_registration_path(role: :psychologist), class: "btn btn-primary" %>
   </div>
 </section>
 
 <script>
-  // Detect user's city via browser geolocation (fallback: "your city")
+  // Initialize carousels
+  document.querySelectorAll('.carousel-wrapper').forEach(carousel => {
+    const container = carousel.querySelector('.carousel-container');
+    const track = carousel.querySelector('.carousel-track');
+    const items = carousel.querySelectorAll('.carousel-item');
+    const prevArrow = carousel.querySelector('.carousel-arrow.prev');
+    const nextArrow = carousel.querySelector('.carousel-arrow.next');
+
+    if (!container || !items.length) return;
+
+    let currentIndex = 0;
+    const itemWidth = 100 / items.length;
+
+    function updateCarousel() {
+      track.style.transform = `translateX(-${currentIndex * 100}%)`;
+      prevArrow.classList.toggle('disabled', currentIndex === 0);
+      nextArrow.classList.toggle('disabled', currentIndex >= items.length - 4);
+    }
+
+    prevArrow.addEventListener('click', () => {
+      if (currentIndex > 0) {
+        currentIndex--;
+        updateCarousel();
+      }
+    });
+
+    nextArrow.addEventListener('click', () => {
+      if (currentIndex < items.length - 4) {
+        currentIndex++;
+        updateCarousel();
+      }
+    });
+
+    updateCarousel();
+  });
+
+  // Geolocation
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(position) {
       fetch(`https://nominatim.openstreetmap.org/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}&format=json`)
@@ -121,7 +627,8 @@
         .then(data => {
           const city = data.address.city || data.address.town || data.address.village || data.address.state;
           if (city) document.getElementById("location-text").textContent = `in ${city}`;
-        });
+        })
+        .catch(err => console.log('Geolocation lookup failed'));
     });
   }
 </script>
