@@ -400,10 +400,162 @@
     </div>
   <% end %>
  
-    <div class="buttons is-centered">
-      <%= link_to t('.download_ics_button'), download_ics_psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "button is-link" %>
-      <%= link_to t('.google_calendar_button'), "https://calendar.google.com/calendar/render?action=TEMPLATE&text=#{CGI.escape(t('.calendar_title', service: @booking.service&.name || 'Therapy Session'))}&dates=#{@booking.start_time.utc.strftime('%Y%m%dT%H%M%SZ')}/#{@booking.end_time.utc.strftime('%Y%m%dT%H%M%SZ')}&details=#{CGI.escape(t('.calendar_details', psychologist: @booking.psychologist_profile&.full_name))}", target: "_blank", class: "button is-link" %>
-    </div>
+
+
+      <div class="button-actions-grid">
+      <!-- Calendar Section (Left) -->
+      <div class="calendar-section">
+       
+        <div class="dropdown-wrapper" id="calendarDropdown">
+          <button class="dropdown-trigger" type="button">
+            <i class="fas fa-calendar-check"></i>
+          <%= t('.add_to_calendar_label') %>
+            <i class="fas fa-chevron-down arrow"></i>
+          </button>
+          <div class="dropdown-menu">
+            <%= link_to download_ics_psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "dropdown-option ics" do %>
+              <i class="fas fa-download"></i>
+              <span>Download ICS File</span>
+            <% end %>
+            <%= link_to "https://calendar.google.com/calendar/render?action=TEMPLATE&text=#{CGI.escape(t('.calendar_title', service: @booking.service&.name || 'N/A'))}&dates=#{@booking.start_time.utc.strftime('%Y%m%dT%H%M%SZ')}/#{@booking.end_time.utc.strftime('%Y%m%dT%H%M%SZ')}&details=#{CGI.escape(t('.calendar_details', psychologist: @booking.psychologist_profile&.full_name))}", target: "_blank", rel: "noopener", class: "dropdown-option google" do %>
+              <i class="fab fa-google"></i>
+              <span>Google Calendar</span>
+            <% end %>
+            <%= link_to "https://outlook.live.com/calendar/0/action/compose?subject=#{CGI.escape(t('.calendar_title', service: @booking.service&.name || 'N/A'))}&startdt=#{@booking.start_time.utc.iso8601}&enddt=#{@booking.end_time.utc.iso8601}&body=#{CGI.escape(t('.calendar_details', psychologist: @booking.psychologist_profile&.full_name))}", target: "_blank", rel: "noopener", class: "dropdown-option outlook" do %>
+              <i class="fab fa-microsoft"></i>
+              <span>Outlook</span>
+            <% end %>
+            <%= link_to download_ics_psychologist_profile_booking_path(@booking.psychologist_profile, @booking), class: "dropdown-option apple" do %>
+              <i class="fab fa-apple"></i>
+              <span>Apple Calendar</span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+
+      <style>
+
+      /* NEW STYLES for Calendar/Share row */
+  .button-actions-grid {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+  }
+
+  .button-actions-grid .calendar-section,
+  .button-actions-grid .share-section {
+    flex: 1;
+    min-width: 0;
+  }
+              .button-actions-grid .calendar-section,
+        .button-actions-grid .share-section {
+          flex: 1;
+          min-width: 0;
+        }
+        
+        /* Responsive stacking for the new grid */
+        @media (max-width: 768px) {
+          .button-actions-grid {
+            flex-direction: column;
+            gap: 32px;
+          }
+            .button-actions-grid .calendar-section,
+            .button-actions-grid .share-section {
+                    flex: none; /* Reset flex to remove equal-width constraint if it interferes */
+              width: 100%; /* Explicitly set to full width on mobile */
+            }
+        }
+
+        /* Generic Dropdown Wrapper */
+  .dropdown-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+  }
+
+  .dropdown-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 12px 24px;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    background: white;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    color: #363636;
+    text-decoration: none;
+  }
+
+  .dropdown-trigger:hover {
+    border-color: #b5b5b5;
+    background: #f9f9f9;
+  }
+  
+  .dropdown-trigger i.arrow {
+    transition: transform 0.2s ease;
+    margin-left: auto;
+  }
+
+  .dropdown-wrapper.is-active .dropdown-trigger i.arrow {
+    transform: rotate(180deg);
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #dbdbdb;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(10, 10, 10, 0.1);
+    z-index: 100;
+    display: none;
+    overflow: hidden;
+  }
+
+  .dropdown-wrapper.is-active .dropdown-menu {
+    display: block;
+  }
+
+  .dropdown-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+    color: #363636;
+    text-decoration: none;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    border-bottom: 1px solid #e5e7eb;
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+
+  .dropdown-option:last-child {
+    border-bottom: none;
+  }
+
+  .dropdown-option:hover {
+    background: #fafafa;
+  }
+
+  .dropdown-option i {
+    width: 20px;
+    text-align: center;
+    font-size: 1.1rem;
+    color: #7a7a7a;
+  }
+
+
+      </style>
+
 </div>
 
 <script>
@@ -496,4 +648,41 @@ function initializePage() {
 
 // Initialize on Turbo load (covers both initial loads and Turbo navigations)
 document.addEventListener('turbo:load', initializePage);
+
+
+
+
+</script>
+
+<script>
+document.addEventListener("turbo:load", function () {
+  const calendarDropdown = document.getElementById('calendarDropdown');
+
+  function setupCalendarDropdown() {
+    if (!calendarDropdown) return;
+
+    const trigger = calendarDropdown.querySelector('.dropdown-trigger');
+
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      calendarDropdown.classList.toggle('is-active');
+    });
+  }
+
+  setupCalendarDropdown();
+
+  // Close calendar dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (calendarDropdown && !calendarDropdown.contains(e.target)) {
+      calendarDropdown.classList.remove('is-active');
+    }
+  });
+});
+
+document.addEventListener("turbo:before-cache", function() {
+  const calendarDropdown = document.getElementById('calendarDropdown');
+  if (calendarDropdown) {
+    calendarDropdown.classList.remove('is-active');
+  }
+});
 </script>

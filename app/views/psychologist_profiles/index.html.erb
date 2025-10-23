@@ -688,7 +688,7 @@
         <div class="column is-narrow has-text-centered">
           <figure class="image is-96x96 mx-auto">
             <% if profile.profile_img.attached? %>
-              <%= image_tag profile.profile_img.variant(resize_to_limit: [96, 96]), class: "is-rounded"%>
+              <%= image_tag profile.profile_img.variant(resize_to_limit: [96, 96]), loading: "lazy", class: "is-rounded"%>
             <% else %>
              <%= image_tag "default-profile.png", alt: "Default Profile", class: "is-rounded profile-image" %>
             <% end %>

@@ -36,9 +36,9 @@
               <!-- LEFT: Profile Image -->
               <div class="media-left">
                 <% if profile.profile_img.attached? %>
-                    <%= image_tag profile.profile_img.variant(resize_to_limit: [96, 96]), class: "profile-img"%>
+                    <%= image_tag profile.profile_img.variant(resize_to_limit: [96, 96]), class: "profile-img", loading: "lazy"%>
                 <% else %>
-                    <%= image_tag("default_avatar.png", class: "profile-img", style: "width:64px; height:64px; object-fit: cover;") %>
+                  <%= image_tag "default-profile.png", alt: "Default Profile", class: "profile-img" %>
                 <% end %>
               </div>
 

@@ -247,25 +247,54 @@
         });
 
         // Hide group if no cards are visible
-        group.style.display = Array.from(group.querySelectorAll('.booking-card')).some(card => card.style.display !== 'none') ? '' : 'none';
+        const hasVisibleCards = Array.from(group.querySelectorAll('.booking-card')).some(card => card.style.display !== 'none');
+        group.style.display = hasVisibleCards && showGroup ? '' : 'none';
       });
     }
 
     // Initial filter application
     applyFilters();
 
-    // Dropdown toggle
+    // === FIXED DROPDOWN BEHAVIOR (Mobile + Desktop) ===
     document.querySelectorAll('.dropdown-trigger button').forEach(btn => {
       btn.addEventListener('click', (event) => {
-        event.stopPropagation();
+        event.stopPropagation(); // Prevent document click from closing immediately
         const dropdown = btn.closest('.dropdown');
-        dropdown.classList.toggle('is-active');
+        const wasActive = dropdown.classList.contains('is-active');
+
+        // Close all dropdowns
+        document.querySelectorAll('.dropdown').forEach(d => {
+          d.classList.remove('is-active');
+        });
+
+        // Re-open this one if it wasn't already open
+        if (!wasActive) {
+          dropdown.classList.add('is-active');
+        }
       });
     });
 
-    // Close dropdowns when clicking outside
+    // Close dropdowns when clicking outside (desktop + mobile click)
     document.addEventListener('click', (event) => {
       if (!event.target.closest('.dropdown')) {
+        document.querySelectorAll('.dropdown').forEach(dropdown => {
+          dropdown.classList.remove('is-active');
+        });
+      }
+    });
+
+    // Close dropdowns on touch outside (mobile reliability)
+    document.addEventListener('touchend', (event) => {
+      if (!event.target.closest('.dropdown')) {
+        document.querySelectorAll('.dropdown').forEach(dropdown => {
+          dropdown.classList.remove('is-active');
+        });
+      }
+    });
+
+    // Optional: Close dropdown on Escape key
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') {
         document.querySelectorAll('.dropdown').forEach(dropdown => {
           dropdown.classList.remove('is-active');
         });

@@ -1002,9 +1002,9 @@ body {
     
     <div class="profile-header">
         <% if @psychologist_profile.profile_img.attached? %>
-            <%= image_tag url_for(@psychologist_profile.profile_img.variant(resize_to_limit: [200, 200])), class: "profile-avatar" %>
+            <%= image_tag url_for(@psychologist_profile.profile_img.variant(resize_to_limit: [200, 200])), class: "profile-avatar", loading: "lazy" %>
         <% else %>
-            <img src="https://placehold.co/200x200/2A7CCC/FFFFFF?text=Dr.+S" alt="Default Profile" class="profile-avatar">
+            <%= image_tag "default-profile.png", alt: "Default Profile", class: "profile-avatar" %>
         <% end %>
         
         <div class="profile-name-section">
