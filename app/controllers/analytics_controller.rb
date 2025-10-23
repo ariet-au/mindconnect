@@ -21,15 +21,16 @@ class AnalyticsController < ApplicationController
 
     # --- Psychologist profile pages ---
     psych_stats = events
-      .where("page_views.url ~ ?", %r{^/psychologist_profiles/\d+$}.source)
-      .group("page_views.url")
-      .pluck(
-        Arel.sql("page_views.url"),
-        Arel.sql("AVG((metadata->>'scroll_percent')::float)")
+      .where("page_views.url ~ ?", %r{^/(en|ru|kg)?/psychologist_profiles/\d+$}.source)
+      .select(
+        Arel.sql("regexp_replace(page_views.url, '^/(en|ru|kg)/', '/', 'g') AS normalized_url"),
+        Arel.sql("AVG((metadata->>'scroll_percent')::float) AS avg_scroll")
       )
-      .map do |url, avg_scroll|
-        { url: url, avg_scroll: avg_scroll.to_f.round(1) }  # nil → 0.0
+      .group("normalized_url")
+      .map do |record|
+        { url: record.normalized_url, avg_scroll: record.avg_scroll.to_f.round(1) }
       end
+
 
     # --- Other pages normalized ---
     other_stats = events
