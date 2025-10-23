@@ -3,11 +3,11 @@
 
   <!-- Psychologist Profiles Chart -->
   <h2 class="text-xl font-semibold mt-6">Psychologist Profiles</h2>
-  <canvas id="psychChart" height="120"></canvas>
+  <canvas id="psychChart"></canvas>
 
   <!-- Other Pages Chart -->
   <h2 class="text-xl font-semibold mt-6">Other Pages (Normalized)</h2>
-  <canvas id="otherChart" height="120"></canvas>
+  <canvas id="otherChart"></canvas>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -16,27 +16,40 @@ document.addEventListener("turbo:load", () => {
   fetch("<%= scroll_stats_analytics_path(format: :json) %>")
     .then(r => r.json())
     .then(data => {
-      const renderChart = (ctxId, stats, color, labelField = "label") => {
+
+      const renderHorizontalChart = (ctxId, stats, color, labelField = "label") => {
+        // Sort descending by average scroll
+        const sortedStats = stats.sort((a, b) => b.avg_scroll - a.avg_scroll);
+
         const ctx = document.getElementById(ctxId);
+
+        // Dynamic canvas height: 25px per bar
+        ctx.height = sortedStats.length * 25;
+
         new Chart(ctx, {
           type: 'bar',
           data: {
-            labels: stats.map(d => d[labelField]),  // use label field by default
+            labels: sortedStats.map(d => d[labelField]),
             datasets: [{
               label: 'Average Scroll %',
-              data: stats.map(d => d.avg_scroll),
+              data: sortedStats.map(d => d.avg_scroll),
+              backgroundColor: color,
               borderWidth: 1,
-              backgroundColor: color
+              maxBarThickness: 20  // caps bar thickness
             }]
           },
           options: {
+            indexAxis: 'y',  // horizontal bars
             responsive: true,
-            scales: { y: { beginAtZero: true, max: 100 } },
+            scales: {
+              x: { beginAtZero: true, max: 100 },
+              y: { ticks: { autoSkip: false } } // show all labels
+            },
             plugins: {
               legend: { display: false },
               tooltip: {
                 callbacks: {
-                  label: ctx => `${ctx.parsed.y}% average scroll`
+                  label: ctx => `${ctx.parsed.x}% average scroll`
                 }
               }
             }
@@ -45,10 +58,10 @@ document.addEventListener("turbo:load", () => {
       };
 
       // Render Psychologist Profiles (ID + Name)
-      renderChart("psychChart", data.psych_stats, "rgba(54, 162, 235, 0.5)");
+      renderHorizontalChart("psychChart", data.psych_stats, "rgba(54, 162, 235, 0.5)");
 
       // Render Other Pages (normalized URLs)
-      renderChart("otherChart", data.other_stats, "rgba(255, 159, 64, 0.5)", "url");
+      renderHorizontalChart("otherChart", data.other_stats, "rgba(255, 159, 64, 0.5)", "url");
     });
 });
 </script>
