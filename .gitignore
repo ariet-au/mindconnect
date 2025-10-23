@@ -39,3 +39,6 @@
 .env
 
 /config/credentials/developement.key
+
+
+db/backups/
