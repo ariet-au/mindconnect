@@ -42,3 +42,5 @@
 
 
 db/backups/
+*.sql
+*.sql.gz
