@@ -20,16 +20,28 @@ class AnalyticsController < ApplicationController
     events = PageViewEvent.joins(:page_view).where(event_type: "scroll")
 
     # --- Psychologist profile pages ---
-    psych_stats = events
-      .where("page_views.url ~ ?", %r{^/(en|ru|kg)?/psychologist_profiles/\d+$}.source)
-      .select(
-        Arel.sql("regexp_replace(page_views.url, '^/(en|ru|kg)/', '/', 'g') AS normalized_url"),
-        Arel.sql("AVG((metadata->>'scroll_percent')::float) AS avg_scroll")
-      )
-      .group("normalized_url")
-      .map do |record|
-        { url: record.normalized_url, avg_scroll: record.avg_scroll.to_f.round(1) }
-      end
+psych_stats = events
+  .where("page_views.url ~ ?", %r{^/(?:en|ru|kg)?/psychologist_profiles/\d+$}.source)
+  .select(
+    Arel.sql("substring(page_views.url from '/psychologist_profiles/([0-9]+)$')::int AS profile_id"),
+    Arel.sql("regexp_replace(page_views.url, '^/(en|ru|kg)/', '/', 'g') AS normalized_url"),
+    Arel.sql("AVG((metadata->>'scroll_percent')::float) AS avg_scroll"),
+    Arel.sql("psychologist_profiles.first_name"),
+    Arel.sql("psychologist_profiles.last_name")
+  )
+  .joins("LEFT JOIN psychologist_profiles ON psychologist_profiles.id = 
+          substring(page_views.url from '/psychologist_profiles/([0-9]+)$')::int")
+  .group("normalized_url, profile_id, psychologist_profiles.first_name, psychologist_profiles.last_name")
+  .map do |record|
+    {
+      url: record.normalized_url,
+      label: "##{record.profile_id} #{record.first_name} #{record.last_name}",
+      avg_scroll: record.avg_scroll.to_f.round(1)
+    }
+  end
+
+
+
 
 
     # --- Other pages normalized ---
