@@ -1,18 +1,50 @@
 class AnalyticsController < ApplicationController
+  # def scroll_stats
+  #   @stats = PageViewEvent
+  #     .joins(:page_view)
+  #     .where(event_type: "scroll")
+  #     .group(Arel.sql("page_views.url"))
+  #     .pluck(
+  #       Arel.sql("page_views.url"),
+  #       Arel.sql("AVG((metadata->>'scroll_percent')::float)")
+  #     )
+  #     .map { |url, avg_scroll| { url: url, avg_scroll: avg_scroll.to_f.round(1) } }
+
+  #   respond_to do |format|
+  #     format.html
+  #     format.json { render json: @stats }
+  #   end
+  # end
+
   def scroll_stats
-    @stats = PageViewEvent
-      .joins(:page_view)
-      .where(event_type: "scroll")
-      .group(Arel.sql("page_views.url"))
+    events = PageViewEvent.joins(:page_view).where(event_type: "scroll")
+
+    # Psychologist profile pages
+    psych_stats = events
+      .where("page_views.url LIKE ?", "/psychologist_profiles/%")
+      .group("page_views.url")
       .pluck(
         Arel.sql("page_views.url"),
         Arel.sql("AVG((metadata->>'scroll_percent')::float)")
       )
       .map { |url, avg_scroll| { url: url, avg_scroll: avg_scroll.to_f.round(1) } }
 
+    # Other pages normalized
+    other_stats = events
+      .where.not("page_views.url LIKE ?", "/psychologist_profiles/%")
+      .pluck(
+        Arel.sql("page_views.url"),
+        Arel.sql("(metadata->>'scroll_percent')::float")
+      )
+      .group_by { |url, _| normalize_route(url) }
+      .map { |route, values|
+        avg_scroll = values.map { |_, s| s }.sum / values.size
+        { url: route, avg_scroll: avg_scroll.round(1) }
+      }
+
     respond_to do |format|
       format.html
-      format.json { render json: @stats }
+      format.json { render json: { psych_stats: psych_stats, other_stats: other_stats } }
     end
   end
 

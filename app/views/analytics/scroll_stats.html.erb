@@ -1,6 +1,11 @@
 <div class="container mx-auto mt-10">
   <h1 class="text-2xl font-bold mb-4">Scroll Depth by Page</h1>
-  <canvas id="scrollChart" height="120"></canvas>
+
+  <h2 class="text-xl font-semibold mt-6">Psychologist Profiles</h2>
+  <canvas id="psychChart" height="120"></canvas>
+
+  <h2 class="text-xl font-semibold mt-6">Other Pages (Normalized)</h2>
+  <canvas id="otherChart" height="120"></canvas>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -9,28 +14,36 @@ document.addEventListener("turbo:load", () => {
   fetch("<%= scroll_stats_analytics_path(format: :json) %>")
     .then(r => r.json())
     .then(data => {
-      const ctx = document.getElementById("scrollChart");
-      new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: data.map(d => d.url),
-          datasets: [{
-            label: 'Average Scroll %',
-            data: data.map(d => d.avg_scroll),
-            borderWidth: 1,
-            backgroundColor: 'rgba(75, 192, 192, 0.5)'
-          }]
-        },
-        options: {
-          scales: { y: { beginAtZero: true, max: 100 } },
-          plugins: {
-            legend: { display: false },
-            tooltip: { callbacks: {
-              label: ctx => `${ctx.parsed.y}% average scroll`
-            }}
+      const renderChart = (ctxId, stats, color) => {
+        const ctx = document.getElementById(ctxId);
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: stats.map(d => d.url),
+            datasets: [{
+              label: 'Average Scroll %',
+              data: stats.map(d => d.avg_scroll),
+              borderWidth: 1,
+              backgroundColor: color
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: { y: { beginAtZero: true, max: 100 } },
+            plugins: {
+              legend: { display: false },
+              tooltip: {
+                callbacks: {
+                  label: ctx => `${ctx.parsed.y}% average scroll`
+                }
+              }
+            }
           }
-        }
-      });
+        });
+      };
+
+      renderChart("psychChart", data.psych_stats, "rgba(54, 162, 235, 0.5)");
+      renderChart("otherChart", data.other_stats, "rgba(255, 159, 64, 0.5)");
     });
 });
 </script>
