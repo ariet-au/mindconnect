@@ -19,7 +19,7 @@ class AnalyticsController < ApplicationController
   def scroll_stats
     events = PageViewEvent.joins(:page_view).where(event_type: "scroll")
 
-    # Psychologist profile pages
+    # --- Psychologist profile pages ---
     psych_stats = events
       .where("page_views.url LIKE ?", "/psychologist_profiles/%")
       .group("page_views.url")
@@ -27,9 +27,14 @@ class AnalyticsController < ApplicationController
         Arel.sql("page_views.url"),
         Arel.sql("AVG((metadata->>'scroll_percent')::float)")
       )
-      .map { |url, avg_scroll| { url: url, avg_scroll: avg_scroll.to_f.round(1) } }
+      .map do |url, avg_scroll|
+        {
+          url: url,
+          avg_scroll: avg_scroll.to_f.round(1)   # nil becomes 0.0
+        }
+      end
 
-    # Other pages normalized
+    # --- Other pages normalized ---
     other_stats = events
       .where.not("page_views.url LIKE ?", "/psychologist_profiles/%")
       .pluck(
@@ -37,16 +42,23 @@ class AnalyticsController < ApplicationController
         Arel.sql("(metadata->>'scroll_percent')::float")
       )
       .group_by { |url, _| normalize_route(url) }
-      .map { |route, values|
-        avg_scroll = values.map { |_, s| s }.sum / values.size
+      .map do |route, values|
+        # Remove nils (missing scroll values)
+        scroll_values = values.map { |_, s| s.to_f } # converts nil to 0.0 safely
+
+        next if scroll_values.empty?
+
+        avg_scroll = scroll_values.sum / scroll_values.size
         { url: route, avg_scroll: avg_scroll.round(1) }
-      }
+      end
+      .compact   # remove any nils from 'next if'
 
     respond_to do |format|
       format.html
       format.json { render json: { psych_stats: psych_stats, other_stats: other_stats } }
     end
   end
+
 
   def page_links
     views = PageView.order(:created_at)
