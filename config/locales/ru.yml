@@ -184,6 +184,8 @@ ru:
       religion: "Религия: %{religion}"
       years_experience:
         one: "1 год опыта"
+        few: "%{count} года опыта"
+        many: "%{count} лет опыта"
         other: "%{count} лет опыта"
       years_experience_short: "%{count} лет опыта"
       about_me: "Обо мне"
