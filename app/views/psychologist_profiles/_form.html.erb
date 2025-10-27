@@ -322,7 +322,7 @@
                   end
                 %>
                 <%= form.select :country, 
-                      options_for_select(translated_countries, selected: @psychologist_profile.country), 
+                      options_for_select(translated_countries, selected: @initial_country), 
                       { include_blank: t('countries') }, 
                       { class: 'input', id: 'country-select' } 
                 %>
@@ -338,7 +338,7 @@
                 <%= form.select :city,
                       [], # empty initially, JS will populate
                       { include_blank: t('cities') },
-                      { class: 'input', id: 'city-select', 'data-saved-city': @psychologist_profile.city } %>
+                      { class: 'input', id: 'city-select', 'data-saved-city': @initial_city} %>
               </div>
             </div>
           </div>
@@ -622,304 +622,543 @@ textarea.textarea {
 
 <%# --- SCRIPTS --- %>
 <script>
+// document.addEventListener("turbo:load", function () {
+//   let cropper;
+
+//   const imageInput = document.getElementById("imageInput");
+//   if (!imageInput) return;
+
+//   const imagePreview = document.getElementById("imagePreview"); // modal preview
+//   const imagePreviewPage = document.getElementById("imagePreviewPage"); // page preview
+//   const cropModal = document.getElementById("cropModal");
+//   const confirmCrop = document.getElementById("confirmCrop");
+//   const cancelCrop = document.getElementById("cancelCrop");
+//   const closeModal = document.getElementById("closeModal");
+//   const croppedImageInput = document.getElementById("croppedImageInput");
+
+//   imageInput.addEventListener("change", function () {
+//     const file = this.files[0];
+//     if (!file) return;
+
+//     const reader = new FileReader();
+//     reader.onload = function (e) {
+//       imagePreview.src = e.target.result;
+//       cropModal.classList.add("is-active");
+
+//       imagePreview.onload = function () {
+//         if (cropper) cropper.destroy();
+//         cropper = new Cropper(imagePreview, {
+//           aspectRatio: 1,
+//           viewMode: 1,
+//         });
+//       };
+//     };
+//     reader.readAsDataURL(file);
+//   });
+
+//   [cancelCrop, closeModal].forEach((btn) => {
+//     btn.addEventListener("click", () => {
+//       cropModal.classList.remove("is-active");
+//       if (cropper) cropper.destroy();
+//     });
+//   });
+
+//   confirmCrop.addEventListener("click", () => {
+//     cropper.getCroppedCanvas().toBlob((blob) => {
+//       const file = new File([blob], "cropped_profile.jpg", { type: "image/jpeg" });
+
+//       // Update hidden input so Rails gets the cropped image
+//       const dataTransfer = new DataTransfer();
+//       dataTransfer.items.add(file);
+//       croppedImageInput.files = dataTransfer.files;
+
+//       // Update preview on the page
+//       const reader = new FileReader();
+//       reader.onload = function (e) {
+//         if (imagePreviewPage) {
+//           imagePreviewPage.src = e.target.result;
+//         }
+//       };
+//       reader.readAsDataURL(file);
+
+//       cropModal.classList.remove("is-active");
+//       cropper.destroy();
+//     });
+//   });
+// });
+
+// document.addEventListener('turbo:load', function() {
+//     // Dynamic Education Fields Logic
+//     const addEducationButton = document.getElementById('add-education-button');
+//     const educationsContainer = document.getElementById('educations-container');
+//     const educationTemplate = document.getElementById('education-fields-template');
+
+//     if (addEducationButton && educationsContainer && educationTemplate) {
+        
+//         // Remove education button handler
+//         document.addEventListener('click', function(event) {
+//             const removeButton = event.target.closest('.remove-education-button');
+//             if (removeButton) {
+//                 event.preventDefault();
+                
+//                 // Add removing state
+//                 removeButton.disabled = true;
+//                 removeButton.classList.add('removing');
+//                 removeButton.innerHTML = '<span class="icon"><i class="fas fa-spinner fa-spin"></i></span> Removing...';
+                
+//                 // Find the parent education box
+//                 const educationBox = removeButton.closest('.box');
+//                 if (!educationBox) {
+//                     removeButton.disabled = false;
+//                     removeButton.classList.remove('removing');
+//                     return;
+//                 }
+                
+//                 // Check if it's an existing record (has destroy field) or new record
+//                 const destroyField = educationBox.querySelector('input[name*="_destroy"]');
+                
+//                 if (destroyField) {
+//                     // Existing record - mark for deletion
+//                     destroyField.value = '1';
+//                     setTimeout(() => {
+//                         educationBox.style.transition = 'opacity 0.3s ease';
+//                         educationBox.style.opacity = '0.5';
+//                         educationBox.style.pointerEvents = 'none';
+//                     }, 100);
+//                 } else {
+//                     // New record - remove immediately with animation
+//                     const fadeOut = educationBox.animate([
+//                         { 
+//                             opacity: 1, 
+//                             transform: 'translateX(0) scale(1)',
+//                             height: educationBox.offsetHeight + 'px'
+//                         },
+//                         { 
+//                             opacity: 0, 
+//                             transform: 'translateX(10px) scale(0.95)',
+//                             height: '0px'
+//                         }
+//                     ], {
+//                         duration: 300,
+//                         easing: 'ease-out'
+//                     });
+                    
+//                     fadeOut.onfinish = () => {
+//                         educationBox.remove();
+//                     };
+//                 }
+//             }
+//         });
+
+//         // Add new education
+//         addEducationButton.addEventListener('click', (event) => {
+//             event.preventDefault();
+//             const content = educationTemplate.innerHTML.replace(/NEW_RECORD/g, new Date().getTime());
+//             const tempDiv = document.createElement('div');
+//             tempDiv.innerHTML = content;
+//             const newEducation = tempDiv.firstElementChild;
+            
+//             // Insert before add button with animation
+//             educationsContainer.insertBefore(newEducation, addEducationButton);
+            
+//             // Animate in
+//             newEducation.style.opacity = '0';
+//             newEducation.style.transform = 'translateY(-20px)';
+//             requestAnimationFrame(() => {
+//                 newEducation.style.transition = 'all 0.3s ease';
+//                 newEducation.style.opacity = '1';
+//                 newEducation.style.transform = 'translateY(0)';
+//             });
+            
+//             // Initialize any new form fields
+//             newEducation.querySelectorAll('input, select, textarea').forEach(field => {
+//                 if (field.tagName === 'INPUT' && field.type === 'checkbox') {
+//                     field.addEventListener('change', function() {
+//                         this.closest('.field').classList.toggle('is-checked', this.checked);
+//                     });
+//                 }
+                
+//                 field.addEventListener('focus', function() {
+//                     this.closest('.field').classList.add('is-focused');
+//                 });
+//                 field.addEventListener('blur', function() {
+//                     this.closest('.field').classList.remove('is-focused');
+//                 });
+//             });
+//         });
+//     }
+
+//     const countrySelect = document.getElementById('country-select');
+//     const citySelect = document.getElementById('city-select');
+//     const countryData = <%= raw @countries_with_cities.to_json %>;
+
+//     if (countrySelect && citySelect) {
+//         const updateCities = () => {
+//             const selectedCountry = countrySelect.value;
+//             const savedCity = citySelect.dataset.savedCity || '<%= j(@psychologist_profile.city) %>';
+
+//             citySelect.innerHTML = '';
+//             citySelect.disabled = !selectedCountry;
+
+//             const placeholder = new Option('<%= t('psychologist_profile.prompts.select_city') %>', '', true, true);
+//             placeholder.disabled = true;
+//             citySelect.add(placeholder);
+
+//             if (selectedCountry) {
+//               const country = countryData.find(c => c.name === selectedCountry);
+//               if (country && country.cities) {
+//                 country.cities.forEach(city => {
+//                   const option = new Option(city.translated_name || city.name, city.name);
+//                   if (city.name === savedCity) {
+//                     option.selected = true;
+//                     placeholder.selected = false;
+//                   }
+//                   citySelect.add(option);
+//                 });
+//               }
+//             }
+//         };
+
+//         countrySelect.addEventListener('change', updateCities);
+
+//         // Populate cities on page load if country is already selected
+//         if (countrySelect.value) {
+//             updateCities();
+//         }
+//     }
+
+//     // TomSelect Initialization
+//     const initTomSelect = (selector, config) => {
+//         document.querySelectorAll(selector).forEach((el) => {
+//             if (!el.tomselect) {
+//                 new TomSelect(el, config);
+//             }
+//         });
+//     };
+
+//     const commonMultiConfig = {
+//       plugins: ['remove_button'],
+//       maxItems: null,
+//       persist: false,
+//       create: false,
+//       closeAfterSelect: false,
+//     };
+
+//     initTomSelect('.tom-select-issues, .tom-select-specialties, .tom-select-client-types, .tom-select-languages', commonMultiConfig);
+
+//     const timezoneSelectElement = document.getElementById('timezone_select');
+//     if (timezoneSelectElement && !timezoneSelectElement.tomselect) {
+//       const tomSelectInstance = new TomSelect(timezoneSelectElement, {
+//         maxItems: 1,
+//         persist: false,
+//         create: false,
+//         plugins: ['dropdown_input'],
+//         sortField: { field: "text", direction: "asc" },
+//         placeholder: timezoneSelectElement.getAttribute('data-placeholder') || "Select your time zone",
+//         allowEmptyOption: true,
+//       });
+
+//       if (typeof Intl?.DateTimeFormat === 'function') {
+//         try {
+//           const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+//           tomSelectInstance.setValue(browserTimeZone, true);
+//         } catch (error) {
+//           console.error("Error detecting browser time zone:", error);
+//         }
+//       }
+//     }
+// });
+
+// document.addEventListener("turbo:load", () => {
+//   const input = document.getElementById("profile_url_input");
+//   const errorEl = document.getElementById("profile_url_error");
+//   const previewEl = document.getElementById("profile_url_preview");
+
+//   if (!input) return;
+
+//   const regex = /^[a-z0-9_-]{3,30}$/;
+//   let timeout;
+
+//   const updatePreview = (value) => {
+//     previewEl.textContent = value || "your-url-here";
+//   };
+
+//   // Initialize preview on page load
+//   updatePreview(input.value);
+
+//   input.addEventListener("input", () => {
+//     const value = input.value.trim();
+
+//     // Clear previous error
+//     errorEl.style.display = "none";
+//     errorEl.textContent = "";
+
+//     // Update preview (always)
+//     updatePreview(value);
+
+//     // Show format error if invalid
+//     if (value && !regex.test(value)) {
+//       errorEl.style.display = "block";
+//       errorEl.textContent = "URL can only contain 3–30 lowercase letters, numbers, hyphens, underscores";
+//       return;
+//     }
+
+//     if (value) {
+//       // Debounce AJAX uniqueness check
+//       clearTimeout(timeout);
+//       timeout = setTimeout(() => {
+//         fetch(`/psychologist_profiles/check_profile_url?profile_url=${encodeURIComponent(value)}`)
+//           .then(res => res.json())
+//           .then(data => {
+//             if (data.taken) {
+//               errorEl.style.display = "block";
+//               errorEl.textContent = "This URL is already taken";
+//             }
+//           })
+//           .catch(err => {
+//             console.error('Error checking URL availability:', err);
+//           });
+//       }, 500);
+//     }
+//   });
+// });
 document.addEventListener("turbo:load", function () {
+  // ---------- Image Cropping ----------
   let cropper;
-
   const imageInput = document.getElementById("imageInput");
-  if (!imageInput) return;
+  if (imageInput) {
+    const imagePreview = document.getElementById("imagePreview"); // modal
+    const imagePreviewPage = document.getElementById("imagePreviewPage"); // page
+    const cropModal = document.getElementById("cropModal");
+    const confirmCrop = document.getElementById("confirmCrop");
+    const cancelCrop = document.getElementById("cancelCrop");
+    const closeModal = document.getElementById("closeModal");
+    const croppedImageInput = document.getElementById("croppedImageInput");
 
-  const imagePreview = document.getElementById("imagePreview"); // modal preview
-  const imagePreviewPage = document.getElementById("imagePreviewPage"); // page preview
-  const cropModal = document.getElementById("cropModal");
-  const confirmCrop = document.getElementById("confirmCrop");
-  const cancelCrop = document.getElementById("cancelCrop");
-  const closeModal = document.getElementById("closeModal");
-  const croppedImageInput = document.getElementById("croppedImageInput");
+    imageInput.addEventListener("change", function () {
+      const file = this.files[0];
+      if (!file) return;
 
-  imageInput.addEventListener("change", function () {
-    const file = this.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      imagePreview.src = e.target.result;
-      cropModal.classList.add("is-active");
-
-      imagePreview.onload = function () {
-        if (cropper) cropper.destroy();
-        cropper = new Cropper(imagePreview, {
-          aspectRatio: 1,
-          viewMode: 1,
-        });
-      };
-    };
-    reader.readAsDataURL(file);
-  });
-
-  [cancelCrop, closeModal].forEach((btn) => {
-    btn.addEventListener("click", () => {
-      cropModal.classList.remove("is-active");
-      if (cropper) cropper.destroy();
-    });
-  });
-
-  confirmCrop.addEventListener("click", () => {
-    cropper.getCroppedCanvas().toBlob((blob) => {
-      const file = new File([blob], "cropped_profile.jpg", { type: "image/jpeg" });
-
-      // Update hidden input so Rails gets the cropped image
-      const dataTransfer = new DataTransfer();
-      dataTransfer.items.add(file);
-      croppedImageInput.files = dataTransfer.files;
-
-      // Update preview on the page
       const reader = new FileReader();
       reader.onload = function (e) {
-        if (imagePreviewPage) {
-          imagePreviewPage.src = e.target.result;
-        }
+        imagePreview.src = e.target.result;
+        cropModal.classList.add("is-active");
+
+        imagePreview.onload = function () {
+          if (cropper) cropper.destroy();
+          cropper = new Cropper(imagePreview, { aspectRatio: 1, viewMode: 1 });
+        };
       };
       reader.readAsDataURL(file);
-
-      cropModal.classList.remove("is-active");
-      cropper.destroy();
     });
-  });
-});
 
-document.addEventListener('turbo:load', function() {
-    // Dynamic Education Fields Logic
-    const addEducationButton = document.getElementById('add-education-button');
-    const educationsContainer = document.getElementById('educations-container');
-    const educationTemplate = document.getElementById('education-fields-template');
+    [cancelCrop, closeModal].forEach((btn) => {
+      btn?.addEventListener("click", () => {
+        cropModal?.classList.remove("is-active");
+        if (cropper) cropper.destroy();
+      });
+    });
 
-    if (addEducationButton && educationsContainer && educationTemplate) {
-        
-        // Remove education button handler
-        document.addEventListener('click', function(event) {
-            const removeButton = event.target.closest('.remove-education-button');
-            if (removeButton) {
-                event.preventDefault();
-                
-                // Add removing state
-                removeButton.disabled = true;
-                removeButton.classList.add('removing');
-                removeButton.innerHTML = '<span class="icon"><i class="fas fa-spinner fa-spin"></i></span> Removing...';
-                
-                // Find the parent education box
-                const educationBox = removeButton.closest('.box');
-                if (!educationBox) {
-                    removeButton.disabled = false;
-                    removeButton.classList.remove('removing');
-                    return;
-                }
-                
-                // Check if it's an existing record (has destroy field) or new record
-                const destroyField = educationBox.querySelector('input[name*="_destroy"]');
-                
-                if (destroyField) {
-                    // Existing record - mark for deletion
-                    destroyField.value = '1';
-                    setTimeout(() => {
-                        educationBox.style.transition = 'opacity 0.3s ease';
-                        educationBox.style.opacity = '0.5';
-                        educationBox.style.pointerEvents = 'none';
-                    }, 100);
-                } else {
-                    // New record - remove immediately with animation
-                    const fadeOut = educationBox.animate([
-                        { 
-                            opacity: 1, 
-                            transform: 'translateX(0) scale(1)',
-                            height: educationBox.offsetHeight + 'px'
-                        },
-                        { 
-                            opacity: 0, 
-                            transform: 'translateX(10px) scale(0.95)',
-                            height: '0px'
-                        }
-                    ], {
-                        duration: 300,
-                        easing: 'ease-out'
-                    });
-                    
-                    fadeOut.onfinish = () => {
-                        educationBox.remove();
-                    };
-                }
-            }
-        });
+    confirmCrop?.addEventListener("click", () => {
+      cropper.getCroppedCanvas().toBlob((blob) => {
+        const file = new File([blob], "cropped_profile.jpg", { type: "image/jpeg" });
 
-        // Add new education
-        addEducationButton.addEventListener('click', (event) => {
-            event.preventDefault();
-            const content = educationTemplate.innerHTML.replace(/NEW_RECORD/g, new Date().getTime());
-            const tempDiv = document.createElement('div');
-            tempDiv.innerHTML = content;
-            const newEducation = tempDiv.firstElementChild;
-            
-            // Insert before add button with animation
-            educationsContainer.insertBefore(newEducation, addEducationButton);
-            
-            // Animate in
-            newEducation.style.opacity = '0';
-            newEducation.style.transform = 'translateY(-20px)';
-            requestAnimationFrame(() => {
-                newEducation.style.transition = 'all 0.3s ease';
-                newEducation.style.opacity = '1';
-                newEducation.style.transform = 'translateY(0)';
-            });
-            
-            // Initialize any new form fields
-            newEducation.querySelectorAll('input, select, textarea').forEach(field => {
-                if (field.tagName === 'INPUT' && field.type === 'checkbox') {
-                    field.addEventListener('change', function() {
-                        this.closest('.field').classList.toggle('is-checked', this.checked);
-                    });
-                }
-                
-                field.addEventListener('focus', function() {
-                    this.closest('.field').classList.add('is-focused');
-                });
-                field.addEventListener('blur', function() {
-                    this.closest('.field').classList.remove('is-focused');
-                });
-            });
-        });
-    }
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
+        croppedImageInput.files = dataTransfer.files;
 
-    const countrySelect = document.getElementById('country-select');
-    const citySelect = document.getElementById('city-select');
-    const countryData = <%= raw @countries_with_cities.to_json %>;
-
-    if (countrySelect && citySelect) {
-        const updateCities = () => {
-            const selectedCountry = countrySelect.value;
-            const savedCity = citySelect.dataset.savedCity || '<%= j(@psychologist_profile.city) %>';
-
-            citySelect.innerHTML = '';
-            citySelect.disabled = !selectedCountry;
-
-            const placeholder = new Option('<%= t('psychologist_profile.prompts.select_city') %>', '', true, true);
-            placeholder.disabled = true;
-            citySelect.add(placeholder);
-
-            if (selectedCountry) {
-              const country = countryData.find(c => c.name === selectedCountry);
-              if (country && country.cities) {
-                country.cities.forEach(city => {
-                  const option = new Option(city.translated_name || city.name, city.name);
-                  if (city.name === savedCity) {
-                    option.selected = true;
-                    placeholder.selected = false;
-                  }
-                  citySelect.add(option);
-                });
-              }
-            }
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          if (imagePreviewPage) imagePreviewPage.src = e.target.result;
         };
+        reader.readAsDataURL(file);
 
-        countrySelect.addEventListener('change', updateCities);
+        cropModal.classList.remove("is-active");
+        cropper.destroy();
+      });
+    });
+  }
 
-        // Populate cities on page load if country is already selected
-        if (countrySelect.value) {
-            updateCities();
-        }
-    }
+  // ---------- Dynamic Education Fields ----------
+  const addEducationButton = document.getElementById('add-education-button');
+  const educationsContainer = document.getElementById('educations-container');
+  const educationTemplate = document.getElementById('education-fields-template');
 
-    // TomSelect Initialization
-    const initTomSelect = (selector, config) => {
-        document.querySelectorAll(selector).forEach((el) => {
-            if (!el.tomselect) {
-                new TomSelect(el, config);
-            }
-        });
-    };
+  if (addEducationButton && educationsContainer && educationTemplate) {
+    // Remove education handler
+    document.addEventListener('click', function(event) {
+      const removeButton = event.target.closest('.remove-education-button');
+      if (!removeButton) return;
 
-    const commonMultiConfig = {
-      plugins: ['remove_button'],
-      maxItems: null,
-      persist: false,
-      create: false,
-      closeAfterSelect: false,
-    };
+      event.preventDefault();
+      removeButton.disabled = true;
+      removeButton.classList.add('removing');
+      removeButton.innerHTML = '<span class="icon"><i class="fas fa-spinner fa-spin"></i></span> Removing...';
 
-    initTomSelect('.tom-select-issues, .tom-select-specialties, .tom-select-client-types, .tom-select-languages', commonMultiConfig);
+      const educationBox = removeButton.closest('.box');
+      if (!educationBox) return;
 
-    const timezoneSelectElement = document.getElementById('timezone_select');
-    if (timezoneSelectElement && !timezoneSelectElement.tomselect) {
-      const tomSelectInstance = new TomSelect(timezoneSelectElement, {
-        maxItems: 1,
-        persist: false,
-        create: false,
-        plugins: ['dropdown_input'],
-        sortField: { field: "text", direction: "asc" },
-        placeholder: timezoneSelectElement.getAttribute('data-placeholder') || "Select your time zone",
-        allowEmptyOption: true,
+      const destroyField = educationBox.querySelector('input[name*="_destroy"]');
+      if (destroyField) {
+        destroyField.value = '1';
+        setTimeout(() => {
+          educationBox.style.transition = 'opacity 0.3s ease';
+          educationBox.style.opacity = '0.5';
+          educationBox.style.pointerEvents = 'none';
+        }, 100);
+      } else {
+        const fadeOut = educationBox.animate([
+          { opacity: 1, transform: 'translateX(0) scale(1)', height: educationBox.offsetHeight + 'px' },
+          { opacity: 0, transform: 'translateX(10px) scale(0.95)', height: '0px' }
+        ], { duration: 300, easing: 'ease-out' });
+        fadeOut.onfinish = () => educationBox.remove();
+      }
+    });
+
+    // Add new education
+    addEducationButton.addEventListener('click', (event) => {
+      event.preventDefault();
+      const content = educationTemplate.innerHTML.replace(/NEW_RECORD/g, new Date().getTime());
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = content.trim();
+      const newEducation = tempDiv.firstElementChild;
+      if (!newEducation) return;
+
+      // Append to container
+      educationsContainer.appendChild(newEducation);
+
+      // Animate in
+      newEducation.style.opacity = '0';
+      newEducation.style.transform = 'translateY(-20px)';
+      requestAnimationFrame(() => {
+        newEducation.style.transition = 'all 0.3s ease';
+        newEducation.style.opacity = '1';
+        newEducation.style.transform = 'translateY(0)';
       });
 
-      if (typeof Intl?.DateTimeFormat === 'function') {
-        try {
-          const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-          tomSelectInstance.setValue(browserTimeZone, true);
-        } catch (error) {
-          console.error("Error detecting browser time zone:", error);
+      // Initialize form field behaviors
+      newEducation.querySelectorAll('input, select, textarea').forEach(field => {
+        if (field.tagName === 'INPUT' && field.type === 'checkbox') {
+          field.addEventListener('change', function() {
+            this.closest('.field').classList.toggle('is-checked', this.checked);
+          });
+        }
+        field.addEventListener('focus', function() {
+          this.closest('.field').classList.add('is-focused');
+        });
+        field.addEventListener('blur', function() {
+          this.closest('.field').classList.remove('is-focused');
+        });
+      });
+    });
+  }
+
+  // ---------- Country → City Dropdown ----------
+  const countrySelect = document.getElementById('country-select');
+  const citySelect = document.getElementById('city-select');
+  const countryData = <%= raw @countries_with_cities.to_json %>;
+
+  if (countrySelect && citySelect) {
+    const updateCities = () => {
+      const selectedCountry = countrySelect.value;
+      const savedCity = citySelect.dataset.savedCity || '<%= j(@psychologist_profile.city) %>';
+
+      citySelect.innerHTML = '';
+      citySelect.disabled = !selectedCountry;
+
+      const placeholder = new Option('<%= t('psychologist_profile.prompts.select_city') %>', '');
+      placeholder.disabled = true;
+      citySelect.add(placeholder);
+
+      if (selectedCountry) {
+        const country = countryData.find(c => c.name === selectedCountry);
+        if (country && country.cities) {
+          country.cities.forEach(city => {
+            const option = new Option(city.translated_name || city.name, city.name);
+            if (city.name === savedCity) option.selected = true;
+            citySelect.add(option);
+          });
         }
       }
-    }
-});
+    };
 
-document.addEventListener("turbo:load", () => {
+    countrySelect.addEventListener('change', updateCities);
+    if (countrySelect.value) updateCities();
+  }
+
+  // ---------- TomSelect Initialization ----------
+  const initTomSelect = (selector, config) => {
+    document.querySelectorAll(selector).forEach((el) => {
+      if (!el.tomselect) new TomSelect(el, config);
+    });
+  };
+
+  const commonMultiConfig = {
+    plugins: ['remove_button'],
+    maxItems: null,
+    persist: false,
+    create: false,
+    closeAfterSelect: false
+  };
+  initTomSelect('.tom-select-issues, .tom-select-specialties, .tom-select-client-types, .tom-select-languages', commonMultiConfig);
+
+  const timezoneSelectElement = document.getElementById('timezone_select');
+  if (timezoneSelectElement && !timezoneSelectElement.tomselect) {
+    const tomSelectInstance = new TomSelect(timezoneSelectElement, {
+      maxItems: 1,
+      persist: false,
+      create: false,
+      plugins: ['dropdown_input'],
+      sortField: { field: "text", direction: "asc" },
+      placeholder: timezoneSelectElement.getAttribute('data-placeholder') || "Select your time zone",
+      allowEmptyOption: true,
+    });
+    try {
+      const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      tomSelectInstance.setValue(browserTimeZone, true);
+    } catch (error) {
+      console.error("Error detecting browser time zone:", error);
+    }
+  }
+
+  // ---------- Profile URL Validation ----------
   const input = document.getElementById("profile_url_input");
   const errorEl = document.getElementById("profile_url_error");
   const previewEl = document.getElementById("profile_url_preview");
+  if (input) {
+    const regex = /^[a-z0-9_-]{3,30}$/;
+    let timeout;
 
-  if (!input) return;
+    const updatePreview = (value) => { previewEl.textContent = value || "your-url-here"; };
+    updatePreview(input.value);
 
-  const regex = /^[a-z0-9_-]{3,30}$/;
-  let timeout;
+    input.addEventListener("input", () => {
+      const value = input.value.trim();
+      errorEl.style.display = "none"; errorEl.textContent = "";
+      updatePreview(value);
 
-  const updatePreview = (value) => {
-    previewEl.textContent = value || "your-url-here";
-  };
+      if (value && !regex.test(value)) {
+        errorEl.style.display = "block";
+        errorEl.textContent = "URL can only contain 3–30 lowercase letters, numbers, hyphens, underscores";
+        return;
+      }
 
-  // Initialize preview on page load
-  updatePreview(input.value);
-
-  input.addEventListener("input", () => {
-    const value = input.value.trim();
-
-    // Clear previous error
-    errorEl.style.display = "none";
-    errorEl.textContent = "";
-
-    // Update preview (always)
-    updatePreview(value);
-
-    // Show format error if invalid
-    if (value && !regex.test(value)) {
-      errorEl.style.display = "block";
-      errorEl.textContent = "URL can only contain 3–30 lowercase letters, numbers, hyphens, underscores";
-      return;
-    }
-
-    if (value) {
-      // Debounce AJAX uniqueness check
-      clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        fetch(`/psychologist_profiles/check_profile_url?profile_url=${encodeURIComponent(value)}`)
-          .then(res => res.json())
-          .then(data => {
-            if (data.taken) {
-              errorEl.style.display = "block";
-              errorEl.textContent = "This URL is already taken";
-            }
-          })
-          .catch(err => {
-            console.error('Error checking URL availability:', err);
-          });
-      }, 500);
-    }
-  });
+      if (value) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          fetch(`/psychologist_profiles/check_profile_url?profile_url=${encodeURIComponent(value)}`)
+            .then(res => res.json())
+            .then(data => {
+              if (data.taken) {
+                errorEl.style.display = "block";
+                errorEl.textContent = "This URL is already taken";
+              }
+            })
+            .catch(err => console.error('Error checking URL availability:', err));
+        }, 500);
+      }
+    });
+  }
 });
+
 </script>

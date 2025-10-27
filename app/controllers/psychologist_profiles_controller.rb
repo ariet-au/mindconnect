@@ -3,6 +3,8 @@ class PsychologistProfilesController < ApplicationController
   before_action :set_psychologist_profile, only: %i[show edit update destroy analytics]
   before_action :authorize_user!, only: [:edit, :update, :destroy]
   before_action :check_user_confirmation,  only: %i[ edit update destroy ]
+  
+  include LocationDetectable
 
 
 
@@ -188,16 +190,43 @@ class PsychologistProfilesController < ApplicationController
   def new
     @psychologist_profile = PsychologistProfile.new
     @psychologist_profile.educations.build
+    @countries_with_cities = get_countries_with_cities_data
+
+
+    if @psychologist_profile.country.blank? && @psychologist_profile.city.blank?
+      location = LocationDetector.detect(ip: request.remote_ip)
+
+      if location[:city].present? && location[:country].present?
+        # Match country name to your YAML
+        matched_country = COUNTRIES_AND_CITIES.find { |c| c[:name].casecmp(location[:country].downcase).zero? }
+
+        @psychologist_profile.country = matched_country[:name] if matched_country
+        @psychologist_profile.city = location[:city]
+      end
+    end
   end
 
   # GET /psychologist_profiles/1/edit
   def edit
     @psychologist_profile = PsychologistProfile.find(params[:id])
-    # Ensure there's at least one blank education form for adding new ones
-    # or if the profile somehow has no existing educations
     @psychologist_profile.educations.build if @psychologist_profile.educations.empty?
     @countries_with_cities = get_countries_with_cities_data
 
+    # Determine initial country & city for the dropdown
+    @initial_country = @psychologist_profile.country
+    @initial_city = @psychologist_profile.city
+
+    #Rails.logger.info "Initial country=#{@initial_country.inspect}, initial city=#{@initial_city.inspect}"
+
+
+    if @initial_country.blank? && @initial_city.blank?
+      location = LocationDetector.detect(ip: request.remote_ip)
+      if location[:city].present? && location[:country].present?
+        matched_country = COUNTRIES_AND_CITIES.find { |c| c[:name].casecmp(location[:country].downcase).zero? }
+        @initial_country = matched_country[:name] if matched_country
+        @initial_city = location[:city]
+      end
+    end
   end
 
   # POST /psychologist_profiles or /psychologist_profiles.json

@@ -11,6 +11,7 @@ class BookingsController < ApplicationController
   before_action :set_booking, only: [:show, :edit, :update, :destroy, :confirm, :decline, :confirm_form, :cancel]
 
   #before_action :set_psychologist_profile, only: [:create_json, :update_json, :destroy_json, :new]
+  include LocationDetectable
 
 
   def index

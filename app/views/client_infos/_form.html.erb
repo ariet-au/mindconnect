@@ -43,25 +43,25 @@
           <div class="form-section">
             <h2 class="section-title"><%= t('client_infos.form.location_information') %></h2>
 
-<div class="form-group">
-  <label class="form-label"><%= t('client_infos.form.placeholder.city') %></label>
+          <div class="form-group">
+            <label class="form-label"><%= t('client_infos.form.placeholder.city') %></label>
 
-  <%= f.select :city,
-        options_for_select(
-          COUNTRIES_AND_CITIES.flat_map do |c|
-            (c[:cities] || []).map do |city|
-              ["#{city.titleize}, #{c[:name].titleize}", "#{city.titleize}, #{c[:name].titleize}"]
-            end
-          end,
-          @current_city&.titleize
-        ),
-        { prompt: t('client_infos.form.placeholder.city') },
-        id: "city_input",
-        class: "form-input"
-      %>
+            <%= f.select :city,
+                  options_for_select(
+                    COUNTRIES_AND_CITIES.flat_map do |c|
+                      (c[:cities] || []).map do |city|
+                        ["#{city.titleize}, #{c[:name].titleize}", "#{city.titleize}, #{c[:name].titleize}"]
+                      end
+                    end,
+                    @current_city&.titleize
+                  ),
+                  { prompt: t('client_infos.form.placeholder.city') },
+                  id: "city_input",
+                  class: "form-input"
+                %>
 
-  <p class="form-help"><%= t('client_infos.form.help_text.location_detection') %></p>
-</div>
+            <p class="form-help"><%= t('client_infos.form.help_text.location_detection') %></p>
+          </div>
 
 
 
