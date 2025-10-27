@@ -1,0 +1,78 @@
+city_aliases:
+  # --- UZBEKISTAN ---
+  tashkent: toshkent
+  taskent: toshkent
+  samarkand: samarkand
+  samarqand: samarkand
+  andijan: andijan
+  andizhan: andijan
+  namangan: namangan
+  bukhara: bukhara
+  buxoro: bukhara
+  khiva: khiva
+  xiva: khiva
+  nukus: nukus
+  termez: termez
+  qarshi: qarshi
+  karshi: qarshi
+  fergana: fergana
+  ferghana: fergana
+  urgench: urgench
+  urganch: urgench
+  navoiy: navoiy
+  navoi: navoiy
+
+  # --- KAZAKHSTAN ---
+  astana: astana
+  almaty: almaty
+  alma-ata: almaty
+  aktobe: aktobe
+  atyrau: atyrau
+  karaganda: karaganda
+  oskemen: oskemen
+  ust-kamenogorsk: ust-kamenogorsk
+  pavlodar: pavlodar
+  shymkent: shymkent
+  chimkent: shymkent
+  taraz: taraz
+  semey: semey
+  semipalatinsk: semey
+  kyzylorda: kyzylorda
+  kostanay: kostanay
+  petropavl: petropavl
+  petropavlovsk: petropavl
+  oral: oral
+  uralsk: oral
+
+  # --- KYRGYZSTAN ---
+  bishkek: bishkek
+  frunze: bishkek
+  osh: osh
+  djalal-abad: djalal-abad
+  jalal-abad: djalal-abad
+  karakol: karakol
+  isyk-kul: karakol
+  talas: talas
+  naryn: naryn
+  batken: batken
+  tokmok: tokmok
+  uzgen: uzgen
+
+country_aliases:
+  # Full country names
+  uzbekistan: uzbekistan
+  kazakhstan: kazakhstan
+  kyrgyzstan: kyrgyzstan
+
+  # Common short forms and codes
+  uz: uzbekistan
+  kz: kazakhstan
+  kg: kyrgyzstan
+
+  # English / Russian / Alt spellings
+  republic of uzbekistan: uzbekistan
+  republic of kazakhstan: kazakhstan
+  republic of kyrgyzstan: kyrgyzstan
+  kyrgyz republic: kyrgyzstan
+  kirghizstan: kyrgyzstan
+  kirgizia: kyrgyzstan

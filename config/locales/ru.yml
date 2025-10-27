@@ -110,33 +110,47 @@ ru:
     canada: "Канада"
     russia: "Россия"
     
+
   cities:
-    bishkek: "Бишкек"
-    osh: "Ош"
-    naryn: "Нарын"
-    jalal_abad: "Джалал-Абад"
-    batken: "Баткен"
-    talas: "Талас"
-    almaty: "Алматы"
+    # Kazakhstan
     astana: "Астана"
-    shymkent: "Шымкент"
-    taraz: "Тараз"
+    almaty: "Алматы"
     aktobe: "Актобе"
     atyrau: "Атырау"
     karaganda: "Караганда"
-    oskemen: "Усть-Каменогорск"
+    oskemen: "Оскемен"
     pavlodar: "Павлодар"
-    djalal-abad: "Джалал-Абад"
+    shymkent: "Шымкент"
+    taraz: "Тараз"
+    semey: "Семей"
+    ust-kamenogorsk: "Усть-Каменогорск" # Russian name for Oskemen
+    kyzylorda: "Кызылорда"
+    kostanay: "Костанай"
+    petropavl: "Петропавловск" # Common Russian name
+    oral: "Уральск" # Common Russian name
+    # Kyrgyzstan
+    bishkek: "Бишкек"
+    djalal_abad: "Джалал-Абад"
     karakol: "Каракол"
-    toshkent: "Ташкент"
+    osh: "Ош"
+    talas: "Талас"
+    naryn: "Нарын"
+    batken: "Баткен"
+    tokmok: "Токмок"
+    uzgen: "Узген"
+    # Uzbekistan
+    toshkent: "Ташкент" # Russian spelling for Tashkent
     namangan: "Наманган"
     samarkand: "Самарканд"
     andijan: "Андижан"
     nukus: "Нукус"
-    tashkent: "Ташкент"
-    ferghana: "Фергана"
-    new_york: "Нью-Йорк"
-    toronto: "Торонто"
+    bukhara: "Бухара"
+    khiva: "Хива"
+    termez: "Термез"
+    qarshi: "Карши" # Russian spelling for Qarshi
+    fergana: "Фергана"
+    urgench: "Ургенч"
+    navoiy: "Навои"
     
   time:
     formats:

@@ -3,6 +3,11 @@ class ClientInfosController < ApplicationController
   before_action :set_psychologist_profile, only: [:index, :new, :create]
   before_action :set_client_info, only: [:show, :edit, :update, :destroy]
   
+  require 'net/http'
+  require 'json'
+
+  include LocationDetectable
+
 
   # GET /client_infos
   def index
@@ -21,24 +26,37 @@ class ClientInfosController < ApplicationController
 
 
   # GET /client_infos/new
- def new
+def new
   @client_info = ClientInfo.new
+  @client_info.client_contacts.build
 
   if params[:psychologist_profile_id].present?
-    # Case 1: User clicked "Submit Client Info" from a psychologist's profile
     @client_info.psychologist_profile_id = params[:psychologist_profile_id]
     @client_info.submitted_by = "client"
   elsif user_signed_in? && current_user.psychologist_profile
-    # Case 2: User clicked "Add New Client" and is a signed-in psychologist
     @client_info.psychologist_profile = current_user.psychologist_profile
     @client_info.submitted_by = "psychologist"
   else
-    # Case 3: Guest user accessing the form without a psychologist profile
     @client_info.submitted_by = "client"
   end
 
-  @client_info.client_contacts.build
+  # Prefill city from IP
+  unless @current_city
+    ip = request.remote_ip
+    begin
+      res = Net::HTTP.get(URI("https://ipinfo.io/#{ip}/json"))
+      geo = JSON.parse(res)
+      @current_city = geo["city"] && geo["country"] ? "#{geo['city']}, #{geo['country']}" : nil
+    rescue
+      @current_city = nil
+    end
+  end
+
+  # Load countries + cities for autocomplete
+  @countries_with_cities = get_countries_with_cities_data
 end
+
+
 
 def create
   @client_info = ClientInfo.new(client_info_params)
@@ -129,6 +147,23 @@ end
   end
 
   private
+
+  def get_countries_with_cities_data
+    data = YAML.load_file(Rails.root.join("config/countries_cities.yml"))
+
+    data.map do |country|
+      {
+        "name" => country["name"],
+        "translated_name" => I18n.t("countries.#{country['name'].parameterize(separator: '_')}", default: country["name"]),
+        "cities" => country["cities"].map do |city|
+          {
+            "name" => city,
+            "translated_name" => I18n.t("cities.#{city.parameterize(separator: '_')}", default: city)
+          }
+        end
+      }
+    end
+  end
 
   def set_psychologist_profile
     if user_signed_in?

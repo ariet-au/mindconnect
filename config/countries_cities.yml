@@ -10,6 +10,12 @@
     - pavlodar
     - shymkent
     - taraz
+    - semey
+    - ust-kamenogorsk
+    - kyzylorda
+    - kostanay
+    - petropavl
+    - oral
 - name: kyrgyzstan
   cities:
     - bishkek
@@ -17,6 +23,10 @@
     - karakol
     - osh
     - talas
+    - naryn
+    - batken
+    - tokmok
+    - uzgen
 - name: uzbekistan
   cities:
     - toshkent
@@ -24,3 +34,10 @@
     - samarkand
     - andijan
     - nukus
+    - bukhara
+    - khiva
+    - termez
+    - qarshi
+    - fergana
+    - urgench
+    - navoiy

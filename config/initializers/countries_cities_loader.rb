@@ -1,12 +1,18 @@
-# config/initializers/countries_cities_loader.rb
+# # config/initializers/countries_cities_loader.rb
+
 require 'yaml'
 
-# Load the YAML file
-# Using ||= ensures it's only loaded once
-Rails.application.config.countries_and_cities = YAML.load_file(Rails.root.join('config', 'countries_cities.yml'))
+raw_data = YAML.load_file(Rails.root.join('config', 'countries_cities.yml'))
 
-# You might want to add some basic validation or formatting here
-# For example, ensuring cities are sorted within each country
-Rails.application.config.countries_and_cities.each do |country_data|
-  country_data['cities'].sort! if country_data['cities'].is_a?(Array)
+COUNTRIES_AND_CITIES = raw_data.map do |country|
+  {
+    name: country['name'].strip.downcase,
+    cities: Array(country['cities']).map { |c| c.strip.downcase }.sort
+  }
+end.freeze
+
+# Helper: quick lookup hashes
+COUNTRY_NAMES = COUNTRIES_AND_CITIES.map { |c| c[:name] }
+CITY_LOOKUP = COUNTRIES_AND_CITIES.each_with_object({}) do |country, h|
+  country[:cities].each { |city| h[city] = country[:name] }
 end

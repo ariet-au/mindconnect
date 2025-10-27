@@ -1,10 +1,96 @@
+<!-- CONTACT ROW PARTIAL -->
 <div class="contact-row">
   <%= f.select :method,
         ClientContact::CONTACT_METHODS.map { |m| [t("client_infos.form.contact_methods.#{m.downcase}"), m] },
-        { prompt: t('client_infos.form.contact_methods.select_method') } %>
+        { prompt: t('client_infos.form.contact_methods.select_method') },
+        class: "contact-method-select" %>
 
-  <%= f.text_field :value, placeholder: t('client_infos.form.contact_methods.placeholder') %>
+  <%= f.text_field :value,
+        placeholder: t('client_infos.form.contact_methods.placeholder'),
+        class: "contact-value-input" %>
 
-  <button type="button" class="button is-small is-danger remove-contact"><%= t('client_infos.form.contact_methods.remove') %></button>
+  <button type="button" class="contact-remove-btn" aria-label="Remove contact">
+    <span aria-hidden="true">×</span>
+  </button>
+
   <%= f.hidden_field :_destroy %>
 </div>
+
+<!-- CSS – FULLY ALIGNED X BUTTON -->
+<style>
+  .contact-row {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+    display: grid;
+    grid-template-columns: 1fr 2fr auto;
+    gap: 0.5rem;
+    align-items: stretch; /* Make all items same height */
+  }
+
+  .contact-method-select,
+  .contact-value-input {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.9375rem;
+    color: #111827;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    transition: border-color 0.15s;
+    height: 2.75rem;
+    box-sizing: border-box;
+  }
+
+  .contact-method-select:focus,
+  .contact-value-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+
+  /* X BUTTON – MATCHES INPUT HEIGHT & STYLE */
+  .contact-remove-btn {
+    background: #ef4444;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    width: 2.75rem;           /* Same as input height */
+    height: 2.75rem;          /* Exact match */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.25rem;
+    font-weight: bold;
+    transition: background 0.15s;
+    flex-shrink: 0;
+    padding: 0;
+    margin: 0;
+  }
+
+  .contact-remove-btn:hover {
+    background: #dc2626;
+  }
+
+  .contact-remove-btn span {
+    line-height: 1;
+    margin-top: -1px; /* Fine-tune vertical centering of × */
+  }
+
+  /* MOBILE: Stack + full-width X */
+  @media (max-width: 768px) {
+    .contact-row {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
+
+    .contact-remove-btn {
+      width: 100%;
+      height: 2.75rem;
+      font-size: 1.1rem;
+    }
+  }
+</style>

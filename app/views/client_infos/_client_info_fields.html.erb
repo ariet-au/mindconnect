@@ -1,302 +1,197 @@
-<div class="container3">
+<div class="container">
   <div class="columns is-centered">
     <div class="column is-12-mobile is-10-tablet is-8-desktop is-6-widescreen">
-      <div class="box2 has-background-white">
-          <div class="mb-4">
-            <h2 class="title is-6"><%= t('client_infos.form.personal_information') %></h2>
-            <div class="columns is-multiline">
-              <div class="column is-12-mobile is-6-tablet">
-                <div class="field">
-                  <div class="control has-icons-left">
-                    <%= f.text_field :first_name, class: "input", placeholder: t('client_infos.form.placeholder.first_name') %>
-                    <span class="icon is-small is-left">
-                      <i class="fas fa-user"></i>
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="column is-12-mobile is-6-tablet">
-                <div class="field">
-                  <div class="control has-icons-left">
-                    <%= f.text_field :last_name, class: "input", placeholder: t('client_infos.form.placeholder.last_name') %>
-                    <span class="icon is-small is-left">
-                      <i class="fas fa-user"></i>
-                    </span>
-                  </div>
-                </div>
-              </div>
+      <div class="form-card">
+        <div class="mb-4">
+          <h2 class="section-title"><%= t('client_infos.form.personal_information') %></h2>
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label"><%= t('client_infos.form.placeholder.first_name') %></label>
+              <%= f.text_field :first_name, class: "form-input", placeholder: t('client_infos.form.placeholder.first_name') %>
             </div>
-
-            <% max_year = Time.current.year - 16 %>
-            <% min_year = 1930 %>
-
-            <div class="field">
-              <div class="control has-icons-left">
-                <%= f.select :year_of_birth,
-                      (max_year).downto(min_year).to_a,
-                      { prompt: t('client_infos.form.placeholder.year_of_birth') },
-                      { class: "input" } %>
-                <span class="icon is-small is-left">
-                  <i class="fas fa-calendar-alt"></i>
-                </span>
-              </div>
+            <div class="form-group">
+              <label class="form-label"><%= t('client_infos.form.placeholder.last_name') %></label>
+              <%= f.text_field :last_name, class: "form-input", placeholder: t('client_infos.form.placeholder.last_name') %>
             </div>
           </div>
 
-          <div class="mb-4">
-            <h2 class="title is-6"><%= t('client_infos.form.location_information') %></h2>
-            <div class="field">
-              <div class="control has-icons-left">
-                <%= f.text_field :city, list: "cities", id: "city_input", class: "input", placeholder: t('client_infos.form.placeholder.city') %>
-                <span class="icon is-small is-left">
-                  <i class="fas fa-city"></i>
-                </span>
-              </div>
-              <p class="help"><%= t('client_infos.form.help_text.location_detection') %></p>
+          <% max_year = Time.current.year - 16 %>
+          <% min_year = 1930 %>
 
-              <datalist id="cities">
-                <option value="Bishkek, Kyrgyzstan">
-                <option value="Osh, Kyrgyzstan">
-                <option value="Almaty, Kazakhstan">
-                <option value="Astana, Kazakhstan">
-                <option value="Kiev, Ukraine">
-              </datalist>
-            </div>
+          <div class="form-group">
+            <label class="form-label"><%= t('client_infos.form.placeholder.year_of_birth') %></label>
+            <%= f.select :year_of_birth,
+                  (max_year).downto(min_year).to_a,
+                  { prompt: t('client_infos.form.placeholder.year_of_birth') },
+                  { class: "form-input" } %>
+          </div>
+        </div>
 
-            <div class="field">
-              <div class="control has-icons-left">
-                <%= f.select :timezone,
-                      TZInfo::Timezone.all_identifiers.map { |id|
-                        begin
-                          tz = TZInfo::Timezone.get(id)
-                          offset = tz.current_period.offset.utc_total_offset / 3600.0
-                          formatted_offset = "GMT#{offset >= 0 ? '+' : ''}#{offset.to_i}"
-                          ["(#{formatted_offset}) #{id}", id]
-                        rescue TZInfo::InvalidTimezoneIdentifier
-                          nil
-                        end
-                      }.compact,
-                      { prompt: t('client_infos.form.placeholder.timezone') },
-                      { id: "timezone_select", class: "input" }
-                %>
-                <span class="icon is-small is-left">
-                  <i class="fas fa-clock"></i>
-                </span>
-              </div>
-              <p class="help"><%= t('client_infos.form.help_text.timezone_detection') %></p>
-            </div>
+        <div class="mb-4">
+          <h2 class="section-title"><%= t('client_infos.form.location_information') %></h2>
+          <div class="form-group">
+            <label class="form-label"><%= t('client_infos.form.placeholder.city') %></label>
+            <%= f.text_field :city,
+                  id: "city_input",
+                  class: "form-input",
+                  placeholder: t('client_infos.form.placeholder.city'),
+                  value: @current_city.presence %>
+            <p class="form-help"><%= t('client_infos.form.help_text.location_detection') %></p>
           </div>
 
-          <div class="mb-4">
-            <h2 class="title is-6"><%= t('client_infos.form.therapy_information') %></h2>
-            <div class="field">
-              <div class="control">
-                <%= f.text_area :reason_for_therapy, class: "textarea", rows: "3", placeholder: t('client_infos.form.placeholder.reason_for_therapy') %>
-              </div>
-            </div>
+          <div class="form-group">
+            <label class="form-label"><%= t('client_infos.form.placeholder.timezone') %></label>
+            <%= f.select :timezone,
+                  TZInfo::Timezone.all_identifiers.map { |id|
+                    begin
+                      tz = TZInfo::Timezone.get(id)
+                      offset = tz.current_period.offset.utc_total_offset / 3600.0
+                      formatted_offset = "GMT#{offset >= 0 ? '+' : ''}#{offset.to_i}"
+                      ["(#{formatted_offset}) #{id}", id]
+                    rescue TZInfo::InvalidTimezoneIdentifier
+                      nil
+                    end
+                  }.compact,
+                  { prompt: t('client_infos.form.placeholder.timezone') },
+                  { id: "timezone_select", class: "form-input" } %>
+            <p class="form-help"><%= t('client_infos.form.help_text.timezone_detection') %></p>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <h2 class="section-title"><%= t('client_infos.form.therapy_information') %></h2>
+          <div class="form-group">
+            <label class="form-label"><%= t('client_infos.form.placeholder.reason_for_therapy') %></label>
+            <%= f.text_area :reason_for_therapy, class: "form-textarea", rows: "3", placeholder: t('client_infos.form.placeholder.reason_for_therapy') %>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <h2 class="section-title"><%= t('client_infos.form.contact_information') %></h2>
+          <div id="contacts-list" class="mb-3">
+            <%= f.fields_for :client_contacts do |contact_form| %>
+              <%= render "client_infos/client_contact_fields", f: contact_form %>
+            <% end %>
           </div>
 
-          <div class="mb-4">
-            <h2 class="title is-6"><%= t('client_infos.form.contact_information') %></h2>
-            <div id="contacts-list" class="mb-3">
-              <%= f.fields_for :client_contacts do |contact_form| %>
-                <%= render "client_infos/client_contact_fields", f: contact_form %>
-              <% end %>
-            </div>
+          <template id="contact-template">
+            <%= f.fields_for(:client_contacts, ClientContact.new, child_index: "NEW_RECORD") do |cf| %>
+              <%= render "client_infos/client_contact_fields", f: cf %>
+            <% end %>
+          </template>
 
-            <template id="contact-template">
-              <%= f.fields_for(:client_contacts, ClientContact.new, child_index: "NEW_RECORD") do |cf| %>
-                <%= render "client_infos/client_contact_fields", f: cf %>
-              <% end %>
-            </template>
-
-            <button type="button" id="add-contact" class="button is-light is-fullwidth-mobile">
-              <span class="icon">
-                <i class="fas fa-plus"></i>
-              </span>
-              <span><%= t('client_infos.form.add_contact') %></span>
-            </button>
-          </div>
+          <button type="button" id="add-contact" class="add-contact-btn">
+            <span>+ <%= t('client_infos.form.add_contact') %></span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-
-
-
 <style>
-/* Mobile-first custom styles */
-.container3.container3 {
-  padding: 1rem;
-}
-
-.container3 .box2 {
-  border-radius: 12px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  border: 1px solid #e5e7eb;
-}
-
-.container3 .title {
-  color: #1f2937;
-  font-weight: 600;
-}
-
-.container3 .subtitle {
-  font-weight: 600;
-  border-bottom: 2px solid #e5e7eb;
-  padding-bottom: 0.5rem;
-}
-
-.container3 .label {
-  font-weight: 600;
-  color: #374151;
-  margin-bottom: 0.5rem;
-}
-
-.container3 .input, 
-.container3 .textarea, 
-.container3 .select select {
-  border-radius: 8px;
-  border: 2px solid #e5e7eb;
-  transition: border-color 0.2s ease;
-  font-size: 1rem;
-}
-
-.container3 .input:focus, 
-.container3 .textarea:focus, 
-.container3 .select select:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.container3 .textarea {
-  resize: vertical;
-  min-height: 120px;
-}
-
-.container3 .help {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin-top: 0.25rem;
-}
-
-.container3 .button.is-primary {
-  background-color: #3b82f6;
-  border-color: #3b82f6;
-  font-weight: 600;
-  border-radius: 8px;
-  padding: 0.75rem 2rem;
-}
-
-.container3 .button.is-primary:hover {
-  background-color: #2563eb;
-  border-color: #2563eb;
-}
-
-.container3 .button.is-light {
-  border-radius: 8px;
-  border: 2px dashed #d1d5db;
-  background-color: #f9fafb;
-  color: #6b7280;
-  font-weight: 500;
-}
-
-.container3 .button.is-light:hover {
-  border-color: #9ca3af;
-  background-color: #f3f4f6;
-}
-
-.container3 .notification.is-danger {
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
-}
-
-.container3 .has-text-primary {
-  color: #3b82f6 !important;
-}
-
-/* Mobile optimizations */
-@media screen and (max-width: 768px) {
-  .container3.container3 {
-    padding: 0.5rem;
-  }
-  
-  .container3 .box2 {
-    margin: 0;
+  .form-card {
+    background: #fff;
     border-radius: 8px;
-  }
-  
-  .container3 .title {
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-  }
-  
-  .container3 .subtitle {
-    font-size: 1.125rem;
-  }
-  
-  .container3 .field:not(:last-child) {
-    margin-bottom: 1.5rem;
-  }
-  
-  .container3 .button.is-large {
-    padding: 1rem 2rem;
-    font-size: 1.125rem;
-  }
-  
-  .container3 .columns.is-multiline .column {
-    padding: 0.5rem;
-  }
-}
-
-/* Tablet and up */
-@media screen and (min-width: 769px) {
-  .container3 .container {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     padding: 2rem;
   }
-  
-  .container3 .columns.is-multiline .column {
+
+  .mb-4 {
+    margin-bottom: 1.75rem;
+  }
+
+  .mb-3 {
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 0.375rem;
+  }
+
+  .form-input,
+  .form-textarea {
+    width: 100%;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.9375rem;
+    color: #111827;
+    background: #fff;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    transition: border-color 0.15s;
+  }
+
+  .form-input { height: 2.75rem; }
+  .form-textarea { min-height: 120px; resize: vertical; }
+
+  .form-input:focus,
+  .form-textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+  }
+
+  .form-help {
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin: 0.375rem 0 0 0;
+  }
+
+  .add-contact-btn {
+    width: 100%;
     padding: 0.75rem;
+    background: #fff;
+    border: 1.5px dashed #d1d5db;
+    border-radius: 6px;
+    color: #6b7280;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
   }
-}
 
-/* Desktop and up */
-@media screen and (min-width: 1024px) {
-  .container3 .field:not(:last-child) {
-    margin-bottom: 1.5rem;
+  .add-contact-btn:hover {
+    background: #f9fafb;
+    border-color: #9ca3af;
+    color: #374151;
   }
-}
 
-/* Contact row styles (assuming you need these) */
-.container3 .contact-row {
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-}
-
-.container3 .contact-row:last-child {
-  margin-bottom: 0;
-}
-
-.container3 .remove-contact {
-  background-color: #ef4444;
-  border-color: #ef4444;
-  border-radius: 6px;
-}
-
-.container3 .remove-contact:hover {
-  background-color: #dc2626;
-  border-color: #dc2626;
-}
-
-/* Icon spacing */
-.container3 .icon-text .icon {
-  margin-right: 0.5rem;
-}
+  @media (max-width: 768px) {
+    .form-card {
+      padding: 1.5rem;
+      border-radius: 0;
+    }
+    
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>
 
 <script>
