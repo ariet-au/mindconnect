@@ -424,7 +424,7 @@ class PsychologistProfilesController < ApplicationController
             client_type_ids: [],  # <-- And this
             specialty_ids: [] ,     # <-- And this,
             language_ids: [],
-            educations_attributes: [:id, :degree, :institution, :field_of_study, :graduation_year, :certificate_url, :_destroy]
+            educations_attributes: [:id, :degree, :institution, :field_of_study, :graduation_year, :certificate_url, { proof_documents: [] }, :_destroy]
             
           )
         end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_13_224318) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_28_034552) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -174,6 +174,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_13_224318) do
     t.string "certificate_url"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "verification_status", default: 0, null: false
+    t.bigint "verified_by_id"
+    t.datetime "verified_at"
+    t.text "verification_notes"
+    t.string "verified_source"
+    t.boolean "publicly_visible", default: true
     t.index ["psychologist_profile_id"], name: "index_educations_on_psychologist_profile_id"
   end
 

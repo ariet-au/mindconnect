@@ -1,7 +1,7 @@
 <!-- views/educations/_form.html.erb -->
 <div class="box mb-4">
-  
   <div class="columns is-multiline">
+    <!-- Degree -->
     <div class="column is-quarter">
       <div class="field">
         <%= f.label :degree, t('psychologist_profiles.education.degree'), class: "label" %>
@@ -11,6 +11,7 @@
       </div>
     </div>
 
+    <!-- Field of Study -->
     <div class="column is-quarter">
       <div class="field">
         <%= f.label :field_of_study, t('psychologist_profiles.education.field_of_study'), class: "label" %>
@@ -20,6 +21,7 @@
       </div>
     </div>
 
+    <!-- Institution -->
     <div class="column is-quarter">
       <div class="field">
         <%= f.label :institution, t('psychologist_profiles.education.institution'), class: "label" %>
@@ -29,6 +31,7 @@
       </div>
     </div>
 
+    <!-- Graduation Year -->
     <div class="column is-quarter">
       <div class="field">
         <%= f.label :graduation_year, t('psychologist_profiles.education.graduation_year'), class: "label" %>
@@ -38,11 +41,21 @@
       </div>
     </div>
 
+    <!-- Proof Documents Upload -->
+    <div class="column is-quarter">
+      <div class="field">
+        <%= f.label :proof_documents, t('psychologist_profiles.education.proof_documents'), class: "label" %>
+        <div class="control">
+          <%= f.file_field :proof_documents, multiple: true, class: "input" %>
+        </div>
+        <p class="help"><%= t('psychologist_profiles.education.proof_documents_help') %></p>
+      </div>
+    </div>
+
+    <!-- Hidden destroy field and Remove button -->
     <div class="column is-full">
-      <!-- Hidden destroy field -->
       <%= f.hidden_field :_destroy %>
 
-      <!-- Remove button - mobile friendly -->
       <button type="button" class="button is-danger remove-education-button mb-3 is-fullwidth-mobile">
         <span class="icon is-small">
           <i class="fas fa-trash"></i>
@@ -52,6 +65,8 @@
     </div>
   </div>
 </div>
+
+
 
 <style>
 /* Custom styles for mobile remove button */
