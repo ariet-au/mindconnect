@@ -343,6 +343,7 @@ kg:
       basic_information: "Негизги маалымат"
       professional_details: "Кесиптик маалыматтар"
       education_history: "Билим тарыхы"
+      education_history_helper: "Сураныч, бардык бош билим берүү маалыматтарын өчүрүп. Aга тиешелүү документтерди тиркеңиз"
       client_issue_details: "Кардар жана маселе маалыматтары"
       contact_service_details: "Байланыш жана кызмат маалыматтары"
     labels:

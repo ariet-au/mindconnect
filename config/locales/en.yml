@@ -355,6 +355,7 @@ en:
       basic_information: "Basic Information"
       professional_details: "Professional Details"
       education_history: "Education History"
+      education_history_helper: "please delete any empty educations and attach supporting files for educations"
       client_issue_details: "Client & Issue Details"
       contact_service_details: "Contact & Service Details"
     labels:

@@ -187,6 +187,9 @@
                 </span>
             </h3>
             <div id="educations-container">
+                    <span><%= t('psychologist_profile.sections.education_history_helper') %></span>
+
+              
                 <%= form.fields_for :educations do |education_fields| %>
                     <%= render "educations/form", f: education_fields %>
                 <% end %>
