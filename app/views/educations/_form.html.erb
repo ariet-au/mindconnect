@@ -56,7 +56,10 @@
     <div class="column is-full">
       <%= f.hidden_field :_destroy %>
 
-      <button type="button" class="button is-danger remove-education-button mb-3 is-fullwidth-mobile">
+      <button type="button"
+              class="button is-danger remove-education-button mb-3 is-fullwidth-mobile"
+              data-confirm-message="<%= j(t('psychologist_profiles.education.confirm_delete_message')) %>"
+              data-removing-text="<%= j(t('psychologist_profiles.education.delete')) %>">
         <span class="icon is-small">
           <i class="fas fa-trash"></i>
         </span>
@@ -91,3 +94,5 @@
   }
 }
 </style>
+
+

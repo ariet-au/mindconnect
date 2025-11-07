@@ -26,10 +26,15 @@ class EducationsController < ApplicationController
       render :edit
     end
   end
-
+  
   def destroy
+    @education = Education.find(params[:id])
     @education.destroy
-    redirect_to edit_psychologist_profile_path(@education.psychologist_profile), notice: "Education deleted."
+
+    respond_to do |format|
+      format.turbo_stream
+      format.html { head :no_content }
+    end
   end
 
   private

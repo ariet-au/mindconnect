@@ -1,4 +1,11 @@
 <style>
+
+.main-content .container {
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
   * {
     margin: 0;
     padding: 0;
@@ -12,6 +19,7 @@
     --text-dark: #1a2332;
     --text-light: #6b7280;
     --border: #e5e7eb;
+    --hover-bg: #e8f0fc;
   }
 
   body {
@@ -156,54 +164,53 @@
   .carousel-track {
     display: flex;
     transition: transform 0.5s ease;
-    gap: 20px;
+    gap: 10px;
   }
 
   .carousel-item {
-    flex: 0 0 calc(25% - 15px);
-    background: var(--secondary);
-    padding: 30px;
-    border-radius: 8px;
-    border-left: 4px solid var(--primary);
+    flex: 0 0 auto;
+    padding: 12px 20px;
+    border-radius: 24px;
     transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    background: var(--secondary);
+    border: 2px solid transparent;
+    color: var(--text-dark);
+    font-weight: 500;
+    font-size: 0.95rem;
+    white-space: nowrap;
   }
 
   .carousel-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(44, 90, 160, 0.12);
+    background: var(--hover-bg);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(44, 90, 160, 0.15);
   }
 
-  .carousel-item h3 {
-    font-size: 1.3rem;
-    margin-bottom: 10px;
-    color: var(--text-dark);
+  .carousel-item.city-item {
+    background: linear-gradient(135deg, #f8faff 0%, var(--secondary) 100%);
   }
 
-  .carousel-item p {
+  .carousel-item.city-item:hover {
+    background: linear-gradient(135deg, var(--hover-bg) 0%, #dce7f7 100%);
+  }
+
+  .carousel-item .count {
+    font-size: 0.8rem;
     color: var(--text-light);
-    font-size: 0.95rem;
-    margin-bottom: 15px;
-  }
-
-  .carousel-link {
-    color: var(--primary);
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    display: inline-block;
-  }
-
-  .carousel-link:hover {
-    transform: translateX(5px);
+    margin-left: 6px;
   }
 
   .carousel-arrow {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: var(--primary);
-    color: white;
-    border: none;
+    background: white;
+    color: var(--primary);
+    border: 2px solid var(--border);
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -214,23 +221,27 @@
     transition: all 0.3s ease;
     z-index: 10;
     font-size: 1.2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
   .carousel-arrow:hover:not(.disabled) {
-    background: #1f3f6b;
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(44, 90, 160, 0.25);
   }
 
   .carousel-arrow.disabled {
-    opacity: 0.5;
+    opacity: 0.3;
     cursor: not-allowed;
   }
 
   .carousel-arrow.prev {
-    left: 10px;
+    left: -50px;
   }
 
   .carousel-arrow.next {
-    right: 10px;
+    right: -50px;
   }
 
   /* Price Grid */
@@ -403,6 +414,92 @@
     font-size: 1.05rem;
   }
 
+  /* Psychologists Section Styles */
+  .psychologists-section {
+    background: white;
+  }
+
+  .psychologist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 25px;
+  }
+
+  .profile-card {
+    background: var(--secondary);
+    padding: 30px;
+    border-radius: 8px;
+    text-align: center;
+    border-top: 4px solid var(--primary);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    cursor: pointer;
+  }
+
+  .profile-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(44, 90, 160, 0.15);
+  }
+
+  .profile-img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 20px;
+  }
+
+  .profile-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+  }
+
+  .rate {
+    font-weight: 600;
+    color: var(--primary);
+    margin-bottom: 15px;
+  }
+
+  .about {
+    margin-bottom: 20px;
+  }
+
+  .tag.is-specialty-tag {
+    background: var(--secondary);
+    color: var(--text-dark);
+    padding: 5px 10px;
+    border-radius: 20px;
+    margin: 5px;
+    display: inline-block;
+    font-size: 0.85rem;
+  }
+
+  .specialty-link {
+    text-decoration: none;
+  }
+
+  .profile-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-block;
+  }
+
+  .profile-link:hover {
+    transform: translateX(5px);
+  }
+
+  @media (max-width: 1024px) {
+    .carousel-arrow.prev {
+      left: 10px;
+    }
+
+    .carousel-arrow.next {
+      right: 10px;
+    }
+  }
+
   @media (max-width: 768px) {
     .section {
       padding: 50px 20px;
@@ -422,13 +519,10 @@
       max-width: 300px;
     }
 
-    .carousel-item {
-      flex: 0 0 calc(50% - 10px);
-    }
-
     .price-grid,
     .quiz-grid,
-    .steps-grid {
+    .steps-grid,
+    .psychologist-grid {
       gap: 20px;
     }
 
@@ -445,13 +539,20 @@
     .carousel-arrow.next {
       right: 5px;
     }
+
+    .carousel-item {
+      font-size: 0.85rem;
+      padding: 10px 16px;
+    }
   }
 
   @media (max-width: 480px) {
     .carousel-item {
-      flex: 0 0 100%;
+      font-size: 0.8rem;
+      padding: 8px 14px;
     }
   }
+
 </style>
 
 <section class="hero-section">
@@ -461,68 +562,6 @@
     <div class="hero-buttons">
       <a href="#search" class="btn btn-primary">Start Your Search</a>
       <a href="#join" class="btn btn-secondary">Join as a Psychologist</a>
-    </div>
-  </div>
-</section>
-
-<section class="section search-section" id="search">
-  <div class="container">
-    <h2 class="section-title">Find What You Need</h2>
-    
-    <!-- Locations Carousel -->
-    <h3 style="font-size: 1.5rem; margin: 40px 0 20px; color: var(--text-dark);">By Location</h3>
-    <div class="carousel-wrapper" id="locations-carousel">
-      <button class="carousel-arrow prev">‹</button>
-      <div class="carousel-container">
-        <div class="carousel-track">
-          <% @cities.each do |city, count| %>
-            <% next if city.blank? %>
-            <div class="carousel-item">
-              <h3><%= city.titleize %></h3>
-              <p><%= count %> verified psychologists</p>
-              <%= link_to "Explore →", psychologist_profiles_path(city: city), class: "carousel-link" %>
-            </div>
-          <% end %>
-          <div class="carousel-item">
-            <h3>Online</h3>
-            <p><%= @online_count %> available psychologists</p>
-            <%= link_to "Explore →", psychologist_profiles_path(online: 1), class: "carousel-link" %>
-          </div>
-        </div>
-      </div>
-      <button class="carousel-arrow next">›</button>
-    </div>
-
-    <!-- Issues Carousel -->
-    <h3 style="font-size: 1.5rem; margin: 40px 0 20px; color: var(--text-dark);">By Issue</h3>
-    <div class="carousel-wrapper" id="issues-carousel">
-      <button class="carousel-arrow prev">‹</button>
-      <div class="carousel-container">
-        <div class="carousel-track">
-          <% @popular_issues.each do |issue| %>
-            <div class="carousel-item">
-              <h3><%= issue.name %></h3>
-              <p><%= issue.psychologists_count %> specialists</p>
-              <%= link_to "Find Help →", psychologist_profiles_path(issue: issue.name), class: "carousel-link" %>
-            </div>
-          <% end %>
-        </div>
-      </div>
-      <button class="carousel-arrow next">›</button>
-    </div>
-
-    <!-- Price Section -->
-    <h3 style="font-size: 1.5rem; margin: 40px 0 20px; color: var(--text-dark);">By Price</h3>
-    <div class="price-grid">
-      <div class="price-card">
-        <h3><%= number_to_currency(@min_price, unit: @selected_currency, precision: 0) %> - <%= number_to_currency(@max_price, unit: @selected_currency, precision: 0) %></h3>
-        <p>Browse all price ranges</p>
-        <%= link_to "See All →", psychologist_profiles_path(sort: "price"), class: "price-link" %>
-      </div>
-    </div>
-
-    <div class="btn-center">
-      <%= link_to "Browse All Psychologists", psychologist_profiles_path, class: "btn btn-primary" %>
     </div>
   </div>
 </section>
@@ -555,6 +594,89 @@
   </div>
 </section>
 
+<section class="section psychologists-section">
+  <div class="container">
+    <h2 class="section-title"><%= t('quizzes.results.psychologist_heading') %></h2>
+    <div class="psychologist-grid">
+      <% @psychologist_profiles.each do |psy| %>
+        <div class="profile-card">
+          <% if psy.profile_img.attached? %>
+            <%= image_tag psy.profile_img.variant(resize_to_limit: [200, 200]), alt: psy.full_name, class: "profile-img", loading: "lazy" %>
+          <% else %>
+            <%= image_tag "default-profile.png", alt: psy.full_name, class: "profile-img", loading: "lazy" %>
+          <% end %>
+          <h3><%= psy.full_name %></h3>
+          <p class="rate"><%= t('quizzes.results.rate') %> <%= psy.standard_rate %><%= t('quizzes.results.per_hour') %></p>
+          <p class="about">
+            <% psy.issues.each do |issue| %>
+              <span class="tag is-specialty-tag">
+                <%= link_to t("issues.#{issue.name.parameterize.underscore}", default: issue.name), definition_specialty_path(issue), class: "specialty-link", style: "color: inherit; text-decoration: none;" %>
+              </span>
+            <% end %>
+          </p>
+          <%= link_to "Read more →", psychologist_profile_path(psy), class: "profile-link" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>
+
+<section class="section search-section" id="search">
+  <div class="container">
+    <h2 class="section-title">Browse Psychologists</h2>
+    
+    <!-- Locations Carousel -->
+    <h3 style="font-size: 1.5rem; margin: 40px 0 20px; color: var(--text-dark);">By Location</h3>
+    <div class="carousel-wrapper" id="locations-carousel">
+      <button class="carousel-arrow prev">‹</button>
+      <div class="carousel-container">
+        <div class="carousel-track">
+          <% @cities.each do |city, count| %>
+            <% next if city.blank? %>
+            <%= link_to psychologist_profiles_path(city: city), class: "carousel-item city-item" do %>
+              <%= city.titleize %><span class="count">(<%= count %>)</span>
+            <% end %>
+          <% end %>
+          <%= link_to psychologist_profiles_path(online: 1), class: "carousel-item city-item" do %>
+            Online<span class="count">(<%= @online_count %>)</span>
+          <% end %>
+        </div>
+      </div>
+      <button class="carousel-arrow next">›</button>
+    </div>
+
+    <!-- Issues Carousel -->
+    <h3 style="font-size: 1.5rem; margin: 40px 0 20px; color: var(--text-dark);">By Issue</h3>
+    <div class="carousel-wrapper" id="issues-carousel">
+      <button class="carousel-arrow prev">‹</button>
+      <div class="carousel-container">
+        <div class="carousel-track">
+          <% @popular_issues.each do |issue| %>
+            <%= link_to psychologist_profiles_path(issue: issue.name), class: "carousel-item" do %>
+              <%= issue.name %><span class="count">(<%= issue.psychologists_count %>)</span>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+      <button class="carousel-arrow next">›</button>
+    </div>
+
+    <!-- Price Section -->
+    <h3 style="font-size: 1.5rem; margin: 40px 0 20px; color: var(--text-dark);">By Price</h3>
+    <div class="price-grid">
+      <div class="price-card">
+        <h3><%= number_to_currency(@min_price, unit: @selected_currency, precision: 0) %> - <%= number_to_currency(@max_price, unit: @selected_currency, precision: 0) %></h3>
+        <p>Browse all price ranges</p>
+        <%= link_to "See All →", psychologist_profiles_path(sort: "price"), class: "price-link" %>
+      </div>
+    </div>
+
+    <div class="btn-center">
+      <%= link_to "Browse All Psychologists", psychologist_profiles_path, class: "btn btn-primary" %>
+    </div>
+  </div>
+</section>
+
 <section class="section quizzes-section">
   <div class="container">
     <h2 class="section-title">Assessment Tools</h2>
@@ -565,9 +687,7 @@
           <div class="quiz-icon">📋</div>
           <h4><%= quiz.title %></h4>
           <p><%= truncate(quiz.description, length: 100) %></p>
-
-    <%= link_to t('quizzes.index.take_quiz'), take_quiz_path(quiz), class: "quiz-link" %>
-
+          <%= link_to t('quizzes.index.take_quiz'), take_quiz_path(quiz), class: "quiz-link" %>
         </div>
       <% end %>
     </div>
@@ -583,7 +703,7 @@
 </section>
 
 <script>
-  // Initialize carousels
+  // Initialize carousels with improved navigation and auto-scroll
   document.querySelectorAll('.carousel-wrapper').forEach(carousel => {
     const container = carousel.querySelector('.carousel-container');
     const track = carousel.querySelector('.carousel-track');
@@ -593,40 +713,72 @@
 
     if (!container || !items.length) return;
 
-    let currentIndex = 0;
-    const itemWidth = 100 / items.length;
+    let currentScroll = 0;
+    let intervalId;
+    const scrollAmount = 300;
 
     function updateCarousel() {
-      track.style.transform = `translateX(-${currentIndex * 100}%)`;
-      prevArrow.classList.toggle('disabled', currentIndex === 0);
-      nextArrow.classList.toggle('disabled', currentIndex >= items.length - 4);
+      track.style.transform = `translateX(-${currentScroll}px)`;
+      
+      const maxScroll = track.scrollWidth - container.clientWidth;
+      prevArrow.classList.toggle('disabled', currentScroll <= 0);
+      nextArrow.classList.toggle('disabled', currentScroll >= maxScroll);
+    }
+
+    function startAutoScroll() {
+      intervalId = setInterval(() => {
+        const maxScroll = track.scrollWidth - container.clientWidth;
+        if (currentScroll < maxScroll) {
+          currentScroll = Math.min(currentScroll + scrollAmount, maxScroll);
+        } else {
+          currentScroll = 0;
+        }
+        updateCarousel();
+      }, 3000);
+    }
+
+    function stopAutoScroll() {
+      clearInterval(intervalId);
     }
 
     prevArrow.addEventListener('click', () => {
-      if (currentIndex > 0) {
-        currentIndex--;
-        updateCarousel();
-      }
+      currentScroll = Math.max(currentScroll - scrollAmount, 0);
+      updateCarousel();
     });
 
     nextArrow.addEventListener('click', () => {
-      if (currentIndex < items.length - 4) {
-        currentIndex++;
-        updateCarousel();
-      }
+      const maxScroll = track.scrollWidth - container.clientWidth;
+      currentScroll = Math.min(currentScroll + scrollAmount, maxScroll);
+      updateCarousel();
     });
 
+    // Auto-scroll with pause on hover
+    carousel.addEventListener('mouseenter', stopAutoScroll);
+    carousel.addEventListener('mouseleave', startAutoScroll);
+
     updateCarousel();
+    startAutoScroll();
   });
 
-  // Geolocation
+  // Make profile cards clickable, excluding inner links
+  document.querySelectorAll('.profile-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (!e.target.closest('a')) {
+        window.location.href = card.querySelector('.profile-link').href;
+      }
+    });
+  });
+
+  // Geolocation with fixed text update
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(position) {
       fetch(`https://nominatim.openstreetmap.org/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}&format=json`)
         .then(response => response.json())
         .then(data => {
           const city = data.address.city || data.address.town || data.address.village || data.address.state;
-          if (city) document.getElementById("location-text").textContent = `in ${city}`;
+          if (city) {
+            document.getElementById("location-text").textContent = `Get professional mental health support from verified experts — online or in ${city}`;
+          }
         })
         .catch(err => console.log('Geolocation lookup failed'));
     });
