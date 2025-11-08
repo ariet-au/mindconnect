@@ -1,11 +1,10 @@
 <style>
-
-.main-content .container {
-  max-width: 100% !important;
-  width: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
+  .main-content .container {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
   * {
     margin: 0;
     padding: 0;
@@ -418,20 +417,25 @@
     font-size: 1.05rem;
   }
 
-  /* Psychologists Section Styles */
+  /* === PSYCHOLOGISTS SECTION – FIXED EQUAL WIDTHS === */
   .psychologists-section {
     background: white;
   }
 
   .psychologist-carousel-wrapper {
     position: relative;
+    padding: 0 60px;
   }
 
   .psychologist-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
     gap: 25px;
     transition: all 0.3s ease;
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .psychologist-grid.carousel-mode {
+    overflow: hidden;
   }
 
   .profile-card {
@@ -443,6 +447,11 @@
     transition: all 0.3s ease;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100% !important;
+    min-height: 340px;
   }
 
   .profile-card:hover {
@@ -455,12 +464,16 @@
     height: 120px;
     border-radius: 50%;
     object-fit: cover;
-    margin-bottom: 20px;
+    margin: 0 auto 20px;
   }
 
   .profile-card h3 {
-    font-size: 1.3rem;
-    margin-bottom: 10px;
+    font-size: 1.2rem;
+    margin: 12px 0 8px;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .rate {
@@ -470,24 +483,28 @@
   }
 
   .about {
-    margin-bottom: 20px;
-    min-height: 70px;
+    flex-grow: 1;
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
     justify-content: center;
-    align-items: flex-start;
+    margin: 10px 0;
+    min-height: 60px;
+    align-content: flex-start;
   }
 
   .tag.is-specialty-tag {
     background: white;
     color: var(--text-dark);
-    padding: 6px 14px;
+    padding: 5px 10px;
     border-radius: 20px;
-    display: inline-block;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     border: 1px solid var(--border);
     transition: all 0.2s ease;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .tag.is-specialty-tag:hover {
@@ -498,6 +515,7 @@
 
   .specialty-link {
     text-decoration: none;
+    color: inherit;
   }
 
   .more-specialties {
@@ -516,6 +534,7 @@
     font-weight: 600;
     transition: all 0.3s ease;
     display: inline-block;
+    margin-top: 10px;
   }
 
   .profile-link:hover {
@@ -528,124 +547,42 @@
     padding: 0 60px;
   }
 
-  .quiz-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 25px;
-  }
-
   .quiz-grid.carousel-mode {
-    display: grid;
-    overflow: visible;
-    gap: 25px;
-  }
-
-  .quiz-grid.carousel-mode .quiz-card {
-    display: none;
-  }
-
-  .quiz-grid.carousel-mode .quiz-card.visible {
-    display: block;
+    overflow: hidden;
   }
 
   @media (max-width: 1400px) {
-    .psychologist-grid {
-      grid-template-columns: repeat(4, 1fr);
-    }
+    .psychologist-grid { grid-template-columns: repeat(4, 1fr); }
   }
 
   @media (max-width: 1200px) {
-    .psychologist-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
+    .psychologist-grid { grid-template-columns: repeat(3, 1fr); }
   }
 
   @media (max-width: 1024px) {
-    .carousel-arrow.prev {
-      left: 10px;
-    }
-
-    .carousel-arrow.next {
-      right: 10px;
-    }
-
-    .psychologist-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    .psychologist-carousel-wrapper,
-    .quiz-carousel-wrapper {
-      padding: 0 50px;
-    }
+    .carousel-arrow.prev { left: 10px; }
+    .carousel-arrow.next { right: 10px; }
+    .psychologist-grid { grid-template-columns: repeat(2, 1fr); }
+    .psychologist-carousel-wrapper, .quiz-carousel-wrapper { padding: 0 50px; }
   }
 
   @media (max-width: 768px) {
-    .section {
-      padding: 50px 20px;
-    }
-
-    .hero-section {
-      padding: 60px 20px;
-      min-height: auto;
-    }
-
-    .hero-buttons {
-      flex-direction: column;
-      width: 100%;
-      align-items: stretch;
-    }
-
-    .btn {
-      width: 100%;
-      max-width: none;
-    }
-
-    .price-grid,
-    .quiz-grid,
-    .steps-grid {
-      gap: 20px;
-    }
-
-    .carousel-arrow {
-      width: 36px;
-      height: 36px;
-      font-size: 1rem;
-    }
-
-    .carousel-arrow.prev {
-      left: 5px;
-    }
-
-    .carousel-arrow.next {
-      right: 5px;
-    }
-
-    .carousel-item {
-      font-size: 0.85rem;
-      padding: 10px 16px;
-    }
-
-    .psychologist-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .quiz-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .psychologist-carousel-wrapper,
-    .quiz-carousel-wrapper {
-      padding: 0 45px;
-    }
+    .section { padding: 50px 20px; }
+    .hero-section { padding: 60px 20px; min-height: auto; }
+    .hero-buttons { flex-direction: column; width: 100%; align-items: stretch; }
+    .btn { width: 100%; max-width: none; }
+    .carousel-arrow { width: 36px; height: 36px; font-size: 1rem; }
+    .carousel-arrow.prev { left: 5px; }
+    .carousel-arrow.next { right: 5px; }
+    .carousel-item { font-size: 0.85rem; padding: 10px 16px; }
+    .psychologist-grid { grid-template-columns: 1fr; }
+    .quiz-grid { grid-template-columns: 1fr; }
+    .psychologist-carousel-wrapper, .quiz-carousel-wrapper { padding: 0 45px; }
   }
 
   @media (max-width: 480px) {
-    .carousel-item {
-      font-size: 0.8rem;
-      padding: 8px 14px;
-    }
+    .carousel-item { font-size: 0.8rem; padding: 8px 14px; }
   }
-
 </style>
 
 <section class="hero-section">
@@ -701,16 +638,15 @@
               <%= image_tag "default-profile.png", alt: psy.full_name, class: "profile-img", loading: "lazy" %>
             <% end %>
             <h3><%= psy.full_name %></h3>
-            <p class="rate"><%= t('quizzes.results.rate') %>  <%= psy.standard_rate %> <%= psy.currency %> <%= t('quizzes.results.per_hour') %></p>
-            <p class="about">
+            <p class="rate"><%= t('quizzes.results.rate') %> <%= psy.standard_rate %> <%= psy.currency %> <%= t('quizzes.results.per_hour') %></p>
+            <div class="about">
               <% visible_specialties = psy.specialties.first(3) %>
               <% remaining_count = psy.specialties.count - 3 %>
               <% visible_specialties.each do |specialty| %>
                 <span class="tag is-specialty-tag">
                   <%= link_to t("specialties.#{specialty.name.parameterize.underscore}", default: specialty.name),
                               definition_specialty_path(specialty),
-                              class: "specialty-link",
-                              style: "color: inherit; text-decoration: none;" %>
+                              class: "specialty-link" %>
                 </span>
               <% end %>
               <% if remaining_count > 0 %>
@@ -718,8 +654,7 @@
                   +<%= remaining_count %>
                 </span>
               <% end %>
-            </p>
-
+            </div>
             <%= link_to "Read more →", psychologist_profile_path(psy), class: "profile-link" %>
           </div>
         <% end %>
@@ -733,7 +668,6 @@
   <div class="container">
     <h2 class="section-title">Browse Psychologists</h2>
     
-    <!-- Locations Carousel -->
     <h3 style="font-size: 1.5rem; margin: 40px 0 20px; color: var(--text-dark);">By Location</h3>
     <div class="carousel-wrapper" id="locations-carousel">
       <button class="carousel-arrow prev">‹</button>
@@ -753,7 +687,6 @@
       <button class="carousel-arrow next">›</button>
     </div>
 
-    <!-- Issues Carousel -->
     <h3 style="font-size: 1.5rem; margin: 40px 0 20px; color: var(--text-dark);">By Issue</h3>
     <div class="carousel-wrapper" id="issues-carousel">
       <button class="carousel-arrow prev">‹</button>
@@ -769,7 +702,6 @@
       <button class="carousel-arrow next">›</button>
     </div>
 
-    <!-- Price Section -->
     <h3 style="font-size: 1.5rem; margin: 40px 0 20px; color: var(--text-dark);">By Price</h3>
     <div class="price-grid">
       <div class="price-card">
@@ -794,7 +726,7 @@
       <div class="quiz-grid" id="quiz-grid">
         <% @quizzes.each do |quiz| %>
           <div class="quiz-card" onclick="window.location.href='<%= take_quiz_path(quiz) %>'">
-            <div class="quiz-icon">📋</div>
+            <div class="quiz-icon">Checkmark</div>
             <h4><%= quiz.title %></h4>
             <p><%= truncate(quiz.description, length: 100) %></p>
             <%= link_to t('quizzes.index.take_quiz'), take_quiz_path(quiz), class: "quiz-link" %>
@@ -815,7 +747,7 @@
 </section>
 
 <script>
-  // Initialize carousels with improved navigation and auto-scroll
+  // === CAROUSEL INITIALIZATION (Locations & Issues) ===
   document.querySelectorAll('.carousel-wrapper').forEach(carousel => {
     const container = carousel.querySelector('.carousel-container');
     const track = carousel.querySelector('.carousel-track');
@@ -831,7 +763,6 @@
 
     function updateCarousel() {
       track.style.transform = `translateX(-${currentScroll}px)`;
-      
       const maxScroll = track.scrollWidth - container.clientWidth;
       prevArrow.classList.toggle('disabled', currentScroll <= 0);
       nextArrow.classList.toggle('disabled', currentScroll >= maxScroll);
@@ -864,7 +795,6 @@
       updateCarousel();
     });
 
-    // Auto-scroll with pause on hover
     carousel.addEventListener('mouseenter', stopAutoScroll);
     carousel.addEventListener('mouseleave', startAutoScroll);
 
@@ -872,7 +802,7 @@
     startAutoScroll();
   });
 
-  // Psychologist Grid Responsive Carousel
+  // === PSYCHOLOGIST GRID → CAROUSEL (EQUAL WIDTHS) ===
   function initPsychologistCarousel() {
     const wrapper = document.querySelector('.psychologist-carousel-wrapper');
     const grid = document.getElementById('psychologist-grid');
@@ -895,7 +825,6 @@
 
       const totalPages = Math.ceil(cards.length / cardsToShow);
 
-      // Enable carousel mode if more cards than can be shown
       if (cards.length > cardsToShow) {
         grid.classList.add('carousel-mode');
         grid.style.gridTemplateColumns = `repeat(${cardsToShow}, 1fr)`;
@@ -907,7 +836,10 @@
         grid.style.gridTemplateColumns = '';
         prevArrow.style.display = 'none';
         nextArrow.style.display = 'none';
-        cards.forEach(card => card.classList.remove('visible'));
+        cards.forEach(card => {
+          card.style.display = 'flex';
+          card.classList.remove('visible');
+        });
         currentPage = 0;
       }
     }
@@ -915,14 +847,16 @@
     function showPage(pageIndex) {
       const totalPages = Math.ceil(cards.length / cardsToShow);
       currentPage = Math.max(0, Math.min(pageIndex, totalPages - 1));
-      
+
       const startIndex = currentPage * cardsToShow;
-      const endIndex = startIndex + cardsToShow;
+      const endIndex = Math.min(startIndex + cardsToShow, cards.length);
 
       cards.forEach((card, index) => {
         if (index >= startIndex && index < endIndex) {
+          card.style.display = 'flex';
           card.classList.add('visible');
         } else {
+          card.style.display = 'none';
           card.classList.remove('visible');
         }
       });
@@ -932,16 +866,12 @@
     }
 
     prevArrow.addEventListener('click', () => {
-      if (currentPage > 0) {
-        showPage(currentPage - 1);
-      }
+      if (currentPage > 0) showPage(currentPage - 1);
     });
 
     nextArrow.addEventListener('click', () => {
       const totalPages = Math.ceil(cards.length / cardsToShow);
-      if (currentPage < totalPages - 1) {
-        showPage(currentPage + 1);
-      }
+      if (currentPage < totalPages - 1) showPage(currentPage + 1);
     });
 
     let resizeTimer;
@@ -950,13 +880,13 @@
       resizeTimer = setTimeout(() => {
         currentPage = 0;
         updateCardsToShow();
-      }, 250);
+      }, 100);
     });
 
     updateCardsToShow();
   }
 
-  // Quiz Grid Responsive Carousel
+  // === QUIZ CAROUSEL (Same logic) ===
   function initQuizCarousel() {
     const wrapper = document.querySelector('.quiz-carousel-wrapper');
     const grid = document.getElementById('quiz-grid');
@@ -979,7 +909,6 @@
 
       const totalPages = Math.ceil(cards.length / cardsToShow);
 
-      // Enable carousel mode if more cards than can be shown
       if (cards.length > cardsToShow) {
         grid.classList.add('carousel-mode');
         grid.style.gridTemplateColumns = `repeat(${cardsToShow}, 1fr)`;
@@ -991,7 +920,10 @@
         grid.style.gridTemplateColumns = '';
         prevArrow.style.display = 'none';
         nextArrow.style.display = 'none';
-        cards.forEach(card => card.classList.remove('visible'));
+        cards.forEach(card => {
+          card.style.display = 'block';
+          card.classList.remove('visible');
+        });
         currentPage = 0;
       }
     }
@@ -999,14 +931,16 @@
     function showPage(pageIndex) {
       const totalPages = Math.ceil(cards.length / cardsToShow);
       currentPage = Math.max(0, Math.min(pageIndex, totalPages - 1));
-      
+
       const startIndex = currentPage * cardsToShow;
-      const endIndex = startIndex + cardsToShow;
+      const endIndex = Math.min(startIndex + cardsToShow, cards.length);
 
       cards.forEach((card, index) => {
         if (index >= startIndex && index < endIndex) {
+          card.style.display = 'block';
           card.classList.add('visible');
         } else {
+          card.style.display = 'none';
           card.classList.remove('visible');
         }
       });
@@ -1016,16 +950,12 @@
     }
 
     prevArrow.addEventListener('click', () => {
-      if (currentPage > 0) {
-        showPage(currentPage - 1);
-      }
+      if (currentPage > 0) showPage(currentPage - 1);
     });
 
     nextArrow.addEventListener('click', () => {
       const totalPages = Math.ceil(cards.length / cardsToShow);
-      if (currentPage < totalPages - 1) {
-        showPage(currentPage + 1);
-      }
+      if (currentPage < totalPages - 1) showPage(currentPage + 1);
     });
 
     let resizeTimer;
@@ -1034,13 +964,13 @@
       resizeTimer = setTimeout(() => {
         currentPage = 0;
         updateCardsToShow();
-      }, 250);
+      }, 100);
     });
 
     updateCardsToShow();
   }
 
-  // Make profile cards clickable, excluding inner links
+  // === CLICKABLE CARDS (excluding links) ===
   document.querySelectorAll('.profile-card').forEach(card => {
     card.addEventListener('click', (e) => {
       if (!e.target.closest('a')) {
@@ -1049,7 +979,7 @@
     });
   });
 
-  // Geolocation with fixed text update
+  // === GEOLOCATION ===
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(position) {
       fetch(`https://nominatim.openstreetmap.org/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}&format=json`)
@@ -1064,7 +994,7 @@
     });
   }
 
-  // Initialize both carousels
+  // === INITIALIZE CAROUSELS ===
   initPsychologistCarousel();
   initQuizCarousel();
 </script>
