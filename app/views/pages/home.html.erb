@@ -664,20 +664,7 @@
             <h3><%= psy.full_name %></h3>
             <p class="rate"><%= t('quizzes.results.rate') %> <%= psy.standard_rate %> <%= psy.currency %> <%= t('quizzes.results.per_hour') %></p>
             <div class="about">
-              <% visible_specialties = psy.specialties.first(3) %>
-              <% remaining_count = psy.specialties.count - 3 %>
-              <% visible_specialties.each do |specialty| %>
-                <span class="tag is-specialty-tag">
-                  <%= link_to t("specialties.#{specialty.name.parameterize.underscore}", default: specialty.name),
-                              definition_specialty_path(specialty),
-                              class: "specialty-link" %>
-                </span>
-              <% end %>
-              <% if remaining_count > 0 %>
-                <span class="more-specialties" title="<%= psy.specialties.drop(3).map(&:name).join(', ') %>">
-                  +<%= remaining_count %>
-                </span>
-              <% end %>
+              <p class="about"><%= psy.about_me.truncate(100) %></p>
             </div>
             <%= link_to "Read more →", psychologist_profile_path(psy), class: "profile-link" %>
           </div>
