@@ -91,6 +91,7 @@
     display: flex;
     gap: 15px;
     justify-content: center;
+    align-items: center;
     flex-wrap: wrap;
   }
 
@@ -101,9 +102,12 @@
     font-weight: 600;
     cursor: pointer;
     text-decoration: none;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     transition: all 0.3s ease;
     border: none;
+    text-align: center;
   }
 
   .btn-primary {
@@ -419,10 +423,15 @@
     background: white;
   }
 
+  .psychologist-carousel-wrapper {
+    position: relative;
+  }
+
   .psychologist-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(5, 1fr);
     gap: 25px;
+    transition: all 0.3s ease;
   }
 
   .profile-card {
@@ -462,20 +471,43 @@
 
   .about {
     margin-bottom: 20px;
+    min-height: 70px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    align-items: flex-start;
   }
 
   .tag.is-specialty-tag {
-    background: var(--secondary);
+    background: white;
     color: var(--text-dark);
-    padding: 5px 10px;
+    padding: 6px 14px;
     border-radius: 20px;
-    margin: 5px;
     display: inline-block;
     font-size: 0.85rem;
+    border: 1px solid var(--border);
+    transition: all 0.2s ease;
+  }
+
+  .tag.is-specialty-tag:hover {
+    background: var(--hover-bg);
+    border-color: var(--accent);
+    transform: translateY(-1px);
   }
 
   .specialty-link {
     text-decoration: none;
+  }
+
+  .more-specialties {
+    background: var(--primary);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    display: inline-block;
+    cursor: help;
   }
 
   .profile-link {
@@ -490,6 +522,44 @@
     transform: translateX(5px);
   }
 
+  /* Quiz carousel mode */
+  .quiz-carousel-wrapper {
+    position: relative;
+    padding: 0 60px;
+  }
+
+  .quiz-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 25px;
+  }
+
+  .quiz-grid.carousel-mode {
+    display: grid;
+    overflow: visible;
+    gap: 25px;
+  }
+
+  .quiz-grid.carousel-mode .quiz-card {
+    display: none;
+  }
+
+  .quiz-grid.carousel-mode .quiz-card.visible {
+    display: block;
+  }
+
+  @media (max-width: 1400px) {
+    .psychologist-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  @media (max-width: 1200px) {
+    .psychologist-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
   @media (max-width: 1024px) {
     .carousel-arrow.prev {
       left: 10px;
@@ -497,6 +567,15 @@
 
     .carousel-arrow.next {
       right: 10px;
+    }
+
+    .psychologist-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .psychologist-carousel-wrapper,
+    .quiz-carousel-wrapper {
+      padding: 0 50px;
     }
   }
 
@@ -512,17 +591,18 @@
 
     .hero-buttons {
       flex-direction: column;
+      width: 100%;
+      align-items: stretch;
     }
 
     .btn {
       width: 100%;
-      max-width: 300px;
+      max-width: none;
     }
 
     .price-grid,
     .quiz-grid,
-    .steps-grid,
-    .psychologist-grid {
+    .steps-grid {
       gap: 20px;
     }
 
@@ -543,6 +623,19 @@
     .carousel-item {
       font-size: 0.85rem;
       padding: 10px 16px;
+    }
+
+    .psychologist-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .quiz-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .psychologist-carousel-wrapper,
+    .quiz-carousel-wrapper {
+      padding: 0 45px;
     }
   }
 
@@ -597,22 +690,41 @@
 <section class="section psychologists-section">
   <div class="container">
     <h2 class="section-title"><%= t('quizzes.results.psychologist_heading') %></h2>
-    <div class="psychologist-grid">
-      <% @psychologist_profiles.each do |psy| %>
-        <div class="profile-card">
-          <% if psy.profile_img.attached? %>
-            <%= image_tag psy.profile_img.variant(resize_to_limit: [200, 200]), alt: psy.full_name, class: "profile-img", loading: "lazy" %>
-          <% else %>
-            <%= image_tag "default-profile.png", alt: psy.full_name, class: "profile-img", loading: "lazy" %>
-          <% end %>
-          <h3><%= psy.full_name %></h3>
-          <p class="rate"><%= t('quizzes.results.rate') %>  <%= psy.standard_rate %> <%= psy.currency %> <%= t('quizzes.results.per_hour') %></p>
-          <p class="about">
-             <%= psy.about_me.truncate(100) %>
-          </p>
-          <%= link_to "Read more →", psychologist_profile_path(psy), class: "profile-link" %>
-        </div>
-      <% end %>
+    <div class="psychologist-carousel-wrapper">
+      <button class="carousel-arrow prev" style="display: none;">‹</button>
+      <div class="psychologist-grid" id="psychologist-grid">
+        <% @psychologist_profiles.each do |psy| %>
+          <div class="profile-card">
+            <% if psy.profile_img.attached? %>
+              <%= image_tag psy.profile_img.variant(resize_to_limit: [200, 200]), alt: psy.full_name, class: "profile-img", loading: "lazy" %>
+            <% else %>
+              <%= image_tag "default-profile.png", alt: psy.full_name, class: "profile-img", loading: "lazy" %>
+            <% end %>
+            <h3><%= psy.full_name %></h3>
+            <p class="rate"><%= t('quizzes.results.rate') %>  <%= psy.standard_rate %> <%= psy.currency %> <%= t('quizzes.results.per_hour') %></p>
+            <p class="about">
+              <% visible_specialties = psy.specialties.first(3) %>
+              <% remaining_count = psy.specialties.count - 3 %>
+              <% visible_specialties.each do |specialty| %>
+                <span class="tag is-specialty-tag">
+                  <%= link_to t("specialties.#{specialty.name.parameterize.underscore}", default: specialty.name),
+                              definition_specialty_path(specialty),
+                              class: "specialty-link",
+                              style: "color: inherit; text-decoration: none;" %>
+                </span>
+              <% end %>
+              <% if remaining_count > 0 %>
+                <span class="more-specialties" title="<%= psy.specialties.drop(3).map(&:name).join(', ') %>">
+                  +<%= remaining_count %>
+                </span>
+              <% end %>
+            </p>
+
+            <%= link_to "Read more →", psychologist_profile_path(psy), class: "profile-link" %>
+          </div>
+        <% end %>
+      </div>
+      <button class="carousel-arrow next" style="display: none;">›</button>
     </div>
   </div>
 </section>
@@ -677,15 +789,19 @@
   <div class="container">
     <h2 class="section-title">Assessment Tools</h2>
     
-    <div class="quiz-grid">
-      <% @quizzes.each do |quiz| %>
-        <div class="quiz-card" onclick="window.location.href='<%= take_quiz_path(quiz) %>'">
-          <div class="quiz-icon">📋</div>
-          <h4><%= quiz.title %></h4>
-          <p><%= truncate(quiz.description, length: 100) %></p>
-          <%= link_to t('quizzes.index.take_quiz'), take_quiz_path(quiz), class: "quiz-link" %>
-        </div>
-      <% end %>
+    <div class="quiz-carousel-wrapper">
+      <button class="carousel-arrow prev" style="display: none;">‹</button>
+      <div class="quiz-grid" id="quiz-grid">
+        <% @quizzes.each do |quiz| %>
+          <div class="quiz-card" onclick="window.location.href='<%= take_quiz_path(quiz) %>'">
+            <div class="quiz-icon">📋</div>
+            <h4><%= quiz.title %></h4>
+            <p><%= truncate(quiz.description, length: 100) %></p>
+            <%= link_to t('quizzes.index.take_quiz'), take_quiz_path(quiz), class: "quiz-link" %>
+          </div>
+        <% end %>
+      </div>
+      <button class="carousel-arrow next" style="display: none;">›</button>
     </div>
   </div>
 </section>
@@ -756,6 +872,174 @@
     startAutoScroll();
   });
 
+  // Psychologist Grid Responsive Carousel
+  function initPsychologistCarousel() {
+    const wrapper = document.querySelector('.psychologist-carousel-wrapper');
+    const grid = document.getElementById('psychologist-grid');
+    const cards = Array.from(grid.querySelectorAll('.profile-card'));
+    const prevArrow = wrapper.querySelector('.carousel-arrow.prev');
+    const nextArrow = wrapper.querySelector('.carousel-arrow.next');
+
+    if (!grid || cards.length === 0) return;
+
+    let currentPage = 0;
+    let cardsToShow = 5;
+
+    function updateCardsToShow() {
+      const width = window.innerWidth;
+      if (width <= 768) cardsToShow = 1;
+      else if (width <= 1024) cardsToShow = 2;
+      else if (width <= 1200) cardsToShow = 3;
+      else if (width <= 1400) cardsToShow = 4;
+      else cardsToShow = 5;
+
+      const totalPages = Math.ceil(cards.length / cardsToShow);
+
+      // Enable carousel mode if more cards than can be shown
+      if (cards.length > cardsToShow) {
+        grid.classList.add('carousel-mode');
+        grid.style.gridTemplateColumns = `repeat(${cardsToShow}, 1fr)`;
+        prevArrow.style.display = 'flex';
+        nextArrow.style.display = 'flex';
+        showPage(currentPage);
+      } else {
+        grid.classList.remove('carousel-mode');
+        grid.style.gridTemplateColumns = '';
+        prevArrow.style.display = 'none';
+        nextArrow.style.display = 'none';
+        cards.forEach(card => card.classList.remove('visible'));
+        currentPage = 0;
+      }
+    }
+
+    function showPage(pageIndex) {
+      const totalPages = Math.ceil(cards.length / cardsToShow);
+      currentPage = Math.max(0, Math.min(pageIndex, totalPages - 1));
+      
+      const startIndex = currentPage * cardsToShow;
+      const endIndex = startIndex + cardsToShow;
+
+      cards.forEach((card, index) => {
+        if (index >= startIndex && index < endIndex) {
+          card.classList.add('visible');
+        } else {
+          card.classList.remove('visible');
+        }
+      });
+
+      prevArrow.classList.toggle('disabled', currentPage === 0);
+      nextArrow.classList.toggle('disabled', currentPage >= totalPages - 1);
+    }
+
+    prevArrow.addEventListener('click', () => {
+      if (currentPage > 0) {
+        showPage(currentPage - 1);
+      }
+    });
+
+    nextArrow.addEventListener('click', () => {
+      const totalPages = Math.ceil(cards.length / cardsToShow);
+      if (currentPage < totalPages - 1) {
+        showPage(currentPage + 1);
+      }
+    });
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        currentPage = 0;
+        updateCardsToShow();
+      }, 250);
+    });
+
+    updateCardsToShow();
+  }
+
+  // Quiz Grid Responsive Carousel
+  function initQuizCarousel() {
+    const wrapper = document.querySelector('.quiz-carousel-wrapper');
+    const grid = document.getElementById('quiz-grid');
+    const cards = Array.from(grid.querySelectorAll('.quiz-card'));
+    const prevArrow = wrapper.querySelector('.carousel-arrow.prev');
+    const nextArrow = wrapper.querySelector('.carousel-arrow.next');
+
+    if (!grid || cards.length === 0) return;
+
+    let currentPage = 0;
+    let cardsToShow = 5;
+
+    function updateCardsToShow() {
+      const width = window.innerWidth;
+      if (width <= 768) cardsToShow = 1;
+      else if (width <= 1024) cardsToShow = 2;
+      else if (width <= 1200) cardsToShow = 3;
+      else if (width <= 1400) cardsToShow = 4;
+      else cardsToShow = 5;
+
+      const totalPages = Math.ceil(cards.length / cardsToShow);
+
+      // Enable carousel mode if more cards than can be shown
+      if (cards.length > cardsToShow) {
+        grid.classList.add('carousel-mode');
+        grid.style.gridTemplateColumns = `repeat(${cardsToShow}, 1fr)`;
+        prevArrow.style.display = 'flex';
+        nextArrow.style.display = 'flex';
+        showPage(currentPage);
+      } else {
+        grid.classList.remove('carousel-mode');
+        grid.style.gridTemplateColumns = '';
+        prevArrow.style.display = 'none';
+        nextArrow.style.display = 'none';
+        cards.forEach(card => card.classList.remove('visible'));
+        currentPage = 0;
+      }
+    }
+
+    function showPage(pageIndex) {
+      const totalPages = Math.ceil(cards.length / cardsToShow);
+      currentPage = Math.max(0, Math.min(pageIndex, totalPages - 1));
+      
+      const startIndex = currentPage * cardsToShow;
+      const endIndex = startIndex + cardsToShow;
+
+      cards.forEach((card, index) => {
+        if (index >= startIndex && index < endIndex) {
+          card.classList.add('visible');
+        } else {
+          card.classList.remove('visible');
+        }
+      });
+
+      prevArrow.classList.toggle('disabled', currentPage === 0);
+      nextArrow.classList.toggle('disabled', currentPage >= totalPages - 1);
+    }
+
+    prevArrow.addEventListener('click', () => {
+      if (currentPage > 0) {
+        showPage(currentPage - 1);
+      }
+    });
+
+    nextArrow.addEventListener('click', () => {
+      const totalPages = Math.ceil(cards.length / cardsToShow);
+      if (currentPage < totalPages - 1) {
+        showPage(currentPage + 1);
+      }
+    });
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        currentPage = 0;
+        updateCardsToShow();
+      }, 250);
+    });
+
+    updateCardsToShow();
+  }
+
   // Make profile cards clickable, excluding inner links
   document.querySelectorAll('.profile-card').forEach(card => {
     card.addEventListener('click', (e) => {
@@ -779,4 +1063,8 @@
         .catch(err => console.log('Geolocation lookup failed'));
     });
   }
+
+  // Initialize both carousels
+  initPsychologistCarousel();
+  initQuizCarousel();
 </script>
