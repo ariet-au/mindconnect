@@ -606,13 +606,9 @@
             <%= image_tag "default-profile.png", alt: psy.full_name, class: "profile-img", loading: "lazy" %>
           <% end %>
           <h3><%= psy.full_name %></h3>
-          <p class="rate"><%= t('quizzes.results.rate') %> <%= psy.standard_rate %><%= t('quizzes.results.per_hour') %></p>
+          <p class="rate"><%= t('quizzes.results.rate') %>  <%= psy.standard_rate %> <%= psy.currency %> <%= t('quizzes.results.per_hour') %></p>
           <p class="about">
-            <% psy.issues.each do |issue| %>
-              <span class="tag is-specialty-tag">
-                <%= link_to t("issues.#{issue.name.parameterize.underscore}", default: issue.name), definition_specialty_path(issue), class: "specialty-link", style: "color: inherit; text-decoration: none;" %>
-              </span>
-            <% end %>
+             <%= psy.about_me.truncate(100) %>
           </p>
           <%= link_to "Read more →", psychologist_profile_path(psy), class: "profile-link" %>
         </div>
