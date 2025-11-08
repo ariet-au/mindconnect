@@ -737,7 +737,7 @@
       <div class="quiz-grid" id="quiz-grid">
         <% @quizzes.each do |quiz| %>
           <div class="quiz-card" onclick="window.location.href='<%= take_quiz_path(quiz) %>'">
-            <div class="quiz-icon">Checkmark</div>
+            <div class="quiz-icon"></div>
             <h4><%= quiz.title %></h4>
             <p><%= truncate(quiz.description, length: 100) %></p>
             <%= link_to t('quizzes.index.take_quiz'), take_quiz_path(quiz), class: "quiz-link" %>
