@@ -493,25 +493,49 @@
     align-content: flex-start;
   }
 
-  .tag.is-specialty-tag {
-    background: white;
-    color: var(--text-dark);
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    border: 1px solid var(--border);
-    transition: all 0.2s ease;
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
+/* -------------------------------------------------
+   SPECIALTY TAGS – keep them from breaking card width
+   ------------------------------------------------- */
+.tag.is-specialty-tag {
+  background: white;
+  color: var(--text-dark);
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  border: 1px solid var(--border);
+  transition: all 0.2s ease;
 
-  .tag.is-specialty-tag:hover {
-    background: var(--hover-bg);
-    border-color: var(--accent);
-    transform: translateY(-1px);
-  }
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+
+  position: relative;               /* for tooltip */
+  cursor: default;
+}
+
+/* Tooltip on hover (optional) */
+.tag.is-specialty-tag:hover::after {
+  content: attr(data-full);
+  position: absolute;
+  bottom: 100%; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,.85);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  z-index: 10;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .2s;
+}
+.tag.is-specialty-tag:hover::after {
+  opacity: 1;
+  visibility: visible;
+}
 
   .specialty-link {
     text-decoration: none;
