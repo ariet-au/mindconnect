@@ -195,11 +195,11 @@ en:
           title: "Connect"
           description: "Message or book directly with verified professionals"
         confirm:
-          title: "Confirm"
-          description: "Get appointment reminders and all the details"
+          title: "Book"
+          description: "Schedule your sessions easily and securely"
         heal:
-          title: "Heal"
-          description: "Begin your sessions and take control of your health"
+          title: "Grow"
+          description: "Start your sessions and work towards better mental health"
 
     psychologists:
       read_more: "Read more →"
