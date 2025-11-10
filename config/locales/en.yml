@@ -176,6 +176,51 @@ en:
       - :year
       - :month
       - :day
+
+
+  home:
+    hero:
+      title: "Find Your <span>Perfect Psychologist</span>"
+      subtitle: "Get professional mental health support from verified experts — online or in your city"
+      search_button: "Start Your Search"
+      join_button: "Join as a Psychologist"
+
+    how_it_works:
+      title: "How It Works"
+      steps:
+        search:
+          title: "Search"
+          description: "Find psychologists by location, specialty, or price"
+        connect:
+          title: "Connect"
+          description: "Message or book directly with verified professionals"
+        confirm:
+          title: "Confirm"
+          description: "Get appointment reminders and all the details"
+        heal:
+          title: "Heal"
+          description: "Begin your sessions and take control of your health"
+
+    psychologists:
+      read_more: "Read more →"
+
+    search:
+      title: "Browse Psychologists"
+      by_location: "By Location"
+      by_issue: "By Issue"
+      by_price: "By Price"
+      online: "Online"
+      browse_all_prices: "Browse all price ranges"
+      see_all_prices: "See All →"
+      browse_all_psychologists: "Browse All Psychologists"
+
+    quizzes:
+      title: "Assessment Tools"
+
+    cta:
+      title: "Are you a Psychologist?"
+      description: "Join our growing network and connect with clients actively seeking professional support."
+      join_button: "Start Your Profile"
         
   psychologist_profiles:
     client_types:

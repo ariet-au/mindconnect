@@ -1,527 +1,593 @@
 <style>
   .main-content .container {
-    max-width: 100% !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
-  :root {
-    --primary: #2c5aa0;
-    --secondary: #f0f4f9;
-    --accent: #4a9eff;
-    --text-dark: #1a2332;
-    --text-light: #6b7280;
-    --border: #e5e7eb;
-    --hover-bg: #e8f0fc;
-  }
-
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    color: var(--text-dark);
-    line-height: 1.6;
-  }
-
-  .hero-section {
-    background: linear-gradient(135deg, #ffffff 0%, var(--secondary) 100%);
-    padding: 80px 20px;
-    text-align: center;
-    min-height: 80vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .hero-section::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -10%;
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, rgba(74, 158, 255, 0.1) 0%, transparent 70%);
-    border-radius: 50%;
-  }
-
-  .hero-section::after {
-    content: '';
-    position: absolute;
-    bottom: -30%;
-    left: -10%;
-    width: 300px;
-    height: 300px;
-    background: radial-gradient(circle, rgba(44, 90, 160, 0.08) 0%, transparent 70%);
-    border-radius: 50%;
-  }
-
-  .hero-content {
-    max-width: 700px;
-    margin: 0 auto;
-    position: relative;
-    z-index: 1;
-  }
-
-  .hero-section h1 {
-    font-size: clamp(2rem, 5vw, 3.5rem);
-    font-weight: 700;
-    margin-bottom: 20px;
-    color: var(--text-dark);
-    line-height: 1.2;
-  }
-
-  .hero-section h1 span {
-    color: var(--primary);
-  }
-
-  .hero-section p {
-    font-size: clamp(1rem, 2vw, 1.2rem);
-    color: var(--text-light);
-    margin-bottom: 40px;
-  }
-
-  .hero-buttons {
-    display: flex;
-    gap: 15px;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-
-  .btn {
-    padding: 14px 32px;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    border: none;
-    text-align: center;
-  }
-
-  .btn-primary {
-    background: var(--primary);
-    color: white;
-    box-shadow: 0 4px 12px rgba(44, 90, 160, 0.25);
-  }
-
-  .btn-primary:hover {
-    background: #1f3f6b;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(44, 90, 160, 0.35);
-  }
-
-  .btn-secondary {
-    background: white;
-    color: var(--primary);
-    border: 2px solid var(--primary);
-  }
-
-  .btn-secondary:hover {
-    background: var(--secondary);
-    transform: translateY(-2px);
-  }
-
-  .section {
-    padding: 70px 20px;
-  }
-
-  .section-title {
-    font-size: clamp(1.8rem, 4vw, 2.8rem);
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 50px;
-    color: var(--text-dark);
-  }
-
-  .search-section {
-    background: white;
-  }
-
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-  }
-
-  /* Carousel Styles */
-  .carousel-wrapper {
-    position: relative;
-    margin-bottom: 40px;
-  }
-
-  .carousel-container {
-    overflow: hidden;
-    border-radius: 8px;
-  }
-
-  .carousel-track {
-    display: flex;
-    transition: transform 0.5s ease;
-    gap: 10px;
-  }
-
-  .carousel-item {
-    flex: 0 0 auto;
-    padding: 12px 20px;
-    border-radius: 24px;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-block;
-    background: var(--secondary);
-    border: 2px solid transparent;
-    color: var(--text-dark);
-    font-weight: 500;
-    font-size: 0.95rem;
-    white-space: nowrap;
-  }
-
-  .carousel-item:hover {
-    background: var(--hover-bg);
-    border-color: var(--accent);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(44, 90, 160, 0.15);
-  }
-
-  .carousel-item.city-item {
-    background: linear-gradient(135deg, #f8faff 0%, var(--secondary) 100%);
-  }
-
-  .carousel-item.city-item:hover {
-    background: linear-gradient(135deg, var(--hover-bg) 0%, #dce7f7 100%);
-  }
-
-  .carousel-item .count {
-    font-size: 0.8rem;
-    color: var(--text-light);
-    margin-left: 6px;
-  }
-
-  .carousel-arrow {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: white;
-    color: var(--primary);
-    border: 2px solid var(--border);
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    z-index: 10;
-    font-size: 1.2rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-
-  .carousel-arrow:hover:not(.disabled) {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
-    box-shadow: 0 4px 12px rgba(44, 90, 160, 0.25);
-  }
-
-  .carousel-arrow.disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-  }
-
-  .carousel-arrow.prev {
-    left: -50px;
-  }
-
-  .carousel-arrow.next {
-    right: -50px;
-  }
-
-  /* Price Grid */
-  .price-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 25px;
-    margin-bottom: 40px;
-  }
-
-  .price-card {
-    background: var(--secondary);
-    padding: 30px;
-    border-radius: 8px;
-    border-left: 4px solid var(--primary);
-    transition: all 0.3s ease;
-  }
-
-  .price-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(44, 90, 160, 0.12);
-  }
-
-  .price-card h3 {
-    font-size: 1.3rem;
-    margin-bottom: 10px;
-    color: var(--text-dark);
-  }
-
-  .price-card p {
-    color: var(--text-light);
-    font-size: 0.95rem;
-    margin-bottom: 15px;
-  }
-
-  .price-link {
-    color: var(--primary);
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    display: inline-block;
-  }
-
-  .price-link:hover {
-    transform: translateX(5px);
-  }
-
-  .btn-center {
-    text-align: center;
-    margin-top: 30px;
-  }
-
-  .how-section {
-    background: white;
-  }
-
-  .steps-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 30px;
-    max-width: 1000px;
-    margin: 0 auto;
-  }
-
-  .step {
-    text-align: center;
-  }
-
-  .step-number {
-    width: 56px;
-    height: 56px;
-    background: var(--primary);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.6rem;
-    font-weight: 700;
-    margin: 0 auto 20px;
-  }
-
-  .step h4 {
-    font-size: 1.15rem;
-    margin-bottom: 12px;
-    color: var(--text-dark);
-  }
-
-  .step p {
-    color: var(--text-light);
-    font-size: 0.95rem;
-  }
-
-  .quizzes-section {
-    background: linear-gradient(135deg, var(--secondary) 0%, #e8f0fc 100%);
-  }
-
-  .quiz-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 25px;
-  }
-
-  .quiz-card {
-    background: white;
-    padding: 35px 25px;
-    border-radius: 8px;
-    text-align: center;
-    border-top: 4px solid var(--primary);
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    cursor: pointer;
-  }
-
-  .quiz-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(44, 90, 160, 0.15);
-  }
-
-  .quiz-icon {
-    font-size: 2.5rem;
-    margin-bottom: 15px;
-    color: var(--primary);
-  }
-
-  .quiz-card h4 {
-    font-size: 1.2rem;
-    margin-bottom: 10px;
-    color: var(--text-dark);
-  }
-
-  .quiz-card p {
-    color: var(--text-light);
-    font-size: 0.9rem;
-    line-height: 1.5;
-  }
-
-  .quiz-link {
-    color: var(--primary);
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    display: inline-block;
-    margin-top: 15px;
-  }
-
-  .quiz-link:hover {
-    transform: translateX(5px);
-  }
-
-  .cta-section {
-    background: white;
-    text-align: center;
-  }
-
-  .cta-content {
-    max-width: 600px;
-    margin: 0 auto;
-  }
-
-  .cta-section h3 {
-    font-size: clamp(1.5rem, 3vw, 2.2rem);
-    margin-bottom: 15px;
-    color: var(--text-dark);
-  }
-
-  .cta-section p {
-    color: var(--text-light);
-    margin-bottom: 30px;
-    font-size: 1.05rem;
-  }
-
-  /* === PSYCHOLOGISTS SECTION – FIXED EQUAL WIDTHS === */
-  .psychologists-section {
-    background: white;
-  }
-
-  .psychologist-carousel-wrapper {
-    position: relative;
-    padding: 0 60px;
-  }
-
-  .psychologist-grid {
-    display: grid;
-    gap: 25px;
-    transition: all 0.3s ease;
-    grid-template-columns: repeat(5, 1fr);
-  }
-
-  .psychologist-grid.carousel-mode {
-    overflow: hidden;
-  }
-
-  .profile-card {
-    background: var(--secondary);
-    padding: 30px;
-    border-radius: 8px;
-    text-align: center;
-    border-top: 4px solid var(--primary);
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    width: 100% !important;
-    min-height: 340px;
-  }
-
-  .profile-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(44, 90, 160, 0.15);
-  }
-
-  .profile-img {
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin: 0 auto 20px;
-  }
-
-  .profile-card h3 {
-    font-size: 1.2rem;
-    margin: 12px 0 8px;
-    line-height: 1.3;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .rate {
-    font-weight: 600;
-    color: var(--primary);
-    margin-bottom: 15px;
-  }
-
-  .about {
-    flex-grow: 1;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    justify-content: center;
-    margin: 10px 0;
-    min-height: 60px;
-    align-content: flex-start;
-  }
+  max-width: 100% !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* === NEW COLOR PALETTE & GLOBAL STYLES === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  /* Primary color matches your navbar for brand consistency */
+  --primary: #2C3E50;
+  
+  /* Secondary is a very light, clean blue-gray for light backgrounds */
+  --secondary: #F4F7F9;
+  
+  /* Accent 1: A calming teal for secondary actions, links, and highlights */
+  --accent-action: #4DB6AC;
+  
+  /* Accent 2: A muted, warm peach/rose for a human touch (e.g., quizzes) */
+  /* --accent-warm: #D99A82; (REMOVED) */
+  
+  /* Accent 3: A very light sage green for alternating content backgrounds */
+  /* --accent-calm-bg: #E8F0E8; (REMOVED) */
+  
+  /* Text colors */
+  --text-dark: #1A2332;
+  --text-light: #5A6A7B;
+  
+  /* Borders and hover states */
+  --border: #DDE3E9;
+  --hover-bg: #EAF1F8; /* A light blue hover, pairs with primary */
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  color: var(--text-dark);
+  line-height: 1.6;
+}
+
+/* === HERO SECTION === */
+.hero-section {
+  /* Uses the light blue-gray secondary background */
+  background: linear-gradient(135deg, #ffffff 0%, var(--secondary) 100%);
+  padding: 80px 20px;
+  text-align: center;
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -10%;
+  width: 400px;
+  height: 400px;
+  /* Updated to use the new teal accent color */
+  background: radial-gradient(circle, rgba(77, 182, 172, 0.08) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.hero-section::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: -10%;
+  width: 300px;
+  height: 300px;
+  /* Updated to use the new primary color */
+  background: radial-gradient(circle, rgba(44, 62, 80, 0.07) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.hero-content {
+  max-width: 700px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-section h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: var(--text-dark);
+  line-height: 1.2;
+}
+
+.hero-section h1 span {
+  /* Uses the new primary color */
+  color: var(--primary);
+}
+
+.hero-section p {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--text-light);
+  margin-bottom: 40px;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 14px 32px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  border: none;
+  text-align: center;
+}
+
+.btn-primary {
+  /* Uses the new primary color */
+  background: var(--primary);
+  color: white;
+  /* Updated shadow to match new primary */
+  box-shadow: 0 4px 12px rgba(44, 62, 80, 0.25);
+}
+
+.btn-primary:hover {
+  /* Darker shade of the new primary */
+  background: #1f2e3d;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(44, 62, 80, 0.35);
+}
+
+.btn-secondary {
+  background: white;
+  /* Uses the new primary color */
+  color: var(--primary);
+  border: 2px solid var(--primary);
+}
+
+.btn-secondary:hover {
+  /* Uses the new secondary background */
+  background: var(--secondary);
+  transform: translateY(-2px);
+}
+
+/* === GENERAL SECTION STYLES === */
+.section {
+  padding: 70px 20px;
+}
+
+.section-title {
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 50px;
+  color: var(--text-dark);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* === SEARCH SECTION & CAROUSELS === */
+.search-section {
+  /* Kept white for a clean break */
+  background: white;
+}
+
+.carousel-wrapper {
+  position: relative;
+  margin-bottom: 40px;
+  overflow: visible;
+}
+
+.carousel-container {
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.5s ease;
+  gap: 10px;
+}
+
+.carousel-item {
+  flex: 0 0 auto;
+  padding: 12px 20px;
+  border-radius: 24px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  background: var(--secondary);
+  border: 2px solid transparent;
+  color: var(--text-dark);
+  font-weight: 500;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.carousel-item:hover {
+  background: var(--hover-bg);
+  /* Updated hover border to the new teal accent */
+  border-color: var(--accent-action);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(77, 182, 172, 0.15);
+}
+
+.carousel-item.city-item {
+  background: linear-gradient(135deg, #f8faff 0%, var(--secondary) 100%);
+}
+
+.carousel-item.city-item:hover {
+  background: linear-gradient(135deg, var(--hover-bg) 0%, #e4ebf3 100%);
+}
+
+.carousel-item .count {
+  font-size: 0.8rem;
+  color: var(--text-light);
+  margin-left: 6px;
+}
+
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: white;
+  color: var(--primary);
+  border: 2px solid var(--border);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10;
+  font-size: 1.2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.carousel-arrow:hover:not(.disabled) {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  /* Updated shadow to match new primary */
+  box-shadow: 0 4px 12px rgba(44, 62, 80, 0.25);
+}
+
+.carousel-arrow.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.carousel-arrow.prev {
+  left: 0;
+  transform: translate(-100%, -50%);
+}
+
+.carousel-arrow.next {
+  right: 0;
+  transform: translate(100%, -50%);
+}
+
+/* Price Grid */
+.price-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 25px;
+  margin-bottom: 40px;
+}
+
+.price-card {
+  background: var(--secondary);
+  padding: 30px;
+  border-radius: 8px;
+  /* Updated border to use the new teal accent */
+  border-left: 4px solid var(--accent-action);
+  transition: all 0.3s ease;
+}
+
+.price-card:hover {
+  transform: translateY(-5px);
+  /* Updated shadow to match teal accent */
+  box-shadow: 0 8px 20px rgba(77, 182, 172, 0.12);
+}
+
+.price-card h3 {
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+  color: var(--text-dark);
+}
+
+.price-card p {
+  color: var(--text-light);
+  font-size: 0.95rem;
+  margin-bottom: 15px;
+}
+
+.price-link {
+  /* Updated link to use the new teal accent */
+  color: var(--accent-action);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.price-link:hover {
+  transform: translateX(5px);
+}
+
+.btn-center {
+  text-align: center;
+  margin-top: 30px;
+}
+
+/* === HOW IT WORKS SECTION === */
+.how-section {
+  /* Kept white for contrast */
+  background: white;
+}
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 30px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.step {
+  text-align: center;
+}
+
+.step-number {
+  width: 56px;
+  height: 56px;
+  /* Updated to use the new teal accent */
+  background: var(--accent-action);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin: 0 auto 20px;
+}
+
+.step h4 {
+  font-size: 1.15rem;
+  margin-bottom: 12px;
+  color: var(--text-dark);
+}
+
+.step p {
+  color: var(--text-light);
+  font-size: 0.95rem;
+}
+
+/* === QUIZZES SECTION === */
+.quizzes-section {
+  /* Updated to a new warm gradient using the peach/rose accent */
+  /* background: linear-gradient(135deg, #FEFBF9 0%, #FBEFEA 100%); (REMOVED) */
+  /* Set to secondary light blue-gray for alternation */
+  background: var(--secondary);
+}
+
+.quiz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 25px;
+}
+
+.quiz-card {
+  background: white;
+  padding: 35px 25px;
+  border-radius: 8px;
+  text-align: center;
+  /* Updated border to use the new warm accent */
+  /* border-top: 4px solid var(--accent-warm); (REMOVED) */
+  /* Updated border to use the single teal accent */
+  border-top: 4px solid var(--accent-action);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+}
+
+.quiz-card:hover {
+  transform: translateY(-5px);
+  /* Updated shadow to match warm accent */
+  /* box-shadow: 0 8px 25px rgba(217, 154, 130, 0.15); (REMOVED) */
+  /* Updated shadow to match teal accent */
+  box-shadow: 0 8px 25px rgba(77, 182, 172, 0.15);
+}
+
+.quiz-icon {
+  font-size: 2.5rem;
+  margin-bottom: 15px;
+  /* Updated icon to use the new warm accent */
+  /* color: var(--accent-warm); (REMOVED) */
+  /* Updated icon to use the single teal accent */
+  color: var(--accent-action);
+}
+
+.quiz-card h4 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: var(--text-dark);
+}
+
+.quiz-card p {
+  color: var(--text-light);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.quiz-link {
+  /* Updated link to use the new warm accent */
+  /* color: var(--accent-warm); (REMOVED) */
+  /* Updated link to use the single teal accent */
+  color: var(--accent-action);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: inline-block;
+  margin-top: 15px;
+}
+
+.quiz-link:hover {
+  transform: translateX(5px);
+}
+
+/* === CTA SECTION === */
+.cta-section {
+  /* Set to secondary light blue-gray for alternation */
+  /* background: var(--secondary); (REMOVED) */
+  /* Set to white for alternation pattern */
+  background: white;
+  text-align: center;
+}
+
+.cta-content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.cta-section h3 {
+  font-size: clamp(1.5rem, 3vw, 2.2rem);
+  margin-bottom: 15px;
+  color: var(--text-dark);
+}
+
+.cta-section p {
+  color: var(--text-light);
+  margin-bottom: 30px;
+  font-size: 1.05rem;
+}
+
+/* === PSYCHOLOGISTS SECTION === */
+.psychologists-section {
+  /* Set to the new light sage green background */
+  /* background: var(--accent-calm-bg); (REMOVED) */
+  /* Set to secondary light blue-gray for alternation */
+  background: var(--secondary);
+}
+
+.psychologist-carousel-wrapper {
+  position: relative;
+  padding: 0 60px;
+}
+
+.psychologist-grid {
+  display: grid;
+  gap: 25px;
+  transition: all 0.3s ease;
+  grid-template-columns: repeat(5, 1fr);
+}
+
+.psychologist-grid.carousel-mode {
+  overflow: hidden;
+}
+
+.profile-card {
+  /* Set to white to pop against the sage background */
+  background: #FFFFFF;
+  padding: 30px;
+  border-radius: 8px;
+  text-align: center;
+  /* Border uses the primary dark blue */
+  border-top: 4px solid var(--primary);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100% !important;
+  min-height: 340px;
+}
+
+.profile-card:hover {
+  transform: translateY(-5px);
+  /* Shadow from the primary color */
+  box-shadow: 0 8px 25px rgba(44, 62, 80, 0.12);
+}
+
+.profile-img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 20px;
+}
+
+.profile-card h3 {
+  font-size: 1.2rem;
+  margin: 12px 0 8px;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rate {
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 15px;
+}
+
+.about {
+  flex-grow: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin: 10px 0;
+  min-height: 60px;
+  align-content: flex-start;
+}
 
 /* -------------------------------------------------
-   SPECIALTY TAGS – keep them from breaking card width
-   ------------------------------------------------- */
+  SPECIALTY TAGS
+  ------------------------------------------------- */
 .tag.is-specialty-tag {
-  background: white;
+  /* Set to secondary to pop against the white card */
+  background: var(--secondary);
   color: var(--text-dark);
   padding: 5px 10px;
   border-radius: 20px;
   font-size: 0.8rem;
   border: 1px solid var(--border);
   transition: all 0.2s ease;
-
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   display: inline-block;
-
-  position: relative;               /* for tooltip */
+  position: relative;
   cursor: default;
 }
 
-/* Tooltip on hover (optional) */
+/* Tooltip on hover */
 .tag.is-specialty-tag:hover::after {
   content: attr(data-full);
   position: absolute;
-  bottom: 100%; left: 50%;
+  bottom: 100%;
+  left: 50%;
   transform: translateX(-50%);
-  background: rgba(0,0,0,.85);
+  background: rgba(0, 0, 0, .85);
   color: #fff;
   padding: 4px 8px;
   border-radius: 4px;
@@ -532,117 +598,165 @@
   visibility: hidden;
   transition: opacity .2s;
 }
+
 .tag.is-specialty-tag:hover::after {
   opacity: 1;
   visibility: visible;
 }
 
-  .specialty-link {
-    text-decoration: none;
-    color: inherit;
-  }
+.specialty-link {
+  text-decoration: none;
+  color: inherit;
+}
 
-  .more-specialties {
-    background: var(--primary);
-    color: white;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    display: inline-block;
-    cursor: help;
-  }
+.more-specialties {
+  background: var(--primary);
+  color: white;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  display: inline-block;
+  cursor: help;
+}
 
-  .profile-link {
-    color: var(--primary);
-    text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    display: inline-block;
-    margin-top: 10px;
-  }
+.profile-link {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: inline-block;
+  margin-top: 10px;
+}
 
-  .profile-link:hover {
-    transform: translateX(5px);
-  }
+.profile-link:hover {
+  transform: translateX(5px);
+}
 
-  /* Quiz carousel mode */
+/* === QUIZ CAROUSEL (unchanged) === */
+.quiz-carousel-wrapper {
+  position: relative;
+  padding: 0 60px;
+}
+
+.quiz-grid.carousel-mode {
+  overflow: hidden;
+}
+
+/* === MEDIA QUERIES (unchanged) === */
+@media (max-width: 1400px) {
+  .psychologist-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 1200px) {
+  .psychologist-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1024px) {
+  .carousel-arrow.prev {
+    left: 10px;
+  }
+  .carousel-arrow.next {
+    right: 10px;
+  }
+  .psychologist-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .psychologist-carousel-wrapper,
   .quiz-carousel-wrapper {
-    position: relative;
-    padding: 0 60px;
+    padding: 0 50px;
   }
+}
 
-  .quiz-grid.carousel-mode {
-    overflow: hidden;
+@media (max-width: 768px) {
+  .section {
+    padding: 50px 20px;
   }
+  .hero-section {
+    padding: 60px 20px;
+    min-height: auto;
+  }
+  .hero-buttons {
+    flex-direction: column;
+    width: 100%;
+    align-items: stretch;
+  }
+  .btn {
+    width: 100%;
+    max-width: none;
+  }
+  .carousel-arrow {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+  .carousel-arrow.prev {
+    left: 5px;
+  }
+  .carousel-arrow.next {
+    right: 5px;
+  }
+  .carousel-item {
+    font-size: 0.85rem;
+    padding: 10px 16px;
+  }
+  .psychologist-grid {
+    grid-template-columns: 1fr;
+  }
+  .quiz-grid {
+    grid-template-columns: 1fr;
+  }
+  .psychologist-carousel-wrapper,
+  .quiz-carousel-wrapper {
+    padding: 0 45px;
+  }
+}
 
-  @media (max-width: 1400px) {
-    .psychologist-grid { grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 480px) {
+  .carousel-item {
+    font-size: 0.8rem;
+    padding: 8px 14px;
   }
-
-  @media (max-width: 1200px) {
-    .psychologist-grid { grid-template-columns: repeat(3, 1fr); }
-  }
-
-  @media (max-width: 1024px) {
-    .carousel-arrow.prev { left: 10px; }
-    .carousel-arrow.next { right: 10px; }
-    .psychologist-grid { grid-template-columns: repeat(2, 1fr); }
-    .psychologist-carousel-wrapper, .quiz-carousel-wrapper { padding: 0 50px; }
-  }
-
-  @media (max-width: 768px) {
-    .section { padding: 50px 20px; }
-    .hero-section { padding: 60px 20px; min-height: auto; }
-    .hero-buttons { flex-direction: column; width: 100%; align-items: stretch; }
-    .btn { width: 100%; max-width: none; }
-    .carousel-arrow { width: 36px; height: 36px; font-size: 1rem; }
-    .carousel-arrow.prev { left: 5px; }
-    .carousel-arrow.next { right: 5px; }
-    .carousel-item { font-size: 0.85rem; padding: 10px 16px; }
-    .psychologist-grid { grid-template-columns: 1fr; }
-    .quiz-grid { grid-template-columns: 1fr; }
-    .psychologist-carousel-wrapper, .quiz-carousel-wrapper { padding: 0 45px; }
-  }
-
-  @media (max-width: 480px) {
-    .carousel-item { font-size: 0.8rem; padding: 8px 14px; }
-  }
+}
 </style>
 
 <section class="hero-section">
   <div class="hero-content">
-    <h1>Find Your <span>Perfect Psychologist</span></h1>
-    <p id="location-text">Get professional mental health support from verified experts — online or in your city</p>
+    <h1><%= t('home.hero.title').html_safe %></h1>
+    <p id="location-text"><%= t('home.hero.subtitle') %></p>
     <div class="hero-buttons">
-      <a href="#search" class="btn btn-primary">Start Your Search</a>
-      <a href="#join" class="btn btn-secondary">Join as a Psychologist</a>
+      <a href="#search" class="btn btn-primary"><%= t('home.hero.search_button') %></a>
+      <a href="#join" class="btn btn-secondary"><%= t('home.hero.join_button') %></a>
     </div>
   </div>
 </section>
 
 <section class="section how-section">
   <div class="container">
-    <h2 class="section-title">How It Works</h2>
+    <h2 class="section-title"><%= t('home.how_it_works.title') %></h2>
     <div class="steps-grid">
       <div class="step">
         <div class="step-number">1</div>
-        <h4>Search</h4>
-        <p>Find psychologists by location, specialty, or price</p>
+        <h4><%= t('home.how_it_works.steps.search.title') %></h4>
+        <p><%= t('home.how_it_works.steps.search.description') %></p>
       </div>
       <div class="step">
         <div class="step-number">2</div>
-        <h4>Connect</h4>
-        <p>Message or book directly with verified professionals</p>
+        <h4><%= t('home.how_it_works.steps.connect.title') %></h4>
+        <p><%= t('home.how_it_works.steps.connect.description') %></p>
       </div>
       <div class="step">
         <div class="step-number">3</div>
-        <h4>Confirm</h4>
-        <p>Get appointment reminders and all the details</p>
+        <h4><%= t('home.how_it_works.steps.confirm.title') %></h4>
+        <p><%= t('home.how_it_works.steps.confirm.description') %></p>
       </div>
       <div class="step">
         <div class="step-number">4</div>
-        <h4>Heal</h4>
-        <p>Begin your sessions and take control of your health</p>
+        <h4><%= t('home.how_it_works.steps.heal.title') %></h4>
+        <p><%= t('home.how_it_works.steps.heal.description') %></p>
       </div>
     </div>
   </div>
@@ -652,7 +766,7 @@
   <div class="container">
     <h2 class="section-title"><%= t('quizzes.results.psychologist_heading') %></h2>
     <div class="psychologist-carousel-wrapper">
-      <button class="carousel-arrow prev" style="display: none;">‹</button>
+      <button class="carousel-arrow prev" style="display: none;"><</button>
       <div class="psychologist-grid" id="psychologist-grid">
         <% @psychologist_profiles.each do |psy| %>
           <div class="profile-card">
@@ -666,41 +780,42 @@
             <div class="about">
               <p class="about"><%= psy.about_me.truncate(100) %></p>
             </div>
-            <%= link_to "Read more →", psychologist_profile_path(psy), class: "profile-link" %>
+            <%= link_to t('home.psychologists.read_more'), psychologist_profile_path(psy), class: "profile-link" %>
           </div>
         <% end %>
       </div>
-      <button class="carousel-arrow next" style="display: none;">›</button>
+      <button class="carousel-arrow next" style="display: none;">></button>
     </div>
   </div>
 </section>
 
 <section class="section search-section" id="search">
   <div class="container">
-    <h2 class="section-title">Browse Psychologists</h2>
+    <h2 class="section-title"><%= t('home.search.title') %></h2>
     
-    <h3 style="font-size: 1.5rem; margin: 40px 0 20px; color: var(--text-dark);">By Location</h3>
+    <h3 style="font-size: 1.5rem; margin: 40px 0 20px; color: var(--text-dark);"><%= t('home.search.by_location') %></h3>
     <div class="carousel-wrapper" id="locations-carousel">
-      <button class="carousel-arrow prev">‹</button>
+      <button class="carousel-arrow prev"><</button>
       <div class="carousel-container">
         <div class="carousel-track">
           <% @cities.each do |city, count| %>
             <% next if city.blank? %>
             <%= link_to psychologist_profiles_path(city: city), class: "carousel-item city-item" do %>
-              <%= city.titleize %><span class="count">(<%= count %>)</span>
+              <%= t("cities.#{city.parameterize(separator: '_')}", default: city.titleize) %>
+              <span class="count">(<%= count %>)</span>
             <% end %>
           <% end %>
           <%= link_to psychologist_profiles_path(online: 1), class: "carousel-item city-item" do %>
-            Online<span class="count">(<%= @online_count %>)</span>
+            <%= t('home.search.online') %><span class="count">(<%= @online_count %>)</span>
           <% end %>
         </div>
       </div>
-      <button class="carousel-arrow next">›</button>
+      <button class="carousel-arrow next">></button>
     </div>
 
-    <h3 style="font-size: 1.5rem; margin: 40px 0 20px; color: var(--text-dark);">By Issue</h3>
+    <h3 style="font-size: 1.5rem; margin: 40px 0 20px; color: var(--text-dark);"><%= t('home.search.by_issue') %></h3>
     <div class="carousel-wrapper" id="issues-carousel">
-      <button class="carousel-arrow prev">‹</button>
+      <button class="carousel-arrow prev"><</button>
       <div class="carousel-container">
         <div class="carousel-track">
           <% @popular_issues.each do |issue| %>
@@ -710,30 +825,30 @@
           <% end %>
         </div>
       </div>
-      <button class="carousel-arrow next">›</button>
+      <button class="carousel-arrow next">></button>
     </div>
 
-    <h3 style="font-size: 1.5rem; margin: 40px 0 20px; color: var(--text-dark);">By Price</h3>
+    <h3 style="font-size: 1.5rem; margin: 40px 0 20px; color: var(--text-dark);"><%= t('home.search.by_price') %></h3>
     <div class="price-grid">
       <div class="price-card">
         <h3><%= number_to_currency(@min_price, unit: @selected_currency, precision: 0) %> - <%= number_to_currency(@max_price, unit: @selected_currency, precision: 0) %></h3>
-        <p>Browse all price ranges</p>
-        <%= link_to "See All →", psychologist_profiles_path(sort: "price"), class: "price-link" %>
+        <p><%= t('home.search.browse_all_prices') %></p>
+        <%= link_to t('home.search.see_all_prices'), psychologist_profiles_path(sort: "price"), class: "price-link" %>
       </div>
     </div>
 
     <div class="btn-center">
-      <%= link_to "Browse All Psychologists", psychologist_profiles_path, class: "btn btn-primary" %>
+      <%= link_to t('home.search.browse_all_psychologists'), psychologist_profiles_path, class: "btn btn-primary" %>
     </div>
   </div>
 </section>
 
 <section class="section quizzes-section">
   <div class="container">
-    <h2 class="section-title">Assessment Tools</h2>
+    <h2 class="section-title"><%= t('home.quizzes.title') %></h2>
     
     <div class="quiz-carousel-wrapper">
-      <button class="carousel-arrow prev" style="display: none;">‹</button>
+      <button class="carousel-arrow prev" style="display: none;"><</button>
       <div class="quiz-grid" id="quiz-grid">
         <% @quizzes.each do |quiz| %>
           <div class="quiz-card" onclick="window.location.href='<%= take_quiz_path(quiz) %>'">
@@ -744,18 +859,20 @@
           </div>
         <% end %>
       </div>
-      <button class="carousel-arrow next" style="display: none;">›</button>
+      <button class="carousel-arrow next" style="display: none;">></button>
     </div>
   </div>
 </section>
 
 <section class="section cta-section" id="join">
   <div class="cta-content">
-    <h3>Are you a Psychologist?</h3>
-    <p>Join our growing network and connect with clients actively seeking professional support.</p>
-    <%= link_to "Start Your Profile", new_user_registration_path(role: :psychologist), class: "btn btn-primary" %>
+    <h3><%= t('home.cta.title') %></h3>
+    <p><%= t('home.cta.description') %></p>
+    <%= link_to t('home.cta.join_button'), new_user_registration_path(role: :psychologist), class: "btn btn-primary" %>
   </div>
 </section>
+
+
 
 <script>
   // === CAROUSEL INITIALIZATION (Locations & Issues) ===
