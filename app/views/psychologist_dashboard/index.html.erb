@@ -397,8 +397,7 @@
     }
     // --- End Custom Alert/Confirm Modals --
 </script>
-<script>    
-  
+<script>
   let calendar;
   let currentEditingBookingId = null;
   let currentEditingUnavailabilityId = null;
@@ -408,9 +407,6 @@
   });
 
   function generateBackgroundEvents(availabilities) {
-    // Rails should already send start_iso and end_iso for each block
-    // e.g., { start_iso: "2025-08-17T15:00:00+10:00", end_iso: "2025-08-17T18:00:00+10:00" }
-
     return availabilities.map(av => ({
       start: av.start_iso,
       end: av.end_iso,
@@ -418,7 +414,6 @@
       color: '#008000'
     }));
   }
-
 
   function initializeCalendar() {
     const calendarEl = document.getElementById('calendar');
@@ -428,7 +423,6 @@
       console.error("Missing required elements or data for calendar initialization.");
       return;
     }
-    
 
     const psychologistProfileId = container.dataset.psychologistProfileId;
     const displayedTimezoneSpan = document.getElementById('displayedTimezone');
@@ -438,14 +432,54 @@
     browserTimezoneSpans.forEach(span => span.textContent = browserTimezone);
     if (displayedTimezoneSpan) displayedTimezoneSpan.textContent = browserTimezone;
 
-    // 👇 Detect if mobile screen
     const isMobile = window.matchMedia("(max-width: 768px)").matches;
-
-    // 👇 Choose view based on screen size
     const initialView = isMobile ? "timeGridDay" : "timeGridWeek";
 
+    // Locale & 24-hour detection
+    const locale = '<%= I18n.locale %>';
+    const is24Hour = locale !== 'en';
+
+    // Manual translations
+    const translations = {
+      en: {
+        today: 'Today',
+        prev: 'Prev',
+        next: 'Next',
+        list: 'List',
+        month: 'Month',
+        week: 'Week',
+        day: 'Day',
+        weekdays: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
+        months: ['January','February','March','April','May','June','July','August','September','October','November','December']
+      },
+      ru: {
+        today: 'Сегодня',
+        prev: 'Назад',
+        next: 'Вперед',
+        list: 'Список',
+        month: 'Месяц',
+        week: 'Неделя',
+        day: 'День',
+        weekdays: ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'],
+        months: ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь']
+      },
+      kg: {
+        today: 'Бүгүн',
+        prev: 'Мурунку',
+        next: 'Кийинки',
+        list: 'Тизмек',
+        month: 'Ай',
+        week: 'Жума',
+        day: 'Күн',
+        weekdays: ['Жекшемби','Дүйшөмбү','Шейшемби','Шаршемби','Бейшемби','Жума','Ишемби'],
+        months: ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь']
+      }
+    };
+
+    const t = translations[locale] || translations['en'];
+
     calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: initialView, // 👈 dynamically set
+      initialView: initialView,
       slotMinTime: "04:00:00",
       slotMaxTime: "23:00:00",
       allDaySlot: false,
@@ -454,73 +488,89 @@
       eventDurationEditable: true,
       selectable: true,
       firstDay: 1,
-      timeZone: 'local', // use browser timezone (DST-aware)
+      timeZone: 'local',
       displayEventTime: true,
-      eventTimeFormat: { hour: 'numeric', minute: '2-digit', meridiem: 'short' },
-      slotLabelFormat: { hour: 'numeric', minute: '2-digit', omitZeroMinute: false, meridiem: 'short' },
-      eventContent: function(arg) {
-        const clientName = arg.event.extendedProps.clientName || '';
-        const start = arg.event.start.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-        const end = arg.event.end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
-
-        return { html: `<div>${start} - ${end} - ${clientName}</div>` };
+      eventTimeFormat: {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: !is24Hour
       },
+      slotLabelFormat: {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: !is24Hour
+      },
+
       headerToolbar: {
         left: 'prev,next today',
         center: 'title',
         right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
       },
-      views: { listWeek: { buttonText: 'List' } },
+
+      views: { listWeek: { buttonText: t.list } },
+      buttonText: t,
+
+      // Translate day headers
+      dayHeaderContent: function(arg) {
+        return t.weekdays[arg.date.getDay()];
+      },
+
+      // Translate calendar title (month)
+      titleFormat: { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      },
+      // You can format the top title manually if needed
+      // e.g., month: t.months[date.getMonth()]
+
+      eventContent: function(arg) {
+        const clientName = arg.event.extendedProps.clientName || '';
+        const start = arg.event.start.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', hour12: !is24Hour });
+        const end = arg.event.end.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', hour12: !is24Hour });
+        const date = arg.event.start.toLocaleDateString(locale, { weekday: 'short', day: 'numeric', month: 'short' });
+
+        return { html: `<div>${date} ${start} - ${end} - ${clientName}</div>` };
+      },
+
       selectAllow: function(selectInfo) {
         const backgroundEvents = calendar.getEvents().filter(e => e.display === 'background');
         return backgroundEvents.some(event => selectInfo.start >= event.start && selectInfo.end <= event.end);
       },
+
       eventSources: [
         {
           url: `/psychologist_profiles/${psychologistProfileId}/psychologist_unavailabilities/`,
           method: 'GET',
           color: '#d9534f',
           textColor: 'white',
-          failure: error => {
-            console.error('Error fetching unavailabilities:', error);
-            showCustomAlert('Error fetching unavailabilities.');
-          }
+          failure: error => { console.error('Error fetching unavailabilities:', error); showCustomAlert('Error fetching unavailabilities.'); }
         },
         {
           url: `/psychologist_profiles/${psychologistProfileId}/bookings/calendar_bookings.json`,
           method: 'GET',
           eventDataTransform: function(eventData) {
-            // Define color mapping for booking statuses
             const statusColorMap = {
-              'pending': '#ffc107', // Yellow for pending
-              'confirmed': '#288ad9ff', // Green for confirmed
-              'cancelled': '#dc3545', // Red for cancelled
-              'completed': '#6c757d' // Gray for completed
-              // Add more statuses as needed
+              'pending': '#ffc107',
+              'confirmed': '#288ad9ff',
+              'cancelled': '#dc3545',
+              'completed': '#6c757d'
             };
-
-            // Set event color based on status, default to blue if status is unknown
             eventData.color = statusColorMap[eventData.extendedProps.status] || '#0df1fdff';
-            eventData.textColor = 'white'; // Ensure readable text color
-
+            eventData.textColor = 'white';
             return eventData;
           },
-          failure: error => {
-            console.error('Error loading bookings:', error);
-            showCustomAlert('Error loading bookings.');
-          }
+          failure: error => { console.error('Error loading bookings:', error); showCustomAlert('Error loading bookings.'); }
         },
-                {
+        {
           url: `/psychologist_profiles/${psychologistProfileId}/psychologist_availabilities/calendar_blocks.json`,
           method: 'GET',
           display: 'background',
           color: '#7ee7aaf9',
-          failure: error => {
-            console.error('Error fetching availability blocks:', error);
-            showCustomAlert('Error fetching availability blocks.');
-          }
+          failure: error => { console.error('Error fetching availability blocks:', error); showCustomAlert('Error fetching availability blocks.'); }
         }
       ],
+
       eventDidMount: function(info) {
         const isBooking = info.event.extendedProps.bookingId ||
                           info.event.extendedProps.type === 'booking' ||
@@ -536,10 +586,8 @@
           info.el.title = 'Click to edit unavailability';
           info.el.classList.add('fc-event-unavailability');
         }
-
-        console.log(`[DEBUG] Event mounted: ${info.event.title || 'Availability Block'}`);
-        console.log(`[DEBUG] Event time: ${info.event.startStr} - ${info.event.endStr}`);
       },
+
       eventClick: function(info) {
         if (!info.event || !info.event.id) return;
 
@@ -548,35 +596,29 @@
                           info.event.extendedProps.clientName ||
                           info.event.extendedProps.status;
 
-        if (isBooking) {
-          console.log('[DEBUG] Booking clicked:', info.event);
-          openEditBookingModal(info.event);
-        } else if (info.event.display === 'background') {
-          console.log('[DEBUG] Background slot clicked → creating unavailability');
-          openCreateUnavailabilityModal(info.event.start, info.event.end);
-        } else {
-          console.log('[DEBUG] Unavailability clicked:', info.event);
-          openEditUnavailabilityModal(info.event);
-        }
+        if (isBooking) openEditBookingModal(info.event);
+        else if (info.event.display === 'background') openCreateUnavailabilityModal(info.event.start, info.event.end);
+        else openEditUnavailabilityModal(info.event);
       },
+
       dateClick: function(info) {
-        console.log('[DEBUG] Empty space clicked at:', info.dateStr);
         const start = info.date;
         const end = new Date(start.getTime() + 30 * 60 * 1000);
         openCreateUnavailabilityModal(start, end);
       },
+
       select: function(info) {
-        console.log(`[DEBUG] Time slot selected. Start: ${info.startStr}, End: ${info.endStr}`);
         openCreateUnavailabilityModal(info.start, info.end);
         calendar.unselect();
       }
+
     });
 
     calendar.render();
   }
-
-
 </script>
+
+
 <script>
 
    
