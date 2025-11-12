@@ -408,6 +408,7 @@
     minute: 'numeric',
     second: 'numeric',
     timeZoneName: 'short'
+    ,hour12: false
   };
   document.getElementById('local-time').textContent = utcTime.toLocaleString(undefined, options);
 </script>

@@ -328,7 +328,7 @@
       if (!utcString) return;
 
       const utcDate = new Date(utcString);
-      const localTimeStr = utcDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const localTimeStr = utcDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' , hour12: false });
       const tzShort = utcDate.toLocaleTimeString([], { timeZoneName: "short" }).split(' ').pop();
 
       const localTimeSpan = el.querySelector(".local-time");

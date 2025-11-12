@@ -13,7 +13,7 @@ document.addEventListener("turbo:load", function () {
 
     // Date options
     const optionsDate = { year: "numeric", month: "short", day: "2-digit" };
-    const optionsTime = { hour: "2-digit", minute: "2-digit", hour12: true, timeZone: userTimeZone };
+    const optionsTime = { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: userTimeZone };
 
     const localDateStr = startDate.toLocaleDateString(undefined, optionsDate);
     const startTimeStr = startDate.toLocaleTimeString(undefined, optionsTime);
