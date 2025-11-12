@@ -15,7 +15,7 @@
 
   .block .box {
     box-shadow: none; /* Remove shadow from inner box */
-    width: 80%;
+    /* width: 80%; */
   }
     .field {
     border: none;        /* remove any unexpected borders */
@@ -312,6 +312,33 @@
   background-color: var(--accent-cyan);
   color: white;
 }
+.block .filter-panel {
+  width: 100%;
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+  box-shadow: none;
+}
+.filter-panel .column {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.filter-panel .column {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.filter-panel .columns {
+  margin-left: -0.5rem;
+  margin-right: -0.5rem;
+
+
+/* Optional: Slightly narrower on very large screens */
+
+
+/* Full width on mobile (already 100%) */
+
 </style>
 
 <div class="box">
@@ -364,10 +391,10 @@
         </span>
       </button>
 
-      <div x-show="showFilters" x-transition class="box mt-3">
+      <div x-show="showFilters" x-transition class="box filter-panel">
 
         <!-- First Row: Client Types, Delivery Method, Price Range -->
-        <div class="columns is-multiline mb-4">
+        <div class="columns is-multiline ">
           <!-- Client Types - Compact -->
           <div class="column is-4-tablet is-12-mobile"> 
             <div class="field">
