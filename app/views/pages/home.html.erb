@@ -728,8 +728,8 @@ body {
     <h1><%= t('home.hero.title').html_safe %></h1>
     <p id="location-text"><%= t('home.hero.subtitle') %></p>
     <div class="hero-buttons">
-      <a href="#search" class="btn btn-primary"><%= t('home.hero.search_button') %></a>
-      <a href="#join" class="btn btn-secondary"><%= t('home.hero.join_button') %></a>
+      <a href="<%= psychologist_profiles_path %>" class="btn btn-primary"><%= t('home.hero.search_button') %></a>
+      <a href="<%= pages_about_for_psych_path %>" class="btn btn-secondary"><%= t('home.hero.join_button') %></a>
     </div>
   </div>
 </section>
@@ -868,7 +868,9 @@ body {
   <div class="cta-content">
     <h3><%= t('home.cta.title') %></h3>
     <p><%= t('home.cta.description') %></p>
-    <%= link_to t('home.cta.join_button'), new_user_registration_path(role: :psychologist), class: "btn btn-primary" %>
+<%= link_to t('home.cta.join_button'), pages_about_for_psych_path, class: "btn btn-primary" %>
+
+
   </div>
 </section>
 
