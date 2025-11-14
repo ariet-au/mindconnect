@@ -42,4 +42,7 @@ class PagesController < ApplicationController
 
   def contact
   end
+
+  def how_to
+  end 
 end

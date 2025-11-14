@@ -44,6 +44,7 @@ Rails.application.routes.draw do
       get "pages/about_for_psych"
       get "pages/about_for_clients"
       get "pages/contact"
+      get "pages/how_to"
 
 
     resources :events do

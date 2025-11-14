@@ -14,6 +14,7 @@ class Article < ApplicationRecord
   has_one_attached :cover_image
 
   before_validation :generate_slug, on: :create
+  scope :published, -> { where(is_published: true) }
 
   private
 

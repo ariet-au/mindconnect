@@ -3,7 +3,7 @@ class ArticlesController < ApplicationController
 
   # GET /articles or /articles.json
   def index
-    @articles = Article.order(created_at: :desc)
+    @articles = Article.published.order(created_at: :desc)
 
     # Grab all page views that contain '/articles/' in the URL
     page_views = PageView.where("url LIKE ?", "%/articles/%")
@@ -16,6 +16,8 @@ class ArticlesController < ApplicationController
       end
     end
   end
+
+
 
   # GET /articles/1 or /articles/1.json
   def show
