@@ -7,7 +7,7 @@ class PagesController < ApplicationController
   .order("count_all DESC")
   .count
 
-  @psychologist_profiles = PsychologistProfile.confirmed.filled.active.not_hidden.order(updated_at: :desc).limit(5)
+  @psychologist_profiles = PsychologistProfile.confirmed.filled.active.with_profile_img.not_hidden.order(updated_at: :desc).limit(5)
 
   @quizzes = Quiz.limit(4)
     # Count those who offer online sessions

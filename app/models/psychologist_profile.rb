@@ -68,6 +68,7 @@ class PsychologistProfile < ApplicationRecord
     where.not(first_name: [nil, ''], last_name: [nil, ''], about_me: [nil, ''])
     .where("standard_rate IS NOT NULL AND standard_rate != 0")
   }
+  scope :with_profile_img, -> { joins(:profile_img_attachment) }
   scope :not_hidden, -> { where(hidden: [false, nil]) }
 
   monetize :standard_rate, as: :standard_rate_money, 
