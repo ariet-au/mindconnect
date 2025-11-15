@@ -726,7 +726,25 @@ body {
 <section class="hero-section">
   <div class="hero-content">
     <h1><%= t('home.hero.title').html_safe %></h1>
-    <p id="location-text"><%= t('home.hero.subtitle') %></p>
+
+
+<%
+  if @current_city.present?
+    raw_city = @current_city.to_s
+    city_only = raw_city.split(',').first.strip                       # "Toshkent, Uzbekistan" → "Toshkent"
+
+    translated_city = I18n.t("cities.#{city_only.downcase}",         # "toshkent"
+                             default: city_only)                     # fallback
+
+    location_text = t('home.hero.location_city', city: translated_city)
+  else
+    location_text = t('home.hero.location_default')
+  end
+%>
+
+      <p id="location-text">
+        <%= t('home.hero.subtitle', location_text: location_text) %>
+      </p>
     <div class="hero-buttons">
       <a href="<%= psychologist_profiles_path %>" class="btn btn-primary"><%= t('home.hero.search_button') %></a>
       <a href="<%= pages_about_for_psych_path %>" class="btn btn-secondary"><%= t('home.hero.join_button') %></a>
