@@ -38,7 +38,13 @@ Rails.application.configure do
 
   # Log to STDOUT with the current request id as a default log tag.
   config.log_tags = [ :request_id ]
-  config.logger   = ActiveSupport::TaggedLogging.logger(STDOUT)
+  #config.logger   = ActiveSupport::TaggedLogging.logger(STDOUT)
+  config.logger = ActiveSupport::Logger.new(
+    Rails.root.join("log", "production.log"),
+    5,                       # keep 5 rotated files
+    10 * 1024 * 1024         # each up to 10MB
+  )
+  config.logger = ActiveSupport::TaggedLogging.new(config.logger)
 
   # Change to "debug" to log everything (including potentially personally-identifiable information!)
   config.log_level = :error
