@@ -60,6 +60,14 @@ class ApplicationController < ActionController::Base
 
   private
 
+  def after_sign_in_path_for(resource)
+    if resource.psychologist?
+      psychologist_profile_path(resource.psychologist_profile)
+    else
+      client_dashboard_path
+    end
+  end
+
   def check_analytics_consent
     # Only send analytics server-side if consent given
     @analytics_allowed = cookies[:analytics_consent] == 'true'

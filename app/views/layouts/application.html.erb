@@ -689,6 +689,9 @@ fieldset[disabled] .button.is-primary-blue {
     <div id="navbar-menu" class="navbar-menu">
       <div class="navbar-end">
         <div class="navbar-item">
+          <%= link_to t('search_nav'), psychologist_profiles_path, class: "nav-link" %>
+        </div>
+        <div class="navbar-item">
           <%= link_to t('quizzes_nav'), quizzes_path, class: "nav-link" %>
         </div>
         <div class="navbar-item">

@@ -14,7 +14,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
       #resource.create_psychologist_profile! unless resource.psychologist_profile
       edit_psychologist_profile_path(resource.psychologist_profile)
     else
-      root_path
+      psychologist_profiles_path
     end
   end
 

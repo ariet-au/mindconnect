@@ -180,5 +180,5 @@ Rails.application.routes.draw do
   end
 
   # Root route
-  root "psychologist_profiles#index"
+  root "pages#home"
 end

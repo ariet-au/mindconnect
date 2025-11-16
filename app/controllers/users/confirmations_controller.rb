@@ -19,7 +19,7 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
       edit_client_profile_path(resource.client_profile)
     else
       # Default path for other roles (or non-assigned profiles)
-      root_path
+      psychologist_profiles_path
     end
   end
 end
