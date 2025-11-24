@@ -1,28 +1,37 @@
-<!-- app/views/admin/psychologist_reviews/index.html.erb -->
+<h1 class="title">Profile Reviews</h1>
 
 <table class="table is-striped is-fullwidth">
   <thead>
     <tr>
       <th>Name</th>
       <th>Profile Status</th>
-      <th>Unverified</th>
-      <th>Pending Review</th>
-      <th>Verified</th>
-      <th>Rejected</th>
+      <th>Educations</th>
       <th>Actions</th>
     </tr>
   </thead>
+
   <tbody>
     <% @psychologists.each do |p| %>
       <tr>
         <td><%= p.full_name %></td>
+
+        <!-- PROFILE STATUS -->
         <td><%= p.status.humanize %></td>
-        <td><%= @education_counts[p.id][:unverified] %></td>
-        <td><%= @education_counts[p.id][:pending_review] %></td>
-        <td><%= @education_counts[p.id][:verified] %></td>
-        <td><%= @education_counts[p.id][:rejected] %></td>
+
+        <!-- LIST ALL EDUCATIONS WITH STATUSES -->
         <td>
-          <%= link_to "Review", admin_psychologist_review_path(p), class: "button is-small is-info" %>
+          <% p.educations.each do |edu| %>
+            <div>
+              <strong><%= edu.degree %></strong>
+              – <%= edu.verification_status.humanize %>
+            </div>
+          <% end %>
+        </td>
+
+        <td>
+          <%= link_to "Review",
+              admin_psychologist_review_path(p),
+              class: "button is-small is-info" %>
         </td>
       </tr>
     <% end %>

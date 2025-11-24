@@ -1,83 +1,99 @@
 <h1 class="title"><%= @psychologist.full_name %></h1>
-<p>Status: <strong><%= @psychologist.status.humanize %></strong></p>
 
-<!-- Update Profile Status -->
-<div class="box">
-  <%= form_with model: @psychologist,
-                url: update_status_admin_psychologist_review_path(@psychologist),
-                method: :patch,
-                local: true do |f| %>
-    <div class="field is-grouped">
-      <div class="control">
-        <%= f.select :status, PsychologistProfile.statuses.keys.map { |s| [s.humanize, s] }, {}, class: "select" %>
-      </div>
-      <div class="control">
-        <%= f.submit "Update Profile Status", class: "button is-success" %>
-      </div>
-    </div>
-  <% end %>
-</div>
-
-<h2 class="subtitle">Educations</h2>
-
-<% @educations.each do |edu| %>
-  <div class="box">
-    <p><strong>Degree:</strong> <%= edu.degree %></p>
-    <p><strong>Institution:</strong> <%= edu.institution %></p>
-    <p><strong>Status:</strong> <%= edu.verification_status.humanize %></p>
-    <p><strong>Verified by:</strong> <%= edu.verified_by&.email || "-" %></p>
-
-    <!-- Proof Documents -->
-    <% if edu.proof_documents.attached? %>
-      <p><strong>Documents:</strong></p>
-      <div class="columns is-multiline">
-        <% edu.proof_documents.each_with_index do |doc, i| %>
-          <div class="column is-one-quarter">
-            <a href="#modal-<%= edu.id %>-<%= i %>" class="button is-link is-small">View Document <%= i+1 %></a>
-
-            <!-- Modal -->
-            <div id="modal-<%= edu.id %>-<%= i %>" class="modal">
-              <div class="modal-background"></div>
-              <div class="modal-content">
-                <% if doc.image? %>
-                  <figure class="image">
-                    <%= image_tag doc.variant(resize_to_limit: [1200, 1200]) %>
-                  </figure>
-                <% else %>
-                  <iframe src="<%= url_for(doc) %>" style="width:100%;height:600px;"></iframe>
-                <% end %>
-              </div>
-              <button class="modal-close is-large" aria-label="close"></button>
-            </div>
-          </div>
-        <% end %>
-      </div>
-    <% end %>
-
-    <!-- Update Education Form -->
-<%= form_with model: edu,
-              url: update_education_admin_psychologist_review_path(@psychologist, edu),
+<%= form_with model: @psychologist,
+              url: update_all_admin_psychologist_review_path(@psychologist),
               method: :patch,
               local: true do |f| %>
+
+  <!-- PROFILE STATUS -->
+  <div class="box">
+    <h2 class="subtitle">Profile Status</h2>
+    <div class="field is-grouped">
+      <div class="control">
+        <%= f.select :status,
+            PsychologistProfile.statuses.keys.map { |s| [s.humanize, s] },
+            {},
+            class: "select" %>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- EDUCATIONS -->
+  <h2 class="subtitle">Educations</h2>
+
+  <%= f.fields_for :educations do |edu_form| %>
+    <% edu = edu_form.object %>
+
+    <div class="box">
+      <p><strong>Degree:</strong> <%= edu.degree %></p>
+      <p><strong>Institution:</strong> <%= edu.institution %></p>
+      <p><strong>Current Status:</strong> <%= edu.verification_status.humanize %></p>
+      <p><strong>Verified by:</strong> <%= edu.verified_by&.email || "-" %></p>
+
+      <!-- Proof Documents -->
+      <% if edu.proof_documents.attached? %>
+        <p><strong>Documents:</strong></p>
+
+        <div class="columns is-multiline">
+          <% edu.proof_documents.each_with_index do |doc, i| %>
+            <div class="column is-one-quarter">
+              <a href="#modal-<%= edu.id %>-<%= i %>" class="button is-link is-small">
+                View Document <%= i + 1 %>
+              </a>
+
+              <!-- Modal -->
+              <div id="modal-<%= edu.id %>-<%= i %>" class="modal">
+                <div class="modal-background"></div>
+                <div class="modal-content">
+                  <% if doc.image? %>
+                    <figure class="image">
+                      <%= image_tag doc.variant(resize_to_limit: [1200, 1200]) %>
+                    </figure>
+                  <% else %>
+                    <iframe src="<%= url_for(doc) %>" style="width:100%;height:600px;"></iframe>
+                  <% end %>
+                </div>
+                <button class="modal-close is-large" aria-label="close"></button>
+              </div>
+
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+
+      <!-- UPDATE FIELDS -->
       <div class="field">
         <label class="label">Verification Status</label>
         <div class="control">
-          <%= f.select :verification_status, Education.verification_statuses.keys.map { |s| [s.humanize, s] }, {}, class: "select" %>
+          <%= edu_form.select :verification_status,
+              Education.verification_statuses.keys.map { |s| [s.humanize, s] },
+              {},
+              class: "select" %>
         </div>
       </div>
+
       <div class="field">
         <label class="label">Notes</label>
         <div class="control">
-          <%= f.text_area :verification_notes, value: edu.verification_notes, rows: 2, class: "textarea" %>
+          <%= edu_form.text_area :verification_notes,
+              rows: 2,
+              class: "textarea" %>
         </div>
       </div>
-      <div class="field">
-        <div class="control">
-          <%= f.submit "Update Education", class: "button is-success" %>
-        </div>
-      </div>
-    <% end %>
+
+    </div><!-- end box -->
+
+  <% end %>
+
+
+  <!-- SUBMIT -->
+  <div class="field">
+    <div class="control">
+      <%= f.submit "Save All Changes", class: "button is-success is-large" %>
+    </div>
   </div>
+
 <% end %>
 
 <script>
@@ -93,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const modalCloses = document.querySelectorAll('.modal-close, .modal-background');
   modalCloses.forEach(btn => {
-    btn.addEventListener('click', (e) => {
+    btn.addEventListener('click', () => {
       const modal = btn.closest('.modal');
       modal.classList.remove('is-active');
     });
