@@ -10,6 +10,7 @@ en:
   find_a_psychologist: "Find a psychologist"
   search_nav: "Search"
   quizzes_nav: "Quizzes"
+  how_to_nav: "How to Guide"
   articles_nav: "Articles"
   logout: "Logout"
   login: "Login"
@@ -178,6 +179,20 @@ en:
       - :month
       - :day
 
+
+
+  pages:
+    how_to:
+      title: "How to Guide"
+      sections:
+        registration: "Registration"
+        profile: "Profile Setup"
+        services: "Services"
+        availability: "Set Availability"
+        telegram: "Connect Telegram"
+        requests: "See Requests from People"
+        bookings: "Manage Bookings and Clients"
+        not_ready: "Content coming soon..."
 
   home:
     hero:

@@ -9,6 +9,7 @@ ru:
   find_a_psychologist: "Найти психолога"
   search_nav: "Поиск"
   quizzes_nav: "Тесты"
+  how_to_nav: "Гид по использованию"
   articles_nav: "Статьи"
   logout: "Выйти"
   login: "Войти"
@@ -176,6 +177,18 @@ ru:
       - :month
       - :day
 
+  pages:
+    how_to:
+      title: "Как пользоваться AkSanaa как психолог"
+      sections:
+        registration: "Регистрация"
+        profile: "Настройка профиля"
+        services: "Управление услугами"
+        availability: "Установить доступность"
+        telegram: "Подключить Telegram"
+        requests: "Просмотр заявок от людей"
+        bookings: "Управление бронированиями и клиентами"
+        not_ready: "Видео еше не готовоо. Скоро появится!"
 
   home:
     hero:

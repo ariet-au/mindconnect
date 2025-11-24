@@ -9,6 +9,7 @@ kg:
   find_a_psychologist: "Психолог табуу"
   search_nav: "Издөө"
   quizzes_nav: "Тесттер"
+  how_to_nav: "Көрсөтмө"
   articles_nav: "Статьи"
   logout: "Чыгуу"
   login: "Кирүү"
@@ -172,6 +173,20 @@ kg:
       - :year
       - :month
       - :day
+
+
+  pages:
+    how_to:
+      title: "Колдонуу боюнча көрсөтмө"
+      sections:
+        registration: "Катталуу"
+        profile: "Профилди орнотуу"
+        services: "Кызматтар"
+        availability: "Жеткиликтүүлүктү коюу"
+        telegram: "Telegram туташтыруу"
+        requests: "Адамдардан келген өтүнүчтөрдү көрүү"
+        bookings: "Броньдоолорду жана кардарларды башкаруу"
+        not_ready: "Бул бөлүм азырынча жеткиликтүү эмес."
 
   home:
     hero:
