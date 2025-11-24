@@ -1,5 +1,19 @@
 Rails.application.routes.draw do
 
+
+# config/routes.rb
+namespace :admin do
+  resources :psychologist_reviews, only: [:index, :show] do
+    # Member route to update profile status
+    member do
+      patch :update_status
+      patch "update_education/:education_id", to: "psychologist_reviews#update_education", as: :update_education
+    end
+  end
+end
+
+
+
   get "analytics/index"
   get "analytics/show"
   resources :analytics, only: [] do

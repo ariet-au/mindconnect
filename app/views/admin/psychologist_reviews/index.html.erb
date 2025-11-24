@@ -1,0 +1,30 @@
+<!-- app/views/admin/psychologist_reviews/index.html.erb -->
+
+<table class="table is-striped is-fullwidth">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Profile Status</th>
+      <th>Unverified</th>
+      <th>Pending Review</th>
+      <th>Verified</th>
+      <th>Rejected</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @psychologists.each do |p| %>
+      <tr>
+        <td><%= p.full_name %></td>
+        <td><%= p.status.humanize %></td>
+        <td><%= @education_counts[p.id][:unverified] %></td>
+        <td><%= @education_counts[p.id][:pending_review] %></td>
+        <td><%= @education_counts[p.id][:verified] %></td>
+        <td><%= @education_counts[p.id][:rejected] %></td>
+        <td>
+          <%= link_to "Review", admin_psychologist_review_path(p), class: "button is-small is-info" %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

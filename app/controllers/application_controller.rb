@@ -64,9 +64,9 @@ class ApplicationController < ActionController::Base
     if resource.psychologist?
       psychologist_profile_path(resource.psychologist_profile)
     else
-      client_dashboard_path
+      psychologist_profiles_path
     end
-  end
+  end 
 
   def check_analytics_consent
     # Only send analytics server-side if consent given
