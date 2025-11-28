@@ -4,7 +4,7 @@ class PagesController < ApplicationController
 
   def home
     # Group by city (exclude blank)
-    @cities = PsychologistProfile
+    @cities = PsychologistProfile.confirmed.filled.active.with_profile_img.not_hidden
     .where(hidden: false)
     .group(:city)
     .order("count_all DESC")
@@ -14,15 +14,16 @@ class PagesController < ApplicationController
 
     @quizzes = Quiz.limit(4)
       # Count those who offer online sessions
-      @online_count = PsychologistProfile.where(online: true).count
+    @online_count = PsychologistProfile.confirmed.filled.active.with_profile_img.not_hidden.where(online: true).count
 
       # Issues — since you don’t have an Issue model, we’ll just extract keywords from text for now
       # Later, you can replace this with a real "issues" association.
-      @popular_issues = Issue.joins(:psychologist_profiles)
-                              .group(:id, :name)
-                              .order('COUNT(psychologist_profiles.id) DESC')
-                              .limit(10)
-                              .select('issues.*, COUNT(psychologist_profiles.id) AS psychologists_count')
+    @popular_issues = Issue.joins(:psychologist_profiles)
+                       .merge(PsychologistProfile.confirmed.filled.active.with_profile_img.not_hidden)
+                       .group(:id, :name)
+                       .order('COUNT(psychologist_profiles.id) DESC')
+                       .limit(10)
+                       .select('issues.*, COUNT(psychologist_profiles.id) AS psychologists_count')
 
       # Price range — use standard_rate
 
@@ -30,7 +31,7 @@ class PagesController < ApplicationController
       @selected_currency = current_currency.upcase
 
       # Convert all rates to the selected currency
-      converted_rates = PsychologistProfile
+      converted_rates = PsychologistProfile.confirmed.filled.active.not_hidden
                           .where.not(standard_rate: nil)
                           .map { |p| p.converted_rate(@selected_currency)&.to_f }
                           .compact
