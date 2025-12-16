@@ -1092,12 +1092,15 @@ body {
 </div>
 
 <div class="card">
+
+    <% if @psychologist_profile.about_me.present? %>
     <div class="profile-section">
         <h2 class="section-title"><i class="fas fa-user-circle"></i> <%= t('psychologist_profiles.show.about_me') %></h2>
         <div class="section-content">
             <p><%= simple_format(@psychologist_profile.about_me) %></p>
         </div>
     </div>
+    <% end %>
 
     <% if @psychologist_profile.youtube_video_url.present? %>
         <% video_id = youtube_embed_url(@psychologist_profile.youtube_video_url) %>

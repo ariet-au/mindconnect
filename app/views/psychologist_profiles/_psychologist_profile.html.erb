@@ -76,14 +76,15 @@
     </div>
 
     <div class="profile-section">
-      <% if @psychologist_profile.about_me.present? %>
 
-      <h2 class="section-title">
+          <h2 class="section-title">
 
         <i class="fas fa-user-circle icon-about"></i>
         <%= t('psychologist_profiles.show.about_me') %>
-      </h2>
+        </h2>
       <%end%> 
+
+      <%= @psychologist_profile.about_me.inspect %>
       <div class="section-content">
         <p><%= simple_format(@psychologist_profile.about_me) %></p>
         <% if @psychologist_profile.youtube_video_url.present? %>
