@@ -3,6 +3,15 @@ Rails.application.routes.draw do
 
 # config/routes.rb
   namespace :admin do
+    resources :psychologist_profile_reports, only: [:index, :update, :show] do
+      member do
+        patch :mark_reviewed
+        patch :dismiss
+        patch :take_action
+      end
+    end
+
+    # Existing admin routes
     resources :psychologist_reviews, only: [:index, :show] do
       member do
         patch :update_all
@@ -132,6 +141,7 @@ Rails.application.routes.draw do
 
     # Psychologist profiles and nested resources
     resources :psychologist_profiles do
+      resources :psychologist_profile_reports, only: [:new, :create]
        collection do
           get :check_profile_url  # <-- add this here
         end

@@ -1379,7 +1379,10 @@ body {
     </div>
     </div>
         
-    
+    <%= link_to t("psychologist_profiles.show.report_profile"),
+            new_psychologist_profile_psychologist_profile_report_path(@psychologist_profile),
+            class: "is-small has-text-danger",
+            style: "opacity:0.5;" %>
 <div>
 
 <style>

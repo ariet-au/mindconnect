@@ -239,6 +239,7 @@ ru:
         
   psychologist_profiles:
     show:
+      report_profile: "Пожаловаться на профиль"
       next_available: "След. Запись"
       submit_client_info: "Оставить заявку"
       contact_me: "Связаться со мной"

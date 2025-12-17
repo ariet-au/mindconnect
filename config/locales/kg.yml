@@ -236,6 +236,7 @@ kg:
         
   psychologist_profiles:
     show:
+      report_profile: "Профилге арыз берүү"
       next_available: "Бош"
       submit_client_info: "Байланыш калтыруу"
       contact_me: "Байланышуу"

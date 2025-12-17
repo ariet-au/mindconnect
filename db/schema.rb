@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_28_034552) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_17_113400) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -322,6 +322,22 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_28_034552) do
     t.index ["psychologist_profile_id"], name: "index_psychologist_languages_on_psychologist_profile_id"
   end
 
+  create_table "psychologist_profile_reports", force: :cascade do |t|
+    t.bigint "psychologist_profile_id", null: false
+    t.bigint "reporter_user_id"
+    t.string "reporter_phone"
+    t.string "reporter_email"
+    t.integer "reason", null: false
+    t.text "message"
+    t.integer "status", default: 0, null: false
+    t.string "ip_address"
+    t.string "user_agent"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["psychologist_profile_id"], name: "index_psychologist_profile_reports_on_psychologist_profile_id"
+    t.index ["reporter_user_id"], name: "index_psychologist_profile_reports_on_reporter_user_id"
+  end
+
   create_table "psychologist_profiles", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.text "about_me"
@@ -518,6 +534,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_28_034552) do
   add_foreign_key "psychologist_issues", "psychologist_profiles"
   add_foreign_key "psychologist_languages", "languages"
   add_foreign_key "psychologist_languages", "psychologist_profiles"
+  add_foreign_key "psychologist_profile_reports", "psychologist_profiles"
+  add_foreign_key "psychologist_profile_reports", "users", column: "reporter_user_id"
   add_foreign_key "psychologist_profiles", "services", column: "featured_service_id"
   add_foreign_key "psychologist_profiles", "users"
   add_foreign_key "psychologist_specialties", "psychologist_profiles"

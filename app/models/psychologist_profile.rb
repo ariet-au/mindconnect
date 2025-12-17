@@ -59,6 +59,7 @@ class PsychologistProfile < ApplicationRecord
   has_many :bookings
 
   has_many :articles, dependent: :destroy
+  has_many :psychologist_profile_reports, dependent: :destroy
 
 
   # Scopes for filtering profiles
