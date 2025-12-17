@@ -1,0 +1,59 @@
+<h1>Psychologist Profile Reports</h1>
+
+<table class="table is-fullwidth is-striped">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Profile</th>
+      <th>Reason</th>
+      <th>Reporter</th>
+      <th>Contact</th>
+      <th>Message</th>
+      <th>Status</th>
+      <th>Submitted At</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @reports.each do |report| %>
+      <tr>
+        <td><%= report.id %></td>
+        <td>
+          <%= link_to report.psychologist_profile.full_name,
+                      psychologist_profile_path(report.psychologist_profile) %>
+        </td>
+        <td><%= report.reason.humanize %></td>
+        <td>
+          <% if report.reporter_user %>
+            <%= link_to report.reporter_user.email, admin_user_path(report.reporter_user) %>
+          <% else %>
+            Guest
+          <% end %>
+        </td>
+        <td>
+          <% if report.reporter_phone.present? %>
+            <%= report.reporter_phone %>
+          <% elsif report.reporter_email.present? %>
+            <%= report.reporter_email %>
+          <% else %>
+            N/A
+          <% end %>
+        </td>
+        <td><%= simple_format(report.message) %></td>
+        <td><%= report.status.humanize %></td>
+        <td><%= report.created_at.strftime("%d %b %Y %H:%M") %></td>
+        <td>
+          <%= form_with url: admin_psychologist_profile_report_path(report),
+                        method: :patch,
+                        local: true do |f| %>
+            <%= f.select :status, PsychologistProfileReport.statuses.keys.map { |s| [s.humanize, s] },
+                         selected: report.status %>
+            <%= f.submit "Update", class: "button is-small is-primary" %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+

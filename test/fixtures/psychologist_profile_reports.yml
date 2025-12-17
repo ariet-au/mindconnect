@@ -1,0 +1,23 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  psychologist_profile: one
+  reporter_user: one
+  reporter_phone: MyString
+  reporter_email: MyString
+  reason: 1
+  message: MyText
+  status: 1
+  ip_address: MyString
+  user_agent: MyString
+
+two:
+  psychologist_profile: two
+  reporter_user: two
+  reporter_phone: MyString
+  reporter_email: MyString
+  reason: 1
+  message: MyText
+  status: 1
+  ip_address: MyString
+  user_agent: MyString

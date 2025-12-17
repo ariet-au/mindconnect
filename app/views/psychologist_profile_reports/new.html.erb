@@ -1,0 +1,31 @@
+<h1>Report <%= @psychologist_profile.full_name %></h1>
+
+<%= form_with model: [@psychologist_profile, @report], local: true do |f| %>
+  <div>
+    <%= f.label :reason %><br>
+    <%= f.select :reason, PsychologistProfileReport.reasons.keys.map { |r| [r.humanize, r] }, prompt: "Select a reason" %>
+  </div>
+
+  <div>
+    <%= f.label :message, "Details (optional)" %><br>
+    <%= f.text_area :message %>
+  </div>
+
+  <% unless user_signed_in? %>
+    <div>
+      <%= f.label :reporter_phone, "Phone" %><br>
+      <%= f.telephone_field :reporter_phone %>
+    </div>
+
+    <div>
+      <%= f.label :reporter_email, "Email" %><br>
+      <%= f.email_field :reporter_email %>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.submit "Submit Report", class: "button is-small has-text-danger", style: "opacity:0.5;" %>
+  </div>
+<% end %>
+
+<%= link_to "Back to Profile", @psychologist_profile %>
