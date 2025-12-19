@@ -43,7 +43,8 @@ class PsychologistProfilesController < ApplicationController
     # --- End of Setup ---
 
     #@psychologist_profiles = PsychologistProfile.order(updated_at: :desc)
-    @psychologist_profiles = PsychologistProfile.confirmed.filled.active.not_hidden.order(updated_at: :desc)
+    @psychologist_profiles = PsychologistProfile.confirmed.filled.active.not_hidden.with_profile_img
+    
     # if params[:search].present?
     #   @psychologist_profiles = @psychologist_profiles
     #   .merge(PsychologistProfile.search_full_text(params[:search]))
@@ -149,7 +150,7 @@ class PsychologistProfilesController < ApplicationController
       @psychologist_profiles = Kaminari.paginate_array(filtered_profiles_array).page(params[:page])
     else
       # No currency filtering needed, paginate the ActiveRecord relation directly
-      @psychologist_profiles = @psychologist_profiles.page(params[:page])
+      @psychologist_profiles = @psychologist_profiles.page(params[:page]).to_a.shuffle
     end
   end
 
