@@ -1,25 +1,30 @@
-# Be sure to restart your server when you modify this file.
+Rails.application.configure do
+  config.content_security_policy do |policy|
+    # Default
+    policy.default_src :self, :https
 
-# Define an application-wide content security policy.
-# See the Securing Rails Applications Guide for more information:
-# https://guides.rubyonrails.org/security.html#content-security-policy-header
+    # Fonts / Images
+    policy.font_src :self, :https, :data
+    policy.img_src :self, :https, :data
 
-# Rails.application.configure do
-#   config.content_security_policy do |policy|
-#     policy.default_src :self, :https
-#     policy.font_src    :self, :https, :data
-#     policy.img_src     :self, :https, :data
-#     policy.object_src  :none
-#     policy.script_src  :self, :https
-#     policy.style_src   :self, :https
-#     # Specify URI for violation reports
-#     # policy.report_uri "/csp-violation-report-endpoint"
-#   end
-#
-#   # Generate session nonces for permitted importmap, inline scripts, and inline styles.
-#   config.content_security_policy_nonce_generator = ->(request) { request.session.id.to_s }
-#   config.content_security_policy_nonce_directives = %w(script-src style-src)
-#
-#   # Report violations without enforcing the policy.
-#   # config.content_security_policy_report_only = true
-# end
+    # Objects
+    policy.object_src :none
+
+    # Scripts
+    # - :unsafe_eval needed for Alpine/Turbo (optional)
+    # - :unsafe_inline needed for Amplitude Session Replay
+    # - Allow CDN
+    policy.script_src  :self, :https, :unsafe_eval, :unsafe_inline, "https://cdn.amplitude.com"
+    policy.script_src_elem :self, :https, :unsafe_inline, "https://cdn.amplitude.com"
+
+    # Network requests
+    policy.connect_src :self, :https, "https://api2.amplitude.com", "https://*.amplitude.com"
+
+    # Styles
+    policy.style_src  :self, :https, :unsafe_inline, "https://cdn.amplitude.com"
+  end
+
+  # Nonce generator (optional, for other inline scripts)
+  config.content_security_policy_nonce_generator = ->(request) { SecureRandom.base64(16) }
+  config.content_security_policy_nonce_directives = %w(script-src)
+end
