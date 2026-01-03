@@ -23,3 +23,5 @@
 #   # Report violations without enforcing the policy.
 #   # config.content_security_policy_report_only = true
 # end
+policy.script_src :self, "https://cdn.amplitude.com"
+policy.connect_src :self, "https://api2.amplitude.com"

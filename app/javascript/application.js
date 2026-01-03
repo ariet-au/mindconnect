@@ -9,9 +9,11 @@ import "@rails/actiontext"
 
 
 
-document.addEventListener("turbo:load", function() {
+document.addEventListener("turbo:load", () => {
   if (window.amplitude) {
-    // This tells Amplitude "I moved to a new page" even without a refresh
-    window.amplitude.track('Page View', { url: window.location.pathname });
+    window.amplitude.track("Page Viewed", {
+      path: window.location.pathname,
+      title: document.title
+    });
   }
 });
