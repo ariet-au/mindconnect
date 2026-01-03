@@ -10,7 +10,7 @@ import "@rails/actiontext"
 
 
 document.addEventListener("turbo:load", () => {
-  if (window.amplitude) {
+  if (window.amplitude && typeof window.amplitude.track === "function") {
     window.amplitude.track("Page Viewed", {
       path: window.location.pathname,
       title: document.title
