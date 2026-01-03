@@ -23,5 +23,18 @@
 #   # Report violations without enforcing the policy.
 #   # config.content_security_policy_report_only = true
 # end
-policy.script_src :self, "https://cdn.amplitude.com"
-policy.connect_src :self, "https://api2.amplitude.com"
+
+Rails.application.config.content_security_policy do |policy|
+  policy.default_src :self
+
+  policy.script_src :self,
+                    :unsafe_inline,
+                    "https://cdn.amplitude.com"
+
+  policy.connect_src :self,
+                     "https://api2.amplitude.com"
+
+  policy.img_src :self, :data, :blob
+  policy.style_src :self, :unsafe_inline
+  policy.font_src :self, :data
+end
