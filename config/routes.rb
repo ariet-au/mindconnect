@@ -24,6 +24,7 @@ Rails.application.routes.draw do
 
   get "analytics/index"
   get "analytics/show"
+  get "analytics/server_status"
   resources :analytics, only: [] do
     collection do
       get :scroll_stats
