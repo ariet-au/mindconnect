@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get "predictions/new"
+  get "predictions/create"
 
 
 # config/routes.rb
@@ -19,6 +21,8 @@ Rails.application.routes.draw do
     end
   end
 
+  # config/routes.rb
+  resources :predictions, only: [:new, :create]
 
 
 

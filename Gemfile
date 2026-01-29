@@ -80,3 +80,5 @@ gem "groupdate"
 gem "telegram-bot-ruby"
 
 gem 'httparty'
+
+gem "faraday"

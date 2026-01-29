@@ -1,0 +1,14 @@
+<h1>Mental Health Classifier</h1>
+
+<%= form_with url: predictions_path, method: :post, local: false, data: { turbo_frame: "prediction_result" } do |f| %>
+  <div>
+    <%= f.label :text, "Enter text to analyze" %><br>
+    <%= f.text_area :text, rows: 4 %>
+  </div>
+  <br>
+  <%= f.submit "Analyze" %>
+<% end %>
+
+<%= turbo_frame_tag "prediction_result" do %>
+  <%= render "predictions/result", results: [], error: nil, text: nil %>
+<% end %>

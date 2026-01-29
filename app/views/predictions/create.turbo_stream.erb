@@ -1,0 +1,18 @@
+<%= turbo_stream.replace "prediction_result" do %>
+  <% if @results.present? %>
+    <div class="result">
+      <h3>Predictions:</h3>
+      <ul>
+        <% @results.each do |r| %>
+          <li>
+            <%= r["label"] %> — <%= (r["score"] * 100).round(2) %>%
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% else %>
+    <div class="error" style="color:red;">
+      <%= @error %>
+    </div>
+  <% end %>
+<% end %>

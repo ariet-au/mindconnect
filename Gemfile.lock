@@ -493,6 +493,7 @@ DEPENDENCIES
   debug
   devise
   devise-i18n
+  faraday
   geocoder
   groupdate
   httparty

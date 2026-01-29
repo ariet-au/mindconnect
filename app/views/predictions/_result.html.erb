@@ -1,0 +1,12 @@
+<% if error.present? %>
+  <p style="color: red;"><%= error %></p>
+<% elsif results.any? %>
+  <p><strong>Input:</strong> <%= text %></p>
+  <ul>
+    <% results.each do |r| %>
+      <li><%= r["label"] %> — <%= (r["score"] * 100).round(1) %>%</li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>Enter text and hit Analyze to see results.</p>
+<% end %>
