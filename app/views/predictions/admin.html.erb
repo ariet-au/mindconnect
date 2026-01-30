@@ -1,0 +1,40 @@
+<h1>Predictions Admin</h1>
+
+<table border="1" cellpadding="5" cellspacing="0">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Prompt</th>
+      <th>Top Label</th>
+      <th>Score</th>
+      <th>Feedback</th>
+      <th>Correct Label</th>
+      <th>Model Version</th>
+      <th>Submitted At</th>
+      <th>Feedback At</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @predictions.each do |p| %>
+      <tr>
+        <td><%= p.id %></td>
+        <td><%= p.prompt %></td>
+        <td><%= p.top_label %></td>
+        <td><%= p.top_score ? (p.top_score * 100).round(1) : "-" %>%</td>
+
+        <td>
+          <% if p.user_marked_correct.nil? %>
+            Not given
+          <% else %>
+            <%= p.user_marked_correct ? "Yes" : "No" %>
+          <% end %>
+        </td>
+        <td><%= p.user_correct_label.presence || "-" %></td>
+        <td><%= p.model_version %></td>
+        <td><%= p.created_at.strftime("%Y-%m-%d %H:%M:%S") %></td>
+        <td><%= p.feedback_at&.strftime("%Y-%m-%d %H:%M:%S") || "-" %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

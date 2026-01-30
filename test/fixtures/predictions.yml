@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  prompt: MyText
+  response: 
+  top_label: MyString
+  top_score: 1.5
+  model_version: MyString
+  user_marked_correct: false
+  user_correct_label: MyString
+  feedback_at: 2026-01-30 12:56:48
+
+two:
+  prompt: MyText
+  response: 
+  top_label: MyString
+  top_score: 1.5
+  model_version: MyString
+  user_marked_correct: false
+  user_correct_label: MyString
+  feedback_at: 2026-01-30 12:56:48
