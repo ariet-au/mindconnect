@@ -1,12 +1,40 @@
 <% if error.present? %>
-  <p style="color: red;"><%= error %></p>
+  <p style="color:red;"><%= error %></p>
+
 <% elsif results.any? %>
+
   <p><strong>Input:</strong> <%= text %></p>
+
   <ul>
     <% results.each do |r| %>
       <li><%= r["label"] %> — <%= (r["score"] * 100).round(1) %>%</li>
     <% end %>
   </ul>
+
+  <% if prediction.present? %>
+    <hr>
+
+    <p><strong>Was this correct?</strong></p>
+
+    <%= button_to "Yes",
+        feedback_prediction_path(prediction, correct: true),
+        method: :post,
+        form: { data: { turbo_frame: "_top" } } %>
+
+    <br>
+
+    <%= form_with url: feedback_prediction_path(prediction), method: :post do %>
+      <%= hidden_field_tag :correct, false %>
+
+      <label>Correct label:</label><br>
+
+      <%= select_tag :correct_label,
+          options_for_select(LABELS) %>
+
+      <%= submit_tag "Submit correction" %>
+    <% end %>
+  <% end %>
+
 <% else %>
   <p>Enter text and hit Analyze to see results.</p>
 <% end %>

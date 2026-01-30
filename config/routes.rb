@@ -22,8 +22,12 @@ Rails.application.routes.draw do
   end
 
   # config/routes.rb
-  resources :predictions, only: [:new, :create]
-
+  resources :predictions, only: [:new, :create] do
+    post :feedback, on: :member
+    collection do
+      get :admin  # admin page
+    end
+  end
 
 
   get "analytics/index"

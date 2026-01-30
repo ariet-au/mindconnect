@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_17_113400) do
+ActiveRecord::Schema[8.0].define(version: 2026_01_30_015648) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -273,6 +273,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_17_113400) do
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_page_views_on_user_id"
     t.index ["viewed_at"], name: "index_page_views_on_viewed_at"
+  end
+
+  create_table "predictions", force: :cascade do |t|
+    t.text "prompt"
+    t.jsonb "response"
+    t.string "top_label"
+    t.float "top_score"
+    t.string "model_version"
+    t.boolean "user_marked_correct"
+    t.string "user_correct_label"
+    t.datetime "feedback_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "psychological_issues", force: :cascade do |t|

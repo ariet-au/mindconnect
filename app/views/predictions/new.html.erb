@@ -1,14 +1,14 @@
-<h1>Mental Health Classifier</h1>
+<div class="p-4">
+  <p class="is-size-7 has-text-grey mb-2">Пожалуйста, пишите только на русском языке.</p>
 
-<%= form_with url: predictions_path, method: :post, local: false, data: { turbo_frame: "prediction_result" } do |f| %>
-  <div>
-    <%= f.label :text, "Enter text to analyze" %><br>
-    <%= f.text_area :text, rows: 4 %>
+  <%= form_with url: predictions_path, method: :post, local: false, data: { turbo_frame: "prediction_result" } do |f| %>
+    <%= f.text_area :text, rows: 4, class: "textarea mb-3", placeholder: "Введите текст..." %>
+    <%= f.submit "Анализировать", class: "button is-primary is-fullwidth" %>
+  <% end %>
+
+  <div class="mt-4">
+    <%= turbo_frame_tag "prediction_result" do %>
+      <%= render "predictions/result", results: [], error: nil, text: nil %>
+    <% end %>
   </div>
-  <br>
-  <%= f.submit "Analyze" %>
-<% end %>
-
-<%= turbo_frame_tag "prediction_result" do %>
-  <%= render "predictions/result", results: [], error: nil, text: nil %>
-<% end %>
+</div>

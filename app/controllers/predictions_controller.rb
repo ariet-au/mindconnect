@@ -1,6 +1,5 @@
 class PredictionsController < ApplicationController
   def new
-    # Just render the form
   end
 
   def create
@@ -8,12 +7,53 @@ class PredictionsController < ApplicationController
     @results = MlPredictor.predict(text) # array of hashes
 
     if @results.any?
-      @results.sort_by! { |r| -r["score"] } # optional: sort by confidence
+      @results.sort_by! { |r| -r["score"] } # optional
+      top = @results.first
+      top_label = top["label"]
+      top_score = top["score"]
     else
+      top_label = nil
+      top_score = nil
       @error = "Prediction service returned no result"
     end
 
-    # Render only the Turbo Frame content, so multiple submissions just update the frame
-    render turbo_stream: turbo_stream.update("prediction_result", partial: "predictions/result", locals: { results: @results, error: @error, text: text })
+    @prediction = Prediction.create!(
+      prompt: text,
+      response: @results,
+      top_label: top_label,
+      top_score: top_score,
+      model_version: "rubert_v1"
+    )
+
+    # Render the turbo frame as before
+    render turbo_stream: turbo_stream.update(
+      "prediction_result",
+      partial: "predictions/result",
+      locals: {
+        results: @results,
+        error: @error,
+        text: text,
+        prediction: @prediction
+      }
+    )
+  end
+
+
+
+  def feedback
+    prediction = Prediction.find(params[:id])
+
+    prediction.update!(
+      user_marked_correct: params[:correct] == "true",
+      user_correct_label: params[:correct_label],
+      feedback_at: Time.current
+    )
+
+    head :ok
+  end
+
+  def admin
+    # Show latest 100 submissions by default
+    @predictions = Prediction.order(created_at: :desc).limit(100)
   end
 end
