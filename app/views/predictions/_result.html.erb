@@ -1,3 +1,17 @@
+<% label_translations = {
+  "addictions_substance_use" => "Зависимости и употребление веществ",
+  "trauma_ptsd" => "Травма / ПТСР",
+  "emotional_regulation_anger" => "Эмоциональная регуляция / гнев",
+  "depression_mood" => "Депрессия / Настроение",
+  "anxiety_panic" => "Тревога / Паника",
+  "child_adolescent_issues" => "Проблемы детей и подростков",
+  "stress_burnout_life_transitions" => "Стресс, выгорание, жизненные изменения",
+  "grief_loss" => "Горе и утрата",
+  "relationship_dating" => "Отношения / свидания",
+  "family_conflict" => "Семейные конфликты",
+  "self_esteem_identity" => "Самооценка / идентичность",
+  "other" => "Другое"
+} %>
 <% if error.present? %>
   <p style="color:red;"><%= error %></p>
 
@@ -5,18 +19,19 @@
 
   <p><strong>Input:</strong> <%= text %></p>
 
-  <ul>
-    <% results.each do |r| %>
-      <li><%= r["label"] %> — <%= (r["score"] * 100).round(1) %>%</li>
-    <% end %>
-  </ul>
-
+<ul>
+  <% results.each do |r| %>
+    <li>
+      <%= label_translations[r["label"]] || r["label"] %> — <%= (r["score"] * 100).round(1) %>%
+    </li>
+  <% end %>
+</ul>
   <% if prediction.present? %>
     <hr>
 
-    <p><strong>Was this correct?</strong></p>
+    <p><strong>Правильно вас поняли?</strong></p>
 
-    <%= button_to "Yes",
+    <%= button_to "Да",
         feedback_prediction_path(prediction, correct: true),
         method: :post,
         form: { data: { turbo_frame: "_top" } } %>
@@ -29,7 +44,9 @@
       <label>Correct label:</label><br>
 
       <%= select_tag :correct_label,
-          options_for_select(LABELS) %>
+          options_for_select(
+            LABELS.map { |l| [label_translations[l], l] }  # [display_text, value]
+          ) %>
 
       <%= submit_tag "Submit correction" %>
     <% end %>

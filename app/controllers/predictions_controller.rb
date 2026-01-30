@@ -1,4 +1,16 @@
 class PredictionsController < ApplicationController
+  LABEL_TRANSLATIONS = {
+    "addictions_substance_use" => "Зависимости и употребление веществ",
+    "trauma_ptsd" => "Травма / ПТСР",
+    "emotional_regulation_anger" => "Эмоциональная регуляция / гнев",
+    "depression_mood" => "Депрессия / Настроение",
+    "anxiety_panic" => "Тревога / Паника",
+    "child_adolescent_issues" => "Проблемы детей и подростков",
+    "stress_burnout_life_transitions" => "Стресс, выгорание, жизненные изменения",
+    "grief_loss" => "Горе и утрата",
+    "family_conflict" => "Семейные конфликты"
+  }
+  
   def new
   end
 
