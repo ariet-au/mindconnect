@@ -1,5 +1,23 @@
 <div class="p-4">
-  <p class="is-size-7 has-text-grey mb-2">Пожалуйста, пишите только на русском языке.</p>
+<div class="content is-size-7 has-text-grey">
+
+  <p><strong>Как использовать инструмент:</strong></p>
+  <ul style="margin-left: 1rem; margin-bottom: 1rem;">
+    <li>Опишите <strong>одно чувство или одну ситуацию</strong> в <strong>1–2 предложениях</strong>.</li>
+    <li>Не задавайте вопросы и не смешивайте несколько тем.</li>
+    <li>Пишите <strong>только на русском языке</strong>.</li>
+  </ul>
+
+  <p><strong>Важно:</strong></p>
+  <ul style="margin-left: 1rem; margin-bottom: 1rem;">
+    <li>⚠️ Этот инструмент <strong>не является медицинской диагностикой</strong>.</li>
+    <li>Если у вас есть мысли о самоубийстве или причинении себе вреда — немедленно обратитесь к врачу, психологу или в экстренные службы.</li>
+    <li>Инструмент предназначен для общего понимания эмоциональных трудностей.</li>
+    <li>Он <strong>не подходит</strong> для диагностики серьёзных психических состояний, таких как биполярное расстройство, шизофрения или психозы.</li>
+  </ul>
+
+</div>
+
 
   <%= form_with url: predictions_path, method: :post, local: false, data: { turbo_frame: "prediction_result" } do |f| %>
     <%= f.text_area :text, rows: 4, class: "textarea mb-3", placeholder: "Введите текст..." %>

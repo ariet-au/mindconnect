@@ -1,57 +1,71 @@
-<% label_translations = {
-  "addictions_substance_use" => "Зависимости и употребление веществ",
-  "trauma_ptsd" => "Травма / ПТСР",
-  "emotional_regulation_anger" => "Эмоциональная регуляция / гнев",
-  "depression_mood" => "Депрессия / Настроение",
-  "anxiety_panic" => "Тревога / Паника",
-  "child_adolescent_issues" => "Проблемы детей и подростков",
-  "stress_burnout_life_transitions" => "Стресс, выгорание, жизненные изменения",
-  "grief_loss" => "Горе и утрата",
-  "relationship_dating" => "Отношения / свидания",
-  "family_conflict" => "Семейные конфликты",
-  "self_esteem_identity" => "Самооценка / идентичность",
-  "other" => "Другое"
-} %>
 <% if error.present? %>
-  <p style="color:red;"><%= error %></p>
+  <p style="color:#b45309; font-weight:bold;">
+    ⚠️ ИИ не смог определить вас в категорию
+  </p>
+  <p>Попробуйте изменить формулировку текста и отправить его ещё раз.</p>
 
-<% elsif results.any? %>
+<% elsif results.present? && results.any? %>
 
-  <p><strong>Input:</strong> <%= text %></p>
+  <p><strong>Ваш текст:</strong></p>
+  <blockquote><%= text %></blockquote>
 
-<ul>
-  <% results.each do |r| %>
-    <li>
-      <%= label_translations[r["label"]] || r["label"] %> — <%= (r["score"] * 100).round(1) %>%
-    </li>
-  <% end %>
-</ul>
+  <h3>Результат классификации</h3>
+  <ul>
+    <% results.each do |r| %>
+      <li>
+        <strong><%= PredictionsController::LABEL_TRANSLATIONS[r["label"]] || r["label"] %></strong>
+        — <%= (r["score"] * 100).round(1) %>%
+      </li>
+    <% end %>
+  </ul>
+
   <% if prediction.present? %>
     <hr>
 
-    <p><strong>Правильно вас поняли?</strong></p>
+    <p><strong>Правильно ли мы вас поняли?</strong></p>
 
-    <%= button_to "Да",
-        feedback_prediction_path(prediction, correct: true),
-        method: :post,
-        form: { data: { turbo_frame: "_top" } } %>
+    <!-- YES button -->
+    <button id="yes-button">Да</button>
 
-    <br>
+    <p style="margin-top:1rem;">
+      Если нет — выберите правильную категорию:
+    </p>
 
-    <%= form_with url: feedback_prediction_path(prediction), method: :post do %>
+    <%= form_with url: feedback_prediction_path(prediction),
+                  method: :post do %>
       <%= hidden_field_tag :correct, false %>
 
-      <label>Correct label:</label><br>
-
       <%= select_tag :correct_label,
-          options_for_select(
-            LABELS.map { |l| [label_translations[l], l] }  # [display_text, value]
-          ) %>
+        options_for_select(
+          [["— Выберите категорию —", ""]] +
+          PredictionsController::LABEL_TRANSLATIONS.map { |k, v| [v, k] }
+        ),
+        required: true %>
 
-      <%= submit_tag "Submit correction" %>
+      <br><br>
+      <%= submit_tag "Отправить исправление" %>
     <% end %>
+
+    <!-- Minimal JS to change button visually -->
+    <script>
+      const yesButton = document.getElementById("yes-button");
+      yesButton.addEventListener("click", function(e) {
+        // Disable and show confirmation
+        yesButton.textContent = "✅ Подтверждено";
+        yesButton.disabled = true;
+
+        // Send feedback in background
+        fetch("<%= feedback_prediction_path(prediction) %>", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+          },
+          body: JSON.stringify({ correct: true })
+        });
+      });
+    </script>
+
   <% end %>
 
-<% else %>
-  <p>Enter text and hit Analyze to see results.</p>
 <% end %>
