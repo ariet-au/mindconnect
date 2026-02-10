@@ -43,7 +43,7 @@ class PsychologistProfilesController < ApplicationController
     # --- End of Setup ---
 
     #@psychologist_profiles = PsychologistProfile.order(updated_at: :desc)
-    @psychologist_profiles = PsychologistProfile.confirmed.filled.active.not_hidden.with_profile_img
+    @psychologist_profiles = PsychologistProfile.confirmed.filled.not_hidden.with_profile_img
     
     # if params[:search].present?
     #   @psychologist_profiles = @psychologist_profiles
