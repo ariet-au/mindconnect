@@ -14,7 +14,11 @@ class Education < ApplicationRecord
   has_many_attached :proof_documents
 
   # Validationsch
-  validates :degree, :field_of_study, presence: true
+  #validates :degree, :field_of_study, presence: true
+  with_options if: :any_field_present? do
+    validates :degree, presence: true
+    validates :field_of_study, presence: true
+  end
 
   # Scopes
   scope :verified, -> { where(verification_status: :verified) }
@@ -29,5 +33,15 @@ class Education < ApplicationRecord
     self.verified_source = source if source
     self.verification_notes = notes if notes
     save
+  end
+  
+  private
+  
+  def any_field_present?
+    degree.present? ||
+    field_of_study.present? ||
+    institution.present? ||
+    start_year.present? ||
+    end_year.present?
   end
 end

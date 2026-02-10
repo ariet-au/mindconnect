@@ -42,8 +42,10 @@ class PsychologistProfile < ApplicationRecord
 
   has_many  :educations, dependent: :destroy
   #accepts_nested_attributes_for :educations, allow_destroy: true
-  accepts_nested_attributes_for :educations, allow_destroy: true, reject_if: :all_blank
-
+  #accepts_nested_attributes_for :educations, allow_destroy: true, reject_if: :all_blank
+  accepts_nested_attributes_for :educations,
+    allow_destroy: true,
+    reject_if: :education_blank?
 
   #bookings
     # Add this line:
@@ -244,6 +246,16 @@ end
 
   
   private 
+
+  def education_blank?(attrs)
+    attrs['degree'].blank? &&
+    attrs['field_of_study'].blank? &&
+    attrs['institution'].blank? &&
+    attrs['start_year'].blank? &&
+    attrs['end_year'].blank?
+  end
+
+
 
   def normalize_socials
     normalize_instagram
