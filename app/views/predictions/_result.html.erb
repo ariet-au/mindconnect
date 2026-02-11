@@ -48,20 +48,22 @@
 
     <!-- Minimal JS to change button visually -->
     <script>
-      const yesButton = document.getElementById("yes-button");
-      yesButton.addEventListener("click", function(e) {
-        // Disable and show confirmation
-        yesButton.textContent = "✅ Подтверждено";
-        yesButton.disabled = true;
+      document.addEventListener("turbo:load", () => {
+        const yesButton = document.getElementById("yes-button");
+        if (!yesButton) return;
 
-        // Send feedback in background
-        fetch("<%= feedback_prediction_path(prediction) %>", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-          },
-          body: JSON.stringify({ correct: true })
+        yesButton.addEventListener("click", function(e) {
+          yesButton.textContent = "✅ Подтверждено";
+          yesButton.disabled = true;
+
+          fetch("<%= feedback_prediction_path(prediction) %>", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ correct: true })
+          });
         });
       });
     </script>
