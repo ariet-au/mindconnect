@@ -1,16 +1,22 @@
 class PredictionsController < ApplicationController
-  LABEL_TRANSLATIONS = {
-    "addictions_substance_use" => "Зависимости и употребление веществ",
-    "trauma_ptsd" => "Травма / ПТСР",
-    "emotional_regulation_anger" => "Эмоциональная регуляция / гнев",
-    "depression_mood" => "Депрессия / Настроение",
-    "anxiety_panic" => "Тревога / Паника",
-    "child_adolescent_issues" => "Проблемы детей и подростков",
-    "stress_burnout_life_transitions" => "Стресс, выгорание, жизненные изменения",
-    "grief_loss" => "Горе и утрата",
-    "family_conflict" => "Семейные конфликты"
-  }
-  
+LABEL_TRANSLATIONS = {
+  "mood_low_energy" => "Апатия и подавленность",
+  "anxiety_fear" => "Тревога и страхи",
+  "stress_burnout" => "Стресс и выгорание",
+  "emotional_regulation" => "Сложные эмоции и гнев",
+  "coping_behavior" => "Трудности в поведении",
+  "trauma_past_experiences" => "Травматичный опыт",
+  "romantic_relationships" => "Проблемы в отношениях",
+  "family_parenting" => "Семья и дети",
+  "identity_selfworth_life_direction" => "Самооценка и поиск себя",
+  "behavior_addictions" => "Зависимости и вредные привычки",
+  "grief_loss" => "Горе и Утрата",
+  "life_transitions_career" => "Карьера и перемены",
+  "social_interpersonal" => "Трудности в общении и социуме",
+  "romantic_solo" => "Одиночество или разрыв"
+}
+
+
   def new
   end
 
