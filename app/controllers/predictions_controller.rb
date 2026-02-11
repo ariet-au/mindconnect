@@ -20,41 +20,98 @@ LABEL_TRANSLATIONS = {
   def new
   end
 
+  MAX_LABELS = 2      # show only top 2
+  MIN_SCORE = 0.35    # minimum confidence threshold
+
   def create
     text = params[:text]
-    @results = MlPredictor.predict(text) # array of hashes
+    raw_results = MlPredictor.predict(text) # array of hashes: [{label: ..., score: ...}, ...]
 
-    if @results.any?
-      @results.sort_by! { |r| -r["score"] } # optional
-      top = @results.first
-      top_label = top["label"]
-      top_score = top["score"]
+    if raw_results.any?
+      # Sort by score descending
+      sorted = raw_results.sort_by { |r| -r["score"] }
+
+      # Filter by confidence threshold
+      filtered = sorted.select { |r| r["score"] > MIN_SCORE }
+
+      # Take top N labels
+      top_results = filtered.first(MAX_LABELS)
+
+      # Translate labels and convert score to percent for display
+      top_results.each do |r|
+        r["name"] = LABEL_TRANSLATIONS[r["label"]] || r["label"]
+        r["percent"] = (r["score"] * 100).round(1)
+      end
+
+      top_label = top_results.first["label"]
+      top_score = top_results.first["score"]
     else
+      top_results = []
       top_label = nil
       top_score = nil
       @error = "Prediction service returned no result"
     end
 
+    # Save prediction to DB
     @prediction = Prediction.create!(
       prompt: text,
-      response: @results,
+      response: top_results,  # only store the friendly top results
       top_label: top_label,
       top_score: top_score,
       model_version: "rubert_v1"
     )
 
-    # Render the turbo frame as before
+    # Render turbo frame
     render turbo_stream: turbo_stream.update(
       "prediction_result",
       partial: "predictions/result",
       locals: {
-        results: @results,
+        results: top_results,
         error: @error,
         text: text,
         prediction: @prediction
       }
     )
   end
+
+
+  # def create
+  #   text = params[:text]
+  #   @results = MlPredictor.predict(text) # array of hashes
+
+  #   if @results.any?
+  #     @results.sort_by! { |r| -r["score"] } # optional
+  #     top = @results.first
+  #     top_label = top["label"]
+  #     top_score = top["score"]
+  #   else
+  #     top_label = nil
+  #     top_score = nil
+  #     @error = "Prediction service returned no result"
+  #   end
+
+  #   @prediction = Prediction.create!(
+  #     prompt: text,
+  #     response: @results,
+  #     top_label: top_label,
+  #     top_score: top_score,
+  #     model_version: "rubert_v1"
+  #   )
+
+  #   # Render the turbo frame as before
+  #   render turbo_stream: turbo_stream.update(
+  #     "prediction_result",
+  #     partial: "predictions/result",
+  #     locals: {
+  #       results: @results,
+  #       error: @error,
+  #       text: text,
+  #       prediction: @prediction
+  #     }
+  #   )
+  # end
+
+
 
 
 
