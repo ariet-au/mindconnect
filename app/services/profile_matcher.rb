@@ -7,8 +7,8 @@ class ProfileMatcher
 
     matching_psychologists = PsychologistProfile
       .joins(psychologist_issues: :issue)
-      .merge(PsychologistProfile.with_profile_img)
-      .merge(PsychologistProfile.not_hidden)
+      .with_profile_img
+      .not_hidden 
       .where(issues: { category: labels_array })
       .distinct
       .includes(psychologist_issues: :issue)
