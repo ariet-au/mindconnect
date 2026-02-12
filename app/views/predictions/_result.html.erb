@@ -1,74 +1,90 @@
-<% if error.present? %>
-  <p style="color:#b45309; font-weight:bold;">
-    ⚠️ ИИ не смог определить вас в категорию
-  </p>
-  <p>Попробуйте изменить формулировку текста и отправить его ещё раз.</p>
+<div id="prediction_container" class="space-y-6">
+  <% if error.present? %>
+    <div class="p-4 bg-amber-50 border-l-4 border-amber-500 rounded">
+      <p class="text-amber-700 font-bold">⚠️ ИИ не смог определить категорию</p>
+      <p class="text-amber-600 text-sm">Попробуйте изменить формулировку текста и отправить его ещё раз.</p>
+    </div>
 
-<% elsif results.present? && results.any? %>
+  <% elsif results.present? %>
+    <section class="user-query italic text-gray-600 border-l-2 pl-4 py-2">
+      "<%= text %>"
+    </section>
 
-  <p><strong>Ваш текст:</strong></p>
-  <blockquote><%= text %></blockquote>
+    <section class="results-box bg-white p-4 shadow-sm border rounded-lg">
+      <h3 class="text-lg font-semibold mb-3">Результат классификации</h3>
+      <div class="space-y-2">
+        <% results.each do |r| %>
+          <div class="flex items-center justify-between">
+            <span class="font-medium text-gray-800">
+              <%= PredictionsController::LABEL_TRANSLATIONS[r["label"]] || r["label"] %>
+            </span>
+            <span class="text-sm text-blue-600 bg-blue-50 px-2 py-1 rounded">
+              <%= (r["score"] * 100).round(1) %>%
+            </span>
+          </div>
+          <div class="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+            <div class="bg-blue-500 h-full" style="width: <%= r["score"] * 100 %>%"></div>
+          </div>
+        <% end %>
+      </div>
+    </section>
 
-  <h3>Результат классификации</h3>
-  <ul>
-    <% results.each do |r| %>
-      <li>
-        <strong><%= PredictionsController::LABEL_TRANSLATIONS[r["label"]] || r["label"] %></strong>
-        — <%= (r["score"] * 100).round(1) %>%
-      </li>
+    <% if prediction.present? %>
+      <hr class="my-6">
+
+      <div id="feedback_section" class="text-center">
+        <p class="font-semibold mb-4 text-gray-700">Правильно ли мы вас поняли?</p>
+        
+        <div class="flex flex-col sm:flex-row gap-3 justify-center items-center">
+          <%= form_with url: feedback_prediction_path(prediction), method: :post, id: "yes-form", class: "w-full sm:w-auto" do %>
+            <%= hidden_field_tag :correct, true %>
+            <button type="submit" id="yes-button" class="w-full px-8 py-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition-all font-medium">
+              Да, всё верно
+            </button>
+          <% end %>
+
+          <button id="show-correction" class="px-8 py-2 border border-gray-300 rounded-full hover:bg-gray-50 transition-all text-gray-600">
+            Нет, выбрать другую
+          </button>
+        </div>
+
+        <div id="correction-form" class="hidden mt-6 p-4 bg-gray-50 rounded-lg border border-dashed text-left">
+          <p class="text-sm text-gray-600 mb-3 font-medium">Выберите правильную категорию:</p>
+          <%= form_with url: feedback_prediction_path(prediction), method: :post do %>
+            <%= hidden_field_tag :correct, false %>
+            <%= select_tag :correct_label,
+                options_for_select(
+                  [["— Выберите категорию —", ""]] +
+                  PredictionsController::LABEL_TRANSLATIONS.map { |k, v| [v, k] }
+                ),
+                required: true,
+                class: "w-full p-2 border rounded-md mb-3" %>
+            <button type="submit" class="w-full py-2 bg-gray-800 text-white rounded hover:bg-black transition-colors">
+              Отправить исправление
+            </button>
+          <% end %>
+        </div>
+      </div>
     <% end %>
-  </ul>
 
-  <% if prediction.present? %>
-    <hr>
+    <div id="psychologist_results" class="mt-8"></div>
 
-    <p><strong>Правильно ли мы вас поняли?</strong></p>
-
-    <!-- YES button -->
-    <button id="yes-button">Да</button>
-
-    <p style="margin-top:1rem;">
-      Если нет — выберите правильную категорию:
-    </p>
-
-    <%= form_with url: feedback_prediction_path(prediction),
-                  method: :post do %>
-      <%= hidden_field_tag :correct, false %>
-
-      <%= select_tag :correct_label,
-        options_for_select(
-          [["— Выберите категорию —", ""]] +
-          PredictionsController::LABEL_TRANSLATIONS.map { |k, v| [v, k] }
-        ),
-        required: true %>
-
-      <br><br>
-      <%= submit_tag "Отправить исправление" %>
-    <% end %>
-
-<!-- Placeholder for matched psychologists -->
-<div id="psychologist_results"></div>
-
-
-
-    <!-- Minimal JS to change button visually -->
     <script>
-      const yesButton = document.getElementById("yes-button");
-        yesButton.addEventListener("click", function(e) {
-          yesButton.textContent = "✅ Подтверждено";
-          yesButton.disabled = true;
+      // Toggle the correction form visibility
+      document.getElementById("show-correction")?.addEventListener("click", function() {
+        document.getElementById("correction-form").classList.toggle("hidden");
+        this.classList.toggle("bg-gray-200");
+      });
 
-          fetch("<%= feedback_prediction_path(prediction) %>", {
-            method: "POST",
-            headers: {
-              "Accept": "text/vnd.turbo-stream.html",  // <-- this is key
-              "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-            },
-            body: new URLSearchParams({ correct: true }) // send as form-encoded
-          });
-        });
+      // Visual feedback for the YES button
+      document.getElementById("yes-form")?.addEventListener("submit", function() {
+        const btn = document.getElementById("yes-button");
+        btn.textContent = "✅ Подтверждено";
+        btn.classList.replace("bg-green-600", "bg-green-700");
+        btn.disabled = true;
+        // The correction form is no longer needed if they said yes
+        document.getElementById("show-correction").remove();
+      });
     </script>
-
   <% end %>
-
-<% end %>
+</div>
