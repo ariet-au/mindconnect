@@ -1,0 +1,49 @@
+<% if psychologists.present? %>
+  <turbo-frame id="prediction_result_psychologists">
+    <hr>
+    <h3>Вам могут помочь эти специалисты:</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-4">
+      <% psychologists.each do |h| %>
+        <% psy = h[:psychologist] %>
+        <% score = h[:score] || 0 %>
+        <% matched_categories = h[:matched_categories] || [] %>
+
+        <div class="profile-card border rounded-lg p-4 shadow-sm flex flex-col items-center">
+          <% if psy.profile_img.attached? %>
+            <%= image_tag psy.profile_img.variant(resize_to_limit: [200, 200]),
+                          alt: psy.full_name,
+                          class: "profile-img rounded-full mb-2",
+                          loading: "lazy" %>
+          <% else %>
+            <%= image_tag "default-profile.png",
+                          alt: psy.full_name,
+                          class: "profile-img rounded-full mb-2",
+                          loading: "lazy" %>
+          <% end %>
+
+          <h3 class="text-lg font-semibold text-center"><%= psy.full_name %></h3>
+
+          <p class="rate text-sm text-gray-600 mt-1">
+            <%= t('quizzes.results.rate') %> <%= psy.standard_rate %> <%= t('quizzes.results.per_hour') %>
+          </p>
+
+          <p class="about text-sm text-gray-500 mt-2 text-center">
+            <%= psy.about_me&.truncate(100) %>
+          </p>
+
+          <% if matched_categories.any? %>
+            <p class="matched-categories text-xs text-blue-600 mt-1">
+              (<%= matched_categories.map { |c| PredictionsController::LABEL_TRANSLATIONS[c] || c }.join(", ") %>)
+            </p>
+          <% end %>
+
+          <%= link_to t('quizzes.results.view_profile'), psychologist_profile_path(psy), class: "btn mt-2 px-4 py-2 bg-gray-800 text-white rounded hover:bg-black transition-colors" %>
+
+          <p class="match-score text-xs text-gray-500 mt-1">
+            Совпадение: <%= (score * 100).round(1) %>%
+          </p>
+        </div>
+      <% end %>
+    </div>
+  </turbo-frame>
+<% end %>
