@@ -51,7 +51,7 @@ LABEL_TRANSLATIONS = {
       top_score = nil
       @error = "Prediction service returned no result"
     end
-
+    
     # Save prediction to DB
     @prediction = Prediction.create!(
       prompt: text,
@@ -117,14 +117,26 @@ LABEL_TRANSLATIONS = {
 
   def feedback
     prediction = Prediction.find(params[:id])
+    correct = params[:correct] == "true"
 
     prediction.update!(
-      user_marked_correct: params[:correct] == "true",
+      user_marked_correct: correct,
       user_correct_label: params[:correct_label],
       feedback_at: Time.current
     )
 
-    head :ok
+    if correct
+      predicted_labels = prediction.response.map { |r| { label: r["label"], score: r["score"] } }
+      ranked_psychologists = ProfileMatcher.match_for_labels(predicted_labels)
+
+      render turbo_stream: turbo_stream.update(
+        "psychologist_results",
+        partial: "predictions/psychologists",
+        locals: { psychologists: ranked_psychologists }
+      )
+    else
+      head :ok
+    end
   end
 
   def admin
