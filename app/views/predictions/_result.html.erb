@@ -55,18 +55,16 @@
     <script>
       const yesButton = document.getElementById("yes-button");
         yesButton.addEventListener("click", function(e) {
-          // Disable and show confirmation
           yesButton.textContent = "✅ Подтверждено";
           yesButton.disabled = true;
 
-          // Send feedback in background
           fetch("<%= feedback_prediction_path(prediction) %>", {
             method: "POST",
             headers: {
-              "Content-Type": "application/json",
+              "Accept": "text/vnd.turbo-stream.html",  // <-- this is key
               "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
             },
-            body: JSON.stringify({ correct: true })
+            body: new URLSearchParams({ correct: true }) // send as form-encoded
           });
         });
     </script>
