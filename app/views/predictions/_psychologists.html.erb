@@ -1,49 +1,102 @@
 <% if psychologists.present? %>
   <turbo-frame id="prediction_result_psychologists">
-    <hr>
-    <h3>Вам могут помочь эти специалисты:</h3>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mt-4">
-      <% psychologists.each do |h| %>
-        <% psy = h[:psychologist] %>
-        <% score = h[:score] || 0 %>
-        <% matched_categories = h[:matched_categories] || [] %>
+    <hr class="my-6">
+    <div class="container pb-6">
+      <h3 class="title is-4 has-text-centered mb-6">
+        <span class="icon has-text-primary mr-2">
+          <i class="fas fa-user-md"></i>
+        </span>
+        Рекомендуемые специалисты
+      </h3>
 
-        <div class="profile-card border rounded-lg p-4 shadow-sm flex flex-col items-center">
-          <% if psy.profile_img.attached? %>
-            <%= image_tag psy.profile_img.variant(resize_to_limit: [200, 200]),
-                          alt: psy.full_name,
-                          class: "profile-img rounded-full mb-2",
-                          loading: "lazy" %>
-          <% else %>
-            <%= image_tag "default-profile.png",
-                          alt: psy.full_name,
-                          class: "profile-img rounded-full mb-2",
-                          loading: "lazy" %>
-          <% end %>
+      <div class="columns is-multiline is-centered">
+        <% psychologists.each do |h| %>
+          <% psy = h[:psychologist] %>
+          <% score = h[:score] || 0 %>
+          <% matched_categories = h[:matched_categories] || [] %>
 
-          <h3 class="text-lg font-semibold text-center"><%= psy.full_name %></h3>
+          <div class="column is-4-desktop is-6-tablet">
+            <div class="card p-5" style="height: 100%; display: flex; flex-direction: column; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: transform 0.3s ease;">
+              
+              <div class="is-flex is-justify-content-space-between is-align-items-center mb-4">
+                <span class="tag is-success is-light is-rounded has-text-weight-bold">
+                  <%= (score * 100).round %>% совпадение
+                </span>
+              </div>
 
-          <p class="rate text-sm text-gray-600 mt-1">
-            <%= t('quizzes.results.rate') %> <%= psy.standard_rate %> <%= t('quizzes.results.per_hour') %>
-          </p>
+              <div class="card-content p-0" style="flex-grow: 1;">
+                <div class="is-flex is-flex-direction-column is-align-items-center mb-4">
+                  <figure class="image is-128x128 mb-3">
+                    <% if psy.profile_img.attached? %>
+                      <%= image_tag psy.profile_img.variant(resize_to_limit: [256, 256]), 
+                          class: "is-rounded shadow-sm", 
+                          style: "border: 4px solid #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.1);" %>
+                    <% else %>
+                      <%= image_tag "default-profile.png", class: "is-rounded" %>
+                    <% end %>
+                  </figure>
+                  
+                  <h4 class="title is-5 mb-1 has-text-centered"><%= psy.full_name %></h4>
+                  <p class="subtitle is-6 has-text-primary has-text-weight-bold">
+                    <%= psy.standard_rate %> <%= t('quizzes.results.per_hour') %>
+                  </p>
+                </div>
 
-          <p class="about text-sm text-gray-500 mt-2 text-center">
-            <%= psy.about_me&.truncate(100) %>
-          </p>
+                <div class="content is-small has-text-grey has-text-centered mb-4">
+                  <p class="line-clamp-3">
+                    "<%= psy.about_me %>"
+                  </p>
+                </div>
 
-          <% if matched_categories.any? %>
-            <p class="matched-categories text-xs text-blue-600 mt-1">
-              (<%= matched_categories.map { |c| PredictionsController::LABEL_TRANSLATIONS[c] || c }.join(", ") %>)
-            </p>
-          <% end %>
+                <% if matched_categories.any? %>
+                  <div class="tags is-centered">
+                    <% matched_categories.first(3).each do |c| %>
+                      <span class="tag is-white has-text-grey-darker border" style="border: 1px solid #eee;">
+                        <%= PredictionsController::LABEL_TRANSLATIONS[c] || c %>
+                      </span>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
 
-          <%= link_to t('quizzes.results.view_profile'), psychologist_profile_path(psy), class: "btn mt-2 px-4 py-2 bg-gray-800 text-white rounded hover:bg-black transition-colors" %>
-
-          <p class="match-score text-xs text-gray-500 mt-1">
-            Совпадение: <%= (score * 100).round(1) %>%
-          </p>
-        </div>
-      <% end %>
+              <div class="mt-4">
+                <%= link_to psychologist_profile_path(psy), 
+                  class: "button is-primary is-fullwidth is-medium has-text-weight-bold", 
+                  style: "border-radius: 12px;",
+                  data: { turbo_frame: "_top" } do %>
+                <span><%= t('quizzes.results.view_profile') %></span>
+                <span class="icon is-small">
+                  <i class="fas fa-chevron-right"></i>
+                </span>
+              <% end %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
     </div>
   </turbo-frame>
+
+  <style>
+    /* Mimic line-clamp in standard CSS for the bio */
+    .line-clamp-3 {
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;  
+      overflow: hidden;
+      min-height: 4.5em; /* Keeps cards aligned */
+    }
+
+    /* Hover effect for the Bulma card */
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.1) !important;
+    }
+
+    /* Button hover interaction */
+    .button.is-primary:hover {
+      filter: brightness(1.1);
+      box-shadow: 0 4px 12px rgba(0, 209, 178, 0.3);
+    }
+  </style>
 <% end %>
