@@ -25,22 +25,21 @@ LABEL_TRANSLATIONS = {
 
   def create
     text = params[:text]
-    raw_results = MlPredictor.predict(text) # array of hashes: [{label: ..., score: ...}, ...]
+    raw_results = MlPredictor.predict(text) # array of hashes: [{label:, score:, confidence:}, ...]
 
     if raw_results.any?
-      # Sort by score descending
+      # Sort strongest first (already sorted in ML API, but safe)
       sorted = raw_results.sort_by { |r| -r["score"] }
 
-      # Filter by confidence threshold
-      filtered = sorted.select { |r| r["score"] > MIN_SCORE }
-
       # Take top N labels
-      top_results = filtered.first(MAX_LABELS)
+      top_results = sorted.first(MAX_LABELS)
 
       # Translate labels and convert score to percent for display
       top_results.each do |r|
         r["name"] = LABEL_TRANSLATIONS[r["label"]] || r["label"]
         r["percent"] = (r["score"] * 100).round(1)
+        # Use the confidence text as-is from API
+        r["message"] = r["confidence"]
       end
 
       top_label = top_results.first["label"]
@@ -51,14 +50,14 @@ LABEL_TRANSLATIONS = {
       top_score = nil
       @error = "Prediction service returned no result"
     end
-    
+
     # Save prediction to DB
     @prediction = Prediction.create!(
       prompt: text,
-      response: top_results,  # only store the friendly top results
+      response: top_results,  # store top results including confidence string
       top_label: top_label,
       top_score: top_score,
-      model_version: "rubert_v1"
+      model_version: "rubert_v2"
     )
 
     # Render turbo frame
@@ -143,4 +142,7 @@ LABEL_TRANSLATIONS = {
     # Show latest 100 submissions by default
     @predictions = Prediction.order(created_at: :desc).limit(100)
   end
+
+
+  
 end

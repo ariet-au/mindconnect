@@ -888,3 +888,8 @@ en:
       categories: "Categories"
       popular_articles: "Popular Articles"
       coming_soon: "Coming soon"
+  
+  ml_confidence:
+    possible: "Possible"
+    likely: "Likely"
+    very_likely: "Very likely

@@ -875,3 +875,8 @@ kg:
       categories: "Категориялар"
       popular_articles: "Популярдуу макалалар"
       coming_soon: "Жакында"
+  
+  ml_confidence:
+    possible: "Мүмкүн"
+    likely: "Ыктымал"
+    very_likely: "Жогорку ыктымалдык менен"
