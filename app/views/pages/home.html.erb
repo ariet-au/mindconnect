@@ -749,6 +749,17 @@ body {
       <a href="<%= psychologist_profiles_path %>" class="btn btn-primary"><%= t('home.hero.search_button') %></a>
       <a href="<%= pages_about_for_psych_path %>" class="btn btn-secondary"><%= t('home.hero.join_button') %></a>
     </div>
+    <div class="hero-buttons">
+          <a href="<%= new_prediction_path %>" class="button is-primary is-light is-medium has-text-weight-bold">
+            <span class="icon">
+              <i class="fas fa-robot"></i>
+            </span>
+            <span><%= t('home.hero.smart_search') %></span>
+            <span class="tag is-info is-rounded is-small ml-2" style="font-size: 0.7rem; letter-spacing: 0.5px;">
+              <%= t('home.hero.beta_tag') %>
+            </span>
+          </a>
+    </div>
   </div>
 </section>
 

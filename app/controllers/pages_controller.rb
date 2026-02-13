@@ -13,7 +13,6 @@ class PagesController < ApplicationController
     ids = PsychologistProfile
             .confirmed
             .filled
-            .active
             .with_profile_img
             .not_hidden
             .pluck(:id)

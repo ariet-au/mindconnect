@@ -204,6 +204,8 @@ en:
       location_city: "in %{city}"      
       search_button: "Start Your Search"
       join_button: "Join as a Psychologist"
+      smart_search: "Smart search"
+      beta_tag: "BETA"
 
     how_it_works:
       title: "How It Works"

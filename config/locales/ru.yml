@@ -200,6 +200,8 @@ ru:
       location_city: "%{city}"
       search_button: "Найти психолога"
       join_button: "Присоединиться как психолог"
+      smart_search: "Умный поиск"
+      beta_tag: "БЕТА"
 
     how_it_works:
       title: "Как работает АкСанаа"

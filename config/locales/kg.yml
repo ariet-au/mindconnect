@@ -198,6 +198,8 @@ kg:
       location_city: "%{city} шаарында"
       search_button: "Издөөнү баштоо"
       join_button: "Психолог катары кошулуу"
+      smart_search: "Акылдуу издөө (Орусча)"
+      beta_tag: "БЕТА"
 
     how_it_works:
       title: "Кантип иштейт"
