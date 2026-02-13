@@ -18,9 +18,9 @@
             <span class="font-medium text-gray-800">
               <%= PredictionsController::LABEL_TRANSLATIONS[r["label"]] || r["label"] %>
             </span>
-              <span class="text-sm text-blue-600 bg-blue-50 px-2 py-1 rounded">
-                <%= t("ml_confidence.#{r['confidence']}") %>
-              </span>
+            <span class="text-sm text-blue-600 bg-blue-50 px-2 py-1 rounded">
+              <%= t("ml_confidence.#{r['confidence']}") %>
+            </span>
           </div>
           <div class="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
             <div class="bg-blue-500 h-full" style="width: <%= r["score"] * 100 %>%"></div>
@@ -67,24 +67,59 @@
       </div>
     <% end %>
 
+    <%# This is where the Turbo Stream from the 'feedback' action will land %>
     <div id="psychologist_results" class="mt-8"></div>
 
     <script>
-      // Toggle the correction form visibility
-      document.getElementById("show-correction")?.addEventListener("click", function() {
-        document.getElementById("correction-form").classList.toggle("hidden");
-        this.classList.toggle("bg-gray-200");
-      });
+      (function() {
+        const setupUI = () => {
+          // 1. Toggle Correction Form
+          const showBtn = document.getElementById("show-correction");
+          const form = document.getElementById("correction-form");
+          if (showBtn && form) {
+            showBtn.onclick = () => {
+              form.classList.toggle("hidden");
+              showBtn.classList.toggle("bg-gray-200");
+            };
+          }
 
-      // Visual feedback for the YES button
-      document.getElementById("yes-form")?.addEventListener("submit", function() {
-        const btn = document.getElementById("yes-button");
-        btn.textContent = "✅ Подтверждено";
-        btn.classList.replace("bg-green-600", "bg-green-700");
-        btn.disabled = true;
-        // The correction form is no longer needed if they said yes
-        document.getElementById("show-correction").remove();
-      });
+          // 2. Yes Button Feedback
+          const yesForm = document.getElementById("yes-form");
+          if (yesForm) {
+            yesForm.onsubmit = () => {
+              const btn = document.getElementById("yes-button");
+              btn.textContent = "✅ Подтверждено";
+              btn.classList.replace("bg-green-600", "bg-green-700");
+              btn.disabled = true;
+              document.getElementById("show-correction")?.remove();
+            };
+          }
+        };
+
+        // Initialize on load and every time Turbo updates the frame
+        document.addEventListener("turbo:load", setupUI);
+        document.addEventListener("turbo:frame-render", setupUI);
+        setupUI(); // Run once immediately in case of partial render
+
+        // 3. Scroll to Psychologists when Turbo Stream arrives
+        document.addEventListener("turbo:before-stream-render", (event) => {
+          const fallbackRender = event.detail.render;
+          
+          event.detail.render = (streamElement) => {
+            fallbackRender(streamElement); // Execute the update
+
+            // Check if the update was for our psychologist div
+            if (streamElement.getAttribute("target") === "psychologist_results") {
+              const target = document.getElementById("psychologist_results");
+              if (target) {
+                setTimeout(() => {
+                  target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+              }
+            }
+          };
+        });
+      })();
     </script>
   <% end %>
 </div>
