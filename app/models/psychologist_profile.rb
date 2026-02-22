@@ -8,15 +8,10 @@ class PsychologistProfile < ApplicationRecord
   before_validation :set_default_primary_contact_method, on: :create
   before_save :normalize_socials
 
-
-
-
   belongs_to :user
- # belongs_to :user_for_search, class_name: 'User', foreign_key: 'user_id'
 
   has_many :services, through: :user
   belongs_to :featured_service, class_name: 'Service', optional: true
-
 
   has_one_attached :profile_img
 
@@ -29,31 +24,24 @@ class PsychologistProfile < ApplicationRecord
   #client types
   has_many :psychologist_client_types, dependent: :destroy
   has_many :client_types, through: :psychologist_client_types
-  
+
   #issues
   has_many :psychologist_issues, dependent: :destroy
   has_many :issues, through: :psychologist_issues 
-
-  
-
+  #languages
   has_many :psychologist_languages
   has_many :languages, through: :psychologist_languages
-
-
+  #education
   has_many  :educations, dependent: :destroy
-  #accepts_nested_attributes_for :educations, allow_destroy: true
-  #accepts_nested_attributes_for :educations, allow_destroy: true, reject_if: :all_blank
   accepts_nested_attributes_for :educations,
     allow_destroy: true,
     reject_if: :education_blank?
 
   #bookings
-    # Add this line:
   has_many :psychologist_availabilities, dependent: :destroy
   
   #events
   has_many :events, dependent: :destroy
-
 
   # You probably also want:
   has_many :psychologist_unavailabilities, dependent: :destroy
@@ -62,6 +50,11 @@ class PsychologistProfile < ApplicationRecord
 
   has_many :articles, dependent: :destroy
   has_many :psychologist_profile_reports, dependent: :destroy
+
+
+
+  after_commit :generate_embedding_if_needed, on: [:create, :update]
+
 
 
   # Scopes for filtering profiles
@@ -114,7 +107,7 @@ class PsychologistProfile < ApplicationRecord
     allow_blank: true
 
 
-# URL 
+  # URL 
   before_validation :slugify_profile_url
   validates :profile_url,
           uniqueness: true,
@@ -127,16 +120,16 @@ class PsychologistProfile < ApplicationRecord
           if: -> { profile_url.present? } # only validate format/length if not nil
 
 
-pg_search_scope :search_full_text,
-  against: [:first_name, :last_name, :about_me, :religion, :about_clients, :about_issues, :about_specialties],
-  associated_against: {
-    services: [:name, :description],
-    issues: [:name],
-    specialties: [:name]
-  },
-  using: {
-    tsearch: { prefix: true }, # finds partial words
-    trigram: { threshold: 0.2 } # finds fuzzy matches (typos, similar words)
+  pg_search_scope :search_full_text,
+    against: [:first_name, :last_name, :about_me, :religion, :about_clients, :about_issues, :about_specialties],
+    associated_against: {
+      services: [:name, :description],
+      issues: [:name],
+      specialties: [:name]
+    },
+    using: {
+      tsearch: { prefix: true }, # finds partial words
+      trigram: { threshold: 0.2 } # finds fuzzy matches (typos, similar words)
   },
   ranked_by: ":tsearch + :trigram" # rank by combined score
   
@@ -209,8 +202,6 @@ pg_search_scope :search_full_text,
   # This method converts the standard_rate_money from its current currency to the target_currency.
   # It leverages the ExchangeRateService to perform the actual rate calculation and conversion.
 
-
-
   def converted_rate(target_currency = "USD")
     target_currency = target_currency.upcase
 
@@ -227,25 +218,35 @@ pg_search_scope :search_full_text,
 
     Money.new((rate * 100).round, target_currency)
   end
-  # app/models/psychologist_profile.rb
-def next_available_slot
-  # Get the first service (or use your own availability logic)
-  service = services.first # simplest version
-  
-  return nil unless service.present?
 
-  slot_finder = TimezoneAwareSlotFinder.new(
-    id,
-    service.duration_minutes,
-    timezone.presence || 'UTC'
-  )
-  
-  slot_finder.next_available_slot(Time.current)
-end
+  def next_available_slot
+    # Get the first service (or use your own availability logic)
+    service = services.first # simplest version
+    
+    return nil unless service.present?
+
+    slot_finder = TimezoneAwareSlotFinder.new(
+      id,
+      service.duration_minutes,
+      timezone.presence || 'UTC'
+    )
+    
+    slot_finder.next_available_slot(Time.current)
+  end
 
 
   
   private 
+
+  def generate_embedding_if_needed
+    if saved_change_to_about_me? ||
+      saved_change_to_about_specialties? ||
+      saved_change_to_about_issues? ||
+      saved_change_to_about_clients?
+
+      GenerateEmbeddingJob.perform_later(id)
+    end
+  end
 
   def education_blank?(attrs)
     attrs['degree'].blank? &&

@@ -259,6 +259,8 @@ GEM
     multi_xml (0.7.2)
       bigdecimal (~> 3.1)
     multipart-post (2.4.1)
+    neighbor (0.6.0)
+      activerecord (>= 7.1)
     net-http (0.6.0)
       uri
     net-imap (0.5.8)
@@ -298,6 +300,7 @@ GEM
     pg_search (2.3.7)
       activerecord (>= 6.1)
       activesupport (>= 6.1)
+    pgvector (0.3.2)
     pp (0.6.2)
       prettyprint
     prettyprint (0.2.0)
@@ -506,8 +509,10 @@ DEPENDENCIES
   kaminari
   mailgun-ruby
   money-rails
+  neighbor
   pg (~> 1.1)
   pg_search
+  pgvector
   propshaft
   puma (>= 5.0)
   rails (~> 8.0.2)

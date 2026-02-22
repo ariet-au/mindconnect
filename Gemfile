@@ -82,3 +82,6 @@ gem "telegram-bot-ruby"
 gem 'httparty'
 
 gem "faraday"
+
+gem "pgvector"
+gem "neighbor" # Highly recommended for Rails/ActiveRecord integration

@@ -10,10 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_30_015648) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_22_030948) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
+  enable_extension "vector"
 
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
@@ -390,6 +391,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_30_015648) do
     t.boolean "has_psychology_degree", default: false, null: false
     t.boolean "supervision", default: false, null: false
     t.string "instagram"
+    t.vector "embedding", limit: 768
+    t.index ["embedding"], name: "index_psychologist_profiles_on_embedding", opclass: :vector_cosine_ops, using: :ivfflat
     t.index ["featured_service_id"], name: "index_psychologist_profiles_on_featured_service_id"
     t.index ["profile_url"], name: "index_psychologist_profiles_on_profile_url", unique: true
     t.index ["user_id"], name: "index_psychologist_profiles_on_user_id"
