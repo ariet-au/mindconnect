@@ -2,24 +2,20 @@ require "open3"
 require "json"
 
 class EmbeddingService
-  # Python binary lives in the mindconnect-ml venv
   VENV_PYTHON = Rails.root.join("../mindconnect-ml/venv/bin/python3")
-  
-  # Python script is in the Rails project
-  SCRIPT_PATH = Rails.root.join("script/embed_profile.py")
+  SCRIPT_PATH = Rails.root.join("script/embed_profile.py") # same name
 
-  def self.generate_for_profile(profile)
-    payload = {
-      about_me: profile.about_me,
-      about_specialties: profile.about_specialties,
-      about_issues: profile.about_issues,
-      about_clients: profile.about_clients,
-      specialties: profile.specialties.pluck(:name),
-      client_types: profile.client_types.pluck(:name),
-      issues: profile.issues.pluck(:name)
-    }
+  # Generates embedding for a PsychologistMatchChunk
+  def self.generate_for_chunk(chunk)
+    payload = { content: chunk.content }
 
-    # Run Python script with payload
+    run_python(payload)
+  end
+
+  private
+
+  def self.run_python(payload)
+    # Open3 still needed if using system call to Python
     stdout, stderr, status = Open3.capture3(
       "#{VENV_PYTHON} #{SCRIPT_PATH}",
       stdin_data: payload.to_json

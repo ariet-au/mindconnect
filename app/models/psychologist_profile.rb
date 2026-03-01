@@ -53,7 +53,7 @@ class PsychologistProfile < ApplicationRecord
 
 
 
-  after_commit :generate_embedding_if_needed, on: [:create, :update]
+  #after_commit :generate_embedding_if_needed, on: [:create, :update]
 
 
 
@@ -238,15 +238,15 @@ class PsychologistProfile < ApplicationRecord
   
   private 
 
-  def generate_embedding_if_needed
-    if saved_change_to_about_me? ||
-      saved_change_to_about_specialties? ||
-      saved_change_to_about_issues? ||
-      saved_change_to_about_clients?
+  # def generate_embedding_if_needed
+  #   if saved_change_to_about_me? ||
+  #     saved_change_to_about_specialties? ||
+  #     saved_change_to_about_issues? ||
+  #     saved_change_to_about_clients?
 
-      GenerateEmbeddingJob.perform_later(id)
-    end
-  end
+  #     GenerateEmbeddingJob.perform_later(id)
+  #   end
+  # end
 
   def education_blank?(attrs)
     attrs['degree'].blank? &&

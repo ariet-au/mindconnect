@@ -74,45 +74,46 @@ LABEL_TRANSLATIONS = {
   end
 
 
-  # def create
-  #   text = params[:text]
-  #   @results = MlPredictor.predict(text) # array of hashes
-
-  #   if @results.any?
-  #     @results.sort_by! { |r| -r["score"] } # optional
-  #     top = @results.first
-  #     top_label = top["label"]
-  #     top_score = top["score"]
-  #   else
-  #     top_label = nil
-  #     top_score = nil
-  #     @error = "Prediction service returned no result"
-  #   end
-
-  #   @prediction = Prediction.create!(
-  #     prompt: text,
-  #     response: @results,
-  #     top_label: top_label,
-  #     top_score: top_score,
-  #     model_version: "rubert_v1"
-  #   )
-
-  #   # Render the turbo frame as before
-  #   render turbo_stream: turbo_stream.update(
-  #     "prediction_result",
-  #     partial: "predictions/result",
-  #     locals: {
-  #       results: @results,
-  #       error: @error,
-  #       text: text,
-  #       prediction: @prediction
-  #     }
-  #   )
-  # end
+  def embedding_search
+  end
 
 
+  def run_embedding_search
+    query = params[:query]
+    return redirect_to embedding_search_predictions_path if query.blank?
 
+    start_time = Process.clock_gettime(Process::CLOCK_MONOTONIC)
 
+    query_embedding = EmbeddingService.generate_for_query(query)
+    vector_string = "[#{query_embedding.join(',')}]"
+    distance_sql = "embedding <=> '#{vector_string}'::vector"
+
+    # Cleanly sanitize the keyword boost
+    search_query = "%#{query}%"
+    keyword_boost = PsychologistProfile.sanitize_sql_array([
+      "CASE WHEN about_me ILIKE ? THEN 1.0 ELSE 0.0 END", 
+      search_query
+    ])
+
+    # We alias the whole equation directly as 'similarity_score'
+    @psychologists = PsychologistProfile
+      .select(
+        "id", 
+        "first_name", 
+        "last_name", 
+        "about_me", 
+        "((1 - (#{distance_sql})) + #{keyword_boost}) AS similarity_score"
+      )
+      .where.not(embedding: nil)
+      .order(Arel.sql("similarity_score DESC"))
+      .limit(10)
+      .to_a 
+
+    @execution_time = (Process.clock_gettime(Process::CLOCK_MONOTONIC) - start_time).round(3)
+    @result_count   = @psychologists.size
+
+    render :embedding_search
+  end
 
   def feedback
     prediction = Prediction.find(params[:id])

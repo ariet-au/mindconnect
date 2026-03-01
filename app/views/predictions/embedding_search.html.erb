@@ -1,0 +1,61 @@
+<div class="container" style="max-width: 900px; margin: 40px auto; font-family: sans-serif; line-height: 1.5;">
+
+  <h1 style="margin-bottom: 20px;">Semantic Embedding Search</h1>
+
+  <div style="margin-bottom: 30px; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
+    <%# data: { turbo: false } is CRITICAL here because your search takes 14s %>
+    <%= form_with url: run_embedding_search_predictions_path, method: :post, local: true, data: { turbo: false } do |f| %>
+      
+      <div style="margin-bottom: 15px;">
+        <%= f.label :query, "Describe the type of help you need (e.g., 'Anxiety specialist for teenagers')", style: "font-weight: bold; display: block; margin-bottom: 5px;" %>
+        <%= f.text_area :query, value: params[:query], rows: 4, style: "width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc;" %>
+      </div>
+
+      <%= f.submit "Search Psychologists", class: "button is-primary", style: "cursor: pointer; padding: 10px 20px; background-color: #00d1b2; color: white; border: none; border-radius: 4px; font-weight: bold;" %>
+    <% end %>
+  </div>
+
+  <hr style="margin: 40px 0; border: 0; border-top: 1px solid #eee;">
+
+  <% if @psychologists.present? %>
+    
+    <h2 style="margin-bottom: 20px;">Top matches for: "<em><%= params[:query] %></em>"</h2>
+
+    <div style="margin-bottom: 20px; padding: 15px; background: #f9f9f9; border-left: 5px solid #00d1b2; border-radius: 4px;">
+        <strong>Results:</strong> <%= @result_count %> found<br>
+        <strong>Search Time:</strong> <%= @execution_time %> seconds
+    </div>
+
+    <% @psychologists.each do |psychologist| %>
+      <div style="margin-bottom: 30px; padding: 20px; border: 1px solid #eee; border-radius: 8px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+        <h3 style="margin: 0 0 10px 0; color: #3273dc;">
+            <%= "#{psychologist.first_name} #{psychologist.last_name}" %>
+        </h3>
+
+        <p style="margin-bottom: 10px; font-size: 0.9em; color: #666;">
+          <strong>Match Strength:</strong> 
+          <%= (psychologist.similarity_score * 100).round(2) %>%
+        </p>
+
+        <% if psychologist.about_me.present? %>
+          <p style="margin-bottom: 15px; color: #4a4a4a;">
+            <%= truncate(psychologist.about_me, length: 250) %>
+          </p>
+        <% end %>
+
+        <%= link_to "View Full Profile", psychologist_profile_path(psychologist), 
+            class: "button is-link", 
+            style: "text-decoration: none; color: #3273dc; font-weight: bold; border: 1px solid #3273dc; padding: 5px 15px; border-radius: 4px;" %>
+      </div>
+    <% end %>
+
+  <% elsif params[:query].present? %>
+    <%# This only shows if a search was actually attempted %>
+    <div style="padding: 20px; text-align: center; background: #fff5f5; color: #cc0000; border-radius: 8px;">
+      <p>No psychologists matched that description. Try broadening your search terms.</p>
+    </div>
+  <% else %>
+    <p style="text-align: center; color: #999;">Enter a description above to begin your semantic search.</p>
+  <% end %>
+
+</div>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_22_030948) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_01_212605) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -336,6 +336,19 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_22_030948) do
     t.index ["psychologist_profile_id"], name: "index_psychologist_languages_on_psychologist_profile_id"
   end
 
+  create_table "psychologist_match_chunks", force: :cascade do |t|
+    t.bigint "psychologist_profile_id", null: false
+    t.text "content", null: false
+    t.string "category"
+    t.bigint "issue_id"
+    t.vector "embedding", limit: 768
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["embedding"], name: "index_psychologist_match_chunks_on_embedding", opclass: :vector_cosine_ops, using: :ivfflat
+    t.index ["issue_id"], name: "index_psychologist_match_chunks_on_issue_id"
+    t.index ["psychologist_profile_id"], name: "index_psychologist_match_chunks_on_psychologist_profile_id"
+  end
+
   create_table "psychologist_profile_reports", force: :cascade do |t|
     t.bigint "psychologist_profile_id", null: false
     t.bigint "reporter_user_id"
@@ -391,8 +404,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_22_030948) do
     t.boolean "has_psychology_degree", default: false, null: false
     t.boolean "supervision", default: false, null: false
     t.string "instagram"
-    t.vector "embedding", limit: 768
-    t.index ["embedding"], name: "index_psychologist_profiles_on_embedding", opclass: :vector_cosine_ops, using: :ivfflat
     t.index ["featured_service_id"], name: "index_psychologist_profiles_on_featured_service_id"
     t.index ["profile_url"], name: "index_psychologist_profiles_on_profile_url", unique: true
     t.index ["user_id"], name: "index_psychologist_profiles_on_user_id"
@@ -550,6 +561,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_22_030948) do
   add_foreign_key "psychologist_issues", "psychologist_profiles"
   add_foreign_key "psychologist_languages", "languages"
   add_foreign_key "psychologist_languages", "psychologist_profiles"
+  add_foreign_key "psychologist_match_chunks", "issues"
+  add_foreign_key "psychologist_match_chunks", "psychologist_profiles"
   add_foreign_key "psychologist_profile_reports", "psychologist_profiles"
   add_foreign_key "psychologist_profile_reports", "users", column: "reporter_user_id"
   add_foreign_key "psychologist_profiles", "services", column: "featured_service_id"

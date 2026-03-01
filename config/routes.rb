@@ -26,6 +26,8 @@ Rails.application.routes.draw do
     post :feedback, on: :member
     collection do
       get :admin  # admin page
+      get  :embedding_search      # page
+      post :run_embedding_search  # executes search
     end
   end
 
