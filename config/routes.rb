@@ -35,6 +35,7 @@ Rails.application.routes.draw do
   get "analytics/index"
   get "analytics/show"
   get "analytics/server_status"
+  get 'analytics/hero-test', to: 'analytics#experiment_stats_hero_button_color_test', as: :hero_button_test_stats
   resources :analytics, only: [] do
     collection do
       get :scroll_stats

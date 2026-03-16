@@ -3,25 +3,61 @@ class PageViewEventsController < ApplicationController
   protect_from_forgery with: :null_session
 
   def create
-    page_view = PageView.find_or_create_by!(
+    # 1. Find or create the parent PageView
+    page_view = find_or_create_page_view
+
+    # 2. Handle the specific event type
+    case params[:event_type]
+    when "scroll"
+      handle_scroll_event(page_view)
+    when "click"
+      handle_click_event(page_view)
+    else
+      # Fallback for generic events
+      page_view.page_view_events.create!(
+        event_type: params[:event_type],
+        metadata: params[:metadata]
+      )
+    end
+
+    head :ok
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { error: e.message }, status: :unprocessable_entity
+  end
+
+  private
+
+  def find_or_create_page_view
+    PageView.find_or_create_by!(
       session_id: session.id.to_s,
       url: params[:url],
-      user: current_user,
-      ip_address: request.headers["X-Forwarded-For"]&.split(",")&.first || request.remote_ip,
-      referrer: request.referrer,
-      user_agent: request.user_agent,
-      viewed_at: Time.current
-    )
+      user: current_user
+    ) do |pv|
+      # These only set on creation
+      pv.ip_address = request.headers["X-Forwarded-For"]&.split(",")&.first || request.remote_ip
+      pv.referrer   = request.referrer
+      pv.user_agent = request.user_agent
+      pv.viewed_at  = Time.current
+    end
+  end
 
-    scroll_percent = params.dig(:metadata, :scroll_percent)&.to_i || 0
-
-    # Only store if new max scroll for this page_view
-    event = PageViewEvent.find_or_initialize_by(page_view: page_view, event_type: "scroll")
+  def handle_scroll_event(page_view)
+    scroll_percent = params.dig(:metadata, :scroll_percent).to_i
+    
+    event = page_view.page_view_events.find_or_initialize_by(event_type: "scroll")
+    
+    # Update only if it's a new record or a deeper scroll
     if event.new_record? || scroll_percent > (event.metadata["scroll_percent"] || 0)
       event.metadata = params[:metadata]
       event.save!
     end
+  end
 
-    head :ok
+  def handle_click_event(page_view)
+    # We create a NEW record for every click
+    page_view.page_view_events.create!(
+      event_type: "click",
+      metadata: params[:metadata] # e.g., { element_id: "buy-btn", text: "Add to Cart" }
+    )
   end
 end

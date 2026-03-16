@@ -1,48 +1,100 @@
-// app/javascript/scroll_tracker.js
+// app/javascript/activity_tracker.js
 
-let maxScrollPercent = 0; // keep track of max scroll per page
+let maxScrollPercent = 0;
 let scrollTimeout = null;
 
-function sendScroll(scrollTop, scrollPercent) {
-  if (!document.querySelector('meta[name="csrf-token"]')) return;
+const getHeaders = () => ({
+  "Content-Type": "application/json",
+  "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')?.content
+});
+
+function sendEvent(type, metadata = {}) {
+  const csrfToken = document.querySelector('meta[name="csrf-token"]');
+  if (!csrfToken) {
+    console.warn("[Tracker] Missing CSRF token. Event not sent.");
+    return;
+  }
 
   fetch("/page_view_events", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
-    },
+    headers: getHeaders(),
     body: JSON.stringify({
-      event_type: "scroll",
+      event_type: type,
       url: window.location.pathname,
-      metadata: { scroll_top: scrollTop, scroll_percent: scrollPercent }
+      metadata: metadata
     })
-  });
-  maxScrollPercent = scrollPercent;
+  }).then(response => {
+    if (response.ok) {
+      console.log(`[Tracker] Successfully sent ${type}:`, metadata);
+    } else {
+      console.error(`[Tracker] Failed to send ${type}. Status: ${response.status}`);
+    }
+  }).catch(err => console.error("[Tracker] Network error:", err));
 }
 
-// Handle scroll, only send if new max
+// --- Click Tracking ---
+function trackClick(e) {
+  const target = e.target.closest('a, button, [data-track-info]');
+  if (!target) return;
+
+  const clickData = {
+    event_name: target.dataset.trackInfo || "unnamed_click",
+    experiment_name: target.dataset.experimentName || null,
+    variant: target.dataset.variant || null,
+    text: target.innerText?.trim().substring(0, 30),
+    element_class: target.className || null
+  };
+
+  sendEvent("click", clickData);
+}
+
+// --- Scroll Tracking ---
 function trackScroll() {
   const scrollTop = window.scrollY;
   const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  if (docHeight <= 0) return;
+
   const scrollPercent = Math.round((scrollTop / docHeight) * 100);
 
   if (scrollPercent > maxScrollPercent) {
     if (scrollTimeout) clearTimeout(scrollTimeout);
-    scrollTimeout = setTimeout(() => sendScroll(scrollTop, scrollPercent), 200);
+    scrollTimeout = setTimeout(() => {
+      sendEvent("scroll", { scroll_top: scrollTop, scroll_percent: scrollPercent });
+      maxScrollPercent = scrollPercent;
+    }, 1000); // 1s debounce to avoid spamming logs
   }
 }
 
-// Attach listeners safely on Turbo page load
-function initScrollTracker() {
+// --- Lifecycle & Impression Management ---
+function initTrackers() {
   maxScrollPercent = 0;
+  console.log("[Tracker] Initializing for page:", window.location.pathname);
 
-  // Remove previous listener if exists to prevent duplicates
+  // 1. Record Impressions
+  const experimentElements = document.querySelectorAll('[data-experiment-name]');
+  const recordedExperiments = new Set();
+
+  experimentElements.forEach(el => {
+    const expName = el.dataset.experimentName;
+    const variant = el.dataset.variant;
+
+    if (expName && !recordedExperiments.has(expName)) {
+      sendEvent("experiment_impression", {
+        experiment_name: expName,
+        variant: variant
+      });
+      recordedExperiments.add(expName);
+    }
+  });
+
+  // 2. Listeners
   window.removeEventListener("scroll", trackScroll);
+  document.removeEventListener("click", trackClick);
+
   window.addEventListener("scroll", trackScroll);
+  document.addEventListener("click", trackClick);
 }
 
-// Send final scroll on page exit
 function sendFinalScroll() {
   const scrollTop = window.scrollY;
   const docHeight = document.documentElement.scrollHeight - window.innerHeight;
@@ -55,9 +107,9 @@ function sendFinalScroll() {
       metadata: { scroll_top: scrollTop, scroll_percent: scrollPercent }
     });
     navigator.sendBeacon("/page_view_events", beaconData);
+    console.log("[Tracker] Sent final scroll via Beacon:", scrollPercent);
   }
 }
 
-// Turbo-safe initialization
-document.addEventListener("turbo:load", initScrollTracker);
+document.addEventListener("turbo:load", initTrackers);
 window.addEventListener("beforeunload", sendFinalScroll);

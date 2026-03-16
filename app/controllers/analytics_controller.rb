@@ -1,20 +1,19 @@
 class AnalyticsController < ApplicationController
-  # def scroll_stats
-  #   @stats = PageViewEvent
-  #     .joins(:page_view)
-  #     .where(event_type: "scroll")
-  #     .group(Arel.sql("page_views.url"))
-  #     .pluck(
-  #       Arel.sql("page_views.url"),
-  #       Arel.sql("AVG((metadata->>'scroll_percent')::float)")
-  #     )
-  #     .map { |url, avg_scroll| { url: url, avg_scroll: avg_scroll.to_f.round(1) } }
+  
+  # app/controllers/analytics_controller.rb
+  def experiment_stats_hero_button_color_test
+    @target_experiment = "hero_button_color_test" 
 
-  #   respond_to do |format|
-  #     format.html
-  #     format.json { render json: @stats }
-  #   end
-  # end
+    @hero_test_stats = PageViewEvent.where("metadata->>'experiment_name' = ?", @target_experiment)
+      .select(
+        "metadata->>'variant' AS variant",
+        "metadata->>'event_name' AS btn_name",
+        "COUNT(DISTINCT page_view_id) FILTER (WHERE event_type = 'experiment_impression') AS impressions",
+        "COUNT(CASE WHEN event_type = 'click' THEN 1 END) AS clicks"
+      )
+      .group("metadata->>'variant'", "metadata->>'event_name'")
+      .group_by(&:variant)
+  end
 
   def scroll_stats
     events = PageViewEvent.joins(:page_view).where(event_type: "scroll")

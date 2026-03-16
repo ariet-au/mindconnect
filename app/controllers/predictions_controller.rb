@@ -86,28 +86,24 @@ LABEL_TRANSLATIONS = {
 
     query_embedding = EmbeddingService.generate_for_query(query)
     vector_string = "[#{query_embedding.join(',')}]"
-    distance_sql = "embedding <=> '#{vector_string}'::vector"
 
-    # Cleanly sanitize the keyword boost
-    search_query = "%#{query}%"
-    keyword_boost = PsychologistProfile.sanitize_sql_array([
-      "CASE WHEN about_me ILIKE ? THEN 1.0 ELSE 0.0 END", 
-      search_query
-    ])
-
-    # We alias the whole equation directly as 'similarity_score'
-    @psychologists = PsychologistProfile
+    # Select best similarity per profile
+    chunks_with_distance = PsychologistMatchChunk
       .select(
-        "id", 
-        "first_name", 
-        "last_name", 
-        "about_me", 
-        "((1 - (#{distance_sql})) + #{keyword_boost}) AS similarity_score"
+        "psychologist_profile_id, MIN(embedding <=> '#{vector_string}'::vector) AS min_distance"
       )
-      .where.not(embedding: nil)
-      .order(Arel.sql("similarity_score DESC"))
+      .group(:psychologist_profile_id)
+
+    # Join back to profiles
+    @psychologists = PsychologistProfile
+      .joins("INNER JOIN (#{chunks_with_distance.to_sql}) AS chunk_match ON chunk_match.psychologist_profile_id = psychologist_profiles.id")
+      .select(
+        "psychologist_profiles.*",
+        "(1 - chunk_match.min_distance) AS similarity_score"
+      )
+      .order("similarity_score DESC")
       .limit(10)
-      .to_a 
+      .to_a
 
     @execution_time = (Process.clock_gettime(Process::CLOCK_MONOTONIC) - start_time).round(3)
     @result_count   = @psychologists.size

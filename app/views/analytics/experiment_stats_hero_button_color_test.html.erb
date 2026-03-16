@@ -1,0 +1,62 @@
+<div class="analytics-dashboard" style="padding: 20px; font-family: sans-serif;">
+  <h1 style="border-bottom: 2px solid #333;">Experiment: <%= @target_experiment.titleize %></h1>
+
+  <% if @hero_test_stats.empty? %>
+    <p>No data recorded yet.</p>
+  <% else %>
+    <div style="display: flex; gap: 30px; margin-top: 20px;">
+      <% ["A", "B"].each do |v_letter| %>
+        <% 
+          variant_results = @hero_test_stats[v_letter] || [] 
+          # Calculate the baseline impressions (total people who saw this variant)
+          total_impressions = variant_results.sum { |r| r.impressions.to_i }
+        %>
+        
+        <div style="flex: 1; border: 1px solid #ccc; border-radius: 12px; overflow: hidden; background: #f9f9f9;">
+          <h2 style="background: <%= v_letter == 'A' ? '#3498db' : '#9b59b6' %>; color: white; margin: 0; padding: 15px; text-align: center;">
+            Variant <%= v_letter %>
+          </h2>
+          
+          <div style="padding: 20px;">
+            <p style="font-size: 1.2em; text-align: center;">
+              <strong>Total Unique Visitors:</strong> <%= total_impressions %>
+            </p>
+            <hr>
+
+            <h3 style="font-size: 0.9em; color: #666; text-transform: uppercase;">Button Breakdown</h3>
+            
+            <% variant_results.each do |row| %>
+              <%# Only show rows that actually have a button name (clicks) %>
+              <% next if row.btn_name.blank? %>
+              
+              <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <strong style="color: #2c3e50;"><%= row.btn_name.gsub('hero_', '').titleize %></strong>
+                  <span style="background: #eee; padding: 2px 8px; border-radius: 12px; font-size: 0.8em;">
+                    <%= row.clicks %> clicks
+                  </span>
+                </div>
+
+                <% ctr = total_impressions > 0 ? (row.clicks.to_f / total_impressions * 100).round(2) : 0 %>
+                
+                <div style="margin-top: 10px;">
+                  <div style="display: flex; justify-content: space-between; font-size: 0.85em; margin-bottom: 4px;">
+                    <span>Click-through Rate</span>
+                    <strong><%= ctr %>%</strong>
+                  </div>
+                  <div style="background: #eee; height: 8px; border-radius: 4px; overflow: hidden;">
+                    <div style="background: #2ecc71; width: <%= [ctr * 2, 100].min %>%; height: 100%;"></div>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+
+            <% if variant_results.none? { |r| r.btn_name.present? } %>
+              <p style="color: #999; font-style: italic; text-align: center;">No clicks recorded yet.</p>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

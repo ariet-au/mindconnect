@@ -604,6 +604,11 @@ body {
   visibility: visible;
 }
 
+.tag.is-info {
+  background-color: #23be4ad5;
+  color: #fff;
+}
+
 .specialty-link {
   text-decoration: none;
   color: inherit;
@@ -721,6 +726,11 @@ body {
     padding: 8px 14px;
   }
 }
+
+.btn-accent {
+  background: #4DB6AC;
+  color: white;
+}
 </style>
 
 <section class="hero-section">
@@ -745,10 +755,27 @@ body {
       <p id="location-text">
         <%= t('home.hero.subtitle', location_text: location_text) %>
       </p>
-    <div class="hero-buttons">
-      <a href="<%= psychologist_profiles_path %>" class="btn btn-primary"><%= t('home.hero.search_button') %></a>
-      <a href="<%= pages_about_for_psych_path %>" class="btn btn-secondary"><%= t('home.hero.join_button') %></a>
-    </div>
+<% session[:hero_button_test] ||= ["A","B"].sample %>
+
+<div class="hero-buttons">
+  <%# Search Button Experiment %>
+  <a href="<%= psychologist_profiles_path %>"
+     class="btn <%= session[:hero_button_test] == 'A' ? 'btn-primary' : 'btn-accent' %>"
+     data-track-info="hero_find_psychologist_button"
+     data-experiment-name="hero_button_color_test"
+     data-variant="<%= session[:hero_button_test] %>">
+     <%= t('home.hero.search_button') %>
+  </a>
+
+  <%# Join Button Experiment (Recording the same variant or a fixed one) %>
+  <a href="<%= pages_about_for_psych_path %>" 
+     class="btn btn-secondary"
+     data-track-info="hero_join_psychologist_button"
+     data-experiment-name="hero_button_color_test"
+     data-variant="<%= session[:hero_button_test] %>">
+    <%= t('home.hero.join_button') %>
+  </a>
+</div>
     <div class="hero-buttons">
           <a href="<%= new_prediction_path %>" class="button is-primary is-light is-medium has-text-weight-bold">
             <span class="icon">

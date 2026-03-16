@@ -1,0 +1,28 @@
+<!-- app/views/psychologist_match_chunks/index.html.erb -->
+<h2>Chunks for <%= @profile.first_name %> <%= @profile.last_name %></h2>
+
+<%= link_to "Add New Chunk", new_psychologist_profile_chunk_path(@profile), class: "button" %>
+
+<table>
+  <thead>
+    <tr>
+      <th>Content</th>
+      <th>Category</th>
+      <th>Possible Issue</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @chunks.each do |chunk| %>
+      <tr>
+        <td><%= truncate(chunk.content, length: 100) %></td>
+        <td><%= chunk.category %></td>
+        <td><%= chunk.possible_issue&.name %></td>
+        <td>
+          <%= link_to "Edit", edit_psychologist_profile_chunk_path(@profile, chunk) %> |
+          <%= link_to "Delete", psychologist_profile_chunk_path(@profile, chunk), method: :delete, data: { confirm: "Are you sure?" } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
