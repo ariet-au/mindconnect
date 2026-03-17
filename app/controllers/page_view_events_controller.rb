@@ -28,17 +28,25 @@ class PageViewEventsController < ApplicationController
   private
 
   def find_or_create_page_view
-    PageView.find_or_create_by!(
+    # 1. Find the record or create it
+    page_view = PageView.find_or_create_by!(
       session_id: session.id.to_s,
-      url: params[:url],
-      user: current_user
+      url: params[:url]
     ) do |pv|
-      # These only set on creation
+      # This only runs on the VERY first hit of the session
+      pv.user = current_user
       pv.ip_address = request.headers["X-Forwarded-For"]&.split(",")&.first || request.remote_ip
       pv.referrer   = request.referrer
       pv.user_agent = request.user_agent
       pv.viewed_at  = Time.current
     end
+
+    # 2. ALWAYS ensure the visitor_id is set (even if the record was found)
+    if page_view.visitor_id.blank?
+      page_view.update_column(:visitor_id, current_visitor_id)
+    end
+
+    page_view
   end
 
   def handle_scroll_event(page_view)

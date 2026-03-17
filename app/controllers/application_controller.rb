@@ -14,8 +14,10 @@ class ApplicationController < ActionController::Base
 
   helper_method :current_currency
   before_action :set_locale
+  helper_method :current_visitor_id
+  helper_method :hero_test_group
+  helper_method :browser_timezone_from_session
 
-  
 
 
 
@@ -44,13 +46,18 @@ class ApplicationController < ActionController::Base
     end
 
     # Add this helper to access the browser timezone from anywhere in your app
-    helper_method :browser_timezone_from_session
 
     def browser_timezone_from_session
       session[:browser_timezone] || cookies[:browser_timezone]
     end
-
-
+  
+    
+  # experiement shit
+  def hero_test_group
+    # This turns the visitor_id into a stable "A" or "B"
+    # No randomness, no session storage.
+    Zlib.crc32(current_visitor_id) % 2 == 0 ? "A" : "B"
+  end
   protected
 
   def configure_permitted_parameters
@@ -120,21 +127,40 @@ class ApplicationController < ActionController::Base
 
     locale_map[country_code]
   end
+  # 1. NEW: Generate or retrieve the visitor_id
+  def current_visitor_id
+    if cookies[:analytics_consent] == 'true'
+      # Path A: Consent given. Use a permanent signed cookie.
+      # This allows tracking the same person for years.
+      cookies.permanent.signed[:visitor_id] ||= SecureRandom.uuid
+    else
+      # Path B: No consent. Generate an ID that only lasts for today.
+      # It uses IP + UA so it's stable for this visit but expires tomorrow.
+      generate_ephemeral_id
+    end
+  end
 
+  def generate_ephemeral_id
+    salt = Rails.application.credentials.secret_key_base || "temporary_salt"
+    # Create a 13-character hash unique to this IP/UA/Date combination
+    Digest::SHA256.hexdigest("#{request.remote_ip}-#{request.user_agent}-#{Date.today}-#{salt}")[0..12]
+  end
+  
   def track_page_view
-    # Skip logging for assets and AJAX calls if you want
     return if request.path.starts_with?("/assets") || request.xhr?
 
+    # Ensure we only track if it's a real person or we are okay with anonymous stats
     PageView.create!(
+      visitor_id: current_visitor_id, 
       user: current_user,
-      session_id: session.id,
+      session_id: session.id.to_s,
       url: request.fullpath,
-      referrer: request.referrer,
       ip_address: request.remote_ip,
       user_agent: request.user_agent,
       viewed_at: Time.current
     )
   rescue => e
+    # Check your terminal/logs right now! If this fails, the error will pop up here.
     Rails.logger.error("PageView tracking failed: #{e.message}")
   end
 
@@ -144,6 +170,7 @@ class ApplicationController < ActionController::Base
     session_id_str = session.id.to_s  # <-- convert to string
 
     @user_session ||= UserSession.find_or_create_by(session_id: session_id_str) do |s|
+      s.visitor_id = current_visitor_id # <--- Added this
       s.user = current_user
       s.started_at = Time.current
       s.device_type = request.user_agent&.match(/Mobile|Android|iPhone/) ? "mobile" : "desktop"

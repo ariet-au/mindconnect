@@ -1,58 +1,83 @@
-<div class="analytics-dashboard" style="padding: 20px; font-family: sans-serif;">
-  <h1 style="border-bottom: 2px solid #333;">Experiment: <%= @target_experiment.titleize %></h1>
+<div class="analytics-dashboard" style="padding: 20px; font-family: sans-serif; color: #2c3e50;">
+  <h1 style="border-bottom: 2px solid #eee; padding-bottom: 10px;">
+    Experiment: <%= @target_experiment.titleize %>
+  </h1>
 
   <% if @hero_test_stats.empty? %>
-    <p>No data recorded yet.</p>
+    <div style="padding: 40px; text-align: center; background: #f9f9f9; border-radius: 12px;">
+      <p>No data recorded yet. Start browsing to generate stats!</p>
+    </div>
   <% else %>
+    <% 
+      # 1. Group the array so we can loop through A and B easily
+      grouped_data = @hero_test_stats.group_by(&:variant) 
+      
+      # 2. Calculate Global Unique Visitors (sum of unique visitors in each variant)
+      global_visitors = ["A", "B"].sum { |v| (grouped_data[v] || []).sum { |r| r.impressions.to_i } }
+    %>
+
+    <div style="background: #2c3e50; color: white; padding: 20px; border-radius: 12px; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between;">
+      <div>
+        <h3 style="margin: 0; text-transform: uppercase; font-size: 0.8em; opacity: 0.8;">Total Experiment Reach</h3>
+        <div style="font-size: 2.5em; font-weight: bold;"><%= number_with_delimiter(global_visitors) %></div>
+      </div>
+      <div style="text-align: right; opacity: 0.8; font-size: 0.9em;">
+        Tracking Unique Visitor IDs<br>
+        (Deterministic Allocation)
+      </div>
+    </div>
+
     <div style="display: flex; gap: 30px; margin-top: 20px;">
       <% ["A", "B"].each do |v_letter| %>
         <% 
-          variant_results = @hero_test_stats[v_letter] || [] 
-          # Calculate the baseline impressions (total people who saw this variant)
+          variant_results = grouped_data[v_letter] || [] 
+          # Calculate the baseline impressions for THIS variant
           total_impressions = variant_results.sum { |r| r.impressions.to_i }
+          
+          # Use your requested colors
+          variant_color = (v_letter == 'A' ? '#1a2a6c' : '#008080') # Dark Blue vs Teal
         %>
         
-        <div style="flex: 1; border: 1px solid #ccc; border-radius: 12px; overflow: hidden; background: #f9f9f9;">
-          <h2 style="background: <%= v_letter == 'A' ? '#3498db' : '#9b59b6' %>; color: white; margin: 0; padding: 15px; text-align: center;">
+        <div style="flex: 1; border: 1px solid #eee; border-radius: 12px; overflow: hidden; background: #fff; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+          <h2 style="background: <%= variant_color %>; color: white; margin: 0; padding: 15px; text-align: center; font-size: 1.2em;">
             Variant <%= v_letter %>
           </h2>
           
           <div style="padding: 20px;">
-            <p style="font-size: 1.2em; text-align: center;">
-              <strong>Total Unique Visitors:</strong> <%= total_impressions %>
-            </p>
-            <hr>
+            <div style="text-align: center; margin-bottom: 20px;">
+              <span style="color: #999; text-transform: uppercase; font-size: 0.75em; font-weight: bold;">Unique Visitors</span>
+              <div style="font-size: 2em; font-weight: bold;"><%= total_impressions %></div>
+            </div>
 
-            <h3 style="font-size: 0.9em; color: #666; text-transform: uppercase;">Button Breakdown</h3>
+            <h3 style="font-size: 0.8em; color: #aaa; text-transform: uppercase; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 15px;">Button Performance</h3>
             
             <% variant_results.each do |row| %>
-              <%# Only show rows that actually have a button name (clicks) %>
               <% next if row.btn_name.blank? %>
               
-              <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #eee;">
+              <div style="background: #fcfcfc; padding: 15px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #f0f0f0;">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
-                  <strong style="color: #2c3e50;"><%= row.btn_name.gsub('hero_', '').titleize %></strong>
-                  <span style="background: #eee; padding: 2px 8px; border-radius: 12px; font-size: 0.8em;">
-                    <%= row.clicks %> clicks
+                  <strong style="color: #34495e;"><%= row.btn_name.gsub('hero_', '').titleize %></strong>
+                  <span style="font-weight: bold; color: <%= variant_color %>;">
+                    <%= row.clicks %> <small style="font-weight: normal; color: #999;">clicks</small>
                   </span>
                 </div>
 
                 <% ctr = total_impressions > 0 ? (row.clicks.to_f / total_impressions * 100).round(2) : 0 %>
                 
                 <div style="margin-top: 10px;">
-                  <div style="display: flex; justify-content: space-between; font-size: 0.85em; margin-bottom: 4px;">
-                    <span>Click-through Rate</span>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.8em; margin-bottom: 4px; color: #7f8c8d;">
+                    <span>Conversion Rate</span>
                     <strong><%= ctr %>%</strong>
                   </div>
-                  <div style="background: #eee; height: 8px; border-radius: 4px; overflow: hidden;">
-                    <div style="background: #2ecc71; width: <%= [ctr * 2, 100].min %>%; height: 100%;"></div>
+                  <div style="background: #eee; height: 6px; border-radius: 3px; overflow: hidden;">
+                    <div style="background: <%= variant_color %>; width: <%= [ctr * 3, 100].min %>%; height: 100%; opacity: 0.8;"></div>
                   </div>
                 </div>
               </div>
             <% end %>
 
             <% if variant_results.none? { |r| r.btn_name.present? } %>
-              <p style="color: #999; font-style: italic; text-align: center;">No clicks recorded yet.</p>
+              <p style="color: #ccc; font-style: italic; text-align: center; padding: 20px;">Waiting for first click...</p>
             <% end %>
           </div>
         </div>
@@ -61,27 +86,23 @@
   <% end %>
 </div>
 
+<div style="margin: 40px 20px; border-top: 2px solid #eee; padding-top: 30px;">
+  <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 30px; border-radius: 16px; display: flex; align-items: center; justify-content: space-between;">
+    <div style="max-width: 60%;">
+      <h3 style="margin-top: 0; color: #1e293b;">Is it significant?</h3>
+      <p style="font-size: 0.95em; line-height: 1.5; color: #64748b;">
+        Using <strong>Bayesian Monte Carlo simulations</strong> (10k runs). 
+        This analyzes the probability that Variant B is truly better than Variant A, 
+        accounting for the volume of visitors and current conversion trends.
+      </p>
+    </div>
 
-<div style="margin-top: 40px; border-top: 2px solid #eee; padding-top: 20px;">
-  <div style="background: #fcfcfc; border: 1px solid #ddd; padding: 25px; border-radius: 12px;">
-    <h3 style="margin-top: 0;">Statistical Confidence</h3>
-    
-    <div style="display: flex; align-items: center; gap: 40px;">
-      <div style="flex: 1;">
-        <p><strong>Methodology: Bayesian Inference</strong></p>
-        <p style="font-size: 0.9em; color: #555;">
-          Instead of looking for a "p-value," we simulated 10,000 future scenarios based on your current click data. 
-          The score on the right represents the percentage of those scenarios where <strong>Variant B</strong> outperformed Variant A.
-        </p>
+    <div style="text-align: center; padding: 20px; background: white; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); min-width: 220px;">
+      <div style="font-size: 3.5em; font-weight: 900; color: <%= @bayesian_results[:prob_b_better] > 90 ? '#008080' : '#64748b' %>;">
+        <%= @bayesian_results[:prob_b_better] %>%
       </div>
-
-      <div style="text-align: center; min-width: 200px;">
-        <div style="font-size: 3em; font-weight: bold; color: <%= @bayesian_results[:prob_b_better] > 95 ? '#27ae60' : '#2c3e50' %>;">
-          <%= @bayesian_results[:prob_b_better] %>%
-        </div>
-        <div style="text-transform: uppercase; letter-spacing: 1px; font-size: 0.8em; color: #999;">
-          Chance of Beating A
-        </div>
+      <div style="text-transform: uppercase; letter-spacing: 2px; font-size: 0.75em; font-weight: bold; color: #94a3b8; margin-top: -5px;">
+        Probability B wins
       </div>
     </div>
   </div>

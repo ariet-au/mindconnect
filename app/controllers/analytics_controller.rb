@@ -1,20 +1,41 @@
 class AnalyticsController < ApplicationController
   
   # app/controllers/analytics_controller.rb
+  # def experiment_stats_hero_button_color_test
+  #   @target_experiment = "hero_button_color_test" 
+
+  #   @hero_test_stats = PageViewEvent.where("metadata->>'experiment_name' = ?", @target_experiment)
+  #     .select(
+  #       "metadata->>'variant' AS variant",
+  #       "metadata->>'event_name' AS btn_name",
+  #       "COUNT(DISTINCT page_view_id) FILTER (WHERE event_type = 'experiment_impression') AS impressions",
+  #       "COUNT(CASE WHEN event_type = 'click' THEN 1 END) AS clicks"
+  #     )
+  #     .group("metadata->>'variant'", "metadata->>'event_name'")
+  #     .group_by(&:variant)
+
+  #    @bayesian_results = calculate_bayesian(@hero_test_stats) 
+  # end
   def experiment_stats_hero_button_color_test
     @target_experiment = "hero_button_color_test" 
 
-    @hero_test_stats = PageViewEvent.where("metadata->>'experiment_name' = ?", @target_experiment)
+    # We use a subquery or a direct join to ensure we get the visitor_id 
+    # even if the record was created anonymously
+    @hero_test_stats = PageViewEvent
+      .joins(:page_view)
+      .where("page_view_events.metadata->>'experiment_name' = ?", @target_experiment)
       .select(
-        "metadata->>'variant' AS variant",
-        "metadata->>'event_name' AS btn_name",
-        "COUNT(DISTINCT page_view_id) FILTER (WHERE event_type = 'experiment_impression') AS impressions",
-        "COUNT(CASE WHEN event_type = 'click' THEN 1 END) AS clicks"
+        "page_view_events.metadata->>'variant' AS variant",
+        "page_view_events.metadata->>'event_name' AS btn_name",
+        # Count the unique visitor IDs associated with the impressions
+        "COUNT(DISTINCT page_views.visitor_id) FILTER (WHERE event_type = 'experiment_impression') AS impressions",
+        # Count the unique visitor IDs associated with the clicks
+        "COUNT(DISTINCT page_views.visitor_id) FILTER (WHERE event_type = 'click') AS clicks"
       )
-      .group("metadata->>'variant'", "metadata->>'event_name'")
-      .group_by(&:variant)
+      .group("page_view_events.metadata->>'variant'", "page_view_events.metadata->>'event_name'")
+      .to_a
 
-     @bayesian_results = calculate_bayesian(@hero_test_stats) 
+    @bayesian_results = calculate_bayesian(@hero_test_stats) 
   end
 
   def scroll_stats
@@ -127,18 +148,53 @@ psych_stats = events
 
   private
 
+  # def calculate_bayesian(stats)
+  #   # 1. Aggregate totals for Variant A and B
+  #   data = {}
+  #   ["A", "B"].each do |v|
+  #     results = stats[v] || []
+  #     clicks = results.sum { |r| r.clicks.to_i }
+  #     imps = results.sum { |r| r.impressions.to_i }
+  #     # Alpha = Clicks + 1 | Beta = (Impressions - Clicks) + 1
+  #     data[v] = { a: clicks + 1.0, b: (imps - clicks) + 1.0 }
+  #   end
+
+  #   # 2. Run Simulation
+  #   b_wins = 0
+  #   simulations = 10_000
+
+  #   simulations.times do
+  #     sample_a = beta_sample(data["A"][:a], data["A"][:b])
+  #     sample_b = beta_sample(data["B"][:a], data["B"][:b])
+  #     b_wins += 1 if sample_b > sample_a
+  #   end
+
+  #   { prob_b_better: (b_wins.to_f / simulations * 100).round(2) }
+  # end
+  
+
   def calculate_bayesian(stats)
-    # 1. Aggregate totals for Variant A and B
     data = {}
+    
+    # 1. Convert the array from the query into a Hash grouped by "A" and "B"
+    grouped_stats = stats.group_by(&:variant)
+
     ["A", "B"].each do |v|
-      results = stats[v] || []
-      clicks = results.sum { |r| r.clicks.to_i }
-      imps = results.sum { |r| r.impressions.to_i }
-      # Alpha = Clicks + 1 | Beta = (Impressions - Clicks) + 1
-      data[v] = { a: clicks + 1.0, b: (imps - clicks) + 1.0 }
+      results = grouped_stats[v] || []
+      
+      # 2. Sum the 'clicks' and 'impressions' using the new names from your SQL
+      clicks_count = results.sum { |r| r.clicks.to_i }
+      imps_count   = results.sum { |r| r.impressions.to_i }
+
+      # 3. Alpha = Success + 1 | Beta = (Total - Success) + 1
+      # We use .abs to prevent negative numbers if tracking is slightly off
+      data[v] = { 
+        a: clicks_count + 1.0, 
+        b: (imps_count - clicks_count).abs + 1.0 
+      }
     end
 
-    # 2. Run Simulation
+    # --- Simulation Logic (This part stays the same) ---
     b_wins = 0
     simulations = 10_000
 

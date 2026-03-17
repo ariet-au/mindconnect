@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_01_212605) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_17_194051) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_trgm"
@@ -272,8 +272,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_01_212605) do
     t.datetime "viewed_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "visitor_id"
     t.index ["user_id"], name: "index_page_views_on_user_id"
     t.index ["viewed_at"], name: "index_page_views_on_viewed_at"
+    t.index ["visitor_id"], name: "index_page_views_on_visitor_id"
   end
 
   create_table "predictions", force: :cascade do |t|
@@ -503,8 +505,10 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_01_212605) do
     t.string "device_type"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "visitor_id"
     t.index ["started_at"], name: "index_user_sessions_on_started_at"
     t.index ["user_id"], name: "index_user_sessions_on_user_id"
+    t.index ["visitor_id"], name: "index_user_sessions_on_visitor_id"
   end
 
   create_table "users", force: :cascade do |t|

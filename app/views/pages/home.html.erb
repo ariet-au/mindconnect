@@ -755,24 +755,25 @@ body {
       <p id="location-text">
         <%= t('home.hero.subtitle', location_text: location_text) %>
       </p>
-<% session[:hero_button_test] ||= ["A","B"].sample %>
+<%# We fetch the consistent group (A or B) from the controller helper %>
+<% current_group = hero_test_group %>
 
 <div class="hero-buttons">
   <%# Search Button Experiment %>
   <a href="<%= psychologist_profiles_path %>"
-     class="btn <%= session[:hero_button_test] == 'A' ? 'btn-primary' : 'btn-accent' %>"
+     class="btn <%= current_group == 'A' ? 'btn-primary' : 'btn-accent' %>"
      data-track-info="hero_find_psychologist_button"
      data-experiment-name="hero_button_color_test"
-     data-variant="<%= session[:hero_button_test] %>">
+     data-variant="<%= current_group %>">
      <%= t('home.hero.search_button') %>
   </a>
 
-  <%# Join Button Experiment (Recording the same variant or a fixed one) %>
+  <%# Join Button Experiment %>
   <a href="<%= pages_about_for_psych_path %>" 
      class="btn btn-secondary"
      data-track-info="hero_join_psychologist_button"
      data-experiment-name="hero_button_color_test"
-     data-variant="<%= session[:hero_button_test] %>">
+     data-variant="<%= current_group %>">
     <%= t('home.hero.join_button') %>
   </a>
 </div>
