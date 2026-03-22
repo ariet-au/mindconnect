@@ -1,4 +1,5 @@
 class PsychologistMatchChunksController < ApplicationController
+  before_action :authenticate_user! 
   before_action :set_profile
   before_action :authorize_user!      # ← add this
   before_action :set_chunk, only: [:update, :destroy]
@@ -39,6 +40,11 @@ class PsychologistMatchChunksController < ApplicationController
   end
 
   private
+  def authorize_user!
+    unless current_user == @profile.user
+      redirect_to root_path, alert: "You are not authorized to view these chunks."
+    end
+  end
 
   def set_profile
     @profile = PsychologistProfile.find(params[:psychologist_profile_id])
