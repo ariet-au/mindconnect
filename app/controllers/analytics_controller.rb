@@ -1,21 +1,5 @@
 class AnalyticsController < ApplicationController
-  
-  # app/controllers/analytics_controller.rb
-  # def experiment_stats_hero_button_color_test
-  #   @target_experiment = "hero_button_color_test" 
 
-  #   @hero_test_stats = PageViewEvent.where("metadata->>'experiment_name' = ?", @target_experiment)
-  #     .select(
-  #       "metadata->>'variant' AS variant",
-  #       "metadata->>'event_name' AS btn_name",
-  #       "COUNT(DISTINCT page_view_id) FILTER (WHERE event_type = 'experiment_impression') AS impressions",
-  #       "COUNT(CASE WHEN event_type = 'click' THEN 1 END) AS clicks"
-  #     )
-  #     .group("metadata->>'variant'", "metadata->>'event_name'")
-  #     .group_by(&:variant)
-
-  #    @bayesian_results = calculate_bayesian(@hero_test_stats) 
-  # end
   def experiment_stats_hero_button_color_test
     @target_experiment = "hero_button_color_test" 
 
@@ -42,25 +26,25 @@ class AnalyticsController < ApplicationController
     events = PageViewEvent.joins(:page_view).where(event_type: "scroll")
 
     # --- Psychologist profile pages ---
-psych_stats = events
-  .where("page_views.url ~ ?", %r{^/(?:en|ru|kg)?/psychologist_profiles/\d+$}.source)
-  .select(
-    Arel.sql("substring(page_views.url from '/psychologist_profiles/([0-9]+)$')::int AS profile_id"),
-    Arel.sql("regexp_replace(page_views.url, '^/(en|ru|kg)/', '/', 'g') AS normalized_url"),
-    Arel.sql("AVG((metadata->>'scroll_percent')::float) AS avg_scroll"),
-    Arel.sql("psychologist_profiles.first_name"),
-    Arel.sql("psychologist_profiles.last_name")
-  )
-  .joins("LEFT JOIN psychologist_profiles ON psychologist_profiles.id = 
-          substring(page_views.url from '/psychologist_profiles/([0-9]+)$')::int")
-  .group("normalized_url, profile_id, psychologist_profiles.first_name, psychologist_profiles.last_name")
-  .map do |record|
-    {
-      url: record.normalized_url,
-      label: "##{record.profile_id} #{record.first_name} #{record.last_name}",
-      avg_scroll: record.avg_scroll.to_f.round(1)
-    }
-  end
+    psych_stats = events
+    .where("page_views.url ~ ?", %r{^/(?:en|ru|kg)?/psychologist_profiles/\d+$}.source)
+    .select(
+      Arel.sql("substring(page_views.url from '/psychologist_profiles/([0-9]+)$')::int AS profile_id"),
+      Arel.sql("regexp_replace(page_views.url, '^/(en|ru|kg)/', '/', 'g') AS normalized_url"),
+      Arel.sql("AVG((metadata->>'scroll_percent')::float) AS avg_scroll"),
+      Arel.sql("psychologist_profiles.first_name"),
+      Arel.sql("psychologist_profiles.last_name")
+    )
+    .joins("LEFT JOIN psychologist_profiles ON psychologist_profiles.id = 
+            substring(page_views.url from '/psychologist_profiles/([0-9]+)$')::int")
+    .group("normalized_url, profile_id, psychologist_profiles.first_name, psychologist_profiles.last_name")
+    .map do |record|
+      {
+        url: record.normalized_url,
+        label: "##{record.profile_id} #{record.first_name} #{record.last_name}",
+        avg_scroll: record.avg_scroll.to_f.round(1)
+      }
+    end
 
 
 
@@ -148,29 +132,6 @@ psych_stats = events
 
   private
 
-  # def calculate_bayesian(stats)
-  #   # 1. Aggregate totals for Variant A and B
-  #   data = {}
-  #   ["A", "B"].each do |v|
-  #     results = stats[v] || []
-  #     clicks = results.sum { |r| r.clicks.to_i }
-  #     imps = results.sum { |r| r.impressions.to_i }
-  #     # Alpha = Clicks + 1 | Beta = (Impressions - Clicks) + 1
-  #     data[v] = { a: clicks + 1.0, b: (imps - clicks) + 1.0 }
-  #   end
-
-  #   # 2. Run Simulation
-  #   b_wins = 0
-  #   simulations = 10_000
-
-  #   simulations.times do
-  #     sample_a = beta_sample(data["A"][:a], data["A"][:b])
-  #     sample_b = beta_sample(data["B"][:a], data["B"][:b])
-  #     b_wins += 1 if sample_b > sample_a
-  #   end
-
-  #   { prob_b_better: (b_wins.to_f / simulations * 100).round(2) }
-  # end
   
 
   def calculate_bayesian(stats)

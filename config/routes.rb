@@ -203,6 +203,8 @@ Rails.application.routes.draw do
       collection do
         post 'toggle_filter'
       end
+
+      resources :psychologist_match_chunks
     end
 
     # Psychologist dashboard

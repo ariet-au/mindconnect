@@ -993,6 +993,11 @@ body {
             <i class="fas fa-list"></i>
             <span><%= t('psychologist_profiles.show.my_services') %></span>
         <% end %>
+
+        <%= link_to psychologist_profile_psychologist_match_chunks_path(@psychologist_profile), class: "button is-small is-secondary" do %>
+            <i class="fas fa-list"></i>
+            <span><%= t('psychologist_profiles.show.my_chunks') %></span>
+        <% end %>
     </div>
 <% end %>
 

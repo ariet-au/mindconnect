@@ -51,7 +51,7 @@ class PsychologistProfile < ApplicationRecord
   has_many :articles, dependent: :destroy
   has_many :psychologist_profile_reports, dependent: :destroy
 
-
+  has_many :psychologist_match_chunks, dependent: :destroy
 
   #after_commit :generate_embedding_if_needed, on: [:create, :update]
 

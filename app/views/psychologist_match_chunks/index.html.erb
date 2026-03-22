@@ -1,28 +1,71 @@
-<!-- app/views/psychologist_match_chunks/index.html.erb -->
-<h2>Chunks for <%= @profile.first_name %> <%= @profile.last_name %></h2>
+<h2>Chunks for <%= @profile.full_name %></h2>
 
-<%= link_to "Add New Chunk", new_psychologist_profile_chunk_path(@profile), class: "button" %>
+<!-- New Chunk Form -->
+<%= form_with(model: [@profile, @new_chunk], local: false) do |f| %>
+  <div>
+    <%= f.text_area :content, placeholder: "New chunk content" %>
+  </div>
+  <div>
+    <%= f.text_field :category, placeholder: "Category" %>
+    <%= f.collection_select :issue_id, Issue.all, :id, :name, include_blank: true %>
+  </div>
+  <div>
+    <%= f.submit "Add Chunk" %>
+  </div>
+<% end %>
 
-<table>
-  <thead>
-    <tr>
-      <th>Content</th>
-      <th>Category</th>
-      <th>Possible Issue</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody>
-    <% @chunks.each do |chunk| %>
-      <tr>
-        <td><%= truncate(chunk.content, length: 100) %></td>
-        <td><%= chunk.category %></td>
-        <td><%= chunk.possible_issue&.name %></td>
-        <td>
-          <%= link_to "Edit", edit_psychologist_profile_chunk_path(@profile, chunk) %> |
-          <%= link_to "Delete", psychologist_profile_chunk_path(@profile, chunk), method: :delete, data: { confirm: "Are you sure?" } %>
-        </td>
-      </tr>
-    <% end %>
-  </tbody>
-</table>
+<hr>
+
+<!-- Existing Chunks -->
+<ul id="chunks-list">
+<% @chunks.each do |chunk| %>
+  <li id="chunk_<%= chunk.id %>">
+    <div class="chunk-display">
+      <p><strong>Category:</strong> <%= chunk.category %></p>
+      <p><%= chunk.content %></p>
+      <p><strong>Issue:</strong> <%= chunk.issue&.name || "None" %></p>
+      <button class="edit-button" data-id="<%= chunk.id %>">Edit</button>
+    </div>
+
+    <div class="chunk-edit" style="display: none;">
+      <%= form_with(model: [@profile, chunk], local: false) do |f| %>
+        <div>
+          <%= f.text_area :content %>
+        </div>
+        <div>
+          <%= f.select :category, Issue.distinct.order(:category).pluck(:category), { include_blank: true }, class: "input" %>
+          <%= f.collection_select :issue_id, Issue.all, :id, :name, include_blank: true %>
+        </div>
+        <div>
+          <%= f.submit "Update" %>
+          <button class="cancel-edit" data-id="<%= chunk.id %>">Cancel</button>
+          <%= link_to "Delete", psychologist_profile_psychologist_match_chunk_path(@profile, chunk), method: :delete, data: { turbo_confirm: "Are you sure?" } %>
+        </div>
+      <% end %>
+    </div>
+  </li>
+<% end %>
+</ul>
+
+<script>
+  document.addEventListener("turbo:load", () => {
+    document.querySelectorAll(".edit-button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.id;
+        const li = document.getElementById(`chunk_${id}`);
+        li.querySelector(".chunk-display").style.display = "none";
+        li.querySelector(".chunk-edit").style.display = "block";
+      });
+    });
+
+    document.querySelectorAll(".cancel-edit").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const id = btn.dataset.id;
+        const li = document.getElementById(`chunk_${id}`);
+        li.querySelector(".chunk-display").style.display = "block";
+        li.querySelector(".chunk-edit").style.display = "none";
+      });
+    });
+  });
+</script>
