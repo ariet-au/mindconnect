@@ -882,3 +882,23 @@ kg:
     possible: "Мүмкүн"
     likely: "Ыктымал"
     very_likely: "Жогорку ыктымалдык менен"
+
+  shared:
+    labels:
+      content: "Мазмуну"
+      category: "Категория"
+      issue: "Маселе"
+    buttons:
+      add: "Кошуу"
+      save: "Сактоо"
+      cancel: "Жокко чыгаруу"
+      delete: "Өчүрүү"
+      edit: "Өзгөртүү"
+    prompts:
+      select_category: "Категорияны тандаңыз"
+      select_issue: "Маселени тандаңыз"
+      confirm_delete: "Бул элементти өчүрүүнү каалайсызбы?"
+  
+  psychologist_match_chunks:
+    title: "%{name} үчүн чанктар"
+    content_placeholder: "Жаңы мазмун киргизиңиз..."

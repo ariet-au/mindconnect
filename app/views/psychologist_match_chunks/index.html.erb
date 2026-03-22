@@ -1,71 +1,154 @@
-<h2>Chunks for <%= @profile.full_name %></h2>
+<div class="px-2" style="max-width: 1000px; margin: 0 auto;">
+  <h2 class="title is-5 mb-4" style="letter-spacing: -0.5px; font-weight: 700;">
+    <%= t('psychologist_match_chunks.title', name: @profile.full_name, default: "Chunks for #{@profile.full_name}") %>
+  </h2>
 
-<!-- New Chunk Form -->
-<%= form_with(model: [@profile, @new_chunk], local: false) do |f| %>
-  <div>
-    <%= f.text_area :content, placeholder: "New chunk content" %>
-  </div>
-  <div>
-    <%= f.text_field :category, placeholder: "Category" %>
-    <%= f.collection_select :issue_id, Issue.all, :id, :name, include_blank: true %>
-  </div>
-  <div>
-    <%= f.submit "Add Chunk" %>
-  </div>
-<% end %>
-
-<hr>
-
-<!-- Existing Chunks -->
-<ul id="chunks-list">
-<% @chunks.each do |chunk| %>
-  <li id="chunk_<%= chunk.id %>">
-    <div class="chunk-display">
-      <p><strong>Category:</strong> <%= chunk.category %></p>
-      <p><%= chunk.content %></p>
-      <p><strong>Issue:</strong> <%= chunk.issue&.name || "None" %></p>
-      <button class="edit-button" data-id="<%= chunk.id %>">Edit</button>
+  <%= form_with(model: [@profile, @new_chunk], local: false) do |f| %>
+    <%# Row 1: Content %>
+    <div class="mb-3">
+      <%= f.text_area :content, placeholder: t('shared.labels.content'), rows: 2, 
+          class: "textarea", style: "border-radius: 8px; border-color: #dbdbdb; min-height: 80px; font-size: 1rem;" %>
     </div>
 
-    <div class="chunk-edit" style="display: none;">
-      <%= form_with(model: [@profile, chunk], local: false) do |f| %>
-        <div>
-          <%= f.text_area :content %>
+    <%# Row 2: Category, Issue, and Button %>
+    <div class="columns is-mobile is-multiline is-variable is-1">
+      <div class="column is-6-mobile is-grow">
+        <div class="select is-fullwidth">
+          <%= f.select :category, Issue.distinct.order(:category).pluck(:category), 
+              { include_blank: t('shared.prompts.select_category') }, 
+              { class: "modern-input" } %>
         </div>
-        <div>
-          <%= f.select :category, Issue.distinct.order(:category).pluck(:category), { include_blank: true }, class: "input" %>
-          <%= f.collection_select :issue_id, Issue.all, :id, :name, include_blank: true %>
-        </div>
-        <div>
-          <%= f.submit "Update" %>
-          <button class="cancel-edit" data-id="<%= chunk.id %>">Cancel</button>
-          <%= link_to "Delete", psychologist_profile_psychologist_match_chunk_path(@profile, chunk), method: :delete, data: { turbo_confirm: "Are you sure?" } %>
-        </div>
-      <% end %>
+      </div>
+
+      <div class="column is-6-mobile is-grow">
+        <%= f.collection_select :issue_id, Issue.all.order(:name), :id, :name, 
+            { include_blank: t('shared.prompts.select_issue') }, 
+            { class: "tomselect-issue is-fullwidth modern-input" } %>
+      </div>
+
+      <div class="column is-12-mobile is-narrow-tablet">
+        <%= f.submit t('shared.buttons.add'), 
+            class: "button is-primary px-6 modern-input", 
+            style: "font-weight: 700; width: 100%; letter-spacing: 0.2px;" %>
+      </div>
     </div>
-  </li>
-<% end %>
-</ul>
+  <% end %>
+
+  <hr style="margin: 2rem 0; border: 0; border-top: 1px solid #f0f0f0;">
+
+
+<style>
+  /* The "Magic" Height - 42px feels professional and modern */
+  .modern-input {
+    height: 42px !important;
+    border-radius: 8px !important;
+    font-size: 0.95rem !important;
+    border-color: #dbdbdb !important;
+  }
+
+  /* Fix TomSelect internal height and alignment */
+  .ts-wrapper .ts-control {
+    height: 42px !important;
+    min-height: 42px !important;
+    padding: 0 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    border-radius: 8px !important;
+    border-color: #dbdbdb !important;
+  }
+
+  /* Adjust dropdown arrow position for taller select */
+  .select:not(.is-multiple):not(.is-loading)::after {
+    border-color: #7a7a7a !important;
+    right: 1.125em !important;
+    top: 50% !important;
+  }
+
+  @media (min-width: 769px) {
+    .is-narrow-tablet {
+      flex: 0 0 auto !important;
+      width: auto !important;
+    }
+  }
+</style>
+  <hr style="margin: 1rem 0; opacity: 0.1;">
+
+  <ul id="chunks-list" style="list-style:none; padding:0; margin:0;">
+    <% @chunks.each do |chunk| %>
+      <li id="<%= dom_id(chunk) %>" style="border-bottom: 1px solid #eee; padding: 8px 0;">       
+        
+        <div class="chunk-display" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
+          <div style="flex: 1;">
+            <div style="font-size: 0.7rem; margin-bottom: 2px; display: flex; align-items: center; gap: 6px;">
+              <strong style="color: #444; background: #efefef; padding: 1px 4px; border-radius: 3px; text-transform: uppercase;"><%= chunk.category %></strong>
+              <% if chunk.issue&.name.present? %>
+                <span style="color: #ccc;">/</span>
+                <span style="color: #666;"><%= chunk.issue.name %></span>
+              <% end %>
+            </div>
+            <div style="white-space: pre-wrap; font-size: 0.9rem; color: #333; line-height: 1.4;"><%= chunk.content %></div>
+          </div>
+          <button class="edit-button button is-small is-ghost" style="color: #bbb; height: 28px; width: 28px; padding: 0;" data-id="<%= chunk.id %>">
+            <i class="fas fa-edit"></i>
+          </button>
+        </div>
+
+        <div class="chunk-edit" style="display:none; margin-top: 4px;">
+          <%= form_with(model: [@profile, chunk], local: false) do |f| %>
+            <div style="margin-bottom: 6px;">
+              <%= f.text_area :content, rows: 3, class: "textarea is-small", style: "width: 100%; font-size: 0.9rem;" %>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; align-items: center; gap: 6px;">
+              <%= link_to psychologist_profile_psychologist_match_chunk_path(@profile, chunk),
+                    data: { turbo_method: :delete, turbo_confirm: t('shared.prompts.confirm_delete') },
+                    class: "button is-small",
+                    style: "background-color: #b91c1c; color: #fff; border: none; margin-right: auto; padding: 0 10px;" do %>
+                <i class="fa-solid fa-trash-can mr-1"></i> <%= t('shared.buttons.delete') %>
+              <% end %>
+
+              <button type="button" class="cancel-edit button is-light is-small" data-id="<%= chunk.id %>" style="padding: 0 10px;">
+                <i class="fa-solid fa-arrow-left mr-1"></i> <%= t('shared.buttons.cancel') %>
+              </button>
+
+              <%= f.button type: :submit, class: "button is-success is-small", style: "font-weight: 600; padding: 0 10px;" do %>
+                <i class="fa-solid fa-check mr-1"></i> <%= t('shared.buttons.save') %>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+
+      </li>
+    <% end %>
+  </ul>
+</div>
 
 <script>
-  document.addEventListener("turbo:load", () => {
-    document.querySelectorAll(".edit-button").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const id = btn.dataset.id;
-        const li = document.getElementById(`chunk_${id}`);
-        li.querySelector(".chunk-display").style.display = "none";
-        li.querySelector(".chunk-edit").style.display = "block";
-      });
-    });
-
-    document.querySelectorAll(".cancel-edit").forEach(btn => {
-      btn.addEventListener("click", (e) => {
-        e.preventDefault();
-        const id = btn.dataset.id;
-        const li = document.getElementById(`chunk_${id}`);
-        li.querySelector(".chunk-display").style.display = "block";
-        li.querySelector(".chunk-edit").style.display = "none";
-      });
-    });
+document.addEventListener("turbo:load", () => {
+  document.querySelectorAll(".edit-button").forEach(btn => {
+    btn.onclick = () => {
+      const id = btn.dataset.id;
+      const li = document.getElementById(`psychologist_match_chunk_${id}`);
+      li.querySelector(".chunk-display").style.display = "none";
+      li.querySelector(".chunk-edit").style.display = "block";
+    };
   });
+
+  document.querySelectorAll(".cancel-edit").forEach(btn => {
+    btn.onclick = (e) => {
+      e.preventDefault();
+      const id = btn.dataset.id;
+      const li = document.getElementById(`psychologist_match_chunk_${id}`);
+      li.querySelector(".chunk-display").style.display = "flex";
+      li.querySelector(".chunk-edit").style.display = "none";
+    };
+  });
+
+  // TomSelect Initialization
+  document.querySelectorAll(".tomselect-issue").forEach(select => {
+    if(!select.tomselect){
+      new TomSelect(select,{create:false,sortField:{field:"text",direction:"asc"}});
+    }
+  });
+});
 </script>

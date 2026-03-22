@@ -2,6 +2,8 @@ class PsychologistMatchChunk < ApplicationRecord
   belongs_to :psychologist_profile
   belongs_to :issue, optional: true
   
+  validates :content, :category, presence: true
+
   after_commit :generate_embedding_if_needed, on: [:create, :update]
 
   private

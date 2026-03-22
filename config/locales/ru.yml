@@ -894,3 +894,23 @@ ru:
     possible: "Возможно"
     likely: "Вероятно"
     very_likely: "С большой вероятностью"
+
+  shared:
+    labels:
+      content: "Содержимое"
+      category: "Категория"
+      issue: "Проблема"
+    buttons:
+      add: "Добавить"
+      save: "Сохранить"
+      cancel: "Отмена"
+      delete: "Удалить"
+      edit: "Изменить"
+    prompts:
+      select_category: "Выберите категорию"
+      select_issue: "Выберите проблему"
+      confirm_delete: "Вы уверены, что хотите удалить этот элемент?"
+  
+  psychologist_match_chunks:
+    title: "Чанки для %{name}"
+    content_placeholder: "Введите текст..."

@@ -6,12 +6,13 @@ class PsychologistMatchChunksController < ApplicationController
     @chunks = @profile.psychologist_match_chunks.order(created_at: :desc)
     @new_chunk = @profile.psychologist_match_chunks.new
   end
-
+  
   def create
     @chunk = @profile.psychologist_match_chunks.new(chunk_params)
     if @chunk.save
       redirect_to psychologist_profile_psychologist_match_chunks_path(@profile), notice: "Chunk created!"
     else
+      @new_chunk = @chunk      # <--- set this so form_with works
       @chunks = @profile.psychologist_match_chunks.order(created_at: :desc)
       render :index
     end
@@ -29,7 +30,11 @@ class PsychologistMatchChunksController < ApplicationController
 
   def destroy
     @chunk.destroy
-    redirect_to psychologist_profile_psychologist_match_chunks_path(@profile), notice: "Chunk deleted!"
+
+    respond_to do |format|
+      format.turbo_stream  # render destroy.turbo_stream.erb
+      format.html { redirect_to psychologist_profile_psychologist_match_chunks_path(@profile), notice: "Chunk deleted!" }
+    end
   end
 
   private

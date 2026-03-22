@@ -890,3 +890,26 @@ en:
       categories: "Categories"
       popular_articles: "Popular Articles"
       coming_soon: "Coming soon"
+
+
+
+
+  shared:
+    labels:
+      content: "Content"
+      category: "Category"
+      issue: "Issue"
+    buttons:
+      add: "Add"
+      save: "Save"
+      cancel: "Cancel"
+      delete: "Delete"
+      edit: "Edit"
+    prompts:
+      select_category: "Select Category"
+      select_issue: "Select Issue"
+      confirm_delete: "Are you sure you want to delete this?"
+  
+  psychologist_match_chunks:
+    title: "Chunks for %{name}"
+    placeholder: "Enter new chunk content..."
