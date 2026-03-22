@@ -1,12 +1,13 @@
 class PsychologistMatchChunksController < ApplicationController
   before_action :set_profile
+  before_action :authorize_user!      # ← add this
   before_action :set_chunk, only: [:update, :destroy]
 
   def index
     @chunks = @profile.psychologist_match_chunks.order(created_at: :desc)
     @new_chunk = @profile.psychologist_match_chunks.new
   end
-  
+
   def create
     @chunk = @profile.psychologist_match_chunks.new(chunk_params)
     if @chunk.save
